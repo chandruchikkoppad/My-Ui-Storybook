@@ -73,14 +73,14 @@ export const Controlled: Story = {
     };
 
     const onInputChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
-      const inputValue = parseInt(event.target.value);
-      setValue(inputValue);
+      const inputValue = event.target.value;
+      setValue(parseInt(inputValue));
 
       if (event.target) {
-        if (inputValue < 0 || checkEmpty(value)) {
+        if (checkEmpty(event.target.value)) {
           setError(true);
           setHelperText(`${event.target.name} is required`);
-        } else if (inputValue > 999) {
+        } else if (parseInt(inputValue) > 999) {
           setError(true);
           setHelperText(`${event.target.name} should be upto 999`);
         } else {

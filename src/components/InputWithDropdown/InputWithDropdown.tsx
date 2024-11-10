@@ -21,7 +21,7 @@ const InputWithDropdown = ({
   onInputBlurHandler,
   optionsRequired = true,
 }: InputWithDropdownProps) => {
-  const isValueFilled = checkEmpty(value);
+  const isValueFilled = !checkEmpty(value);
   return (
     <div
       className={classNames('ff-input-with-dropdown-container', {
