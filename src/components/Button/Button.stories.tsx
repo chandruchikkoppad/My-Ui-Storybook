@@ -13,13 +13,13 @@ const meta: Meta<typeof Button> = {
 type Story = StoryObj<typeof Button>;
 
 const defaultArgs = {
-  label: 'Button',
   disabled: false,
 };
 
 export const Primary: Story = {
   args: {
     ...defaultArgs,
+    label: 'Primary Button',
     variant: 'primary',
   },
 };
@@ -27,29 +27,47 @@ export const Primary: Story = {
 export const Secondary: Story = {
   args: {
     ...defaultArgs,
+    label: 'Secondary Button',
     variant: 'secondary',
-    transparentBackground: true,
   },
 };
-export const Danger: Story = {
+export const Tertiary: Story = {
   args: {
     ...defaultArgs,
-    variant: 'danger',
+    label: 'Tertiary Button',
+    variant: 'tertiary',
+  },
+};
+export const Delete: Story = {
+  args: {
+    ...defaultArgs,
+    label: 'Delete',
+    variant: 'delete',
+  },
+};
+export const PrimaryWithIcon: Story = {
+  args: {
+    ...defaultArgs,
+    label: 'Primary Button',
+    variant: 'primary',
+    iconName: 'manage_apps',
   },
 };
 
-export const Success: Story = {
+export const SecondaryWithIcon: Story = {
   args: {
     ...defaultArgs,
-    variant: 'success',
+    label: 'Secondary Button',
+    variant: 'secondary',
+    iconName: 'manage_apps',
   },
 };
-
-export const ButtonWithIcon: Story = {
+export const TertiaryWithIcon: Story = {
   args: {
     ...defaultArgs,
-    withIcon: true,
-    iconName: 'add_icon',
+    label: 'Tertiary Button',
+    variant: 'tertiary',
+    iconName: 'manage_apps',
   },
 };
 

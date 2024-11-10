@@ -1,0 +1,21 @@
+// Mixin for centering content
+@mixin center-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+}
+
+// Mixin for transition effects
+@mixin transition($properties, $duration: 0.3s) {
+  transition: $properties $duration;
+}
+
+//Mixin for height, width and border
+@mixin box($size, $border: none) {
+  width: $size;
+  height: $size;
+  @if $border != none {
+    border: $border;
+  }
+}

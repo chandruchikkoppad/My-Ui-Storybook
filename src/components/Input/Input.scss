@@ -1,0 +1,150 @@
+@use '../../assets/styles/fonts';
+
+.ff-input-container {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+
+  .ff-input {
+    padding: 6px 8px;
+    border: 1px solid var(--input-default-border-color);
+    border-radius: 4px;
+    outline: none;
+    line-height: 18px;
+    @extend .fontSm;
+    &:disabled {
+      cursor: not-allowed;
+    }
+    &::placeholder {
+      opacity: 0;
+      line-height: 18px;
+    }
+    &--disabled {
+      background: transparent;
+      border-color: var(--input-default-border-color);
+    }
+    &--danger {
+      border-color: var(--input-error-text-color);
+    }
+    &--transparentBackground {
+      background: transparent;
+    }
+    &--no-border {
+      border: none;
+    }
+  }
+
+  .ff-input-label-container {
+    @extend .ff-input;
+    display: flex;
+    gap: 2px;
+    position: absolute;
+    border: none;
+    outline: none;
+    line-height: 18px;
+    margin-top: 1px;
+    transition: all 0.3s ease-in-out;
+
+    .ff-input-label {
+      color: var(--input-default-label-color);
+      &--danger {
+        color: var(--input-error-text-color);
+      }
+      &--disabled {
+        color: var(--input-default-border-color);
+        background-color: var(--input-label-bg-color);
+      }
+    }
+
+    .required-asterisk {
+      color: var(--input-error-text-color);
+    }
+  }
+  &:hover {
+    .ff-input-label {
+      color: var(--input-hover-border-color);
+      &--no-hover {
+        color: var(--input-default-label-color);
+      }
+      &--disabled {
+        color: var(--input-default-border-color);
+      }
+      &--danger {
+        color: var(--input-error-text-color);
+      }
+    }
+    .ff-input {
+      border-color: var(--input-hover-border-color);
+      &--no-hover {
+        border-color: var(--input-default-border-color);
+      }
+      &--disabled {
+        background: transparent;
+        border-color: var(--input-default-border-color);
+      }
+      &--danger {
+        border-color: var(--input-error-text-color);
+      }
+    }
+  }
+  &:focus-within {
+    .ff-input-label-container {
+      top: -6px;
+      @extend .font-size-8;
+      background-color: var(--input-label-bg-color);
+      line-height: 12px;
+      padding: 0px 2px;
+      margin-left: 10px;
+    }
+    .ff-input-label {
+      &--primary {
+        color: var(--brand-color);
+      }
+      &--danger {
+        color: var(--input-error-text-color);
+      }
+    }
+    .ff-input {
+      &--primary {
+        border-color: var(--brand-color);
+      }
+      &--danger {
+        border-color: var(--input-error-text-color);
+      }
+
+      &::placeholder {
+        opacity: 1;
+        margin-bottom: 1px;
+        @extend .font-size-8;
+      }
+    }
+  }
+
+  .ff-input-message {
+    @extend .font-size-8;
+    padding: 0px 4px;
+    margin-left: 8px;
+    line-height: 12px;
+    &--danger {
+      color: var(--input-error-text-color);
+    }
+  }
+
+  &--float {
+    .ff-input-label-container {
+      //re-written label container code to place it at on border
+      top: -6px;
+      @extend .font-size-8;
+      background-color: var(--input-label-bg-color);
+      line-height: 12px;
+      padding: 0px 2px;
+      margin-left: 10px;
+    }
+    &--disabled {
+      cursor: not-allowed;
+      .ff-input-label-container {
+        cursor: not-allowed;
+      }
+    }
+  }
+}

@@ -1,0 +1,197 @@
+@use '../../assets/styles/fonts';
+
+@mixin flex-center($justify: space-between) {
+  display: flex;
+  align-items: center;
+  justify-content: $justify;
+}
+@mixin label-styles {
+  font-family: Poppins;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+}
+@mixin hovered-styles($color) {
+  &:hover {
+    border: 1px solid $color;
+    .ff-multiselect .ff-multiselect__main {
+      .default-label,
+      .active-default-label {
+        color: $color;
+      }
+    }
+  }
+}
+@mixin arrow_fill($color) {
+  .ff-select-arrow {
+    svg {
+      path {
+        fill: $color;
+        transition: all 0.3s ease;
+      }
+    }
+  }
+}
+.ff-multiselect-wrapper {
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+  border: 1px solid var(--default-icon-color);
+  border-radius: 8px;
+  background: var(--drawer-footer-bg);
+  min-width: 150px;
+  width: 100%;
+  height: 32px;
+  .ff-multiselect {
+    position: relative;
+    padding: 6px;
+    border: none;
+    border-radius: 8px;
+    @include flex-center;
+    &__main {
+      display: flex;
+      flex: 1;
+      .default-label {
+        @extend .fontSm;
+        @include label-styles;
+        color: var(--default-icon-color);
+        line-height: 18px;
+      }
+
+      .active-default-label {
+        @extend .font-size-8;
+        @include label-styles;
+        background-color: var(--multi-select-label-bg);
+        line-height: 12px;
+        color: var(--default-icon-color);
+        padding: 0 4px;
+        position: absolute;
+        left: 8px;
+        top: -6px;
+        pointer-events: none;
+      }
+      .ff-multiselect-chip-container {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 5px;
+        .ff-multiselect-chip {
+          @include flex-center;
+          box-sizing: border-box;
+          border: 0.5px solid #f1ebf2;
+          padding: 0 1px 0 4px;
+          gap: 4px;
+          border-radius: 15px;
+          .ff-multiselect-chip-label {
+            @extend .fontXs;
+            line-height: 14px;
+            color: var(--tooltip-bg-color);
+          }
+          .ff-multiselect-chip-close-icon {
+            cursor: pointer;
+          }
+        }
+        .ff-multiselect-input-container {
+          flex: 1;
+          min-width: 20px;
+          input {
+            width: 100%;
+            min-width: 30px;
+            max-width: calc(100% - 0px);
+            padding: 2px;
+            box-sizing: border-box;
+            border: none;
+            font-size: 12px;
+            &:focus {
+              outline: none;
+            }
+          }
+        }
+        .ff-multiselect-more-chip{
+          width: 1rem;
+          @extend .fontXs;
+          font-weight: 600;
+          line-height: 16px;
+          color: var(--brand-color);
+        }
+      }
+    }
+    &__toggle {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      .ff-select-arrow {
+        transition: transform 0.3s ease;
+        transform: rotate(360deg);
+
+        svg {
+          path {
+            transition: all 0.3s ease;
+          }
+        }
+
+        &--opened-dropdown {
+          transform: rotate(180deg);
+          transition: transform 0.3s ease;
+        }
+      }
+    }
+  }
+
+  @include hovered-styles(var(--tooltip-bg-color));
+  &:hover {
+    @include arrow_fill(var(--tooltip-bg-color));
+  }
+  &--with-options {
+    height: fit-content;
+  }
+  &--opened-dropdown {
+    border: 1px solid var(--brand-color);
+    height: fit-content;
+    cursor: default;
+    .ff-multiselect .ff-multiselect__main .active-default-label {
+      color: var(--brand-color);
+    }
+    @include hovered-styles(var(--brand-color));
+  }
+  &--error {
+    border: 1px solid var(--error-light);
+    .ff-multiselect .ff-multiselect__main .active-default-label {
+      color: var(--error-light);
+    }
+    @include hovered-styles(var(--error-light));
+  }
+  &--disabled {
+    pointer-events: none;
+
+    border: 1px solid var(--multi-select-border);
+    .ff-multiselect .ff-multiselect__main .active-default-label {
+      color: var(--multi-select-border);
+    }
+    @include hovered-styles(var(--multi-select-border));
+    @include arrow_fill(var(--multi-select-border));
+    &:hover {
+      @include arrow_fill(var(--multi-select-border));
+    }
+    .ff-multiselect {
+      &__main {
+        .ff-multiselect-chip-container {
+          .ff-multiselect-chip {
+            .ff-multiselect-chip-label {
+              color: var(--text-color-light);
+            }
+          }
+        }
+      }
+    }
+  }
+  .error-text {
+    @extend .font-size-8;
+    position: absolute;
+    margin-top: 0.25rem;
+    left: 12px;
+    color: var(--error-light);
+    letter-spacing: 0.5px;
+  }
+}

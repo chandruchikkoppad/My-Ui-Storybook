@@ -16,12 +16,13 @@ const Icon = ({
 }: IconProps) => {
   const IconComponent = Components[name];
 
-  const iconHeight = height ? height : 15;
-  const iconWidth = width ? width : 15;
+  const iconHeight = height ? height : 16;
+  const iconWidth = width ? width : 16;
 
   if (!IconComponent) {
     return null;
   }
+
 
   return (
     <span

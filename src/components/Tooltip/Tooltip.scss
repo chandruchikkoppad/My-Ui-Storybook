@@ -1,0 +1,26 @@
+@use '../../assets/styles/fonts';
+
+.ff-tooltip-container {
+  cursor: auto;
+  display: inline-block;
+}
+
+.ff-tooltip {
+  @extend .fontSm;
+  position: fixed;
+  width: max-content;
+  max-width: 60vw;
+  word-wrap: break-word;
+  background-color: var(--tooltip-bg-color);
+  line-height: 18px;
+  color: var(--tooltip-text-color);
+  text-align: center;
+  border-radius: 5px;
+  padding: 6px 12px;
+  opacity: 0;
+
+  &--visible {
+    opacity: 1;
+    transition: opacity 0.3s;
+  }
+}

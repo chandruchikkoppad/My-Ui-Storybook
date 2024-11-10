@@ -1,0 +1,70 @@
+@use '../../assets/styles/colors' as *;
+@use '../../assets/styles/fonts' as *;
+
+@mixin chip-variant-background($color) {
+  background-color: $color;
+  color: $drawer-footer-bg;
+}
+
+.ff-chip-wrapper {
+  display: inline-flex;
+  margin: 5px;
+  justify-content: center;
+  align-items: center;
+
+  .ff-default-chip-style {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    width: fit-content;
+    gap: 5px;
+    height: 17px;
+    border-radius: 25px;
+    padding: 1px 6px;
+    line-height: 15px;
+    border: none;
+    transition: transform 0.5s ease, box-shadow 0.5s ease, padding 1s ease;
+    box-shadow: 1px 1px 3px 0px $ff-chips-blur-color inset,
+      -1px -1px 2px 0px $drawer-footer-bg inset,
+      1px -1px 2px 0px $ff-chips-blur-color inset,
+      -1px -1px 2px 0px $ff-chips-blur-color, 1px 1px 2px 0px $drawer-footer-bg;
+    &--fullText:hover {
+      box-shadow: 1px 1px 6px 0px $ff-chips-blur-color inset,
+        -1px -1px 4px 0px $drawer-footer-bg inset;
+      padding-right: 12px;
+    }
+    @extend .fontXs;
+
+    &--primary {
+      @include chip-variant-background($ff-chips-fill-color);
+      color: $text-color;
+    }
+
+    &--success {
+      @include chip-variant-background($ff-success);
+    }
+
+    &--error {
+      @include chip-variant-background($ff-error-light);
+    }
+
+    &--warning {
+      @include chip-variant-background($ff-warning);
+    }
+    &--custom {
+      @extend .fontSm;
+      background: #610b861a; //TODO: add color code name
+      color: #610b86; //TODO: add color code name
+      padding: 2px 8px;
+      border-radius: 12px;
+      cursor: pointer;
+      white-space: nowrap;
+      box-shadow: none;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      &:hover {
+        background-color: #610b86; //TODO: add color code name
+        color: #fdfaff; //TODO: add color code name
+      }
+    }
+  }
+}

@@ -1,23 +1,148 @@
-$brand-color : #71347b;
-$text-color : #200624;
-$icons-default-color : #71347b;
-$border-color : #f0e7f4;
-$disable-color : #71347b80;
-$hover-color :  #f7ebff;
-$pop-up-background-blur : #14041c;
-$drawer-footer-bg : #ffffff;
+$brand-color: #71347b;
+$text-color: #1e161f;
+$icons-default-color: #71347b;
+$default-icon-color: #a3a3a3;
+$border-color: #f0e7f4;
+$disable-color: #71347b80;
+$hover-color: #f7ebff;
+$pop-up-background-blur: #14041c;
+$drawer-footer-bg: #ffffff;
 $slider-table-color: #efe1f9;
-$tooltip-bg-color:#1e161f;
-$tooltip-text-color:#ffffff;
+$tooltip-bg-color: #1e161f;
+$tooltip-text-color: #ffffff;
 $toggle-strip-color: #cfd1e2;
 $toggle-cross-color: #aeb0c0;
-$toggle-strip-shadow: #00000040;
+$toggle-strip-shadow: #00000040; // TODO : Color Name is Not Provided By Designers
+$toggle-button-bg-color: #ffffff; // TODO : Color Name is Not Provided By Designers
+$toggle-disable-icon-color: #767994; // TODO : Color Name is Not Provided By Designers
+$arrow-button-bg-color: #ffffff; // TODO : Color Name is Not Provided By Designers
 $shadow-strip-enable-shadow: #141a60;
-$text-bg-highlight:#f5fb00;
+$text-bg-highlight: #f5fb00;
 $toast-msg-icon-bg: linear-gradient(180deg, #079455 0%, #00693a 100%);
 $drawer-footer-border: #f0e7f4;
-$primary-button-color: linear-gradient(180deg, #46164d 0%, #71347b 100%);
-$primary-button-hover: linear-gradient(180deg, #8d3b9a 0%, #781f86 100%);
-$primary-button-disable: linear-gradient(180deg, rgba(70, 22, 77, 0.5) 0%, rgba(113, 52, 123, 0.5) 100%);
+$primary-button-border: linear-gradient(180deg, #46164d 3.04%, #71347b 100%);
+$table-header-color: #f0e7f4;
+$table-lines-color: #d7b5e3;
+$primary-button-color: linear-gradient(
+  188.79deg,
+  #71347b 2.94%,
+  #46164d 93.09%
+);
+
+$primary-button-hover: linear-gradient(
+  179.06deg,
+  #8d3b9a 3.49%,
+  #781f86 99.22%
+);
+
+$primary-button-disable: linear-gradient(180deg, #46164d 0%, $brand-color 100%);
 $primary-button-text-color: #ffffff;
+$secondary-button-color-text: linear-gradient(
+  179.06deg,
+  #71347b 3.49%,
+  #46164d 99.22%
+);
+$secondary-button-text-color: #46164d;
+$secondary-button-hover: linear-gradient(
+  179.06deg,
+  #71347b0d 3.49%,
+  #46164d0d 99.22%
+);
+$tertiary-button-color: linear-gradient(
+  179.06deg,
+  #71347b0d 3.49%,
+  #46164d0d 99.22%
+);
+$tertiary-button-hover: linear-gradient(
+  179.06deg,
+  #71347b1a 3.49%,
+  #46164d1a 99.22%
+);
+$delete-button-color: linear-gradient(179.06deg, #e42525 3.49%, #c90000 99.22%);
+$delete-button-border: linear-gradient(180deg, #a90707 3.04%, #e42525 100%);
+$delete-button-hover: linear-gradient(179.06deg, #e95151 3.49%, #d43434 99.22%);
 $secondary-button-color: linear-gradient(180deg, #46164d 0%, #71347b 100%);
+$secondary-icon-color: #71347b;
+
+///!-----------------------------------------------------------------------------------------------------
+
+$drawer-title-color: #252c37;
+$button-bg-color: #f6ebff;
+$description-text: #d9d9d9;
+$error_light: #e42525;
+$text-area-border-hover: #1e161f;
+$text-area-border-color: #a3a3a3;
+$default-color: #747474;
+
+///!-----------------------------------------------------------------------------------------------------
+
+
+
+$description-text: #d9d9d9;
+$ff-success: #079455;
+$ff-warning: #f79009;
+$ff-error-light: #e42525;
+$ff-chips-fill-color: #f9d5ff;
+$ff-chips-blur-color: #575757;
+$hovered-add-button-color: #fce9ff; // TODO: Change the color variable name
+$arrows-button-border-color: #ded1e5; // TODO: Change the color variable name
+$add-icon-hover-color: #431b4a; ////TODO: color need to be add into style guide
+
+$add-icon-hover-color: #431b4a; //TODO : Color Name is Not Provided By Designers
+$default-icon-color: #a3a3a3;
+$expandable-menu-default-bg: #fdfaff;
+$expandable-menu-option-bg: #610b861a;
+$file-dropzone-default-color: #71347b1a;
+$file-dropzone-selected-color: #71347b33;
+$file-details-container-shadow: #1e161f29;
+$file-details-bg: #ffffff;
+
+:root {
+  --tooltip-bg-color: #{$tooltip-bg-color};
+  --status-approved-text-color: #016102;
+  --status-warning-text-color: #ff8b00;
+  --status-rejected-text-color: #c60202;
+  --status-skipped-text-color: #3c3838;
+  --status-approved-bg-color: #c6efcd;
+  --status-rejected-bg-color: #f7d9d9;
+  --status-warning-bg-color: #fae2c6; // TODO: Change the color variable name
+  --status-skipped-bg-color: #c4c3c3; // TODO: Change the color variable name
+  --brand-color: #{$brand-color};
+  --icons-default-color: #{$icons-default-color};
+  --default-icon-color: #{$default-icon-color};
+  --default-color: #747474; // todo color need to be add into style guide
+  --primary-icon-color: #ffffff;
+  --secondary-icon-color: #71347b;
+  --system-color--error: #c50303;
+  --hover-color: #{$hover-color};
+  --brand2-color: #610b86; // Todo:Change the color variable name
+  --status-warning-hover-bg-color: #fcd8ac; // Todo:Change the color variable name
+  --status-percentage-growth-bg-color: #ecedf8; // Todo:Change the color variable name
+  --primary-icon-color: #{$primary-button-text-color};
+  --secondary-icon-color: #71347b;
+  --description-text-color:#{$description-text};
+  --expandable-menu-default-bg: #{$expandable-menu-default-bg}; // TODO: Change the color variable name
+  --expandable-menu-option-bg: #{$expandable-menu-option-bg}; // TODO: Change the color variable name
+  --text-color: #{$text-color};
+  --file-dropzone-default-color: #{$file-dropzone-default-color};
+  --file-dropzone-selected-color: #{$file-dropzone-selected-color};
+  --file-details-container-shadow: #{$file-details-container-shadow}; // TODO: Change the color variable name
+  --file-details-bg: #{$file-details-bg}; // TODO: Change the color variable name
+  --error-light: #{$error_light};
+
+  --tabs-label-default-color: #{tabs-label-default-color};
+  --tabs-label-active-color: #{tabs-label-active-color};
+  --tabs-border-color: #{tabs-border-color};
+  --tabs-bg-color: #{tabs-bg-color};
+  --tab-bg-color: #{tab-bg-color};
+  --toggle-button-bg-color: #{$toggle-button-bg-color}; // TODO: Change the color variable name
+  --toggle-strip-shadow: #{$toggle-strip-shadow}; // TODO: Change the color variable name
+  --toggle-strip-color: #{$toggle-strip-color}; // TODO: Change the color variable name
+  --disable-color: #{$disable-color};
+  --toggle-strip-color: #{$toggle-strip-color};
+  --add-icon-hover-color: #{$add-icon-hover-color}; // TODO: Change the color variable name
+  --arrows-button-border-color: #{$arrows-button-border-color}; // TODO: Change the color variable name
+  --arrow-button-bg-color: #{$arrow-button-bg-color}; // TODO: Change the color variable name
+  --text-bg-highlight:#{$text-bg-highlight};
+  --slider-table-color: #{$slider-table-color};
+}

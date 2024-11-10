@@ -1,7 +1,7 @@
 import { checkEmpty } from './checkEmpty';
 
 export default {
-  title: 'Utils/isEmptyValue',
+  title: 'Utils/checkEmpty',
   component: checkEmpty,
 };
 

@@ -1,0 +1,70 @@
+@use '../../assets/styles/mixins';
+
+.ff-all-project {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  .ff-all-project-dropdown {
+    background-color: var(--secondary-icon-color);
+    color: var(--expandable-menu-default-bg);
+    height: 24px;
+    @include mixins.center-content();
+    gap: 10px;
+    padding: 4px;
+    .label-icon {
+      height: 16px;
+      width: 16px;
+      @include mixins.center-content();
+    }
+  }
+  .ff-dropdown {
+    position: absolute;
+    top: 50px;
+    padding: 1px;
+    border: 0.5px solid var(--expandable-menu-default-bg);
+    border-radius: 4px;
+    background-color: var(--secondary-icon-color);
+    color: var(--primary-icon-color);
+    .ff-search {
+      margin-bottom: 1px;
+      input {
+        height: 30px;
+        width: inherit;
+        border-radius: 4px;
+        border-style: none;
+        &::placeholder {
+          padding-left: 32px;
+          font-size: 8px;
+          line-height: 12px;
+        }
+      }
+      span {
+        position: absolute;
+        top: 15px;
+        left: 20px;
+      }
+    }
+    .scroll {
+      max-height: 124px;
+      overflow-y: scroll;
+    }
+    .option-card {
+      .projects-options {
+        @include mixins.center-content();
+        justify-content: flex-start;
+        gap: 4px;
+
+        .projects-icons {
+          @include mixins.center-content();
+          height: 24px;
+          width: 24px;
+        }
+      }
+      .all-projects-option {
+        background-color: var(--primary-icon-color);
+        color: var(--secondary-icon-color);
+        border-radius: 4px;
+      }
+    }
+  }
+}

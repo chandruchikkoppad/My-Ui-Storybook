@@ -1,0 +1,85 @@
+@use '../../assets/styles/fonts';
+
+.ff-search-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  .ff-search-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 4px;
+    .ff-icon-container {
+      svg {
+        path {
+          fill: var(--brand-color);
+        }
+      }
+    }
+  }
+  .ff-search-input {
+    @extend .fontXs;
+    border: none;
+    color: var(--tooltip-bg-color);
+    line-height: 12px;
+    visibility: hidden;
+    transition: width 0.4s ease;
+    &:focus {
+      outline: none;
+      border: none;
+    }
+
+    &:hover {
+      border: none;
+    }
+  }
+  &.disabled {
+    opacity: 0.5;
+  }
+  &.expanded {
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    .ff-vertical-line {
+      height: 8px;
+      width: 1px;
+      position: relative;
+      right: 2px;
+      border-radius: 1px;
+      margin: 8px 0px;
+      background-color: var(--border-color);
+    }
+    .ff-search-input {
+      visibility: visible;
+
+      &::placeholder {
+        color: var(--ff-search-filed-placeholder-text);
+      }
+    }
+    .ff-search-icon {
+      padding: 4px;
+      border: none;
+      cursor: default;
+    }
+    .ff-search-clear-button {
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      width: 22px;
+    }
+    .ff-search-close-icon {
+      margin: 4px;
+      cursor: pointer;
+
+      .ff-icon-container {
+        svg {
+          path {
+            fill: var(--ff-search-filed-close-Icon);
+          }
+        }
+      }
+    }
+  }
+}

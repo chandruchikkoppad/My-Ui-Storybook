@@ -1,14 +1,48 @@
-@import '../../assets/styles/colors';
-@import '../../assets/styles/rsfonts';
+@use "sass:map";
+$switch-sizes: (
+  small: (
+    button-size: 16px,
+    container-width: 24px,
+    container-height: 10px,
+    translate-x: 10px,
+  ),
+  medium: (
+    button-size: 20px,
+    container-width: 32px,
+    container-height: 14px,
+    translate-x: 14px,
+  ),
+  large: (
+    button-size: 24px,
+    container-width: 40px,
+    container-height: 16px,
+    translate-x: 16px,
+  ),
+);
+
+@mixin switch-size($size) {
+  $button-size: map.get(map.get($switch-sizes, $size), button-size);
+  $container-width: map.get(map.get($switch-sizes, $size), container-width);
+  $container-height: map.get(map.get($switch-sizes, $size), container-height);
+  $translate-x: map.get(map.get($switch-sizes, $size), translate-x);
+
+  width: $container-width;
+  height: $container-height;
+
+  .ff--switch-button {
+    width: $button-size;
+    height: $button-size;
+    transform: translateX(0);
+    &.checked {
+      transform: translateX($translate-x);
+    }
+  }
+}
 
 .ff--switch-container {
   position: relative;
   display: flex;
   align-items: center;
-  &:disabled {
-    opacity: 0.7;
-    cursor: no-drop;
-  }
 
   .ff--switch-checkbox {
     height: 0;
@@ -18,34 +52,29 @@
     &:checked {
       + .ff--switch-label {
         .ff--switch-button {
-          left: calc(100% - 19px);
           right: -1px;
-          border: 1px solid $brand-color;
-          background: $drawer-footer-bg;
+          border: 1px solid var(--brand-color);
+          background: var(--toggle-button-bg-color);
           transition: all 0.3s;
-          box-shadow: 0px 0px 2px 0px $shadow-strip-enable-shadow;
-
-          .ff-check-symbol {
-            height: 6px;
-            width: 3px;
-            border-bottom: 2px solid $brand-color;
-            border-right: 2px solid $brand-color;
-            transform: rotate(45deg);
-            border-bottom-right-radius: 2px;
-            animation: checkmark 0.2s forwards;
-            transition: all 0.1s;
+          box-shadow: 0px 0px 2px 0px var(--toggle-strip-shadow);
+          .ff-checked-icon--primary {
+            svg {
+              path {
+                fill: var(--brand-color);
+              }
+            }
           }
         }
 
         &--primary {
-          background: $brand-color;
+          background: var(--brand-color);
           transition: all 0.3s;
         }
 
         &:disabled {
           cursor: default;
-          color: $disable-color;
-          background: $disable-color;
+          color: var(--disable-color);
+          background: var(--disable-color);
         }
       }
     }
@@ -61,7 +90,7 @@
     cursor: pointer;
     border-radius: 8px;
     position: relative;
-    background: $toggle-strip-color;
+    background: var(--toggle-strip-color);
     transition: all 0.3s;
 
     &--disabled {
@@ -72,82 +101,33 @@
     .ff--switch-button {
       position: absolute;
       left: 0;
-      width: 20px;
-      height: 20px;
-      border: 1px solid $toggle-strip-color;
+      border: 1px solid var(--toggle-strip-color);
       display: flex;
-      background: $drawer-footer-bg;
+      background: var(--toggle-button-bg-color);
       border-radius: 50%;
-      box-shadow: 0px 0px 2px 0px $toggle-strip-shadow;
+      box-shadow: 0px 0px 2px 0px var(--toggle-strip-shadow);
       transition: all 0.3s;
       align-items: center;
       justify-content: center;
       box-sizing: border-box;
 
-      .ff-wrong-symbol {
-        width: 8px;
-        height: 8px;
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        .ff-cross-line {
-          position: absolute;
-          width: 100%;
-          height: 2px;
-          background-color: $toggle-cross-color;
-          transition: all 0.3s;
-
-          &:first-child {
-            transform: rotate(45deg);
+      .ff-unchecked-icon--primary {
+        svg {
+          path {
+            fill: var(--toggle-disable-icon-color);
           }
-
-          &:last-child {
-            transform: rotate(-45deg);
-          }
-
-          animation: crossmark 0.2s forwards;
         }
       }
     }
   }
 
-  .default {
-    width: 32px;
-    height: 14px;
+  .default--small {
+    @include switch-size(small);
   }
-
-  @keyframes checkmark {
-    0% {
-      height: 0;
-      width: 0;
-      opacity: 0;
-    }
-    50% {
-      height: 3px;
-      width: 3px;
-      opacity: 1;
-    }
-    100% {
-      height: 6px;
-      width: 3px;
-      opacity: 1;
-    }
+  .default--medium {
+    @include switch-size(medium);
   }
-
-  @keyframes crossmark {
-    0% {
-      width: 0;
-      opacity: 0;
-    }
-    50% {
-      width: 50%;
-      opacity: 1;
-    }
-    100% {
-      width: 100%;
-      opacity: 1;
-    }
+  .default--large {
+    @include switch-size(large);
   }
 }

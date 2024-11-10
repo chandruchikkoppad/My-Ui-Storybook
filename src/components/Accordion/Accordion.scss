@@ -1,0 +1,44 @@
+@use '../../assets/styles/fonts';
+
+.ff-accordion {
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  min-width: fit-content;
+  .accordion-header {
+    display: flex;
+    justify-content: space-between;
+    min-height: 32px;
+    .header-title {
+      padding: 8px;
+    }
+
+    .accordion-arrow {
+      display: flex;
+      padding: 8px;
+      align-items: center;
+      transition: transform 0.3s ease;
+      &.expanded {
+        transform: rotate(180deg);
+      }
+      &:hover {
+        color: var(--tooltip-bg-color);
+      }
+    }
+
+    &.expanded {
+      background-color: var(
+        --hover-color
+      ); //todo need to replace this color once it is available in the design system
+      border-bottom: 1px solid var(--hover-color);
+    }
+  }
+  .accordion-header:hover {
+    background-color: var(
+      --hover-color
+    ); //todo need to replace this color once it is available in the design system
+  }
+
+  .accordion-content {
+    padding: 4px;
+  }
+}

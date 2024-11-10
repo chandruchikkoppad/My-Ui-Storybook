@@ -1,0 +1,12 @@
+@use '../../../assets/styles/fonts';
+
+.ff-radial-chart-container {
+  cursor: pointer;
+  svg {
+    text {
+      @extend .font-size-8;
+      font-size: var(--fontSize) !important;
+      font-weight: 400;
+    }
+  }
+}

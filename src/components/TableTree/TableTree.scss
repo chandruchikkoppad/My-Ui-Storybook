@@ -1,0 +1,142 @@
+@use '../../assets/styles/fonts';
+.ff-tree-container {
+  width: 100%;
+  font-size: 12px;
+  color: var(--brand-color);
+  transition: all 0.3s ease;
+  @extend .fontSm;
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    text-align: left;
+  }
+  .ff-toggle-arrow-icon {
+    height: 12px;
+    width: 12px;
+    margin-left: 8px;
+    display: grid;
+    place-items: center;
+    transform: rotate(0deg);
+
+    svg {
+      path {
+        fill: var(--brand-color);
+      }
+    }
+
+    &.ff-expanded {
+      transform: rotate(0deg);
+    }
+
+    &.ff-collapsed {
+      transform: rotate(-90deg);
+    }
+  }
+
+  th,
+  td {
+    padding: 0 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  th {
+    vertical-align: middle;
+    height: 32px;
+    background-color: var(--slider-table-color);
+    color: var(--text-color);
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  tr {
+    .ff-action-section {
+      display: none;
+    }
+    &:hover {
+      background-color: var(--hover-color);
+      .ff-action-section {
+        display: block;
+      }
+    }
+  }
+
+  .ff-title-container {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    .ff-toggle-folder {
+      display: flex;
+      cursor: pointer;
+    }
+    &.ff-folder {
+      font-weight: 600;
+    }
+
+    &.ff-file {
+      font-weight: 400;
+    }
+    .ff-title {
+      display: flex;
+      gap: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-weight: 400;
+      cursor: pointer;
+
+      .ff-hover-icon {
+        display: none;
+        position: absolute;
+        right: 10px;
+      }
+    }
+  }
+
+  .ff-node-li {
+    position: relative;
+    --indent-size: 16px;
+    --total-children-height: var(--node-height);
+
+    td:first-child {
+      padding-left: calc(var(--level) * var(--indent-size));
+      height: 32px;
+    }
+
+    // Vertical line connecting the node to the parent
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: calc(var(--level) * var(--indent-size) - 4px);
+      width: 1px;
+      height: calc(var(--total-children-height));
+      background-color: var(--tree-connecting-lines-color);
+      z-index: 1;
+    }
+
+    // Horizontal line connecting child node to parent
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: calc(var(--level) * var(--indent-size) - 4px);
+      width: 12px;
+      height: 1px;
+      background-color: var(--tree-connecting-lines-color);
+      z-index: 1;
+    }
+
+    // For the last child node, limit the vertical line
+    &.ff-is-last::before {
+      height: calc(var(--node-height) / 2);
+    }
+
+    // Remove the  lines for root level
+    &[style*='--level: 0']::before,
+    &[style*='--level: 0']::after {
+      content: none;
+    }
+  }
+}

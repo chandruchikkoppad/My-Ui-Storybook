@@ -1,0 +1,70 @@
+@use '../../../../assets/styles/fonts';
+
+// todo color need to be add into style guide
+
+@mixin absolute-position($top: auto, $right: auto, $bottom: auto, $left: auto) {
+  position: absolute;
+  top: $top;
+  right: $right;
+  bottom: $bottom;
+  left: $left;
+}
+
+.ff-select-dropdown-wrapper {
+  .ff-select-options-wrapper {
+    // Future use case. Increase the height by adding padding at the top and bottom.
+    max-height: 160px;
+    z-index: 100;
+
+    position: absolute;
+    min-width: 100px;
+    border: 1px solid var(--ff-select-option-border-color);
+    box-sizing: border-box;
+    margin-top: 4px;
+    border-radius: 4px;
+    background-color: var(--ff-select-background-color);
+    box-shadow: 0px 1px 4px 0px var(--ff-select-option-wrapper-box-shadow);
+    overflow: hidden auto;
+
+    &::-webkit-scrollbar {
+      width: 4px;
+      height: 12px;
+
+      &-thumb {
+        background-color: var(--ff-select-scroll-thumb-color);
+        border-radius: 4px;
+      }
+
+      &-track {
+        background-color: transparent;
+        border-radius: 4px;
+      }
+    }
+
+    .ff-select-option {
+      width: calc(100% - 18px);
+      border: 1px solid transparent;
+      border-radius: 4px;
+      padding: 0px 8px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      cursor: pointer;
+
+      &:hover {
+        border-color: var(--ff-select-background-color);
+        background-color: var(--ff-select-option-hover-color);
+      }
+    }
+
+    .ff-select-no-option {
+      width: calc(100% - 16px);
+      margin: 0;
+      overflow: hidden;
+      padding: 0px 8px;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      cursor: not-allowed;
+    }
+  }
+}

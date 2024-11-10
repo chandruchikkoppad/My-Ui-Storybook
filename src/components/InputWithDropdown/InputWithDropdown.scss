@@ -1,0 +1,185 @@
+@use '../../assets/styles/fonts';
+
+.ff-input-with-dropdown-container {
+  display: flex;
+  flex-direction: column;
+
+  .ff-input-with-dropdown {
+    display: flex;
+    border: 1px solid var(--input-default-border-color);
+    border-radius: 4px;
+    padding: 0;
+    position: relative;
+
+    .ff-floating-label-input-container {
+      .ff-floating-label {
+        position: absolute;
+        z-index: 9;
+        color: var(--input-default-border-color);
+        top: 7px;
+        left: 7px;
+        @extend .fontSm;
+        transition: all 0.3s ease-in-out;
+
+        .ff-required-asterisk {
+          color: var(--input-error-text-color);
+        }
+        &--filled {
+          color: var(--input-active-text-color);
+        }
+        &--no-hover {
+          color: var(--input-default-border-color);
+        }
+        &--error {
+          color: var(--input-error-text-color);
+        }
+      }
+
+      .ff-floating-input {
+        position: relative;
+        padding: 6px 7px;
+        line-height: 18px;
+        border: none;
+        outline: none;
+        border-right: 1px solid var(--input-default-border-color);
+        border-radius: 4px 0 0 4px;
+        @extend .fontSm;
+        top: 1px;
+
+        &::-webkit-outer-spin-button,
+        &::-webkit-inner-spin-button {
+          -webkit-appearance: none;
+          margin: 0;
+        }
+        &::placeholder {
+          opacity: 0;
+        }
+        &:disabled {
+          cursor: not-allowed;
+          background: transparent;
+        }
+        &--error {
+          border-color: var(--input-error-text-color);
+        }
+      }
+    }
+
+    &--no-hover {
+      border-color: var(--input-default-border-color);
+    }
+    &--disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+    &--error {
+      border-color: var(--input-error-text-color);
+    }
+
+    .ff-floating-dropdown {
+      min-width: 120px;
+      border: none;
+      outline: none;
+      margin: 0;
+      &:disabled {
+        cursor: not-allowed;
+      }
+    }
+  }
+  &:hover {
+    .ff-input-with-dropdown {
+      border-color: var(--input-hover-border-color);
+
+      &--filled {
+        border-color: var(--input-default-border-color);
+      }
+      &--disabled {
+        border-color: var(--input-default-border-color);
+      }
+      &--error {
+        border-color: var(--input-error-text-color);
+      }
+      .ff-floating-label {
+        color: var(--input-hover-border-color);
+        &--filled {
+          color: var(--input-default-border-color);
+        }
+        &--disabled {
+          color: var(--input-default-border-color);
+        }
+        &--error {
+          color: var(--input-error-text-color);
+        }
+      }
+      .ff-floating-input {
+        border-color: var(--input-hover-border-color);
+        &--filled {
+          border-color: var(--input-default-border-color);
+        }
+        &--disabled {
+          border-color: var(--input-default-border-color);
+        }
+        &--error {
+          border-color: var(--input-error-text-color);
+        }
+      }
+    }
+  }
+
+  &:focus-within {
+    .ff-input-with-dropdown {
+      border-color: var(--input-active-text-color);
+      &--error {
+        border-color: var(--input-error-text-color);
+      }
+
+      .ff-floating-label {
+        top: -6px;
+        background-color: var(--input-label-bg-color);
+        padding: 0px 2px;
+        color: var(--input-active-text-color);
+        line-height: 12px;
+        font-size: 8px !important;
+
+        &--error {
+          color: var(--input-error-text-color);
+        }
+      }
+      .ff-floating-input {
+        border-color: var(--input-active-text-color);
+        &--error {
+          border-color: var(--input-error-text-color);
+        }
+        &::placeholder {
+          opacity: 1;
+        }
+      }
+    }
+  }
+  &--filled {
+    .ff-input-with-dropdown {
+      .ff-floating-label-input-container {
+        border-color: var(--input-active-text-color);
+        .ff-floating-label {
+          //re-written label container code to place it at on border
+          top: -6px;
+          background-color: var(--input-label-bg-color);
+          padding: 0px 2px;
+          line-height: 12px;
+          font-size: 8px !important;
+        }
+      }
+    }
+    span {
+      font-size: 8px;
+    }
+    .required-asterisk {
+      color: var(--input-error-text-color);
+    }
+  }
+
+  .ff-helper-text {
+    color: var(--input-error-text-color);
+    @extend .font-size-8;
+    padding: 0 11px;
+  }
+}

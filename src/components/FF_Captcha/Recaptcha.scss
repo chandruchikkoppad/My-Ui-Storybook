@@ -1,0 +1,11 @@
+.ff-recaptcha-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    
+    .ff-recaptcha-error {
+      color: var(--input-error-text-color);
+      font-size: 12px;
+      margin-top: 4px;
+    }
+  }

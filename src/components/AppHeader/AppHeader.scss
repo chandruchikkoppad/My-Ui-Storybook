@@ -1,0 +1,67 @@
+.ff-app-header {
+  display: flex;
+  justify-content: space-between;
+  background-color: var(--brand-color);
+  padding-left: 8px;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  .ff-app-header-logo-icon {
+    padding: 8px;
+    height: 24px;
+  }
+  .ff-app-header-nav-bar {
+    display: flex;
+    align-items: center;
+    background-color: var(--brand-color);
+    transform: translateY(12px);
+    border-radius: 20px;
+    padding: 5px;
+    .ff-app-header-nav-bar-items {
+      display: flex;
+      align-items: center;
+      .ff-app-header-nav-bar-item {
+        margin-left: 8px;
+        color: var(--ff-header-text-color);
+        cursor: pointer;
+        display: flex;
+        &--selected {
+          padding: 3px;
+          background-color: var(--primary-icon-color);
+          border-radius: 20px;
+          .ff-app-header-nav-bar-item-label {
+            background-color: var(--brand-color);
+            border-radius: 20px;
+            padding: 4px 8px;
+          }
+        }
+        .ff-app-header-submenu-container {
+          display: flex;
+          .ff-app-header-nav-bar-submenu-item {
+            color: var(--ff-header-submenu-text-color);
+            align-content: center;
+            padding-left: 8px;
+            &--selected{
+              color: var(--ff-header-submenu-highlight-text-color);
+            }
+          }
+          .ff-app-header-quickmenu-container {
+            display: flex;
+            align-items: center;
+          }
+        }
+      }
+    }
+    .ff-app-header-more-icon {
+      svg {
+        path {
+          fill: var(--primary-icon-color);
+        }
+        cursor: pointer;
+      }
+    }
+  }
+  .ff-app-header-right-content {
+    height: 24px;
+    padding: 8px;
+  }
+}

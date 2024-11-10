@@ -1,0 +1,110 @@
+@use '../../assets/styles/fonts';
+
+.ff-expandable-chip-menu {
+  display: inline-flex;
+  gap: 16px;
+  align-items: center;
+  border-radius: 16px;
+  cursor: pointer;
+  overflow: hidden;
+  width: auto;
+  padding: 4px 8px;
+  transition: all 0.3s ease;
+
+  &--primary {
+    border: 0.5px solid var(--brand-color);
+    background-color: var(--expandable-menu-default-bg);
+  }
+
+  .ff-label-chip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+    white-space: nowrap;
+    padding: 2px 0;
+
+    .arrow-icon {
+      height: 14px;
+      width: 14px;
+      display: grid;
+      place-items: center;
+    }
+
+    &--primary {
+      color: var(--brand-color);
+    }
+  }
+
+  &--disabled {
+    opacity: 0.5;
+    &:disabled {
+      pointer-events: none;
+    }
+  }
+
+  &--medium {
+    @extend .fontSm;
+    line-height: 18px;
+  }
+
+  .ff-sub-chips {
+    display: flex;
+    gap: 8px;
+    max-width: 500px;
+    overflow-x: auto;
+    -ms-overflow-style: none;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    opacity: 0;
+  }
+
+  &.expanded .ff-sub-chips {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+
+  .ff-sub-chip {
+    padding: 2px 8px;
+    border-radius: 12px;
+    white-space: nowrap;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    opacity: 0;
+    transform: translateX(-10px);
+    animation: fadeIn 0.5s ease forwards;
+
+    &--primary {
+      background: var(--expandable-menu-option-bg);
+      color: var(--brand-color);
+
+      &:hover,
+      &.selected {
+        background-color: var(--brand-color);
+        color: var(--expandable-menu-default-bg);
+      }
+    }
+    &--medium {
+      @extend .fontSm;
+      line-height: 18px;
+    }
+  }
+
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+      transform: translateX(-10px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  &.expanded .ff-sub-chip {
+    animation: fadeIn 0.5s ease forwards;
+  }
+}

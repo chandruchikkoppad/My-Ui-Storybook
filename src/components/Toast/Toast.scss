@@ -1,0 +1,121 @@
+@use '../../assets/styles/fonts';
+
+.ff-toaster-overlay {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  pointer-events: none;
+  justify-content: flex-end;
+  align-items: flex-end;
+
+  .ff-toaster {
+    background-color: var(--drawer-footer-bg);
+    display: flex;
+    border-radius: 10px;
+    margin: 16px;
+    pointer-events: auto;
+    min-width: 320px;
+    max-width: 600px;
+    gap: 8px;
+    box-shadow: 0px 1px 4px 0px var(--toaster-boxshadow);
+    animation: slideInToasterBottomRight 0.5s forwards;
+
+    .ff-toaster-container {
+      padding: 8px;
+      display: flex;
+      border-radius: 10px;
+      gap: 8px;
+      width: 100%;
+      &::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 8px;
+        padding: 1px;
+        -webkit-mask: linear-gradient(var(--drawer-footer-bg) 0 0) content-box,
+          linear-gradient(var(--drawer-footer-bg) 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        z-index: -1;
+      }
+
+      .ff-toaster-content {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+        gap: 4px;
+        &__title {
+          max-width: 500px;
+          word-wrap: break-word;
+        }
+        &__message {
+          max-width: 500px;
+          word-wrap: break-word;
+        }
+        &__prompt {
+          margin-top: 4px;
+          display: flex;
+          gap: 10px;
+        }
+      }
+    }
+    &--success::before {
+      background: var(--toaster-success-border);
+    }
+    &--warning::before {
+      background: var(--toaster-warning-border);
+    }
+
+    &--info::before {
+      background: var(--toaster-info-border);
+    }
+
+    &--danger::before,
+    &--confirm::before {
+      background: var(--toaster-danger_confirm-border);
+    }
+
+    .ff-close-icon-wrapper {
+      box-sizing: border-box;
+      cursor: pointer;
+      height: fit-content;
+      width: fit-content;
+      border-radius: 8px;
+      padding: 8px;
+      background: var(--toast-close-icon-wrapper-bg);
+      margin-left: auto;
+    }
+  }
+
+  &.exiting {
+    animation: slideOutToasterBottomRight 0.5s forwards;
+  }
+}
+@keyframes slideOutToasterBottomRight {
+  from {
+    transform: translateX(0%);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+@keyframes slideInToasterBottomRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0%);
+  }
+}
+// style related to buttons in storybook UI only
+.fireflink-stories-toaster-container {
+  .fireflink-stories-toaster-container-row {
+    display: flex;
+    gap: 5px;
+    margin: 15px;
+  }
+}

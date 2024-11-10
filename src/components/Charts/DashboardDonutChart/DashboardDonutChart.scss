@@ -1,0 +1,145 @@
+@use '../../../assets/styles/fonts';
+
+.ff-dashboard-donut-chart-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  &-table-legend {
+    flex-direction: row;
+  }
+
+  .ff-dashboard-donut-chart-svg-container {
+    text-align: center;
+    svg {
+      text:nth-of-type(1) {
+        @extend .font2Xl;
+        font-weight: 600;
+      }
+      text:nth-of-type(2) {
+        @extend .fontMd;
+        font-weight: 500;
+      }
+    }
+
+    .ff-donut-chart-tooltip {
+      position: fixed;
+      padding: 5px;
+      border-radius: 4px;
+      pointer-events: none;
+      background-color: var(--tooltip-bg-color);
+      color: var(--tooltip-text-color);
+    }
+  }
+
+  .ff-legend-container {
+    display: grid;
+    gap: 10px;
+
+    &.numberLegend {
+      grid-template-columns: repeat(3, 1fr);
+      .ff-legend-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+
+    &.pillLegend {
+      grid-template-columns: repeat(2, 1fr);
+      .ff-legend-item {
+        display: flex;
+        align-items: center;
+
+        .ff-legend-capsule {
+          background-color: var(--status-success-text-color);
+          color: var(--tooltip-text-color);
+          border-radius: 15px;
+          min-width: 25px;
+          height: 18px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+
+        .ff-legend-key {
+          margin-left: 8px;
+        }
+      }
+    }
+
+    &.memoryLegend {
+      grid-template-columns: repeat(2, 1fr);
+      .ff-legend-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        padding-right: 10px;
+        border-right: 1px solid var(--border-color);
+
+        // Remove the right border for the last item in each row
+        &:nth-child(2n) {
+          border-right: none;
+        }
+      }
+    }
+  }
+
+  .ff-legend-table-wrapper {
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    margin-left: 1rem;
+  }
+
+  .ff-legend-table {
+    width: 100%;
+    min-width: 300px;
+    border-collapse: collapse;
+    text-align: left;
+
+    .ff-table-header {
+      @extend .fontXs;
+      font-weight: bold;
+      background-color: var(--tabs-bg-color);
+      color: var(--input-hover-border-color);
+      padding: 0.5rem;
+
+      &:last-child {
+        text-align: right;
+      }
+    }
+
+    .ff-legend-capsule {
+      background-color: var(--status-success-text-color);
+      color: var(--tooltip-text-color);
+      border-radius: 1rem;
+      min-width: 22px;
+      height: 16px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .ff-legend-item {
+      .ff-legend-name,
+      .ff-legend-percentage,
+      .ff-legend-count {
+        padding: 0.5rem;
+        @extend .fontXs;
+        color: var(--input-hover-border-color);
+      }
+
+      .ff-legend-name {
+        display: flex;
+        align-items: baseline;
+        gap: 5px;
+        color: var(--input-hover-border-color);
+      }
+      .ff-legend-count {
+        text-align: right;
+      }
+    }
+  }
+}

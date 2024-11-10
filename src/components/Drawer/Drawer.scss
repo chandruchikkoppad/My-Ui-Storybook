@@ -1,0 +1,119 @@
+@use '../../assets/styles/fonts';
+
+.ff-drawer-container {
+  .ff-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: var(--drawer-title-color);
+    opacity: 0.5;
+  }
+
+  .ff-drawer {
+    height: 100vh;
+    position: fixed;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    min-width: 450px;
+    background-color: var(--primary-button-text-color);
+    z-index: 999;
+    transform: translateX(100%);
+    opacity: 0;
+
+    &--open {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    &--small {
+      width: 444px;
+    }
+    &--medium {
+      width: 666px;
+    }
+    &--large {
+      width: 888px;
+    }
+    &--x-large {
+      width: calc(100vw - 10px);
+    }
+    &--open,
+    &--medium,
+    &--large,
+    &--x-large {
+      transition: all 0.4s ease-in-out;
+      border-radius: 5px;
+      border: 2px solid var(--border-color);
+    }
+
+    .ff-drawer-header {
+      padding: 10px 8px 10px 8px;
+      display: flex;
+      gap: 10px;
+      border-bottom: 2px solid var(--border-color);
+
+      .ff-drawer-title {
+        @extend .fontSm;
+        font-weight: 600;
+        color: var(--drawer-title-color);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .ff-drawer-action-section {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+
+        .ff-action-button {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+
+          .ff-expand-collapse-button {
+            cursor: pointer;
+            background-color: var(--button-bg-color);
+            outline: none;
+            border: none;
+            margin: 0;
+            border: 1px solid transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            padding: 6px;
+          }
+        }
+      }
+    }
+
+    .ff-drawer-body {
+      background-color: var(--drawer-footer-bg);
+      height: calc(100vh - 76px);
+      overflow: hidden auto;
+    }
+
+    .no-footer {
+      height: 100vh;
+    }
+
+    .ff-drawer-footer {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 5px 16px 5px 16px;
+      display: flex;
+      justify-content: space-between;
+      border-top: 2px solid var(--drawer-footer-border);
+
+      .button-container {
+        display: flex;
+        justify-content: flex-end;
+        gap: 16px;
+      }
+    }
+  }
+}

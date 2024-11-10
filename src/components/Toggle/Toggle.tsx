@@ -2,6 +2,7 @@ import React from 'react';
 import classNames from 'classnames';
 import { ToggleProps } from './types';
 import './Toggle.scss';
+import Icon from '../Icon';
 
 const Toggle: React.FC<ToggleProps> = ({
   onChange,
@@ -9,6 +10,8 @@ const Toggle: React.FC<ToggleProps> = ({
   disabled,
   checked = false,
   id = 'toggle',
+  size = 'large',
+  icon,
 }) => {
   const handleChange = (e: any) => {
     if (onChange) {
@@ -16,12 +19,36 @@ const Toggle: React.FC<ToggleProps> = ({
     }
   };
 
+  const baseIconSizes = {
+    large: 10,
+    medium: 8,
+    small: 6,
+  };
+
+  const defaultIconSize = baseIconSizes[size as 'small' | 'medium' | 'large'];
+
+  const defaultIcons = {
+    checked: {
+      name: 'check_mark',
+      width: defaultIconSize,
+      height: defaultIconSize,
+    },
+    unchecked: {
+      name: 'wrong_mark',
+      width: defaultIconSize,
+      height: defaultIconSize,
+    },
+  };
+
+  const iconNames = {
+    checked: { ...defaultIcons.checked, ...icon?.checked },
+    unchecked: { ...defaultIcons.unchecked, ...icon?.unchecked },
+  };
+
   return (
-    <div className={classNames('ff--switch-container')}>
+    <div className="ff--switch-container">
       <input
-        className={classNames(
-          `ff--switch-checkbox ff--switch-checkbox--default ff--switch`
-        )}
+        className="ff--switch-checkbox"
         id={`ff-toggle-${id}`}
         type="checkbox"
         disabled={!!disabled}
@@ -30,21 +57,35 @@ const Toggle: React.FC<ToggleProps> = ({
       />
       <label
         className={classNames(
-          `ff--switch-label ff--switch default ff--switch-label--${variant}`,
+          `ff--switch-label default--${size} ff--switch-label--${variant}`,
           {
             'ff--switch-label--disabled': disabled,
           }
         )}
         htmlFor={`ff-toggle-${id}`}
       >
-        <span className="ff--switch-button">
+        <span
+          className={classNames(
+            `ff--switch-button ff--switch-button--${size}`,
+            {
+              checked: checked,
+            }
+          )}
+        >
           {checked ? (
-            <div className="ff-check-symbol"></div>
+            <Icon
+              name={iconNames.checked.name}
+              width={iconNames.checked.width}
+              height={iconNames.checked.height}
+              className={`ff-checked-icon--${variant}`}
+            />
           ) : (
-            <div className="ff-wrong-symbol">
-              <div className="ff-cross-line"></div>
-              <div className="ff-cross-line"></div>
-            </div>
+            <Icon
+              name={iconNames.unchecked.name}
+              width={iconNames.unchecked.width}
+              height={iconNames.unchecked.height}
+              className={`ff-unchecked-icon--${variant}`}
+            />
           )}
         </span>
       </label>

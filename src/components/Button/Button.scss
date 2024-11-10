@@ -1,5 +1,148 @@
 @use '../../assets/styles/colors' as *;
+@use '../../assets/styles/fonts';
 
-.button {
-  background-color: $brand-color;
+.ff-button {
+  width: auto;
+  background-color: $primary-button-text-color;
+  border-radius: 4px;
+  padding: 4px 8px;
+  text-align: center;
+  text-decoration: none;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+  align-items: center;
+  @extend .fontXs;
+  border: 2px solid transparent;
+  &--transparent {
+    background-color: transparent;
+  }
+
+  &--primary,
+  &--delete,
+  &--secondary {
+    position: relative;
+    cursor: pointer;
+    border-radius: 4px;
+    z-index: 1;
+    border: none;
+    overflow: hidden;
+
+    &:before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 4px;
+      padding: 0.6px;
+
+      background: $primary-button-border;
+      mask: linear-gradient($primary-button-text-color 0 0) content-box,
+        linear-gradient($primary-button-text-color 0 0);
+      mask-composite: exclude;
+      -webkit-mask: linear-gradient($primary-button-text-color 0 0) content-box,
+        linear-gradient($primary-button-text-color 0 0);
+      -webkit-mask-composite: destination-out;
+      z-index: -1;
+    }
+
+    &:hover {
+      background: $primary-button-hover;
+    }
+
+    &:disabled {
+      opacity: 50%;
+      cursor: no-drop;
+
+      &:before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 4px;
+        padding: 0.6px;
+        -webkit-mask-composite: destination-out;
+        mask-composite: exclude;
+        z-index: -1;
+      }
+    }
+  }
+
+  &--primary {
+    background: $primary-button-color;
+
+    &:before {
+      background: $primary-button-border;
+    }
+
+    &:hover {
+      background: $primary-button-hover;
+    }
+  }
+
+  &--delete {
+    background: $delete-button-color;
+    color: $primary-button-text-color;
+
+    &:before {
+      background: $delete-button-border;
+    }
+
+    &:hover {
+      background: $delete-button-hover;
+    }
+  }
+
+  &--secondary {
+    &:before {
+      background: $primary-button-border;
+    }
+
+    &:hover {
+      background: $secondary-button-hover;
+    }
+  }
+
+  &--tertiary {
+    border: none;
+    background: $tertiary-button-color;
+
+    &:hover {
+      background: $tertiary-button-hover;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: no-drop;
+    }
+  }
+
+  &--small {
+    @extend .fontXs;
+    font-weight: 500;
+    padding: 4.5px 8px;
+  }
+
+  &--medium {
+    @extend .fontXs;
+    font-weight: 500;
+    padding: 6px 12px;
+  }
+
+  &--large {
+    @extend .fontMd;
+    padding: 8px 16px;
+  }
+
+  &-primary--text {
+    color: $primary-button-text-color;
+  }
+
+  &-secondary--text,
+  &-tertiary--text {
+    background: $secondary-button-color-text;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
 }

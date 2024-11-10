@@ -4,7 +4,7 @@ export interface ButtonProps {
   /**
    * Variant of the button
    */
-  variant: 'primary' | 'secondary' | 'danger' | 'success';
+  variant: 'primary' | 'secondary' | 'tertiary' | 'delete';
   /**
    * What background color to use
    */
@@ -52,14 +52,7 @@ export interface ButtonProps {
    * Additional styles for the button
    */
   style?: React.CSSProperties;
-  /**
-   * Pass true for transparentBackground button
-   */
-  transparentBackground?: boolean;
-  /**
-   * Pass true if button should be with icon
-   */
-  withIcon?: boolean;
+
   /**
    * Give icon name availble in storybook that to be on left side of button
    */
@@ -68,4 +61,5 @@ export interface ButtonProps {
    * Give icon name availble in storybook that to be on left side of button
    */
   iconPosition?: 'left' | 'right';
+  transparentBackground?:boolean;
 }

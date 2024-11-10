@@ -1,0 +1,134 @@
+@mixin column-flex-gap($gap: 0) {
+  display: flex;
+  flex-direction: column;
+  gap: $gap;
+}
+
+@mixin center {
+  display: grid;
+  place-items: center;
+}
+
+@mixin icon-container($height: 24px, $width: 24px) {
+  height: $height;
+  width: $width;
+}
+
+.ff-file-dropzone-wrapper {
+  @include column-flex-gap(10px);
+
+  .ff-file-dropzone {
+    width: 640px;
+    height: 188px;
+    padding: 16px 0;
+    border-radius: 8px;
+    background: var(--file-dropzone-default-color);
+    border: 1px dashed var(--brand-color);
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+    gap: 8px;
+
+    &--active {
+      background-color: var(--file-dropzone-selected-color);
+    }
+
+    &-content {
+      &__icon {
+        height: 80px;
+        width: 80px;
+        display: grid;
+        place-items: center;
+      }
+
+      &__labels {
+        .choose-file-btn {
+          margin: 0 auto;
+          position: relative;
+          font-weight: 600;
+          line-height: 15px;
+
+          input {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+          }
+        }
+      }
+    }
+  }
+
+  .ff-file-details-wrapper {
+    @include column-flex-gap(10px);
+    width: 640px;
+    max-height: 300px;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+    padding: 2px;
+
+    ::-webkit-scrollbar {
+      width: 2px;
+    }
+    -ms-overflow-style: none;
+    scrollbar-width: thin;
+
+    .ff-file-details {
+      @include column-flex-gap(10px);
+
+      &__item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 4px;
+        border-radius: 4px;
+        background-color: var(--file-details-bg);
+        box-shadow: 0px 0px 4px 0px var(--file-details-container-shadow);
+        overflow: hidden;
+
+        .ff-file-info {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          width: 60%;
+
+          .ff-file-info__icon {
+            @include center;
+            @include icon-container;
+          }
+
+          &__name-wrapper {
+            @include column-flex-gap(2px);
+            justify-content: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            width: 100%;
+
+            &__name {
+              overflow: hidden;
+              white-space: nowrap;
+              text-overflow: ellipsis;
+              display: block;
+              color: var(--text-color);
+            }
+          }
+        }
+
+        .ff-file-actions {
+          display: flex;
+          align-items: center;
+          &__icon-replace,
+          &__icon-remove {
+            @include icon-container;
+            @include center;
+            cursor: pointer;
+          }
+        }
+      }
+    }
+  }
+}

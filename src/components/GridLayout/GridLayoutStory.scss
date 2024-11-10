@@ -1,0 +1,25 @@
+
+@mixin p-20(){
+    padding: 20px;
+}
+
+.one{
+    background-color: var(--brand-color);
+    @include p-20;
+}
+.two{
+    background-color: var(--status-warning-text-color);
+    @include p-20;
+}
+.three{
+    background-color: var(--status-rejected-text-color);
+    @include p-20;
+}
+.four{
+    background-color: var(--status-rejected-bg-color);
+    @include p-20;
+}
+.five{
+    background-color: var(--status-skipped-bg-color);
+    @include p-20;
+}

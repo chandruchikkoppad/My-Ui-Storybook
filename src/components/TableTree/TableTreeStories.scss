@@ -1,0 +1,22 @@
+.ff-parent-node-section {
+  display: flex;
+  gap: 4px;
+  width: 400px;
+  align-items: center;
+
+  .ff-folder-name-style {
+    width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .ff-file-name-style {
+    @extend .ff-folder-name-style;
+    margin-left: 8px;
+  }
+
+  .ff-action-menu {
+    display: flex;
+    gap: 6px;
+  }
+}

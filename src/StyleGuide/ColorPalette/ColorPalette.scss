@@ -1,0 +1,62 @@
+@use '../../assets/styles/fonts';
+
+.ff-style-guide {
+  border-radius: 12px;
+
+  .style-guide-header {
+    background-color: var(--brand-color);
+
+    height: 100px;
+    padding: 40px;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    color: var(--tooltip-text-color);
+
+    & div {
+      @extend .font-size-32;
+      font-weight: 600;
+    }
+    & span {
+      @extend .fontLg;
+      font-weight: 400;
+    }
+  }
+
+  .style-guide-content {
+    padding: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    grid-gap: 40px;
+
+    .color-card {
+      display: flex;
+      flex-direction: column;
+      padding: 10px;
+
+      .color-box {
+        height: 82px;
+        width: 210px;
+        border-radius: 12px;
+        margin-bottom: 10px;
+        > p {
+          color: var(--colorCode);
+          backdrop-filter: invert(100%);
+        }
+      }
+
+      .color-name {
+        @extend .fontMd;
+        font-weight: 500;
+        margin-bottom: 5px;
+        text-transform: capitalize;
+        word-wrap: break-word;
+      }
+
+      .color-code {
+        @extend .fontSm;
+        font-weight: 400;
+        color: var(--text-color);
+      }
+    }
+  }
+}

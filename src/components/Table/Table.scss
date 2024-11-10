@@ -1,0 +1,106 @@
+@use '../../assets/styles/_fonts';
+
+.ff-fixed-header-table {
+  overflow-y: auto;
+}
+
+.ff-table {
+  th,
+  td {
+    text-align: left;
+    font-size: 12px;
+    padding: 9px 8px;
+  }
+  thead {
+    tr {
+      th {
+        @extend .fontMd;
+        color: var(--text-color);
+        border-bottom: 1px solid var(--slider-table-color);
+        text-transform: uppercase;
+      }
+      th:first-child {
+        div {
+          display: flex;
+          align-items: center;
+          .ff-table-checkbox {
+            padding-right: 8px;
+          }
+        }
+      }
+    }
+  }
+  tbody {
+    tr {
+      .action-column {
+        opacity: 0;
+      }
+      .icon-container {
+        padding-left: 10px;
+        opacity: 0;
+        display: flex;
+        justify-content: flex-end;
+        transition: opacity 0.3s ease, transform 0.3s ease;
+        transform: translateX(20px);
+      }
+      &:hover {
+        background-color: var(--hover-color);
+
+        .icon-container {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+      td {
+        position: relative;
+        color: var(--text-color);
+        @extend .fontSm;
+
+        &.clickable-cell {
+          cursor: pointer;
+        }
+      }
+      td:first-child {
+        div {
+          display: flex;
+          align-items: center;
+          .ff-table-checkbox {
+            padding-right: 8px;
+          }
+        }
+      }
+    }
+  }
+  .primary-bg {
+    background-color: var(--brand-color);
+  }
+  .secondary-bg {
+    background-color: var(--slider-table-color);
+  }
+  .default-bg {
+    background-color: transparent;
+  }
+}
+.border-borderRadius {
+  border: 1px solid var(--slider-table-color);
+  border-radius: 5px;
+  border-collapse: none !important;
+}
+
+.ff-fixed-header {
+  position: sticky !important;
+  top: 0;
+  z-index: 99;
+  background-color: Var(--file-details-bg);
+}
+.no-data-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+tbody tr.disabled-row {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

@@ -1,0 +1,387 @@
+@use '../../assets/styles/fonts';
+@import 'react-day-picker/style.css';
+
+/* Custom date picker styling */
+.ff-date-picker {
+  // day-picker variable override
+  .rdp-root {
+    --rdp-accent-color: var(--brand-color);
+    --rdp-day-height: 24px;
+    --rdp-day-width: 36px;
+    @include fonts.fontPoppins(12px);
+    --rdp-font-family: 'Poppins', sans-serif;
+  }
+
+  .ff-cursor-pointer {
+    cursor: pointer;
+  }
+
+  position: relative;
+
+  .ff-datepicker-input-container {
+    display: flex;
+    gap: 10px;
+
+    .ff-input-with-icon {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+
+      .ff-date-input,
+      .ff-time-input {
+        padding: 4px 8px;
+        padding-left: 2rem;
+        height: 32px;
+        border-radius: 5px;
+        border: 1px solid var(--border-color);
+        @extend .fontXs;
+        color: var(--status-skipped-text-color);
+        line-height: 15px;
+        box-sizing: border-box;
+
+        &:focus {
+          outline: none;
+        }
+      }
+
+      .ff-calendar-icon,
+      .ff-clock-icon {
+        position: absolute;
+        transform: translate(50%, 50%);
+        display: flex;
+        align-items: center;
+        pointer-events: none;
+      }
+    }
+
+    .ff-date-input-field {
+      flex: 1;
+      .ff-date-input {
+        width: 100%;
+      }
+
+      .ff-date-input-message {
+        @extend .font-size-8;
+        padding: 0px 4px;
+        margin-left: 8px;
+        line-height: 12px;
+        &--danger {
+          color: var(--input-error-text-color);
+        }
+      }
+    }
+
+    .ff-time-input-field {
+      flex: 0 0 120px;
+      .ff-time-input {
+        width: 100%;
+      }
+    }
+  }
+  .ff-date-picker-container {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    border-radius: 8px;
+    padding: 4px;
+    box-sizing: border-box;
+    background-color: var(--tab-bg-color);
+    box-shadow: 0 0 12px 0 #00000033;
+    gap: 8px;
+    z-index: 10;
+
+    .ff-calendar-container {
+      display: flex;
+      align-items: flex-start;
+      gap: 4px;
+      height: 240px;
+    }
+
+    .ff-date-picker-controls {
+      padding: 4px;
+      display: flex;
+      justify-content: end;
+      gap: 8px;
+      border-top: 1px solid var(--border-color);
+
+      .ff-date-picker-button {
+        font-weight: 600;
+        line-height: 15px;
+      }
+    }
+  }
+
+  .ff-calendar {
+    .ff-calendar-nav-button {
+      margin: 0 5px;
+      border: 1px solid var(--border-color);
+      background-color: var(--toggle-button-bg-color);
+      box-shadow: 0 -2px 2px 0 var(--ff-mini-modal-box-shadow);
+      padding: 4px;
+      border-radius: 30%;
+      cursor: pointer;
+
+      &:disabled {
+        cursor: auto;
+        opacity: 0.5;
+      }
+    }
+
+    .ff-calendar-haeder {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      color: var(--text-color);
+    }
+
+    .ff-custom-year_grid,
+    .ff-custom-month_grid {
+      width: calc((var(--rdp-day-width) + 4px) * 7);
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      padding: 5px;
+      max-width: 100%;
+
+      .ff-custom-year,
+      .ff-custom-month {
+        padding: 10px 0;
+        text-align: center;
+        cursor: pointer;
+        border-radius: 8px;
+        background-color: #f9f9f9; // color need to be change
+
+        &--selected {
+          background-color: var(--brand-color);
+          color: var(--primary-button-text-color);
+        }
+      }
+    }
+
+    .rdp-weekdays {
+      th {
+        color: #6f7c8e; // color need to be change
+        font-weight: 400;
+      }
+    }
+
+    .rdp-day {
+      padding: 2px;
+      font-weight: 500;
+    }
+
+    .rdp-day_button {
+      border-radius: 4px;
+      padding: 3px 9px;
+
+      &:hover {
+        background-color: var(--hover-color);
+      }
+    }
+    .rdp-selected {
+      font: inherit;
+      .rdp-day_button {
+        background: var(--rdp-accent-color);
+        color: var(--drawer-footer-bg);
+        border: none;
+      }
+    }
+    .rdp-today:not(.rdp-outside) {
+      .rdp-day_button {
+        border: 2px solid var(--rdp-accent-color);
+      }
+    }
+  }
+
+  // Timepicker css ************************************************************************
+
+  .ff-time-picker-container {
+    position: relative;
+    width: 150px;
+    height: 100%;
+    overflow-y: hidden;
+    border-left: 1px solid #ccc;
+    padding: 10px 5px;
+    box-sizing: border-box;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    .ff-time-picker-fields {
+      display: flex;
+      height: 14%;
+      width: 100%;
+      margin-bottom: 5px;
+      box-sizing: border-box;
+
+      .ff-time-input-container {
+        display: flex;
+        border: 1px solid var(--border-color);
+        border-right: 0;
+        border-radius: 4px 0 0 4px;
+        width: 55%;
+        position: relative;
+
+        .ff-time-input {
+          border: none;
+          padding: 5px;
+          width: 100%;
+          text-align: center;
+          border-radius: 4px 0 0 4px;
+          @extend .fontSm;
+
+          &::placeholder {
+            opacity: 0;
+            line-height: 18px;
+          }
+        }
+
+        .ff-time-input-label {
+          position: absolute;
+          left: 10px;
+          top: 50%;
+          transform: translateY(-50%);
+          transition: 0.2s ease all;
+          color: var(--input-default-label-color);
+          pointer-events: none;
+        }
+
+        &--float .ff-time-input-label {
+          top: 0;
+          left: 5px;
+          color: var(--brand-color);
+          background-color: var(--input-label-bg-color);
+          line-height: 12px;
+          padding: 0 2px;
+          font-size: 8px !important;
+
+          &--danger {
+            color: var(--input-error-text-color);
+          }
+        }
+
+        &:hover {
+          border-color: var(--input-hover-border-color);
+        }
+
+        &:focus-within {
+          border-color: var(--brand-color);
+
+          .ff-time-input-label {
+            top: 0;
+            left: 5px;
+            color: var(--brand-color);
+            background-color: var(--input-label-bg-color);
+            line-height: 12px;
+            padding: 0 2px;
+            font-size: 8px !important;
+
+            &--danger {
+              color: var(--input-error-text-color);
+            }
+          }
+
+          .ff-time-input {
+            &::placeholder {
+              opacity: 1;
+              margin-bottom: 1px;
+            }
+          }
+        }
+
+        &--danger {
+          border-color: var(--input-error-text-color) !important;
+        }
+
+        .ff-time-input:focus {
+          outline: none;
+        }
+      }
+      .ff-time-period-container {
+        position: relative;
+        width: 45%;
+        display: flex;
+        border: 1px solid var(--border-color);
+        border-radius: 0 4px 4px 0;
+
+        .ff-time-period-select {
+          display: flex;
+          align-items: center;
+          padding: 0 5px;
+          width: 100%;
+          border-radius: 4px;
+          background-color: white;
+          cursor: pointer;
+          border: none;
+        }
+        &--active {
+          border-color: var(--brand-color) !important;
+        }
+        &:hover {
+          border-color: var(--input-hover-border-color);
+        }
+
+        .ff-time-period-icon {
+          margin-left: auto;
+          pointer-events: none;
+        }
+
+        .ff-time-period-options {
+          position: fixed;
+          z-index: 100;
+          min-width: 60px;
+          margin: 4px 0 0;
+          padding: 0;
+          list-style: none;
+          border: 1px solid var(--ff-select-background-color);
+          border-radius: 4px;
+          background-color: var(--primary-button-text-color);
+          box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .ff-option-item {
+          padding: 8px;
+          color: var(--text-color);
+          border-radius: 4px;
+          cursor: pointer;
+          transition: background-color 0.2s ease;
+
+          &:hover {
+            background-color: var(--ff-select-option-hover-color);
+          }
+        }
+      }
+    }
+    .ff-time-picker-options {
+      height: 86%;
+      overflow-y: auto;
+      padding-right: 5px;
+
+      &::-webkit-scrollbar {
+        width: 4px;
+        height: 12px;
+
+        &-thumb {
+          background-color: var(--ff-select-scroll-thumb-color);
+          border-radius: 4px;
+        }
+
+        &-track {
+          background-color: var(--hover-color); // color need to be change
+          border-radius: 4px;
+        }
+      }
+
+      .ff-time-option {
+        padding: 10px 12px;
+        cursor: pointer;
+        text-align: center;
+        border-radius: 8px;
+        background-color: rgba(249, 249, 249); // color need to be change
+        margin: 10px 0;
+      }
+    }
+  }
+}

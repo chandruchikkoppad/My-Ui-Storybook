@@ -1,0 +1,83 @@
+@use '../../../../assets/styles/fonts';
+
+@mixin absolute-position($top: auto, $right: auto, $bottom: auto, $left: auto) {
+  position: absolute;
+  top: $top;
+  right: $right;
+  bottom: $bottom;
+  left: $left;
+}
+
+.ff-nlp-dropdown-wrapper {
+  .ff-nlp-options-wrapper {
+    max-height: 160px;
+    z-index: 100;
+    position: absolute;
+    min-width: 100px;
+    border: 1px solid var(--ff-select-option-border-color);
+    box-sizing: border-box;
+    margin-top: 4px;
+    border-radius: 4px;
+    background-color: var(--ff-select-background-color);
+    box-shadow: 0px 1px 4px 0px var(--ff-select-option-wrapper-box-shadow);
+    overflow: hidden auto;
+    display: flex;
+    justify-content: space-between;
+
+    .ff-nlp-options-wrapper1 {
+      max-height: 160px;
+      z-index: 100;
+      min-width: auto;
+      box-sizing: border-box;
+    }
+    &::-webkit-scrollbar {
+      width: 4px;
+      height: 12px;
+
+      &-thumb {
+        background-color: var(--ff-select-scroll-thumb-color);
+        border-radius: 4px;
+      }
+
+      &-track {
+        background-color: transparent;
+        border-radius: 4px;
+      }
+    }
+
+    .ff-nlp-option {
+      width: calc(100% - 18px);
+      border: 1px solid transparent;
+      border-radius: 4px;
+      padding: 0px 8px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      cursor: pointer;
+
+      &:hover {
+        border-color: var(--ff-select-background-color);
+        background-color: var(--ff-select-option-hover-color);
+      }
+    }
+
+    .ff-nlp-no-option {
+      width: calc(100% - 16px);
+      margin: 0;
+      overflow: hidden;
+      padding: 0px 8px;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      cursor: not-allowed;
+    }
+  }
+  .ff-nlp-data {
+    width: 200px;
+    height: 134px;
+
+    border: 1px solid transparent;
+    border-radius: 5px;
+    box-shadow: 0px 1px 4px 0px var(--ff-select-option-wrapper-box-shadow);
+    overflow: scroll;
+  }
+}

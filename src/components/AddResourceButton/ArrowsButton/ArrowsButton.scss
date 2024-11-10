@@ -1,0 +1,160 @@
+.ff-arrow-buttons-container {
+  position: absolute;
+  transition: opacity 0.3s ease;
+
+  &.ff-down-right-top,
+  &.ff-down-top {
+    height: 80px;
+    width: 52px;
+    transform: translateY(calc(-50% + 12px));
+
+    .ff-arrow-button--right {
+      top: 28px;
+      right: 2px;
+      animation: slideRight 0.4s ease-out;
+    }
+
+    .ff-arrow-button--top {
+      top: 2px;
+      animation: slideTop 0.4s ease-out;
+    }
+
+    .ff-arrow-button--down {
+      bottom: 2px;
+      animation: slideDown 0.4s ease-out;
+    }
+  }
+
+  &.ff-right-top {
+    height: 52px;
+    width: 52px;
+    transform: translateY(calc(-54%));
+
+    .ff-arrow-button--right {
+      top: 28px;
+      right: 2px;
+      animation: slideRight 0.4s ease-out;
+    }
+
+    .ff-arrow-button--top {
+      top: 2px;
+      animation: slideTop 0.4s ease-out;
+    }
+  }
+
+  &.ff-down-right {
+    height: 52px;
+    width: 52px;
+
+    .ff-arrow-button--right {
+      top: 0px;
+      right: 2px;
+      animation: slideRight 0.4s ease-out;
+    }
+
+    .ff-arrow-button--down {
+      bottom: 2px;
+      animation: slideDown 0.4s ease-out;
+    }
+  }
+
+  &.ff-top {
+    height: 52px;
+    width: 24px;
+    transform: translateY(calc(-54%));
+
+    .ff-arrow-button--top {
+      top: 2px;
+      animation: slideTop 0.4s ease-out;
+    }
+  }
+
+  &.ff-right {
+    height: 24px;
+    width: 52px;
+
+    .ff-arrow-button--right {
+      right: 2px;
+      animation: slideRight 0.4s ease-out;
+    }
+  }
+
+  &.ff-down {
+    height: 52px;
+    width: 24px;
+
+    .ff-arrow-button--down {
+      bottom: 2px;
+      animation: slideDown 0.4s ease-out;
+    }
+  }
+  .ff-arrow-button {
+    background: var(--arrow-button-bg-color);
+    border: 0.5px solid var(--arrows-button-border-color);
+    padding: 0;
+    cursor: pointer;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    border-radius: 4px;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s ease;
+    position: absolute;
+
+    &--top {
+      top: 0px;
+      left: 0;
+    }
+
+    &--down {
+      bottom: 0px;
+      left: 0;
+    }
+  }
+
+  @keyframes slideTop {
+    from {
+      transform: translateY(20px);
+      opacity: 0;
+    }
+    50% {
+      transform: translateY(-10px);
+      opacity: 0.5;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideRight {
+    from {
+      transform: translateX(-20px);
+      opacity: 0;
+    }
+    50% {
+      transform: translateX(10px);
+      opacity: 0.5;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideDown {
+    from {
+      transform: translateY(-20px);
+      opacity: 0;
+    }
+    50% {
+      transform: translateY(10px);
+      opacity: 0.5;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+}

@@ -1,4 +1,4 @@
-@import '../../assets/styles/colors';
+
 .ff-icon-container {
   display: flex;
   justify-content: center;
@@ -11,10 +11,10 @@
   box-sizing: content-box;
   &:hover {
     border-radius: 50%;
-    background-color: $drawer-footer-bg;
-    box-shadow: 0px 0px 16px $toggle-strip-shadow;
+    background-color: var(--drawer-footer-bg);
+    box-shadow: 0px 0px 16px var(--toggle-strip-shadow);
     & > svg {
-      color: $brand-color;
+      color: var(--brand-color);
     }
   }
 }
@@ -22,12 +22,12 @@
 .ff-icon-disabled {
   cursor: no-drop;
   & > svg {
-    color: $toggle-strip-color;
+    color: var(--toggle-strip-color);
   }
   &:hover {
     box-shadow: none;
     & > svg {
-      color: $toggle-strip-color;
+      color: var(--toggle-strip-color);
     }
   }
 }

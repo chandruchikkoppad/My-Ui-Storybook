@@ -1,0 +1,39 @@
+@use '../../assets/styles/mixins' as *;
+
+.ff-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--background-modal-color);
+  @include center-content;
+  flex-direction: column;
+}
+
+.ff-modal-content {
+  background: var(--ff-mini-modal-border);
+  position: relative;
+  max-width: 100%;
+  border-radius: 12px;
+  padding: 16px;
+  
+  .ff-modal-header {
+    height: 32px;
+    width: 100%;
+  }
+}
+
+.ff-modal-footer {
+  background-color: var(--expandable-menu-option-bg);
+  max-width: 100%;
+  width: 100%;
+  height: 32px;
+  border-radius: 0 0 12px 12px;
+  display: flex;
+  flex-direction: row;
+  justify-content: end;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 16px;
+}

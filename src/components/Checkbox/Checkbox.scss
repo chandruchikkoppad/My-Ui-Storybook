@@ -1,0 +1,89 @@
+@use '../../assets/styles/fonts';
+@use '../../assets/styles/mixins';
+
+.ff-checkbox--overlay {
+  @include mixins.center-content();
+  cursor: pointer;
+  position: relative;
+
+  .ff-checkbox-input {
+    display: none;
+  }
+
+  .ff-checkbox-custom {
+    @include mixins.box(16px, 1px solid var(--checkbox-border-color));
+    box-sizing: border-box;
+    border-radius: 2px;
+    margin-right: 8px;
+    background-color: var(--checkbox-bg-color);
+    position: relative;
+    @include mixins.center-content;
+    @include mixins.transition(border-color, background-color);
+
+    &::before {
+      content: '';
+      width: 9px;
+      height: 2px;
+      background-color: var(--checkbox-partial-color);
+      border-radius: 2px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(180deg);
+      opacity: 0;
+      @include mixins.transition(border-color, background-color);
+    }
+
+    &::after {
+      content: '';
+      @include mixins.box(16px, 4px solid var(--checkbox-hover-color));
+      border-radius: 4px;
+      position: absolute;
+      opacity: 0;
+      background-color: var(--checkbox-hover-color);
+      z-index: -1;
+      @include mixins.transition(border-color, background-color);
+    }
+    &:hover {
+      border-color: var(--brand-color);
+      &::after {
+        opacity: 1;
+      }
+    }
+  }
+
+  .ff-checkbox-input:checked + .ff-checkbox-custom {
+    background: var(--brand-color);
+    border-color: var(--brand-color);
+  }
+
+  .ff-checkbox-input:checked:hover + .ff-checkbox-custom {
+    background: var(--brand-color);
+    &::after {
+      opacity: 1;
+    }
+  }
+
+  .ff-checkbox-input:disabled + .ff-checkbox-custom {
+    opacity: 0.5;
+    cursor: not-allowed;
+    border: 1px solid var(--checkbox-border-color);
+    &::after {
+      opacity: 0;
+    }
+  }
+  .ff-storybook-checkbox--partial {
+    background-color: var(--brand-color);
+    border: none;
+    &::before {
+      opacity: 1;
+    }
+
+    &:hover {
+      background-color: var(--brand-color);
+      &::after {
+        opacity: 1;
+      }
+    }
+  }
+}

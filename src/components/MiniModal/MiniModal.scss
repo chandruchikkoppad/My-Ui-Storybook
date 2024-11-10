@@ -1,0 +1,139 @@
+.ff-mini-edit-modal-container {
+  width: fit-content;
+  padding: 0;
+  position: absolute;
+  visibility: hidden;
+  &.modalVisible {
+    visibility: visible;
+  }
+  &.animatedModal {
+    animation: slideDown 0.5s ease, opacity 0.5s ease;
+  }
+
+  .popover-arrow {
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    z-index: 5;
+    &.popover-arrow-top {
+      bottom: 100%;
+      left: 30px;
+      border-width: 0 10px 10px 10px;
+      border-color: transparent transparent var(--ff-mini-modal-border)
+        transparent;
+      filter: drop-shadow(0 -2px 1px var(--ff-mini-modal-box-shadow));
+    }
+    &.popover-arrow-left {
+      left: -15px; //align the arrow with modal for the right side modal
+      border-width: 10px 10px 10px 0;
+      border-color: transparent var(--ff-mini-modal-border) transparent
+        transparent;
+      filter: drop-shadow(-2px 0 1px var(--ff-mini-modal-box-shadow));
+    }
+    &.popover-arrow-bottom {
+      top: 100%;
+      left: 30px;
+      border-width: 10px 10px 0 10px;
+      border-color: var(--ff-mini-modal-border) transparent transparent
+        transparent; // Bottom part of the arrow with the correct color
+      filter: drop-shadow(0 2px 1px var(--ff-mini-modal-box-shadow));
+    }
+    &.popover-arrow-right {
+      right: -10px;
+      top: 75px;
+      border-width: 10px 0 10px 10px;
+      border-color: transparent transparent transparent
+        var(--ff-mini-modal-border);
+      filter: drop-shadow(2px 0 1px var(--ff-mini-modal-box-shadow));
+    }
+
+    &.left-top-arrow {
+      top: 10%;
+    }
+    &.left-middle-arrow {
+      top: 50%;
+    }
+  }
+  .wrapped-div {
+    width: 35px;
+    height: 35px;
+    background-color: transparent;
+    outline: 8px solid var(--ff-mini-modal-border);
+    outline-offset: -8px;
+    position: absolute;
+    top: -34px;
+    z-index: 10;
+    border-radius: 7px 7px 0 0;
+    box-shadow: 0px -3px 4px 0px var(--ff-mini-modal-box-shadow);
+    &::before,
+    &::after {
+      position: absolute;
+      content: '';
+      width: 13px;
+      height: 13px;
+      background: transparent;
+      border-radius: 50%;
+      bottom: 0;
+      box-shadow: 8px 4px 0 var(--ff-mini-modal-border);
+    }
+    &::before {
+      left: -13px;
+      clip-path: polygon(100% 100%, 110% 45%, 0% 70%, 0% 100%);
+    }
+    &::after {
+      right: -13px;
+      clip-path: polygon(-5% 100%, 0% 40%, 100% 70%, 100% 100%);
+      box-shadow: -8px 4px 0 var(--ff-mini-modal-border);
+    }
+  }
+  .mini-edit-modal {
+    background: var(--ff-mini-modal-border);
+    position: relative;
+    max-height: fit-content;
+    z-index: 2;
+    padding: 4px;
+    width: 100%;
+    border-radius: 7px;
+    margin: 0 0 0 -5px;
+    height: 100%;
+    box-shadow: 0px 0px 4px 0px var(--ff-mini-modal-box-shadow);
+
+    header {
+      border-radius: 4px 4px 0 0;
+    }
+    footer {
+      border-radius: 0 0 4px 4px;
+    }
+  }
+  .modal-content {
+    max-height: 250px;
+    overflow-y: auto;
+  }
+  .modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 5px;
+    background-color: var(--ff-mini-modal-footer-background);
+    height: 24px;
+    padding: 0 10px 0 0;
+    transition: transform 0.3s ease-in-out;
+  }
+  @keyframes slideDown {
+    0% {
+      transform: translateY(-50px);
+      opacity: 0;
+    }
+    100% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+}
+.ff-mini-modal-buttons-flex {
+  display: flex;
+}
+.ff-mini-modal-gap-10 {
+  gap: 10px;
+}

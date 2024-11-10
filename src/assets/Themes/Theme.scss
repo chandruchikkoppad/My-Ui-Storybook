@@ -1,0 +1,16 @@
+@use './BaseTheme' as base;
+@use './DarkTheme' as dark;
+
+@mixin set-theme-variables($theme-map) {
+  @each $key, $value in $theme-map {
+    --#{$key}: #{$value};
+  }
+}
+
+.ff-light-theme {
+  @include set-theme-variables(base.$base-theme);
+}
+
+.ff-dark-theme {
+  @include set-theme-variables(dark.$dark-theme);
+}
