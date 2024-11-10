@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import Paper from './Paper';
 import { Children } from 'react';
-import { Typography } from 'pixel-react';
+import Typography from '../Typography';
 import './Paper.scss';
 
 const meta: Meta<typeof Paper> = {

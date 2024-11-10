@@ -3,6 +3,7 @@ import './InputWithDropdown.scss';
 import { InputWithDropdownProps } from './types';
 import Select from '../Select/Select';
 import Typography from '../Typography';
+import { checkEmpty } from '../../utils/checkEmpty/checkEmpty';
 
 const InputWithDropdown = ({
   name = '',
@@ -20,7 +21,7 @@ const InputWithDropdown = ({
   onInputBlurHandler,
   optionsRequired = true,
 }: InputWithDropdownProps) => {
-  const isValueFilled = (value !== undefined && value >= 0) || !!value;
+  const isValueFilled = checkEmpty(value);
   return (
     <div
       className={classNames('ff-input-with-dropdown-container', {

@@ -23,7 +23,6 @@ import LazyLoad from './components/LazyLoad/LazyLoad';
 import ThemeProvider from './components/ThemeProvider';
 import Typography from './components/Typography';
 import useTheme from './hooks/useTheme';
-import Form from './components/Form';
 import InputWithDropdown from './components/InputWithDropdown';
 import RadioButton from './components/RadioButton';
 import RadioGroup from './components/RadioGroup';
@@ -81,7 +80,6 @@ export {
   Table,
   RadioButton,
   RadioGroup,
-  Form,
   MiniModal,
   Container,
   Row,
