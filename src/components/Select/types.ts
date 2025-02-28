@@ -35,7 +35,7 @@ export interface SelectProps {
    */
   errorMsg?: string;
   /*
-   * If error is true, this message will be displayed
+   * optional 'error' prop to show error state
    */
   error?: boolean;
 
