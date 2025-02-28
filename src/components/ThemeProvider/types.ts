@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 
-export type Theme = 'ff-light-theme' | 'ff-dark-theme' | 'ff-grey-theme';
+export type Theme = 'ff-light-theme' | 'ff-dark-theme' | 'ff-grey-theme' | 'ff-blue-theme';
 
 export interface ThemeContextType {
   currentTheme: Theme;

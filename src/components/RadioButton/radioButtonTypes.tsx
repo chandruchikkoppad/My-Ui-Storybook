@@ -1,3 +1,5 @@
+import { ReactElement } from 'react';
+
 /**
  * Props for the RadioButton component.
  */
@@ -6,7 +8,7 @@ interface RadioButtonProps {
    * The display label for the radio button.
    * Optional.
    */
-  label?: string;
+  label?: string | ReactElement;
 
   /**
    * The name attribute for the radio button, used for grouping.
@@ -37,4 +39,32 @@ interface RadioButtonProps {
    * Optional.
    */
   disabled?: boolean;
+
+  /**
+   * Indicates whether the radio button show the tooltip.
+   * Optional.
+   */
+  showTooltip?: boolean;
+
+  /**
+   * The content of the tooltip.
+   * Optional.
+   */
+  tooltipChildren?: React.ReactNode;
+
+  /**
+   * The content of the tooltip.
+   * Optional.
+   */
+  tooltipTitle?: React.ReactNode;
+
+  /**
+   * Additional CSS classes to be applied to the radio button.
+   * Optional.
+   */
+  tooltipPosition?: 'top' | 'bottom' | 'left' | 'right';
+
+  onBlur?: () => void;
 }
+
+export default RadioButtonProps;

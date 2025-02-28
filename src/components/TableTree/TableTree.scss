@@ -1,142 +1,349 @@
-@use '../../assets/styles/fonts';
-.ff-tree-container {
-  width: 100%;
-  font-size: 12px;
-  color: var(--brand-color);
-  transition: all 0.3s ease;
-  @extend .fontSm;
-  table {
-    border-collapse: collapse;
-    width: 100%;
-    text-align: left;
-  }
-  .ff-toggle-arrow-icon {
-    height: 12px;
-    width: 12px;
-    margin-left: 8px;
-    display: grid;
-    place-items: center;
-    transform: rotate(0deg);
+:root {
+  --table-height: calc(100vh - 134px);
+}
 
+.tree-table-space-block {
+  display: inline-block;
+  width: 20px;
+  height: 16px;
+  text-align: center;
+  line-height: 16px;
+  vertical-align: top;
+  font-size: 19px;
+  position: relative;
+  box-sizing: border-box;
+  border-radius: 50%;
+
+  &.tree-table-space-block-0 {
+    width: 30px;
+  }
+
+  &.btn-toggle {
+    position: relative;
+    cursor: pointer;
+    width: 22px;
+    height: 18px;
+    z-index: 12;
+
+    &::before {
+      display: none;
+    }
+  }
+
+  &.last-block::after,
+  &.no-folder::after {
+    position: absolute;
+    content: '';
+    height: 1px;
+    background: var(--tree-connecting-lines-color);
+    top: 50%;
+    margin-top: -1px;
+  }
+
+  &.last-block::after {
+    width: 12px;
+    left: -10px;
+  }
+
+  &.no-folder {
+    width: 8px;
+
+    &::after {
+      width: 22px;
+      left: -10px;
+    }
+  }
+
+  &:not(.last-block, .no-lines, .last-node)::before {
+    position: absolute;
+    content: '';
+    width: 1px;
+    height: 40px;
+    background: var(--tree-connecting-lines-color);
+    left: 50%;
+    top: -8px !important;
+    z-index: 99;
+  }
+
+  &.last-node::before {
+    position: absolute;
+    content: '';
+    width: 1px;
+    height: 12px;
+    background: var(--tree-connecting-lines-color);
+    left: 50%;
+    top: -4px;
+    z-index: -1;
+  }
+
+  &.folder {
+    &.last-node::before {
+      height: 13px;
+    }
+  }
+
+  //Todo uncomment the following code when we are highlighting the tree table nodes on hover
+  /* Hover background for all elements of the same level */
+  // &.tree-table-hovered::before,
+  // &.tree-table-hovered::after {
+  //   background-color: var(--brand-color);
+  // }
+}
+
+.tree-title-container {
+  .tree-table-space-block {
+    width: 20px !important;
+
+    &.tree-table-space-block-1 {
+      &::after {
+        width: 14px;
+        left: -14px;
+      }
+
+      &.no-folder::after {
+        width: 26px;
+      }
+    }
+  }
+}
+
+.hidden {
+  display: none;
+}
+
+.show {
+  display: table-row;
+  visibility: visible;
+}
+
+.btn-toggle {
+  cursor: pointer;
+
+  &.is-close {
+    background: #f1f1f1;
+    border: 1px solid transparent;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  }
+
+  &::before,
+  &::after {
+    display: none;
+  }
+}
+
+.tree-table-wrap {
+  width: 100%;
+  padding-left: 4px; // padding size need to check
+  overflow: hidden;
+  overflow-x: auto;
+  box-sizing: border-box;
+}
+
+.table-scrollable {
+  height: calc(var(--table-height) + 0px);
+  /* Adjust height as needed */
+  overflow-y: auto;
+  position: relative;
+
+  &.table-empty {
+    scrollbar-width: none;
+  }
+
+  &.table-empty::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.ff-table-tree-body {
+  overflow: scroll;
+}
+
+.tree-table {
+  // border: 1px solid #f1f1f1;
+  table-layout: fixed;
+  width: 100%;
+  border-collapse: collapse;
+  overflow: scroll;
+
+  .ff-table-tree-head {
+    position: sticky;
+    top: 0;
+    z-index: 99;
+
+    .tree-table-td-content-text {
+      display: inline-flex;
+      align-items: center;
+      margin-left: 4px;
+
+      .table-tree-root-cell {
+        padding-left: 5px;
+      }
+    }
+  }
+
+  .ff-table-tree-row:hover,
+  .ff-table-tree-row.hover {
+    background-color: var(--hover-color);
+
+    .ff-table-tree-td {
+      &:first-child {
+        background-color: var(--hover-color);
+      }
+    }
+
+    .table-tree-row-action {
+      display: inline-flex;
+      align-items: center;
+
+      svg {
+        height: 16px;
+        width: 16px;
+      }
+    }
+  }
+
+  .ff-table-tree-row {
+    background-color: var(--base-bg-color);
+
+    .table-tree-row-action {
+      display: none;
+      padding-left: 12px;
+
+      .ff-icon-container {
+        height: 24px !important;
+        width: 24px !important;
+        padding: 2px 4px;
+      }
+
+      .ff-add-button-container {
+        height: 20px;
+        width: 22px;
+      }
+    }
+
+    .table-row-add-button {
+      display: inline-flex;
+      z-index: 9999;
+      align-items: center;
+
+      svg {
+        height: 16px;
+        width: 16px;
+      }
+
+      .ff-hovered-add-button--primary {
+        margin-right: 20px;
+      }
+    }
+
+    &::after {
+      content: '';
+      display: block;
+      visibility: hidden;
+      clear: both;
+    }
+  }
+
+  .ff-table-tree-th,
+  .ff-table-tree-td {
+    text-align: left;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+
+  .ff-table-tree-th {
+    color: var(--table-header-text-color);
+    background: var(--border-color);
+    font-size: 12px;
+    font-weight: 600;
+    width: 400px;
+    height: 32px;
+    box-sizing: border-box;
+
+    &:first-child {
+      position: sticky;
+      left: 0;
+      padding-left: 8px;
+    }
+  }
+
+  .ff-table-tree-td {
+    font-size: 12px;
+    height: 32px !important;
+    box-sizing: border-box;
+
+    &:first-child {
+      overflow: initial;
+      position: sticky;
+      left: 0;
+      width: 100%;
+      background-color: white;
+      display: inline-flex;
+      color: var(--brand-color) !important;
+      align-items: center;
+      z-index: 98;
+
+      // &:hover {
+      //   background-color: var(--hover-color);
+      // }
+
+      .tree-table-default-content {
+        margin-left: 8px;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+      }
+
+      .tree-table-td-content {
+        padding-left: 4px;
+
+        .tree-table-td-content-text {
+          margin-left: 4px;
+        }
+      }
+    }
+  }
+}
+
+.tree-table-td-content {
+  display: inline-flex;
+  align-items: center;
+  font-size: 12px;
+  font-family: 'Poppins', sans-serif;
+
+  &.folder {
+    font-weight: 600;
+  }
+}
+
+.tree-row-expanded,
+.tree-row-collapsed {
+  span {
     svg {
+      height: 12px;
+      width: 12px;
+      transition: transform 0.3s ease;
+      cursor: pointer;
+
       path {
         fill: var(--brand-color);
       }
     }
-
-    &.ff-expanded {
-      transform: rotate(0deg);
-    }
-
-    &.ff-collapsed {
-      transform: rotate(-90deg);
-    }
   }
+}
 
-  th,
-  td {
-    padding: 0 8px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  th {
-    vertical-align: middle;
-    height: 32px;
-    background-color: var(--slider-table-color);
-    color: var(--text-color);
-    font-weight: 600;
-    text-transform: uppercase;
-  }
+.tree-row-collapsed svg {
+  transform: rotate(-90deg);
+  transition: transform 0.3s ease;
+}
 
-  tr {
-    .ff-action-section {
-      display: none;
-    }
-    &:hover {
-      background-color: var(--hover-color);
-      .ff-action-section {
-        display: block;
-      }
-    }
-  }
+.tree-table-space-container {
+  display: inline-flex;
+  // flex-direction: row-reverse;
+}
 
-  .ff-title-container {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-
-    .ff-toggle-folder {
-      display: flex;
-      cursor: pointer;
-    }
-    &.ff-folder {
-      font-weight: 600;
-    }
-
-    &.ff-file {
-      font-weight: 400;
-    }
-    .ff-title {
-      display: flex;
-      gap: 4px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      font-weight: 400;
-      cursor: pointer;
-
-      .ff-hover-icon {
-        display: none;
-        position: absolute;
-        right: 10px;
-      }
-    }
-  }
-
-  .ff-node-li {
-    position: relative;
-    --indent-size: 16px;
-    --total-children-height: var(--node-height);
-
-    td:first-child {
-      padding-left: calc(var(--level) * var(--indent-size));
-      height: 32px;
-    }
-
-    // Vertical line connecting the node to the parent
-    &::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: calc(var(--level) * var(--indent-size) - 4px);
-      width: 1px;
-      height: calc(var(--total-children-height));
-      background-color: var(--tree-connecting-lines-color);
-      z-index: 1;
-    }
-
-    // Horizontal line connecting child node to parent
-    &::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: calc(var(--level) * var(--indent-size) - 4px);
-      width: 12px;
-      height: 1px;
-      background-color: var(--tree-connecting-lines-color);
-      z-index: 1;
-    }
-
-    // For the last child node, limit the vertical line
-    &.ff-is-last::before {
-      height: calc(var(--node-height) / 2);
-    }
-
-    // Remove the  lines for root level
-    &[style*='--level: 0']::before,
-    &[style*='--level: 0']::after {
-      content: none;
-    }
-  }
+.tree-title-container {
+  display: inline-flex;
+  align-items: center;
 }

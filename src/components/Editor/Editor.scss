@@ -1,0 +1,62 @@
+@mixin folding-icon-styles($color: var(--base-bg-color), $zIndex: 999999, $opacity: 1) {
+  color: $color !important;
+  fill: $color !important;
+  z-index: $zIndex !important;
+  opacity: $opacity !important;
+}
+
+/* Style for the line number gutter */
+.monaco-editor .margin {
+  background-color: var(--ff-editor-gutter-color) !important;
+}
+
+/* Style for the line numbers */
+.monaco-editor .margin .line-numbers {
+  color: var(--text-color) !important;
+  text-align: center !important;
+}
+
+
+.monaco-editor .margin-view-overlays {
+  width: 100% !important;
+}
+
+.monaco-editor .margin-view-overlays .line-numbers {
+  width: 100% !important;
+}
+
+/* Background color for active line */
+.monaco-editor .current-line-background {
+  background-color: var(--ff-editor-line-bg) !important;
+}
+
+/* Change the background of the active line number */
+.monaco-editor .margin .active-line-number {
+  background-color: var(--ff-line-number-bg)!important; 
+  color: var(--base-bg-color) !important;
+}
+
+.ff-editor-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  .monaco-editor {
+    border-radius: 6px;
+    border-top: 1px solid var(--ff-editor-border-color);
+    border-right: 1px dashed var(--ff-editor-border-color);
+    border-bottom: 1px dashed var(--ff-editor-border-color);
+    border-left: 1px solid var(--ff-editor-border-color);
+  }
+  .monaco-editor .cldr.codicon.codicon-folding-collapsed,
+  .monaco-editor .cldr.codicon.codicon-folding-expanded,
+  .monaco-editor .cldr.codicon.codicon-folding-manual-collapsed,
+  .monaco-editor .cldr.codicon.codicon-folding-manual-expanded {
+   @include folding-icon-styles()
+  }
+  .monaco-editor .cldr.codicon.codicon-folding-expanded {
+   @include folding-icon-styles()
+  }
+  .cldr.codicon.codicon-folding-manual-collapsed {
+    @include folding-icon-styles()
+  }
+}

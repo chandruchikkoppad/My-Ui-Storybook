@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { CSSProperties } from 'react';
 
 export interface TypographyProps {
   /**
@@ -53,4 +53,8 @@ export interface TypographyProps {
    * To add onClick function
    */
   onClick?: () => void;
+  required?: boolean; // TO add * in the label
+  style?: React.CSSProperties;
+  cursor?: CSSProperties['cursor'];
+  onDoubleClick?: () => void;
 }

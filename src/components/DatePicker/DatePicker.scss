@@ -3,20 +3,6 @@
 
 /* Custom date picker styling */
 .ff-date-picker {
-  // day-picker variable override
-  .rdp-root {
-    --rdp-accent-color: var(--brand-color);
-    --rdp-day-height: 24px;
-    --rdp-day-width: 36px;
-    @include fonts.fontPoppins(12px);
-    --rdp-font-family: 'Poppins', sans-serif;
-  }
-
-  .ff-cursor-pointer {
-    cursor: pointer;
-  }
-
-  position: relative;
 
   .ff-datepicker-input-container {
     display: flex;
@@ -45,10 +31,19 @@
         }
       }
 
+      .ff-filter-time-input,
+      .ff-filter-date-input {
+        @extend .ff-date-input;
+        @extend .ff-time-input;
+        border-radius: 27px;
+        border: 1px solid var(--details-page-value-color);
+      }
+
       .ff-calendar-icon,
       .ff-clock-icon {
         position: absolute;
-        transform: translate(50%, 50%);
+        top: 50%;
+        transform: translate(25%, -50%);
         display: flex;
         align-items: center;
         pointer-events: none;
@@ -57,15 +52,17 @@
 
     .ff-date-input-field {
       flex: 1;
+
       .ff-date-input {
         width: 100%;
       }
 
       .ff-date-input-message {
-        @extend .font-size-8;
+        @extend .font-size-10;
         padding: 0px 4px;
         margin-left: 8px;
         line-height: 12px;
+
         &--danger {
           color: var(--input-error-text-color);
         }
@@ -74,181 +71,234 @@
 
     .ff-time-input-field {
       flex: 0 0 120px;
+
       .ff-time-input {
         width: 100%;
       }
     }
   }
-  .ff-date-picker-container {
+}
+
+.ff-date-picker-container {
+  // day-picker variable override
+  .rdp-root {
+    --rdp-accent-color: var(--brand-color);
+    --rdp-day-height: 24px;
+    --rdp-day-width: 36px;
+    --rdp-day_button-height: 24px;
+    --rdp-day_button-width: 36px;
+    @include fonts.fontPoppins(12px);
+    --rdp-font-family: 'Poppins', sans-serif;
+  }
+
+  .ff-cursor-pointer {
+    cursor: pointer;
+  }
+
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  border-radius: 8px;
+  padding: 4px;
+  box-sizing: border-box;
+  background-color: var(--tab-bg-color);
+  box-shadow: 0 0 12px 0 #00000033; 
+  gap: 8px;
+
+  .ff-calendar-container {
     display: flex;
-    flex-direction: column;
-    position: absolute;
-    border-radius: 8px;
+    align-items: flex-start;
+    gap: 4px;
+    height: 240px;
+  }
+
+  .ff-date-picker-controls {
     padding: 4px;
-    box-sizing: border-box;
-    background-color: var(--tab-bg-color);
-    box-shadow: 0 0 12px 0 #00000033;
+    display: flex;
+    justify-content: end;
     gap: 8px;
-    z-index: 10;
+    border-top: 1px solid var(--border-color);
 
-    .ff-calendar-container {
-      display: flex;
-      align-items: flex-start;
-      gap: 4px;
-      height: 240px;
+    .ff-date-picker-button {
+      font-weight: 600;
+      line-height: 15px;
     }
+  }
+}
 
-    .ff-date-picker-controls {
-      padding: 4px;
-      display: flex;
-      justify-content: end;
-      gap: 8px;
-      border-top: 1px solid var(--border-color);
+.ff-calendar {
+  .ff-calendar-nav-button {
+    margin: 0 5px;
+    border: 1px solid var(--border-color);
+    background-color: var(--toggle-button-bg-color);
+    box-shadow: 0 -1px 2px 0 var(--ff-mini-modal-box-shadow);
+    padding: 0px;
+    border-radius: 30%;
+    cursor: pointer;
 
-      .ff-date-picker-button {
-        font-weight: 600;
-        line-height: 15px;
+    &:disabled {
+      cursor: auto;
+      opacity: 0.5;
+    }
+  }
+
+  .ff-calendar-haeder {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--text-color);
+    padding-left: 10px;
+  }
+
+  .ff-custom-year_grid,
+  .ff-custom-month_grid {
+    width: calc((var(--rdp-day_button-width) + 4px) * 7);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    padding: 5px;
+    max-width: 100%;
+
+    .ff-custom-year,
+    .ff-custom-month {
+      padding: 10px 0;
+      text-align: center;
+      cursor: pointer;
+      border-radius: 8px;
+      background-color:  var(--disabled-primary-color);
+
+      &--selected {
+        background-color: var(--brand-color);
+        color: var(--primary-button-text-color);
+      }
+
+      &--disabled {
+        color: var(--text-color-light);
+        cursor: default;
+
+        &.ff-custom-month--selected,
+        &.ff-custom-year--selected {
+          background-color: var(--disable-color);
+        }
       }
     }
   }
 
-  .ff-calendar {
-    .ff-calendar-nav-button {
-      margin: 0 5px;
-      border: 1px solid var(--border-color);
-      background-color: var(--toggle-button-bg-color);
-      box-shadow: 0 -2px 2px 0 var(--ff-mini-modal-box-shadow);
-      padding: 4px;
-      border-radius: 30%;
-      cursor: pointer;
-
-      &:disabled {
-        cursor: auto;
-        opacity: 0.5;
-      }
+  .rdp-weekdays {
+    th {
+      color: #6f7c8e; // color need to be change
+      font-weight: 400;
     }
+  }
 
-    .ff-calendar-haeder {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      color: var(--text-color);
+  .rdp-day {
+    padding: 2px;
+    font-weight: 500;
+  }
+
+  .rdp-day_button {
+    border-radius: 4px;
+    padding: 3px 9px;
+
+    &:hover {
+      background-color: var(--hover-color);
     }
+  }
 
-    .ff-custom-year_grid,
-    .ff-custom-month_grid {
-      width: calc((var(--rdp-day-width) + 4px) * 7);
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      padding: 5px;
-      max-width: 100%;
-
-      .ff-custom-year,
-      .ff-custom-month {
-        padding: 10px 0;
-        text-align: center;
-        cursor: pointer;
-        border-radius: 8px;
-        background-color: #f9f9f9; // color need to be change
-
-        &--selected {
-          background-color: var(--brand-color);
-          color: var(--primary-button-text-color);
-        }
-      }
-    }
-
-    .rdp-weekdays {
-      th {
-        color: #6f7c8e; // color need to be change
-        font-weight: 400;
-      }
-    }
-
-    .rdp-day {
-      padding: 2px;
-      font-weight: 500;
-    }
+  .rdp-selected {
+    font: inherit;
 
     .rdp-day_button {
-      border-radius: 4px;
-      padding: 3px 9px;
-
-      &:hover {
-        background-color: var(--hover-color);
-      }
-    }
-    .rdp-selected {
-      font: inherit;
-      .rdp-day_button {
-        background: var(--rdp-accent-color);
-        color: var(--drawer-footer-bg);
-        border: none;
-      }
-    }
-    .rdp-today:not(.rdp-outside) {
-      .rdp-day_button {
-        border: 2px solid var(--rdp-accent-color);
-      }
+      background: var(--rdp-accent-color);
+      color: var(--drawer-footer-bg);
+      border: none;
     }
   }
 
-  // Timepicker css ************************************************************************
+  .rdp-today:not(.rdp-outside) {
+    .rdp-day_button {
+      border: 2px solid var(--rdp-accent-color);
+    }
+  }
+}
 
-  .ff-time-picker-container {
-    position: relative;
-    width: 150px;
-    height: 100%;
-    overflow-y: hidden;
-    border-left: 1px solid #ccc;
-    padding: 10px 5px;
+// Timepicker css ************************************************************************
+
+.ff-time-picker-container {
+  position: relative;
+  width: 150px;
+  height: 100%;
+  overflow-y: hidden;
+  border-left: 1px solid #ccc;
+  padding: 10px 5px;
+  box-sizing: border-box;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  .ff-time-picker-fields {
+    display: flex;
+    height: 14%;
+    width: 100%;
+    margin-bottom: 5px;
     box-sizing: border-box;
 
-    &::-webkit-scrollbar {
-      display: none;
-    }
-
-    .ff-time-picker-fields {
+    .ff-time-input-container {
       display: flex;
-      height: 14%;
-      width: 100%;
-      margin-bottom: 5px;
-      box-sizing: border-box;
+      border: 1px solid var(--border-color);
+      border-right: 0;
+      border-radius: 4px 0 0 4px;
+      width: 55%;
+      position: relative;
 
-      .ff-time-input-container {
-        display: flex;
-        border: 1px solid var(--border-color);
-        border-right: 0;
+      .ff-time-input {
+        border: none;
+        padding: 5px;
+        width: 100%;
+        text-align: center;
         border-radius: 4px 0 0 4px;
-        width: 55%;
-        position: relative;
+        font-weight: 400;
+        @extend .fontSm;
 
-        .ff-time-input {
-          border: none;
-          padding: 5px;
-          width: 100%;
-          text-align: center;
-          border-radius: 4px 0 0 4px;
-          @extend .fontSm;
-
-          &::placeholder {
-            opacity: 0;
-            line-height: 18px;
-          }
+        &::placeholder {
+          opacity: 0;
+          line-height: 18px;
         }
+      }
+
+      .ff-time-input-label {
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        transition: 0.2s ease all;
+        color: var(--input-default-label-color);
+        pointer-events: none;
+      }
+
+      &--float .ff-time-input-label {
+        top: 0;
+        left: 5px;
+        color: var(--brand-color);
+        background-color: var(--input-label-bg-color);
+        line-height: 12px;
+        padding: 0 2px;
+        font-size: 8px !important;
+
+        &--danger {
+          color: var(--input-error-text-color);
+        }
+      }
+
+      &:hover {
+        border-color: var(--input-hover-border-color);
+      }
+
+      &:focus-within {
+        border-color: var(--brand-color);
 
         .ff-time-input-label {
-          position: absolute;
-          left: 10px;
-          top: 50%;
-          transform: translateY(-50%);
-          transition: 0.2s ease all;
-          color: var(--input-default-label-color);
-          pointer-events: none;
-        }
-
-        &--float .ff-time-input-label {
           top: 0;
           left: 5px;
           color: var(--brand-color);
@@ -262,126 +312,474 @@
           }
         }
 
-        &:hover {
-          border-color: var(--input-hover-border-color);
-        }
-
-        &:focus-within {
-          border-color: var(--brand-color);
-
-          .ff-time-input-label {
-            top: 0;
-            left: 5px;
-            color: var(--brand-color);
-            background-color: var(--input-label-bg-color);
-            line-height: 12px;
-            padding: 0 2px;
-            font-size: 8px !important;
-
-            &--danger {
-              color: var(--input-error-text-color);
-            }
+        .ff-time-input {
+          &::placeholder {
+            opacity: 1;
+            margin-bottom: 1px;
           }
-
-          .ff-time-input {
-            &::placeholder {
-              opacity: 1;
-              margin-bottom: 1px;
-            }
-          }
-        }
-
-        &--danger {
-          border-color: var(--input-error-text-color) !important;
-        }
-
-        .ff-time-input:focus {
-          outline: none;
         }
       }
-      .ff-time-period-container {
-        position: relative;
-        width: 45%;
-        display: flex;
-        border: 1px solid var(--border-color);
-        border-radius: 0 4px 4px 0;
 
-        .ff-time-period-select {
-          display: flex;
-          align-items: center;
-          padding: 0 5px;
-          width: 100%;
-          border-radius: 4px;
-          background-color: white;
-          cursor: pointer;
-          border: none;
-        }
-        &--active {
-          border-color: var(--brand-color) !important;
-        }
-        &:hover {
-          border-color: var(--input-hover-border-color);
-        }
+      &--danger {
+        border-color: var(--input-error-text-color) !important;
+      }
 
-        .ff-time-period-icon {
-          margin-left: auto;
-          pointer-events: none;
-        }
-
-        .ff-time-period-options {
-          position: fixed;
-          z-index: 100;
-          min-width: 60px;
-          margin: 4px 0 0;
-          padding: 0;
-          list-style: none;
-          border: 1px solid var(--ff-select-background-color);
-          border-radius: 4px;
-          background-color: var(--primary-button-text-color);
-          box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .ff-option-item {
-          padding: 8px;
-          color: var(--text-color);
-          border-radius: 4px;
-          cursor: pointer;
-          transition: background-color 0.2s ease;
-
-          &:hover {
-            background-color: var(--ff-select-option-hover-color);
-          }
-        }
+      .ff-time-input:focus {
+        outline: none;
       }
     }
-    .ff-time-picker-options {
-      height: 86%;
-      overflow-y: auto;
-      padding-right: 5px;
 
-      &::-webkit-scrollbar {
-        width: 4px;
-        height: 12px;
+    .ff-time-period-container {
+      position: relative;
+      width: 45%;
+      display: flex;
+      border: 1px solid var(--border-color);
+      border-radius: 0 4px 4px 0;
 
-        &-thumb {
-          background-color: var(--ff-select-scroll-thumb-color);
-          border-radius: 4px;
+      .ff-time-period-select {
+        display: flex;
+        align-items: center;
+        padding: 0 5px;
+        width: 100%;
+        border-radius: 4px;
+        background-color: white;
+        cursor: pointer;
+        border: none;
+      }
+
+      &--active {
+        border-color: var(--brand-color) !important;
+      }
+
+      &:hover {
+        border-color: var(--input-hover-border-color);
+      }
+
+      .ff-time-period-icon {
+        svg {
+          path {
+            fill: var(--default-icon-color);
+          }
         }
 
-        &-track {
-          background-color: var(--hover-color); // color need to be change
-          border-radius: 4px;
+        margin-left: auto;
+        pointer-events: none;
+      }
+
+      &:hover {
+        svg {
+          path {
+            fill: var(--brand-color);
+          }
         }
       }
 
-      .ff-time-option {
-        padding: 10px 12px;
+      .ff-time-period-options {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        z-index: 100;
+        min-width: 60px;
+        margin: 4px 0 0;
+        padding: 0;
+        list-style: none;
+        border: 1px solid var(--ff-select-background-color);
+        border-radius: 4px;
+        background-color: var(--primary-button-text-color);
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      .ff-option-item {
+        padding: 8px;
+        color: var(--text-color);
+        border-radius: 4px;
         cursor: pointer;
-        text-align: center;
-        border-radius: 8px;
-        background-color: rgba(249, 249, 249); // color need to be change
-        margin: 10px 0;
+        transition: background-color 0.2s ease;
+
+        &:hover {
+          background-color: var(--ff-select-option-hover-color);
+        }
       }
     }
   }
+
+  .ff-time-picker-options {
+    height: 86%;
+    overflow-y: auto;
+    padding-right: 5px;
+
+    &::-webkit-scrollbar {
+      width: 4px;
+      height: 12px;
+
+      &-thumb {
+        background-color: var(--ff-select-scroll-thumb-color);
+        border-radius: 4px;
+      }
+
+      &-track {
+        background-color: var(--hover-color); // color need to be change
+        border-radius: 4px;
+      }
+    }
+
+    .ff-time-option {
+      padding: 10px 12px;
+      cursor: pointer;
+      text-align: center;
+      border-radius: 8px;
+      background-color: rgba(249, 249, 249); // color need to be change
+      margin: 10px 0;
+    }
+  }
+}
+
+// Adding react day picker library node modules css here to get the css style available in platform
+
+/* Variables declaration */
+/* prettier-ignore */
+.rdp-root {
+  --rdp-accent-color: blue;
+  /* The accent color used for selected days and UI elements. */
+  --rdp-accent-background-color: #f0f0ff;
+  /* The accent background color used for selected days and UI elements. */
+  --rdp-font-family: system-ui;
+  /* The font family used by the calendar. Note that `inherit`does not work here. */
+
+  --rdp-day-font: inherit;
+  /* The font used for the day cells. */
+  --rdp-day-height: 2.75rem;
+  /* The height of the day cells. */
+  --rdp-day-width: 2.75rem;
+  /* The width of the day cells. */
+
+  --rdp-day_button-border-radius: 100%;
+  /* The border radius of the day cells. */
+  --rdp-day_button-border: 2px solid transparent;
+  /* The border of the day cells. */
+  --rdp-day_button-height: var(--rdp-day-height);
+  /* The height of the day cells. */
+  --rdp-day_button-width: var(--rdp-day-width);
+  /* The width of the day cells. */
+
+  --rdp-selected-border: 2px solid var(--rdp-accent-color);
+  /* The border of the selected days. */
+  --rdp-selected-font: bold large var(--rdp-font-family);
+  /* The font of the selected days. */
+  --rdp-disabled-opacity: 0.5;
+  /* The opacity of the disabled days. */
+  --rdp-outside-opacity: 0.75;
+  /* The opacity of the days outside the current month. */
+  --rdp-today-color: var(--rdp-accent-color);
+  /* The color of the today's date. */
+
+  --rdp-dropdown-gap: 0.5rem;
+  /* The gap between the dropdowns used in the month captons. */
+
+  --rdp-month_caption-font: bold larger var(--rdp-font-family);
+  /* The font of the month caption. */
+  --rdp-months-gap: 2rem;
+  /* The gap between the months in the multi-month view. */
+
+  --rdp-nav_button-disabled-opacity: 0.5;
+  /* The opacity of the disabled navigation buttons. */
+  --rdp-nav_button-height: 2.25rem;
+  /* The height of the navigation buttons. */
+  --rdp-nav_button-width: 2.25rem;
+  /* The width of the navigation buttons. */
+  --rdp-nav-height: 2.75rem;
+  /* The height of the navigation bar. */
+
+  --rdp-range_middle-background-color: var(--rdp-accent-background-color);
+  /* The color of the background for days in the middle of a range. */
+  --rdp-range_middle-font: normal medium var(--rdp-font-family);
+  /* The font for days in the middle of a range. */
+  --rdp-range_middle-foreground-color: white;
+  /* The font for days in the middle of a range. */
+  --rdp-range_middle-color: inherit;
+  /* The color of the range text. */
+
+  --rdp-range_start-color: white;
+  /* The color of the range text. */
+  --rdp-range_start-background: linear-gradient(var(--rdp-gradient-direction), transparent 50%, var(--rdp-range_middle-background-color) 50%);
+  /* Used for the background of the start of the selected range. */
+  --rdp-range_start-date-background-color: var(--rdp-accent-color);
+  /* The background color of the date when at the start of the selected range. */
+
+  --rdp-range_end-background: linear-gradient(var(--rdp-gradient-direction), var(--rdp-range_middle-background-color) 50%, transparent 50%);
+  /* Used for the background of the end of the selected range. */
+  --rdp-range_end-color: white;
+  /* The color of the range text. */
+  --rdp-range_end-date-background-color: var(--rdp-accent-color);
+  /* The background color of the date when at the end of the selected range. */
+
+  --rdp-week_number-border-radius: 100%;
+  /* The border radius of the week number. */
+  --rdp-week_number-border: 2px solid transparent;
+  /* The border of the week number. */
+  --rdp-week_number-font: 400 small var(--rdp-font-family);
+  /* The font of the week number cells. */
+  --rdp-week_number-height: var(--rdp-day-height);
+  /* The height of the week number cells. */
+  --rdp-week_number-opacity: 0.75;
+  /* The opacity of the week number. */
+  --rdp-week_number-width: var(--rdp-day-width);
+  /* The width of the week number cells. */
+  --rdp-weeknumber-text-align: center;
+  /* The text alignment of the weekday cells. */
+
+  --rdp-weekday-font: 500 smaller var(--rdp-font-family);
+  /* The font of the weekday. */
+  --rdp-weekday-opacity: 0.75;
+  /* The opacity of the weekday. */
+  --rdp-weekday-padding: 0.5rem 0rem;
+  /* The padding of the weekday. */
+  --rdp-weekday-text-align: center;
+  /* The text alignment of the weekday cells. */
+
+  --rdp-gradient-direction: 90deg;
+}
+
+.rdp-root[dir='rtl'] {
+  --rdp-gradient-direction: -90deg;
+}
+
+/* Root of the component. */
+.rdp-root {
+  position: relative;
+  /* Required to position the navigation toolbar. */
+  box-sizing: border-box;
+}
+
+.rdp-root * {
+  box-sizing: border-box;
+}
+
+.rdp-day {
+  width: var(--rdp-day-width);
+  height: var(--rdp-day-height);
+  font: var(--rdp-day-font);
+  text-align: center;
+}
+
+.rdp-day_button {
+  background: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+
+  width: var(--rdp-day_button-width);
+  height: var(--rdp-day_button-height);
+  border: var(--rdp-day_button-border);
+  border-radius: var(--rdp-day_button-border-radius);
+}
+
+.rdp-day_button:disabled {
+  cursor: revert;
+}
+
+.rdp-caption_label {
+  z-index: 1;
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+
+  white-space: nowrap;
+  border: 0;
+}
+
+.rdp-button_next,
+.rdp-button_previous {
+  border: none;
+  background: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  appearance: none;
+
+  width: var(--rdp-nav_button-width);
+  height: var(--rdp-nav_button-height);
+}
+
+.rdp-button_next:disabled,
+.rdp-button_previous:disabled {
+  cursor: revert;
+
+  opacity: var(--rdp-nav_button-disabled-opacity);
+}
+
+.rdp-chevron {
+  display: inline-block;
+  fill: var(--rdp-accent-color);
+}
+
+.rdp-root[dir='rtl'] .rdp-nav .rdp-chevron {
+  transform: rotate(180deg);
+}
+
+.rdp-root[dir='rtl'] .rdp-nav .rdp-chevron {
+  transform: rotate(180deg);
+  transform-origin: 50%;
+}
+
+.rdp-dropdowns {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--rdp-dropdown-gap);
+}
+
+.rdp-dropdown {
+  z-index: 2;
+
+  /* Reset */
+  opacity: 0;
+  appearance: none;
+  position: absolute;
+  inset-block-start: 0;
+  inset-block-end: 0;
+  inset-inline-start: 0;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  cursor: inherit;
+  border: none;
+  line-height: inherit;
+}
+
+.rdp-dropdown_root {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.rdp-dropdown_root[data-disabled='true'] .rdp-chevron {
+  opacity: var(--rdp-disabled-opacity);
+}
+
+.rdp-month_caption {
+  display: flex;
+  align-content: center;
+  height: var(--rdp-nav-height);
+  font: var(--rdp-month_caption-font);
+}
+
+.rdp-months {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rdp-months-gap);
+  max-width: fit-content;
+}
+
+.rdp-month_grid {
+  border-collapse: collapse;
+}
+
+.rdp-nav {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-end: 0;
+
+  display: flex;
+  align-items: center;
+
+  height: var(--rdp-nav-height);
+}
+
+.rdp-weekday {
+  opacity: var(--rdp-weekday-opacity);
+  padding: var(--rdp-weekday-padding);
+  font: var(--rdp-weekday-font);
+  text-align: var(--rdp-weekday-text-align);
+  text-transform: var(--rdp-weekday-text-transform);
+}
+
+.rdp-week_number {
+  opacity: var(--rdp-week_number-opacity);
+  font: var(--rdp-week_number-font);
+  height: var(--rdp-week_number-height);
+  width: var(--rdp-week_number-width);
+  border: var(--rdp-week_number-border);
+  border-radius: var(--rdp-week_number-border-radius);
+  text-align: var(--rdp-weeknumber-text-align);
+}
+
+/* DAY MODIFIERS */
+.rdp-today:not(.rdp-outside) {
+  color: var(--rdp-today-color);
+}
+
+.rdp-selected {
+  font: var(--rdp-selected-font);
+}
+
+.rdp-selected .rdp-day_button {
+  border: var(--rdp-selected-border);
+}
+
+.rdp-outside {
+  opacity: var(--rdp-outside-opacity);
+}
+
+.rdp-disabled {
+  opacity: var(--rdp-disabled-opacity);
+}
+
+.rdp-hidden {
+  visibility: hidden;
+  color: var(--rdp-range_start-color);
+}
+
+.rdp-range_start {
+  background: var(--rdp-range_start-background);
+}
+
+.rdp-range_start .rdp-day_button {
+  background-color: var(--rdp-range_start-date-background-color);
+  color: var(--rdp-range_start-color);
+}
+
+.rdp-range_middle {
+  background-color: var(--rdp-range_middle-background-color);
+  font: var(--rdp-range_middle-font);
+}
+
+.rdp-range_middle .rdp-day_button {
+  border-color: transparent;
+  border: unset;
+  border-radius: unset;
+  color: var(--rdp-range_middle-color);
+}
+
+.rdp-range_end {
+  background: var(--rdp-range_end-background);
+  color: var(--rdp-range_end-color);
+}
+
+.rdp-range_end .rdp-day_button {
+  color: var(--rdp-range_start-color);
+  background-color: var(--rdp-range_end-date-background-color);
+}
+
+.rdp-range_start.rdp-range_end {
+  background: revert;
+}
+
+.rdp-focusable {
+  cursor: pointer;
 }

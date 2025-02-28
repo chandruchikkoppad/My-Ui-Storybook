@@ -1,21 +1,23 @@
-export interface StateDropdownProps{
+import { Option } from "../Select/types";
 
-    value:string;
+export interface StateDropdownProps {
+  value: string;
 
-    nodeObj:{};
+  isReviewer: boolean;
 
-    isReviewer:boolean;
+  isApprovePage: boolean;
 
-    isApprovePage:boolean;
+  handleDropdownOptionsClick: (option: Option) => void;
+  /*
+   * Pass true if userHasOnlyViewAccess
+   */
+  disabled: boolean;
 
-    handleDropdownOptionsClick:()=>void;
+  isOnlyReviewer: boolean;
 
-    disabled:boolean;
+  handleStateValueClick: () => void;
 
-    isOnlyReviewer:boolean;
+  showBorder?: boolean;
 
-    userHasOnlyViewAccess:boolean;
-
-    handleStateValueClick:()=>void;
+  zIndex?: number;
 }
-

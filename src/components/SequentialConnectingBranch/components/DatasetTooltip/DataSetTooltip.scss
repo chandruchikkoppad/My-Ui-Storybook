@@ -1,0 +1,14 @@
+@mixin flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.ff-dataSetList-container {
+  @include flex-column;
+  gap: 4px;
+  padding: 6px 12px;
+
+  .ff-dataSetList-items {
+    @include flex-column;
+  }
+}

@@ -1,3 +1,4 @@
+import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import InputWithDropdown from './InputWithDropdown';
 import { ChangeEvent, useState } from 'react';
@@ -51,7 +52,7 @@ export const DisabledWithValue: Story = {
 
 export const Controlled: Story = {
   render: () => {
-    const [value, setValue] = useState<number>(0);
+    const [value, setValue] = useState<number | string>(0);
     const [error, setError] = useState<boolean>(false);
     const [helperText, setHelperText] = useState<string>('');
 
@@ -73,14 +74,14 @@ export const Controlled: Story = {
     };
 
     const onInputChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
-      const inputValue = event.target.value;
-      setValue(parseInt(inputValue));
+      const inputValue = parseInt(event.target.value);
+      setValue(event.target.value);
 
       if (event.target) {
-        if (checkEmpty(event.target.value)) {
+        if (inputValue < 0 || checkEmpty(value)) {
           setError(true);
           setHelperText(`${event.target.name} is required`);
-        } else if (parseInt(inputValue) > 999) {
+        } else if (inputValue > 999) {
           setError(true);
           setHelperText(`${event.target.name} should be upto 999`);
         } else {

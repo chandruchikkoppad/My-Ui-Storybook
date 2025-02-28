@@ -1,28 +1,42 @@
-@use '../../assets/styles/_fonts';
-
 .ff-fixed-header-table {
   overflow-y: auto;
+  position: relative;
 }
 
 .ff-table {
+  width: 100%;
+
+  .sticky-column {
+    position: sticky;
+    z-index: 999;
+    background-color: var(--input-label-bg-color);
+  }
+  .ff-table-icon {
+    position: absolute;
+    top: 4px;
+    right: 0;
+    z-index: 100;
+    cursor: pointer;
+  }
+
   th,
   td {
     text-align: left;
     font-size: 12px;
-    padding: 9px 8px;
+    padding: 7px 8px;
   }
+
   thead {
     tr {
       th {
-        @extend .fontMd;
-        color: var(--text-color);
         border-bottom: 1px solid var(--slider-table-color);
-        text-transform: uppercase;
       }
-      th:first-child {
-        div {
+
+      th {
+        .ff-label-checkbox-container {
           display: flex;
           align-items: center;
+
           .ff-table-checkbox {
             padding-right: 8px;
           }
@@ -30,57 +44,128 @@
       }
     }
   }
+
   tbody {
+    scrollbar-width: none;
+
+    tr:hover,
+    tr.hover {
+      background-color: var(--hover-color);
+
+      .icon-container {
+        opacity: 1;
+        transform: translateX(0);
+      }
+
+      .ff-table-drag,
+      .ff-table-drag-icon {
+        opacity: 1 !important;
+      }
+    }
+
+    .edit-row:hover {
+      background-color: transparent;
+    }
+
     tr {
       .action-column {
         opacity: 0;
       }
+
       .icon-container {
-        padding-left: 10px;
+        padding-left: 8px;
         opacity: 0;
         display: flex;
         justify-content: flex-end;
         transition: opacity 0.3s ease, transform 0.3s ease;
         transform: translateX(20px);
       }
-      &:hover {
-        background-color: var(--hover-color);
 
-        .icon-container {
-          opacity: 1;
-          transform: translateX(0);
+      .ff-data-checkbox-container {
+        display: flex;
+        align-items: center;
+
+        .ff-table-checkbox {
+          padding-right: 8px;
+        }
+
+        .ff-table-drag {
+          opacity: 0;
+          transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .ff-table-drag-icon {
+          @extend .ff-table-drag;
+          cursor: grab;
         }
       }
+
       td {
         position: relative;
-        color: var(--text-color);
-        @extend .fontSm;
+        color: var(--table-column-text-color);
 
         &.clickable-cell {
           cursor: pointer;
         }
       }
-      td:first-child {
-        div {
+
+      .edit_depends_on_script {
+        border-radius: 8px;
+        margin: 8px;
+        border: 1px solid var(--ff-select-option-wrapper-box-shadow);
+
+        &__header {
           display: flex;
+          justify-content: space-between;
           align-items: center;
-          .ff-table-checkbox {
-            padding-right: 8px;
+          border-radius: 8px 8px 0 0;
+          background: var(--slider-table-color);
+          min-height: 32px;
+          padding: 0 8px;
+
+          &__link {
+            border-bottom: 2px solid var(--nlp-color);
+            cursor: pointer;
+          }
+        }
+
+        &__form {
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+          padding: 8px;
+
+          &__button {
+            display: flex;
+            justify-content: end;
+            gap: 8px;
           }
         }
       }
     }
   }
+
   .primary-bg {
-    background-color: var(--brand-color);
+    background-color: var(--table-header-color-primary);
   }
+
   .secondary-bg {
-    background-color: var(--slider-table-color);
+    background-color: var(--custom-table-header-bg-color);
   }
+
   .default-bg {
     background-color: transparent;
   }
+
+  .default-color {
+    color: var(--table-header-text-color);
+  }
+
+  .primary-color {
+    color: var(--brand-color);
+  }
 }
+
 .border-borderRadius {
   border: 1px solid var(--slider-table-color);
   border-radius: 5px;
@@ -93,6 +178,7 @@
   z-index: 99;
   background-color: Var(--file-details-bg);
 }
+
 .no-data-content {
   display: flex;
   flex-direction: column;

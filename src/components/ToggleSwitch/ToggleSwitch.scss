@@ -1,0 +1,59 @@
+/* Container Styling */
+.toggle-container {
+    display: flex;
+    background-color: var(--base-bg-color);
+    height: 24px;
+    border-radius: 6px;
+    padding: 4px 2px;
+    overflow: hidden;
+    width: fit-content;
+    box-shadow: 1px 1px 2px 0px var(--base-bg-color),
+    inset -1px -1px 2px var(--base-bg-color),
+    inset 1px -1px 2px var(--ff-toggle-switch-shadow-color),
+    inset -1px 2px 0px var(--ff-toggle-switch-shadow-color);
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+  }
+  
+  /* Button Styling */
+  .toggle-button {
+    padding: 4px 2px;
+    font-size: 10px;
+    font-weight: 500;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    background-color: var(--base-bg-color);
+    color: var(--ff-toggle-switch-off-color);
+    outline: none;
+    transition: all 0.3s ease;
+    min-width: 24px;
+    height: 20px;
+    text-align: center;
+    box-shadow: 
+    inset 1px 1px 2px 0 var(--base-bg-color),
+    1px 1px 3px 0 var(--ff-chips-blur-color),
+    -1px -1px 2px 0 var(--base-bg-color),
+    1px -1px 2px 0 var(--ff-chips-blur-color),
+    -1px 1px 2px 0 var(--ff-chips-blur-color)
+  }
+  
+  /* Active Button */
+  .toggle-button.active {
+    background-color: var(--ff-line-number-bg);
+    color: var(--base-bg-color);
+    box-shadow: 
+    inset -1px -1px 2px 0 var(--ff-chips-blur-color),
+    1px 1px 3px 0 var(--ff-chips-blur-color),
+    -1px -1px 2px 0 var(--base-bg-color),
+    -1px 1px 2px 0 var(--ff-chips-blur-color);
+  }
+  
+  /* Button Hover Effect */
+  .toggle-button:hover {
+    background-color: var(--hover-color);
+    color: var(--brand-color);
+  }
+  
+  

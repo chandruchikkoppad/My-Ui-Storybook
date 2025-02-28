@@ -2,8 +2,15 @@
 
 .ff-dashboard-donut-chart-section {
   display: flex;
-  flex-direction: column;
   align-items: center;
+
+  &.legend-position-bottom {
+    flex-direction: column;
+  }
+
+  &.legend-position-left {
+    flex-direction: row-reverse;
+  }
 
   &-table-legend {
     flex-direction: row;
@@ -11,19 +18,20 @@
 
   .ff-dashboard-donut-chart-svg-container {
     text-align: center;
+
     svg {
+      display: block;
+
       text:nth-of-type(1) {
-        @extend .font2Xl;
         font-weight: 600;
       }
       text:nth-of-type(2) {
-        @extend .fontMd;
         font-weight: 500;
       }
     }
 
     .ff-donut-chart-tooltip {
-      position: fixed;
+      position: absolute;
       padding: 5px;
       border-radius: 4px;
       pointer-events: none;
@@ -32,65 +40,126 @@
     }
   }
 
-  .ff-legend-container {
-    display: grid;
-    gap: 10px;
+  @mixin ff-legend-item-styles {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1 1 calc(33.33% - var(--donut-legend-gap, 5px));
 
-    &.numberLegend {
-      grid-template-columns: repeat(3, 1fr);
+    .ff-legend-value {
+      white-space: nowrap;
+    }
+  }
+
+  @mixin ff-side-legend-styles {
+    flex-direction: column;
+    flex-wrap: wrap;
+    height: 200px;
+    width: auto;
+    justify-content: center;
+
+    .ff-legend-item {
+      flex: 0 0 auto !important;
+      width: 100%;
+      justify-content: center;
+    }
+  }
+
+  .ff-legend-container {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    gap: var(--donut-legend-gap, 5px); // Dynamic gap support with fallback
+
+    .ff-legend-item {
+      @include ff-legend-item-styles;
+    }
+
+    &.ff-count-2,
+    &.ff-count-4 {
       .ff-legend-item {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+        flex: 1 1 calc(50% - var(--donut-legend-gap, 5px));
       }
     }
 
-    &.pillLegend {
+    &.ff-count-5 {
+      .ff-legend-item:nth-child(-n + 3) {
+        flex: 1 1 calc(33.33% - var(--donut-legend-gap, 5px));
+      }
+      .ff-legend-item:nth-child(n + 4) {
+        flex: 1 1 calc(50% - var(--donut-legend-gap, 5px));
+      }
+    }
+
+    &.ff-count-3,
+    &.ff-count-6,
+    &.ff-count-more {
+      .ff-legend-item {
+        flex: 1 1 calc(33.33% - var(--donut-legend-gap, 5px));
+      }
+    }
+
+    &.ff-side-legend {
+      @include ff-side-legend-styles;
+
+      &.ff-count-2,
+      &.ff-count-4 {
+        .ff-legend-item {
+          height: calc(50% - var(--donut-legend-gap, 5px));
+        }
+      }
+
+      &.ff-count-3,
+      &.ff-count-5,
+      &.ff-count-6,
+      &.ff-count-more {
+        .ff-legend-item {
+          height: calc(33.33% - var(--donut-legend-gap, 5px));
+        }
+      }
+    }
+
+    &.ff-pill-legend {
+      display: grid;
       grid-template-columns: repeat(2, 1fr);
+      gap: var(--donut-legend-gap, 5px);
+      overflow-y: auto;
+      width: auto;
+      min-width: 0;
+      overflow-x: visible;
       .ff-legend-item {
         display: flex;
+        flex-direction: row;
         align-items: center;
 
         .ff-legend-capsule {
           background-color: var(--status-success-text-color);
           color: var(--tooltip-text-color);
           border-radius: 15px;
-          min-width: 25px;
+          width: 25px;
           height: 18px;
           display: flex;
           justify-content: center;
           align-items: center;
         }
-
+        .ff-legend-capsule-content {
+          position: relative;
+          top: 1px;
+        }
         .ff-legend-key {
           margin-left: 8px;
-        }
-      }
-    }
-
-    &.memoryLegend {
-      grid-template-columns: repeat(2, 1fr);
-      .ff-legend-item {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        width: 100%;
-        padding-right: 10px;
-        border-right: 1px solid var(--border-color);
-
-        // Remove the right border for the last item in each row
-        &:nth-child(2n) {
-          border-right: none;
+          color: var(--text-color);
         }
       }
     }
   }
 
   .ff-legend-table-wrapper {
-    overflow: hidden;
     border: 1px solid var(--border-color);
     border-radius: 4px;
     margin-left: 1rem;
+    overflow-y: auto;
   }
 
   .ff-legend-table {
@@ -99,18 +168,25 @@
     border-collapse: collapse;
     text-align: left;
 
+    .ff-legend-table-thead {
+      position: static;
+      top: auto;
+    }
     .ff-table-header {
       @extend .fontXs;
       font-weight: bold;
       background-color: var(--tabs-bg-color);
       color: var(--input-hover-border-color);
-      padding: 0.5rem;
+      padding: 7px 5px 9px 20px;
 
       &:last-child {
         text-align: right;
+        padding-right: 10px;
+      }
+      &:nth-last-child(2) {
+        width: 58px;
       }
     }
-
     .ff-legend-capsule {
       background-color: var(--status-success-text-color);
       color: var(--tooltip-text-color);
@@ -121,16 +197,20 @@
       justify-content: center;
       align-items: center;
     }
-
     .ff-legend-item {
+      .ff-legend-name {
+        margin-left: 10px;
+      }
       .ff-legend-name,
       .ff-legend-percentage,
       .ff-legend-count {
-        padding: 0.5rem;
+        padding: 4px 8px 4px 10px;
         @extend .fontXs;
         color: var(--input-hover-border-color);
+        &:last-child {
+          padding-right: 22px;
+        }
       }
-
       .ff-legend-name {
         display: flex;
         align-items: baseline;
@@ -142,4 +222,56 @@
       }
     }
   }
+}
+
+.ff-overflow-visible,
+.ff-svg-overflow-visible {
+  overflow: visible;
+}
+
+.ff-d-flex {
+  display: flex;
+}
+
+.ff-legend-version-container {
+  margin-left: 10px;
+  height: 56px;
+  width: 251px;
+  padding: 8px;
+  display: flex;
+  justify-content: center;
+  overflow: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.ff-legend-version-container::-webkit-scrollbar {
+  display: none;
+}
+
+.ff-legend-version-grid {
+  display: grid;
+  grid-template-columns: repeat(4, auto);
+  column-gap: 30px;
+  row-gap: 20px;
+}
+
+.ff-legend-version-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.ff-legend-version-circle {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+.ff-legend-version-error {
+  height: 56px;
+  width: 251px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 }

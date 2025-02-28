@@ -1,0 +1,66 @@
+@use '../../assets/styles/fonts';
+@use '../../assets/styles/mixins';
+
+.ff-module-chip {
+  padding: 0 12px;
+  width: fit-content;
+  height: 30px;
+  color: var(--table-column-text-color);
+  border: 1px solid var(--ff-editor-line-bg);
+  border-radius: 16px;
+  cursor: pointer;
+  @include mixins.center-content();
+  .module-typography {
+    color: var(--table-column-text-color);
+  }
+  &--active {
+    border: 0.5px solid var(--brand-color);
+    background: var(--brand-color);
+    .module-typography {
+      color: var(--base-bg-color);
+      font-weight: 600;
+    }
+  }
+  &:hover {
+    background-color: var(--hover-color);
+    .module-typography {
+      color: var(--table-column-text-color);
+    }
+  }
+}
+.ff-filter-chip {
+  height: 22px;
+  border: 0.5px solid var(--in-active-button-color);
+  &:hover {
+    background-color: var(--ff-icon-hover-fill-color);
+    .module-typography {
+      color: var(--table-column-text-color);
+    }
+  }
+  &--active {
+    box-shadow: 0px 4px 4px 0px var(--toggle-strip-shadow) inset;
+    border: none;
+    background: linear-gradient(
+      90deg,
+      var(--brand-color) 0%,
+      var(--button-background-gradient-color) 100%
+    );
+    .module-typography {
+      color: var(--base-bg-color);
+      font-weight: 600;
+    }
+    &:hover {
+      border: none;
+      box-shadow: 0px 4px 4px 0px #00000040 inset;
+      background: linear-gradient(
+          90deg,
+          var(--brand-color) 0%,
+          var(--button-background-gradient-color) 100%
+        ),
+        linear-gradient(0deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2));
+      .module-typography {
+        color: var(--base-bg-color);
+      }
+    }
+  }
+}

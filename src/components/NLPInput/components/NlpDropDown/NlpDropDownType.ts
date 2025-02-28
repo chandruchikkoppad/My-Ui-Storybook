@@ -1,15 +1,17 @@
-import { DrowdownPosition, Option } from '../../type';
+import { DrowdownPosition, NlpRenderOption } from '../../types';
 
 export interface NlpDropDownListProps {
   /*
    * Callback function triggered on blur event
    */
   onSelectBlur: () => void;
-
+  leftIcon?: string;
+  webServiceClick?: () => void;
+  containerWidth?: string | number;
   /*
    * Callback function triggered when an option is selected
    */
-  onSelectOptionSelector: (option: Option) => void;
+  onSelectOptionSelector: (option: NlpRenderOption) => void;
 
   /*
    * Position of the dropdown relative to the input
@@ -19,7 +21,7 @@ export interface NlpDropDownListProps {
   /*
    * List of options to display in the dropdown
    */
-  options?: Option[];
+  options?: NlpRenderOption[];
 
   /*
    * Optional z-index for controlling the dropdown's stacking order
@@ -50,6 +52,12 @@ export interface NlpDropDownListProps {
    * If true, disables the dropdown
    */
   disabled?: boolean;
+
+  loadMoreOptions?: () => void;
+
+  chipRef?: React.RefObject<HTMLDivElement>;
+
+  isWebservice?: boolean;
 }
 
 export const nlpDropdownDefaultCSSData = {

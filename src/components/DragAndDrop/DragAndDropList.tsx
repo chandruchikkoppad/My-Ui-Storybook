@@ -21,6 +21,7 @@ const {
 import Typography from '../Typography';
 
 import './DragAndDropList.scss';
+import { DragEndEvent } from '@dnd-kit/core';
 
 interface TaskProps {
   id: number;
@@ -117,14 +118,14 @@ const DragAndDropList = () => {
   const getTaskPos = (id: number): number =>
     tasks.findIndex((task) => task.id === id);
 
-  const handleDragEnd = (event: any) => {
+  const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
-    if (active.id === over.id) return;
+    if (active.id === over?.id) return;
 
     setTasks((tasks) => {
-      const originalPos = getTaskPos(active.id);
-      const newPos = getTaskPos(over.id);
+      const originalPos = getTaskPos(Number(active?.id));
+      const newPos = getTaskPos(Number(over?.id));
 
       return arrayMove(tasks, originalPos, newPos);
     });

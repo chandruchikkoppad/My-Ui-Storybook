@@ -1,0 +1,26 @@
+image: node:18  # Use a Node.js image with Yarn pre-installed
+
+stages:
+  - build
+  - deploy
+
+cache:
+  paths:
+    - node_modules/  # Cache dependencies for faster builds
+
+build-job:
+  stage: build
+  script:
+    - echo "Installing dependencies..."
+    - yarn install --frozen-lockfile  # Ensures exact dependencies
+    - echo "Compiling the code..."
+    - yarn build
+    - echo "Compile complete."
+
+# deploy-job:
+#   stage: deploy
+#   environment: production
+#   script:
+#     - echo "Deploying application..."
+#     - yarn chromatic
+#     - echo "Application successfully deployed."

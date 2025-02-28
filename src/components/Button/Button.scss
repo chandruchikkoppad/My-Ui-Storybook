@@ -2,8 +2,7 @@
 @use '../../assets/styles/fonts';
 
 .ff-button {
-  width: auto;
-  background-color: $primary-button-text-color;
+  background-color: var(--primary-button-text-color);
   border-radius: 4px;
   padding: 4px 8px;
   text-align: center;
@@ -16,12 +15,14 @@
   align-items: center;
   @extend .fontXs;
   border: 2px solid transparent;
+
   &--transparent {
     background-color: transparent;
   }
 
   &--primary,
   &--delete,
+  &--danger,
   &--secondary {
     position: relative;
     cursor: pointer;
@@ -37,18 +38,20 @@
       border-radius: 4px;
       padding: 0.6px;
 
-      background: $primary-button-border;
-      mask: linear-gradient($primary-button-text-color 0 0) content-box,
-        linear-gradient($primary-button-text-color 0 0);
+      background: var(--primary-button-border);
+      mask:
+        linear-gradient(var(--primary-button-text-color) 0 0) content-box,
+        linear-gradient(var(--primary-button-text-color) 0 0);
       mask-composite: exclude;
-      -webkit-mask: linear-gradient($primary-button-text-color 0 0) content-box,
-        linear-gradient($primary-button-text-color 0 0);
+      -webkit-mask:
+        linear-gradient(var(--primary-button-text-color) 0 0) content-box,
+        linear-gradient(var(--primary-button-text-color) 0 0);
       -webkit-mask-composite: destination-out;
       z-index: -1;
     }
 
     &:hover {
-      background: $primary-button-hover;
+      background: var(--primary-button-hover);
     }
 
     &:disabled {
@@ -69,46 +72,63 @@
   }
 
   &--primary {
-    background: $primary-button-color;
+    background: var(--primary-button-color);
 
     &:before {
-      background: $primary-button-border;
+      background: var(--primary-button-border);
     }
 
     &:hover {
-      background: $primary-button-hover;
+      background: var(--primary-button-hover);
     }
   }
 
   &--delete {
-    background: $delete-button-color;
-    color: $primary-button-text-color;
+    background: var(--delete-button-color);
+    color: var(--primary-button-text-color);
 
     &:before {
-      background: $delete-button-border;
+      background: var(--delete-button-border);
     }
 
     &:hover {
-      background: $delete-button-hover;
+      background: var(--delete-button-hover);
     }
+  }
+
+  &--warning {
+    background: var(--warning-button-color);
+    border: var(--warning-button-border);
   }
 
   &--secondary {
     &:before {
-      background: $primary-button-border;
+      background: var(--primary-button-border);
     }
 
     &:hover {
-      background: $secondary-button-hover;
+      background: var(--secondary-button-hover);
+    }
+  }
+
+  &--danger {
+    color: var(--status-rejected-text-color);
+
+    &:before {
+      background: var(--status-rejected-text-color);
+    }
+
+    &:hover {
+      background: var(--danger-button-hover);
     }
   }
 
   &--tertiary {
     border: none;
-    background: $tertiary-button-color;
+    background: var(--tertiary-button-color);
 
     &:hover {
-      background: $tertiary-button-hover;
+      background: var(--tertiary-button-hover);
     }
 
     &:disabled {
@@ -121,6 +141,7 @@
     @extend .fontXs;
     font-weight: 500;
     padding: 4.5px 8px;
+    line-height: 15px;
   }
 
   &--medium {
@@ -135,14 +156,27 @@
   }
 
   &-primary--text {
-    color: $primary-button-text-color;
+    color: var(--primary-button-text-color);
   }
 
   &-secondary--text,
   &-tertiary--text {
-    background: $secondary-button-color-text;
+    background: var(--secondary-button-color-text);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
   }
+}
+
+.ff-button-icon {
+  cursor: pointer;
+}
+
+.ff-button-choose-file-text {
+  color: var(--dotted-border-color);
+}
+
+.ff-button-choose-file {
+  display: flex;
+  justify-content: space-between;
 }

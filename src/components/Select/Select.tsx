@@ -1,365 +1,324 @@
-import { useReducer, useRef, useEffect, useMemo } from 'react';
-import { Option, SelectAction, SelectProps, SelectState } from './types';
-import { checkEmpty } from '../../utils/checkEmpty/checkEmpty';
-import { createPortal } from 'react-dom';
-import classNames from 'classnames';
-import Dropdown from './components/Dropdown/Dropdown';
-import Icon from '../Icon';
+import { ChangeEvent, FC, useEffect, useMemo, useRef, useState } from 'react';
 import './Select.scss';
-import usePortalPosition from '../../hooks/usePortalPosition';
+import Icon from '../Icon';
 import Typography from '../Typography';
+import { DropdownPosition, Option, SelectProps } from './types';
+import classNames from 'classnames';
+import { createPortal } from 'react-dom';
+import Dropdown from './components/Dropdown';
+import { getValue } from '../../utils/getSelectOptionValue/getSelectOptionValue';
+import usePortalPosition from '../../hooks/usePortalPosition';
+import Tooltip from '../Tooltip';
 
-const selectReducer = (
-  state: SelectState,
-  action: SelectAction
-): SelectState => {
-  switch (action.type) {
-    case 'FOCUS_INPUT':
-      return {
-        ...state,
-        isInputFocused: true,
-        iconColor: 'var(--ff-select-brand-color)',
-        isIconClick: true,
-        showOptions: true,
-      };
-    case 'BLUR_INPUT':
-      return {
-        ...state,
-        isInputFocused: false,
-        options: action.payload.optionsList,
-        option: action.payload.option,
-
-        // todo color need to be add in style guide
-        iconColor: 'var(--ff-select-default-color)',
-        isIconClick: false,
-        showOptions: false,
-        dropdownPosition: {
-          positionX: 0,
-          positionY: 0,
-          width: 0,
-          fromBottom: 0,
-        },
-      };
-    case 'MOUSE_ENTER':
-      return state.isInputFocused
-        ? state
-        : { ...state, iconColor: 'var(--ff-select-text-hover-color)' };
-    case 'MOUSE_LEAVE':
-      return state.isInputFocused
-        ? state
-        : // todo color need to be add in style guide
-          {
-            ...state,
-            iconColor: 'var(--ff-select-default-color)',
-            isIconClick: false,
-          };
-
-    case 'UPDATE_DROPDOWN_POSITION':
-      const { positionX, positionY, width, fromBottom } = action.payload || {};
-      return {
-        ...state,
-        dropdownPosition: {
-          positionX,
-          positionY,
-          width,
-          fromBottom,
-        },
-      };
-
-    case 'UPDATE_OPTION':
-      return {
-        ...state,
-        option: action.payload,
-      };
-
-    case 'UPDATE_OPTION_LIST':
-      return {
-        ...state,
-        options: action.payload,
-      };
-    case 'SHOW_ERROR':
-      return {
-        ...state,
-        isInputFocused: true,
-        isIconClick: false,
-        showOptions: false,
-        options: action.payload.optionsList,
-        option: action.payload.option,
-
-        // todo color need to be add in style guide
-        iconColor: 'var(--ff-select-default-color)',
-        dropdownPosition: {
-          positionX: 0,
-          positionY: 0,
-          width: 0,
-          fromBottom: 0,
-        },
-      };
-
-    default:
-      return state;
-  }
-};
-
-const Select = ({
-  label = '',
+const Select: FC<SelectProps> = ({
+  label = 'Default Label',
   showLabel = true,
   optionsList = [],
   selectedOption = { label: '', value: '' },
   onChange = () => {},
   errorMsg = '',
+  error = false,
   className = '',
-  optionZIndex = 100,
+  optionZIndex = 1500,
   disabled = false,
-  borderRadius = true,
   showBorder = true,
-  required = false,
+  required = true,
   optionsRequired = true,
-}: SelectProps) => {
-  const initialState: SelectState = useMemo(
-    () => ({
-      isInputFocused: false,
+  selectedOptionColor = 'var(--ff-select-text-color)',
+  labelAccessor = '',
+  valueAccessor = '',
+  height = 32,
+  width = '100%',
+  onBlur = () => {},
+  disableInput = false,
+  showIcon = false,
+  placeHolder = '',
+  showToolTip = false,
+  onCancelModal = () => {},
+  onSaveModal = () => {},
+  modalJSXProps = <></>,
+  recurrence = false,
+  showArrowIcon = true,
+  showOptions = { open: false, toggle: false },
+  tooltip = false,
+}) => {
+  const selectWidth = typeof width === 'number' ? `${width}px` : width;
+  const memoizedOptionsList = useMemo(() => optionsList, [optionsList]);
 
-      // todo color need to be added in style guide
-      iconColor: 'var(--ff-select-default-color)',
-      isIconClick: false,
-      showOptions: false,
-      options: optionsList,
-      option: checkEmpty(selectedOption) ? '' : selectedOption?.value,
-      dropdownPosition: { positionX: 0, positionY: 0, width: 0, fromBottom: 0 },
-    }),
-    [optionsList, selectedOption]
-  );
+  const [showDropdownOptions, setShowDropdownOptions] = useState(false);
+  const [customRecurrence, setCustomRecurrence] = useState(false);
+  const [searchedOption, setSearchedOption] = useState<any>({
+    searchedText: '',
+    searchedIcon: '',
+  });
+  const { searchedText, searchedIcon } = searchedOption;
+  const [selectOptionList, setSelectOptionList] = useState<Option[] | []>([]);
+  const [dropdownPosition, setDropdownPosition] = useState<DropdownPosition>({
+    positionX: 0,
+    positionY: 0,
+    width: 0,
+    fromBottom: 0,
+  });
 
-  const [selectControlState, dispatch] = useReducer(
-    selectReducer,
-    initialState
-  );
+  const DropdownRef = useRef<HTMLDivElement>(null);
+  const selectWrapperRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const selectArrowRef = useRef<HTMLDivElement>(null);
 
-  const DropDownRef = useRef<HTMLDivElement>(null);
-  const InputRef = useRef<HTMLInputElement>(null);
+  const calculatePosition = usePortalPosition(inputRef, showDropdownOptions);
 
-  const {
-    isInputFocused,
-    iconColor,
-    isIconClick,
-    showOptions,
-    dropdownPosition,
-    options,
-    option,
-  } = selectControlState;
-
-  const calculatePosition = usePortalPosition(DropDownRef, showOptions);
-
-  const handleSelectAction = (
-    actionType:
-      | 'FOCUS_INPUT'
-      | 'MOUSE_ENTER'
-      | 'MOUSE_LEAVE'
-      | 'SHOW_ERROR'
-      | 'BLUR_INPUT'
-  ) => {
-    if (!disabled) {
-      if (actionType === 'SHOW_ERROR' || actionType === 'BLUR_INPUT') {
-        dispatch({
-          type: actionType,
-          payload: { optionsList, option: selectedOption.value },
-        });
-      } else {
-        dispatch({ type: actionType });
-      }
-    }
-  };
-
-  const onSelectInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleIconClick = () => {
     if (disabled) return;
-    const { value } = e.target;
-    const filteredOptions = optionsList.filter((option) => {
-      return typeof option.value === 'string'
-        ? option.value.toLowerCase().includes(value.toLowerCase().trim())
-        : option.value === Number(value);
+    setShowDropdownOptions(!showDropdownOptions);
+    setSearchedOption({
+      ...searchedOption,
+      searchedText: getValue(selectedOption, valueAccessor) || '',
     });
-    dispatch({ type: 'UPDATE_OPTION_LIST', payload: filteredOptions });
-    dispatch({ type: 'UPDATE_OPTION', payload: value });
+    setSelectOptionList(optionsList);
+    if (!showDropdownOptions && inputRef.current) {
+      inputRef.current.focus();
+    }
   };
 
-  const onSelectBlur = () => {
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (disabled) return;
+    const { value } = event.target;
 
-    if (errorMsg) {
-      handleSelectAction('SHOW_ERROR');
-    } else {
-      handleSelectAction('BLUR_INPUT');
-    }
-  };
+    const filteredOptions = optionsList.filter((option) => {
+      const valueData = getValue(option, valueAccessor);
+      return typeof valueData === 'string'
+        ? valueData.toLowerCase().includes(value.toLowerCase().trim())
+        : valueData === Number(value);
+    });
 
-  const onSelectOptionSelector = (option: Option) => {
-    if (!disabled) {
-      onSelectBlur();
-      dispatch({ type: 'UPDATE_OPTION', payload: option.value });
-      if (onChange) {
-        onChange(option);
-      }
-    }
+    setSelectOptionList(filteredOptions);
+    setSearchedOption({
+      ...searchedOption,
+      searchedText: value,
+    });
   };
 
   const onSelectUpdatePosition = () => {
-    if (!showOptions || !DropDownRef?.current || disabled) return;
-    const { positionX, positionY, width, fromBottom } =
-      calculatePosition(DropDownRef);
-    dispatch({
-      type: 'UPDATE_DROPDOWN_POSITION',
-      payload: { positionX, positionY, width, fromBottom },
-    });
+    if (!showDropdownOptions || !DropdownRef?.current || disabled) return;
+    setDropdownPosition(calculatePosition(inputRef));
   };
 
-  const onSelectToggleScroll = (isEnabled: boolean) => {
-    const bodyScrollWidth = window.innerWidth - document.body.clientWidth;
-    document.body.style.paddingRight = isEnabled ? '' : `${bodyScrollWidth}px`;
-    document.body.style.overflow = isEnabled ? '' : 'hidden';
+  const onSelectToggleScroll = (isEnabled: boolean): void => {
+    const scrollWidth =
+      window.innerWidth - document.documentElement.clientWidth;
+
+    if (isEnabled) {
+      document.body.style.paddingRight = '';
+      document.body.style.overflow = '';
+    } else {
+      document.body.style.paddingRight = `${scrollWidth}px`;
+      document.body.style.overflow = 'hidden';
+    }
+  };
+
+  const handleFocus = () => {
+    if (disabled) return;
+    setShowDropdownOptions(true);
   };
 
   useEffect(() => {
+    if (showOptions.open) {
+      setShowDropdownOptions(true);
+    }
+  }, [showOptions.toggle]);
+
+  const onSelectBlur = () => {
+    setShowDropdownOptions(false);
+    setDropdownPosition({
+      positionX: 0,
+      positionY: 0,
+      fromBottom: 0,
+      width: 0,
+    });
+    setSearchedOption({
+      searchedText: getValue(selectedOption, valueAccessor) || '',
+      searchedIcon: selectedOption.iconName || '',
+    });
+    setSelectOptionList(optionsList);
+    setCustomRecurrence(false);
+    onBlur();
+  };
+
+  const onSelectOptionSelector = (option: Option): void => {
     if (disabled) return;
-    if (showOptions) {
-      onSelectToggleScroll(!showOptions);
+    const isCustomRecurrence = option?.recurrence || false;
+    setCustomRecurrence(isCustomRecurrence);
+    setSearchedOption({
+      searchedText: getValue(selectedOption, valueAccessor),
+      searchedIcon: selectedOption.iconName,
+    });
+    if (onChange) {
+      onChange(option);
+    }
+    if (!isCustomRecurrence) {
+      onSelectBlur();
+    }
+  };
+
+  const handleResizeOrScroll = () => onSelectUpdatePosition();
+
+  const hideShowScrollbar = () => {
+    if (disabled) return;
+    if (showDropdownOptions && optionsRequired) {
+      onSelectToggleScroll(!showDropdownOptions);
     }
     onSelectUpdatePosition();
 
-    const handleResizeOrScroll = () => onSelectUpdatePosition();
-
     window.addEventListener('resize', handleResizeOrScroll);
     window.addEventListener('scroll', handleResizeOrScroll);
+  };
+
+  useEffect(() => {
+    hideShowScrollbar();
     return () => {
       onSelectToggleScroll(true);
       window.removeEventListener('resize', handleResizeOrScroll);
       window.removeEventListener('scroll', handleResizeOrScroll);
     };
-  }, [showOptions]);
+  }, [showDropdownOptions]);
 
   useEffect(() => {
-    if (errorMsg) {
-      handleSelectAction('SHOW_ERROR');
-    }
-  }, []);
+    setSearchedOption({
+      searchedText: getValue(selectedOption, valueAccessor),
+      searchedIcon: selectedOption.iconName,
+    });
+  }, [
+    selectedOption?.label,
+    selectedOption?.value,
+    selectedOption?.iconName,
+    getValue(selectedOption, valueAccessor),
+  ]);
 
-  const applyActiveOptionClasses = !isInputFocused && Boolean(option);
+  useEffect(() => {
+    setSelectOptionList(memoizedOptionsList);
+  }, [memoizedOptionsList]);
+
+  if (showLabel) {
+    placeHolder = '';
+  }
 
   return (
-    <div className={classNames(`ff-select-wrapper ${className}`)}>
-      <div className="ff-select">
-        <input  
-          type="text"
-          className={classNames('ff-select-input', {
-            'ff-select-input--default': !isInputFocused,
-            'ff-select-input--active': applyActiveOptionClasses,
-            'ff-select-input--no-label': !showLabel,
-            'ff-select-input--error':
-              errorMsg && !isInputFocused && !Boolean(option),
-            'ff-select-input--border-radius': !borderRadius,
-            'ff-select-input--disable': disabled,
-            'ff-select-input--no-border': !showBorder,
-          })}
-          // inline css required due to multiple overlay scenarios are present
-          style={{ zIndex: optionZIndex }}
-          onFocus={() => handleSelectAction('FOCUS_INPUT')}
-          onMouseEnter={() => handleSelectAction('MOUSE_ENTER')}
-          onMouseLeave={() => handleSelectAction('MOUSE_LEAVE')}
-          onChange={onSelectInputChange}
-          value={option}
-          disabled={disabled}
-          autoComplete="off"
-          spellCheck="false"
-          ref={InputRef}
-        />
-
-        {showLabel && (
-          <div
-            className={classNames('ff-select-label', {
-              'ff-select-label--default': !isInputFocused,
-              'ff-select-label--active': isInputFocused || Boolean(option),
-              'ff-select-label--error': errorMsg,
+    <div
+      className={`ff-select-wrapper ${className}`}
+      ref={selectWrapperRef}
+      style={{ height: `${height}px`, width: `${selectWidth}` }}
+    >
+      <div
+        className={classNames('ff-select', {
+          'ff-select__focus': showDropdownOptions,
+          'ff-select__disabled': disabled,
+          'ff-select__error': !!errorMsg || error,
+          'ff-select__error__focused': !!errorMsg && showDropdownOptions,
+          'ff-select__no_border': !showBorder,
+        })}
+      >
+        {showIcon && (
+          <Tooltip placement="bottom" title={searchedText}>
+            <Icon name={searchedIcon} className="ff-select-input-icon" />
+          </Tooltip>
+        )}
+        <Tooltip title={tooltip ? searchedText : ''} style={{ width: '100%' }}>
+          <input
+            type="text"
+            ref={inputRef}
+            id="select-input-element"
+            className={classNames('ff-select-inputField', {
+              'ff-select-inputField__disabled': disabled,
+              'ff-select-inputField__readonly': disableInput,
+              'ff-select-inputField__icon': showIcon,
             })}
+            onFocus={handleFocus}
+            value={searchedText}
+            autoCorrect="off"
+            autoComplete="off"
+            spellCheck="false"
+            style={{
+              zIndex: optionZIndex,
+              color: selectedOptionColor,
+            }}
+            disabled={disabled}
+            onChange={handleChange}
+            readOnly={disableInput}
+            placeholder={placeHolder}
+          />
+        </Tooltip>
+        {optionsRequired && (
+          <div
+            ref={selectArrowRef}
+            className={classNames('ff-select-arrows-wrapper', {
+              'ff-select-arrows-wrapper__disabled': disabled,
+            })}
+            onClick={handleIconClick}
           >
-            {required && (
-              <Typography
-                color="var(--$error-light)"
-                className="ff-select-label--required"
-              >
-                *
-              </Typography>
+            {showArrowIcon && (
+              <Icon
+                name="arrow_down"
+                className="ff-select-arrows"
+                height={8}
+                width={12}
+              />
             )}
-            {label}
           </div>
         )}
-        {optionsRequired && (
-          <Icon
-            name="arrow_up"
-            height={7}
-            width={12}
-            className={classNames('ff-select-arrow', {
-              'ff-select-arrow--down': isIconClick,
-              'ff-select-arrow--no-label': !showLabel,
+        {showLabel && (
+          <Typography
+            as="span"
+            className={classNames('ff-select-labels', {
+              'ff-select-labels__icon': showIcon,
+              'ff-select-labels__active': searchedText,
             })}
-            color={iconColor}
-          />
+            fontSize={searchedText || showDropdownOptions ? 10 : 12}
+            lineHeight={searchedText || showDropdownOptions ? '10px' : '12px'}
+            required={required}
+          >
+            {label}
+          </Typography>
         )}
-        <fieldset
-          className={classNames('ff-select-fieldset', {
-            'ff-select-fieldset--no-label': !showLabel,
-            'ff-select-fieldset--default': !isInputFocused,
-            'ff-select-fieldset--active': isInputFocused,
-            'ff-select-fieldset--option': applyActiveOptionClasses,
-            'ff-select-fieldset--error': errorMsg,
-            'ff-select-fieldset--border-radius': !borderRadius,
-            'ff-select-fieldset--no-border': !showBorder,
-          })}
-        >
-          {showLabel && (
-            <legend
-              className={classNames('ff-select-legend', {
-                'ff-select-legend--default': !isInputFocused,
-                'ff-select-legend--active': isInputFocused,
-                'ff-select-legend--option': applyActiveOptionClasses,
-                'ff-select-legend--error': errorMsg,
-              })}
-            >
-              {required && (
-                <Typography
-                  fontSize={8}
-                  color={'var(--$error-light)'}
-                  className="ff-select-legend--required"
-                >
-                  *
-                </Typography>
-              )}
-              {label}
-            </legend>
-          )}
-        </fieldset>
       </div>
-
-      {errorMsg && (
+      {(errorMsg || error) && (
         <Typography
-          className="ff-select-wrapper-error-text"
-          fontSize={8}
-          color={'var(--error-light)'}
+          as="div"
+          lineHeight="15px"
+          fontSize={10}
+          color="var(--error_light)"
+          className="ff-select-error-msg"
         >
           {errorMsg}
         </Typography>
       )}
 
       {optionsRequired && (
-        <div ref={DropDownRef}>
-          {showOptions &&
+        <div ref={DropdownRef}>
+          {showDropdownOptions &&
             createPortal(
               <Dropdown
+                options={selectOptionList}
+                dropdownPosition={dropdownPosition}
+                labelAccessor={labelAccessor}
+                optionZIndex={optionZIndex}
+                inputRef={inputRef}
+                selectArrowRef={selectArrowRef}
                 onSelectBlur={onSelectBlur}
                 onSelectOptionSelector={onSelectOptionSelector}
-                dropdownPosition={dropdownPosition}
-                options={options}
-                optionZIndex={optionZIndex}
-                inputRef={InputRef}
+                heightFromTop={height}
+                selectedOption={searchedText}
+                showIcon={showIcon}
+                showToolTip={showToolTip}
+                customReccurenece={customRecurrence}
+                onSaveModal={onSaveModal}
+                onCancelModal={() => {
+                  onCancelModal();
+                  setCustomRecurrence(false);
+                }}
+                modalJSXProps={modalJSXProps}
+                recurrence={recurrence}
+                valueAccessor={valueAccessor}
+                showArrowIcon={showArrowIcon}
               />,
               document.body
             )}

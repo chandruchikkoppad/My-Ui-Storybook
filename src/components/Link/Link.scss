@@ -1,0 +1,173 @@
+@use '../../assets/styles/fonts';
+@use '../../assets/styles/mixins';
+
+.ff-link-input-fieldset {
+  display: inline-block;
+  border: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  border: 1px solid var(--input-default-border-color);
+  border-radius: 4px;
+  outline: none;
+  line-height: 18px;
+  border-radius: 4px;
+  height: 32px;
+
+  &--disabled {
+    border: 1px solid var(--input-default-border-color);
+    background: var(--input-disabled-background-color);
+    border-radius: 4px;
+    opacity: 0.5;
+  }
+  .ff-link-input-container {
+    @include mixins.horizontal-space-between();
+    position: relative;
+    width: 100%;
+    display: flex;
+    .ff-link-input {
+      padding: 6px 8px;
+      border-top-right-radius: 4px;
+      margin-left: 2px;
+      border: none;
+      outline: none;
+      line-height: 18px;
+      width: 100%;
+      @extend .fontSm;
+      &--medium {
+        padding: 10px 9px;
+      }
+      &:disabled {
+        cursor: not-allowed;
+        border: none;
+        background: transparent;
+      }
+      &::placeholder {
+        opacity: 0;
+        @extend .fontXs;
+        line-height: 15px;
+      }
+      &--danger {
+        border-color: var(--input-error-text-color);
+      }
+      &--transparentBackground {
+        background: transparent;
+      }
+      &--no-border {
+        border: none;
+      }
+      &--placeholder {
+        &::placeholder {
+          opacity: 1;
+        }
+      }
+    }
+
+    .ff-link-input-label-container {
+      @extend .ff-link-input;
+      width: auto;
+      display: flex;
+      gap: 2px;
+      position: absolute;
+      border: none;
+      outline: none;
+      line-height: 18px;
+      margin-top: 1px;
+      transition: all 0.3s ease-in-out;
+      &--medium {
+        line-height: 25px;
+      }
+      .ff-link-input-label {
+        color: var(--input-default-label-color);
+        &--danger {
+          color: var(--input-error-text-color);
+        }
+        &--disabled {
+          color: var(--input-default-border-color);
+          background-color: var(--input-label-bg-color);
+        }
+      }
+
+      .required-asterisk {
+        color: var(--input-error-text-color);
+      }
+    }
+    &:hover {
+      .ff-link-input-label {
+        color: var(--input-default-label-color);
+        &--no-hover {
+          color: var(--input-default-label-color);
+        }
+        &--disabled {
+          color: var(--input-default-border-color);
+        }
+        &--danger {
+          color: var(--input-error-text-color);
+        }
+      }
+      .ff-link-input {
+        &--disabled {
+          background: transparent;
+        }
+      }
+    }
+    &:focus-within {
+      .ff-link-input-label-container {
+        top: -9px;
+        @extend .fontXs;
+        background-color: var(--input-label-bg-color);
+        line-height: 15px;
+        padding: 0px 2px;
+        margin-left: 10px;
+      }
+      .ff-link-input-label {
+        &--primary {
+          color: var(--brand-color);
+        }
+        &--danger {
+          color: var(--input-error-text-color);
+        }
+      }
+      .ff-link-input {
+
+        &::placeholder {
+          opacity: 1;
+          margin-bottom: 1px;
+        }
+      }
+      .input-link-link-icon {
+        width: 24px;
+        height: 24px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+    }
+
+    &--float {
+      .ff-link-input-label-container {
+        top: -9px;
+        font-size: 10px;
+        background-color: var(--input-label-bg-color);
+        line-height: 15px;
+        padding: 0px 2px;
+        margin-left: 10px;
+      }
+      &--disabled {
+        cursor: not-allowed;
+        .ff-link-input-label-container {
+          cursor: not-allowed;
+        }
+      }
+    }
+  }
+  .ff-link-input-message {
+    @extend .fontXs;
+    padding: 0px 4px;
+    margin-left: 8px;
+    line-height: 15px;
+    &--danger {
+      color: var(--input-error-text-color);
+    }
+  }
+}

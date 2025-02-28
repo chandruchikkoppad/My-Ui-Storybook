@@ -1,0 +1,37 @@
+.ff-view-step-group {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+
+    &__header {
+        padding: 4px 8px;
+        display: flex;
+        justify-content: space-between;
+        background-color: var(--arrows-button-border-color);
+
+        &_info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        &_link {
+            display: flex;
+            align-items: center;
+
+            &__line {
+                padding: 0px !important;
+            }
+        }
+    }
+
+    &__content {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+
+        &__item {
+            padding: 8px;
+            box-sizing: border-box;
+        }
+    }
+}

@@ -39,6 +39,21 @@ const calculateArcAngles = (
   const startAngle = currentAngle;
   const endAngle = startAngle + angleIncrement;
 
+  if (percentage === 1) {
+    const path = `
+      M ${radius} 0 
+      A ${radius} ${radius} 0 1 1 ${-radius} 0 
+      A ${radius} ${radius} 0 1 1 ${radius} 0 
+      Z
+    `;
+    return {
+      endAngle,
+      backgroundArcPath: path,
+      foregroundArcPath: path,
+      percentage,
+    };
+  }
+
   const path = calculateArc({
     x: 0,
     y: 0,
@@ -68,25 +83,48 @@ const PieChart: React.FC<PieChartProps> = ({
   chartBorder = false,
 }) => {
   const [tooltip, setTooltip] = useState<Tooltip | null>(null);
-  const [tooltipPosition, setTooltipPosition] = useState<{
-    x: number;
-    y: number;
-  }>({ x: 0, y: 0 });
+  const [tooltipPosition, setTooltipPosition] = useState<{ x: number; y: number }>({
+    x: 0,
+    y: 0,
+  });
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
-  const total = data.reduce((acc, item) => acc + item.value, 0);
+  const normalizedData = data.map((item) => {
+    let normalizedValue: number;
+    if (typeof item.value === 'string') {
+      const parsedValue = parseFloat(item.value);
+      normalizedValue = isNaN(parsedValue) ? 0 : parsedValue;
+    } else {
+      normalizedValue = item.value;
+    }
+    return {
+      ...item,
+      value: normalizedValue,
+      labelValue: Number.isInteger(normalizedValue)
+        ? item.value
+        : normalizedValue.toFixed(2),
+    };
+  });
+
+  const total = normalizedData.reduce((acc, item) => acc + item.value, 0);
+  const nonZeroCount = normalizedData.filter((item) => item.value > 0).length;
+  const isSingleSegment = nonZeroCount === 1;
+
   let currentAngle = -Math.PI / 2;
   const svgSize = 2 * (radius + 5);
 
   const chartData =
-    chartBorder && data.length > 0
+    chartBorder && normalizedData.length > 0
       ? [
           {
-            label: data[0]?.label || '',
-            value: data.slice(1).reduce((acc, item) => acc + item.value, 0),
+            label: normalizedData[0]?.label || '',
+            value: normalizedData
+              .slice(1)
+              .reduce((acc, item) => acc + item.value, 0),
           },
-          ...data.slice(1),
+          ...normalizedData.slice(1),
         ]
-      : data;
+      : normalizedData;
 
   const handleMouseMove = (e: React.MouseEvent) => {
     const { clientX: x, clientY: y } = e;
@@ -95,16 +133,37 @@ const PieChart: React.FC<PieChartProps> = ({
 
   const handleMouseEnter = (
     item: { label: string; value: number },
-    color: string
+    color: string,
+    index: number,
+    isLegend: boolean = false
   ) => {
-    setTooltip({ label: item.label, value: item.value, color });
+    if (isLegend) {
+      setHoveredIndex(index);
+    } else {
+      setTooltip({ label: item.label, value: item.value, color });
+    }
   };
 
   const handleMouseLeave = () => {
     setTooltip(null);
+    setHoveredIndex(null);
   };
-  const legendItems = chartData.map((item, index) => (
-    <div key={item.label} className="ff-pie-chart-legend-item">
+
+  const getSegmentStyle = (index: number): React.CSSProperties => ({
+    transform: hoveredIndex === index ? 'scale(1.1)' : 'scale(1)',
+    transition: 'transform 0.3s ease, opacity 0.3s ease',
+    opacity: hoveredIndex === null || hoveredIndex === index ? 1 : 0.5,
+  });
+
+  const legendItems = normalizedData.map((item, index) => (
+    <div
+      key={item.label}
+      className="ff-pie-chart-legend-item"
+      onMouseEnter={() =>
+        handleMouseEnter(item, colors[index % colors.length] || '', index, true)
+      }
+      onMouseLeave={handleMouseLeave}
+    >
       <Typography
         as="div"
         fontSize={24}
@@ -112,24 +171,65 @@ const PieChart: React.FC<PieChartProps> = ({
         lineHeight="36px"
         color={colors[index % colors.length] || ''}
       >
-        {item.value}
+        {item.labelValue}
       </Typography>
       <Typography
         as="div"
         fontSize={10}
         fontWeight="regular"
         lineHeight="18px"
-        className="ff-Pie-chart-legend-value"
+        className="ff-pie-chart-legend-value"
       >
         {item.label}
       </Typography>
     </div>
   ));
 
+  if (total === 0) {
+    const fullCirclePath = `M ${radius} 0 A ${radius} ${radius} 0 1 1 ${
+      -radius
+    } 0 A ${radius} ${radius} 0 1 1 ${radius} 0 Z`;
+    return (
+      <div className="ff-pie-chart-container" onMouseMove={handleMouseMove}>
+        <div
+          className={`${chartBorder ? 'ff-pie-chart-border' : ''}`}
+          style={{ width: svgSize, height: svgSize }}
+        >
+          <svg
+            width={svgSize}
+            height={svgSize}
+            viewBox={`0 0 ${svgSize} ${svgSize}`}
+          >
+            <g transform={`translate(${radius + 5}, ${radius + 5})`}>
+              <path
+                d={fullCirclePath}
+                fill="var(--tooltip-bg-color)"
+                stroke="white"
+                strokeWidth={0.5}
+                opacity={0.2}
+              />
+            </g>
+          </svg>
+        </div>
+
+        {tooltip && (
+          <div
+            className="ff-pie-chart-tooltip"
+            style={{ top: tooltipPosition.y, left: tooltipPosition.x }}
+          >
+            {tooltip.label} : {tooltip.value}
+          </div>
+        )}
+
+        <div className="ff-pie-chart-legend">{legendItems}</div>
+      </div>
+    );
+  }
+
   return (
     <div className="ff-pie-chart-container" onMouseMove={handleMouseMove}>
       <div
-        className={` ${chartBorder ? 'ff-pie-chart-border' : ''}`}
+        className={`${chartBorder ? 'ff-pie-chart-border' : ''}`}
         style={{ width: svgSize, height: svgSize }}
       >
         <svg
@@ -139,34 +239,64 @@ const PieChart: React.FC<PieChartProps> = ({
         >
           <g transform={`translate(${radius + 5}, ${radius + 5})`}>
             {chartData.map((item, index) => {
-              const { endAngle, backgroundArcPath } = calculateArcAngles(
-                item.value,
-                total,
-                currentAngle,
-                radius
-              );
-              currentAngle = endAngle;
-              const color = colors[index % colors.length] || '';
+              if (item.value > 0) {
+                const color = colors[index % colors.length] || '';
+                const { endAngle, backgroundArcPath } = calculateArcAngles(
+                  item.value,
+                  total,
+                  currentAngle,
+                  radius
+                );
+                currentAngle = endAngle;
 
-              return (
-                <g key={item.label}>
-                  <path
-                    d={backgroundArcPath}
-                    fill={color}
-                    stroke="white"
-                    strokeWidth={0.5}
-                    onMouseEnter={() => handleMouseEnter(item, color)}
-                    onMouseLeave={handleMouseLeave}
-                  />
-                  <text
-                    x={(radius / 2) * Math.cos((currentAngle + endAngle) / 2)}
-                    y={(radius / 2) * Math.sin((currentAngle + endAngle) / 2)}
-                    fill="white"
-                    textAnchor="middle"
-                    dominantBaseline="central"
-                  ></text>
-                </g>
-              );
+                if (isSingleSegment) {
+                  return (
+                    <g
+                      key={item.label}
+                      onMouseEnter={() => handleMouseEnter(item, color, index)}
+                      onMouseLeave={handleMouseLeave}
+                      style={getSegmentStyle(index)}
+                    >
+                      <path
+                        d={backgroundArcPath}
+                        fill={color}
+                        stroke="white"
+                        strokeWidth={0.5}
+                      />
+                      <line
+                        x1={0}
+                        y1={radius}
+                        x2={0}
+                        y2={0}
+                        stroke="white"
+                        strokeWidth={2}
+                      />
+                    </g>
+                  );
+                } else {
+                  return (
+                    <g key={item.label}>
+                      <path
+                        d={backgroundArcPath}
+                        fill={color}
+                        stroke="white"
+                        strokeWidth={0.5}
+                        onMouseEnter={() => handleMouseEnter(item, color, index)}
+                        onMouseLeave={handleMouseLeave}
+                        style={getSegmentStyle(index)}
+                      />
+                      <text
+                        x={(radius / 2) * Math.cos((currentAngle + endAngle) / 2)}
+                        y={(radius / 2) * Math.sin((currentAngle + endAngle) / 2)}
+                        fill="white"
+                        textAnchor="middle"
+                        dominantBaseline="central"
+                      ></text>
+                    </g>
+                  );
+                }
+              }
+              return null;
             })}
           </g>
         </svg>
@@ -175,11 +305,7 @@ const PieChart: React.FC<PieChartProps> = ({
       {tooltip && (
         <div
           className="ff-pie-chart-tooltip"
-          style={{
-            top: tooltipPosition.y,
-            left: tooltipPosition.x,
-            border: `2px solid ${tooltip.color}`,
-          }}
+          style={{ top: tooltipPosition.y, left: tooltipPosition.x }}
         >
           {tooltip.label} : {tooltip.value}
         </div>

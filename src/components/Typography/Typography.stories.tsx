@@ -14,6 +14,7 @@ type Story = StoryObj<typeof Typography>;
 
 export const Docs: Story = {
   args: {
+    required: false,
     children: 'Typography',
   },
 };
@@ -24,6 +25,7 @@ export const Regular12px: Story = {
     fontSize: '12px',
     as: 'h1',
     children: 'This is Regular text with 400 font weight and 12px font size.',
+    cursor: 'grabbing',
   },
 };
 
@@ -51,6 +53,7 @@ export const Bold14px: Story = {
     fontSize: '16px',
     as: 'h2',
     children: 'This is Bold text with 700 font weight and 16px font size.',
+    required: true,
   },
 };
 

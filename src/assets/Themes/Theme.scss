@@ -1,5 +1,6 @@
 @use './BaseTheme' as base;
 @use './DarkTheme' as dark;
+@use './BlueTheme' as blueTheme;
 
 @mixin set-theme-variables($theme-map) {
   @each $key, $value in $theme-map {
@@ -13,4 +14,8 @@
 
 .ff-dark-theme {
   @include set-theme-variables(dark.$dark-theme);
+}
+
+.ff-blue-theme {
+  @include set-theme-variables(blueTheme.$blue-theme);
 }

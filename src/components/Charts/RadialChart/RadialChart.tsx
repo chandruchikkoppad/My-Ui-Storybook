@@ -6,6 +6,7 @@ import {
   ArcResult,
   ArcAnglesResult,
 } from './types';
+import Tooltip from '../../Tooltip';
 
 const useColorMappings = () =>
   useMemo(() => {
@@ -117,54 +118,59 @@ const RadialChart: React.FC<RadialChartProps> = ({
           calculateArcAngles(status.value, total, currentAngle, radius);
         currentAngle = endAngle;
         return (
-          <svg
-            key={status.status}
-            width={svgSize}
-            height={svgSize}
-            viewBox={`0 0 ${svgSize} ${svgSize}`}
-            onClick={() => onClick(status)}
-            role="img"
-            aria-label={`${status.status}: ${Math.round(percentage * 100)}%`}
+          <Tooltip
+            title={`${status.status}: ${Math.round(percentage * 100)}%`}
+            zIndex={1000}
           >
-            <g
-              transform={`translate(${radius + lineWidth}, ${
-                radius + lineWidth
-              })`}
+            <svg
+              key={status.status}
+              width={svgSize}
+              height={svgSize}
+              viewBox={`0 0 ${svgSize} ${svgSize}`}
+              onClick={() => onClick(status)}
+              role="img"
+              aria-label={`${status.status}: ${Math.round(percentage * 100)}%`}
             >
-              {/* Background Circle */}
-              <path
-                d={backgroundArcPath}
-                fill="none"
-                stroke={
-                  backgroundColorMapping[
-                    normalizedStatus as keyof typeof colorMapping
-                  ]
-                }
-                strokeWidth={lineWidth}
-              />
-              {/* Status Arc */}
-              <path
-                d={foregroundArcPath}
-                fill="none"
-                stroke={
-                  colorMapping[normalizedStatus as keyof typeof colorMapping]
-                }
-                strokeWidth={lineWidth}
-              />
-              {/* Percentage Text */}
-              <text
-                x="0"
-                y="0"
-                fill={
-                  colorMapping[normalizedStatus as keyof typeof colorMapping]
-                }
-                textAnchor="middle"
-                dominantBaseline="central"
+              <g
+                transform={`translate(${radius + lineWidth}, ${
+                  radius + lineWidth
+                })`}
               >
-                {`${Math.round(percentage * 100)}%`}
-              </text>
-            </g>
-          </svg>
+                {/* Background Circle */}
+                <path
+                  d={backgroundArcPath}
+                  fill="none"
+                  stroke={
+                    backgroundColorMapping[
+                      normalizedStatus as keyof typeof colorMapping
+                    ]
+                  }
+                  strokeWidth={lineWidth}
+                />
+                {/* Status Arc */}
+                <path
+                  d={foregroundArcPath}
+                  fill="none"
+                  stroke={
+                    colorMapping[normalizedStatus as keyof typeof colorMapping]
+                  }
+                  strokeWidth={lineWidth}
+                />
+                {/* Percentage Text */}
+                <text
+                  x="0"
+                  y="0"
+                  fill={
+                    colorMapping[normalizedStatus as keyof typeof colorMapping]
+                  }
+                  textAnchor="middle"
+                  dominantBaseline="central"
+                >
+                  {`${Math.round(percentage * 100)}%`}
+                </text>
+              </g>
+            </svg>
+          </Tooltip>
         );
       })}
     </div>

@@ -1,30 +1,54 @@
 @use '../../assets/styles/fonts';
+@use '../../assets/styles/mixins';
 
 .ff-textarea-container {
   display: flex;
   flex-direction: column;
   position: relative;
   gap: 5px;
+
   @extend .fontSm;
+
   .msg-character-count {
     @extend .font-size-8;
     display: flex;
     color: var(--text-area-default-color);
     justify-content: flex-end;
+    height: 18px;
+  }
+  .ff-textarea-error-alignment {
+    display: flex;
+    color: var(--text-area-default-color);
+    justify-content: space-between;
+    padding-left: 10px;
+    height: 18px;
+  }
+  .ff-textarea-error-text {
+    color: var(--ff-error-light);
+  }
+  .ff-textarea-character-count {
+    @include mixins.center-vertical();
   }
   .ff-textarea {
     padding: 8px;
-    width: 100%;
-    min-height: 80px;
     gap: 0px;
     border: 1px solid var(--default-icon-color);
     border-radius: 4px;
     outline: none;
+    @extend .fontSm;
     line-height: 18px;
     font-weight: 400;
+    overflow: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+
+    ::-webkit-scrollbar {
+      display: none;
+    }
     &--resize {
       resize: none;
     }
+
     &:disabled {
       opacity: 0.5;
       cursor: not-allowed;
@@ -33,12 +57,15 @@
         color: inherit;
       }
     }
+
     &::placeholder {
       opacity: 0;
     }
+
     &--danger {
-      border-color: var(--error_light);
+      border-color: var(--ff-error-light);
     }
+
     &--transparentBackground {
       background: transparent;
     }
@@ -54,28 +81,29 @@
     transition: all 0.3s ease-in-out;
 
     .ff-textarea-label {
-      padding: 1px;
       height: 10px;
       width: auto;
       background-color: var(--drawer-footer-bg);
       color: var(--text-area-default-color);
       &--danger {
-        color: var(--error_light);
+        color: var(--ff-error-light);
       }
     }
 
     .required-asterisk {
-      color: var(--error_light);
+      color: var(--ff-error-light);
     }
   }
+
   &:hover {
     .ff-textarea-label {
       color: var(--text-color);
     }
     .ff-textarea {
-      border-color: var(--text-color);
+      border-color: var(--toggle-strip-active);
     }
   }
+
   &:focus-within {
     .ff-textarea-label-container {
       font-weight: 400;
@@ -83,16 +111,18 @@
       letter-spacing: 0.5px;
       text-align: left;
       top: -6px;
-      @extend .font-size-8;
+      @extend .font-size-10;
       background-color: transparent;
       padding: 0px 2px;
       margin-left: 7px;
     }
+
     .ff-textarea-label {
       &--primary {
         color: var(--brand-color);
       }
     }
+
     .ff-textarea {
       &--primary {
         border-color: var(--brand-color);
@@ -101,7 +131,7 @@
       &::placeholder {
         opacity: 1;
         margin-bottom: 1px;
-        @extend .font-size-8;
+        @extend .font-size-10;
       }
     }
   }
@@ -112,7 +142,7 @@
     margin-left: 8px;
     line-height: 12px;
     &--danger {
-      color: var(--error_light);
+      color: var(--ff-error-light);
     }
   }
 
@@ -120,13 +150,14 @@
     .ff-textarea-label-container {
       letter-spacing: 0.5px;
       top: -6px;
-      @extend .font-size-8;
+      @extend .font-size-10;
       background-color: transparent;
       line-height: 12px;
       padding: 0px 2px;
       margin-left: 7px;
     }
   }
+
   &--disabled {
     &:hover {
       .ff-textarea-label {

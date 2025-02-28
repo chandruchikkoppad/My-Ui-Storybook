@@ -73,17 +73,14 @@ $error_light: #e42525;
 $text-area-border-hover: #1e161f;
 $text-area-border-color: #a3a3a3;
 $default-color: #747474;
-
 ///!-----------------------------------------------------------------------------------------------------
-
-
 
 $description-text: #d9d9d9;
 $ff-success: #079455;
 $ff-warning: #f79009;
 $ff-error-light: #e42525;
 $ff-chips-fill-color: #f9d5ff;
-$ff-chips-blur-color: #575757;
+$ff-chips-blur-color: #5757571A;
 $hovered-add-button-color: #fce9ff; // TODO: Change the color variable name
 $arrows-button-border-color: #ded1e5; // TODO: Change the color variable name
 $add-icon-hover-color: #431b4a; ////TODO: color need to be add into style guide
@@ -96,6 +93,12 @@ $file-dropzone-default-color: #71347b1a;
 $file-dropzone-selected-color: #71347b33;
 $file-details-container-shadow: #1e161f29;
 $file-details-bg: #ffffff;
+
+$variable-dropdown-bg: #ffffff;
+
+$dataset-tooltip-title: #808080;
+$dataset-tooltip-value: #ffffff;
+$line-chart-data: #4c90ff;
 
 :root {
   --tooltip-bg-color: #{$tooltip-bg-color};
@@ -120,7 +123,7 @@ $file-details-bg: #ffffff;
   --status-percentage-growth-bg-color: #ecedf8; // Todo:Change the color variable name
   --primary-icon-color: #{$primary-button-text-color};
   --secondary-icon-color: #71347b;
-  --description-text-color:#{$description-text};
+  --description-text-color: #{$description-text};
   --expandable-menu-default-bg: #{$expandable-menu-default-bg}; // TODO: Change the color variable name
   --expandable-menu-option-bg: #{$expandable-menu-option-bg}; // TODO: Change the color variable name
   --text-color: #{$text-color};
@@ -143,6 +146,9 @@ $file-details-bg: #ffffff;
   --add-icon-hover-color: #{$add-icon-hover-color}; // TODO: Change the color variable name
   --arrows-button-border-color: #{$arrows-button-border-color}; // TODO: Change the color variable name
   --arrow-button-bg-color: #{$arrow-button-bg-color}; // TODO: Change the color variable name
-  --text-bg-highlight:#{$text-bg-highlight};
+  --text-bg-highlight: #{$text-bg-highlight};
   --slider-table-color: #{$slider-table-color};
+  --variable-dropdown-bg: #($variable-dropdown-bg);
+  --dataset-tooltip-title: #($dataset-tooltip-title),
+    --dataset-tooltip-value: #($dataset-tooltip-value);
 }

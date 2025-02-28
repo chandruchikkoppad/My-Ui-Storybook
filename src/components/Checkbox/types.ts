@@ -27,4 +27,12 @@ export interface CheckboxProps {
    * For partially checked checkbox
    */
   partial?: boolean;
+  /**
+   * For variant color
+   */
+  variant?: 'passed' | 'failed' | 'warning' | 'skipped' | 'flaky';
+ /**
+   * For default hover
+   */
+  isDefaultHover?:boolean;
 }

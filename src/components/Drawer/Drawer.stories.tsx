@@ -1,8 +1,9 @@
+import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import Drawer from './Drawer';
 import { useState } from 'react';
 import Button from '../Button';
-
+import Icon from '../Icon';
 const meta: Meta<typeof Drawer> = {
   title: 'Components/Drawer',
   component: Drawer,
@@ -11,15 +12,15 @@ const meta: Meta<typeof Drawer> = {
   },
   tags: ['autodocs'],
 };
-
 export default meta;
-
 type Story = StoryObj<typeof Drawer>;
 const defaultArgs = {
   isOpen: true,
   title: 'Drawer Title',
   showEditButton: false,
+  showTransition: true,
   _isExpanded: false,
+  showHeader: true,
   onClose: () => {},
   primaryButtonProps: {
     label: 'Create',
@@ -49,39 +50,165 @@ const defaultArgs = {
   overlay: false,
   isFooterRequired: true,
   footerContent: null,
+  backButtonIcon: <Icon name="error" height={16} width={16} />,
+  onCloseIconClick: () => alert('Close icon clicked!'),
 };
-
 export const Default: Story = {
   args: {
     ...defaultArgs,
     size: 'medium',
+    showHeader: true,
   },
 };
-
+export const WithoutHeader: Story = {
+  args: {
+    ...defaultArgs,
+    showHeader: false,
+    size: 'medium',
+  },
+  parameters: {
+    docs: { disable: true },
+  },
+};
+export const WithCustomHeader: Story = {
+  args: {
+    ...defaultArgs,
+    customHeader: (
+      <div>
+        <h3>My Custom Header</h3>
+      </div>
+    ),
+  },
+  parameters: {
+    docs: { disable: true },
+  },
+};
+export const WithCustomFooter: Story = {
+  args: {
+    ...defaultArgs,
+    customFooter: (
+      <div>
+        <h3>My Custom Footer</h3>
+      </div>
+    ),
+  },
+  parameters: {
+    docs: { disable: true },
+  },
+};
+export const WithTertiaryButtons: Story = {
+  args: {
+    ...defaultArgs,
+    leftTertiaryButtonProps: {
+      label: 'Help',
+      onClick: () => {},
+    },
+    rightTertiaryButtonProps: {
+      label: 'More Info',
+      onClick: () => {},
+    },
+  },
+  parameters: {
+    docs: { disable: true },
+  },
+};
+export const WithCustomZIndex: Story = {
+  args: {
+    ...defaultArgs,
+    zIndex: 1050,
+  },
+  parameters: {
+    docs: { disable: true },
+  },
+};
 export const Controlled: Story = {
   render: () => {
-    const [showModal, setShowModal] = useState(false);
+    const [showXLDrawer, setShowXLDrawer] = useState(false);
+    const [showLargeDrawer, setShowLargeDrawer] = useState(false);
+    const [showMediumDrawer, setShowMediumDrawer] = useState(false);
+    const [showSmallDrawer, setShowSmallDrawer] = useState(false);
 
     return (
       <>
-        <div>
-          <Button
-            onClick={() => setShowModal(true)}
-            label="show modal"
-            variant="primary"
-            disabled={false}
-          />
-        </div>
-        <Drawer
-          {...defaultArgs}
-          isOpen={showModal}
-          onClose={() => setShowModal(false)}
-          isFooterRequired={true}
-          _isExpanded={false}
-          size="medium"
-        >
-          <span>Drawer body</span>
-        </Drawer>
+        <Button
+          onClick={() => setShowXLDrawer(true)}
+          label="Show X-Large Drawer"
+          variant="primary"
+        />
+        {showXLDrawer && (
+          <Drawer
+            {...defaultArgs}
+            isOpen={showXLDrawer}
+            onClose={() => setShowXLDrawer(false)}
+            isFooterRequired
+            _isExpanded={false}
+            size="x-large"
+            overlay
+            onCloseIconClick={() => setShowXLDrawer(false)}
+          >
+            <span>Drawer Body XL</span>
+            <Button
+              onClick={() => setShowLargeDrawer(true)}
+              label="Show Large Drawer"
+              variant="primary"
+            />
+          </Drawer>
+        )}
+
+        {showLargeDrawer && (
+          <Drawer
+            {...defaultArgs}
+            isOpen={showLargeDrawer}
+            onClose={() => setShowLargeDrawer(false)}
+            isFooterRequired
+            _isExpanded={false}
+            size="large"
+            overlay
+            onCloseIconClick={() => setShowLargeDrawer(false)}
+          >
+            <span>Drawer Body Large</span>
+            <Button
+              onClick={() => setShowMediumDrawer(true)}
+              label="Show Medium Drawer"
+              variant="primary"
+            />
+          </Drawer>
+        )}
+
+        {showMediumDrawer && (
+          <Drawer
+            {...defaultArgs}
+            isOpen={showMediumDrawer}
+            onClose={() => setShowMediumDrawer(false)}
+            isFooterRequired
+            _isExpanded={false}
+            size="medium"
+            overlay
+            onCloseIconClick={() => setShowMediumDrawer(false)}
+          >
+            <span>Drawer Body Medium</span>
+            <Button
+              onClick={() => setShowSmallDrawer(true)}
+              label="Show Small Drawer"
+              variant="primary"
+            />
+          </Drawer>
+        )}
+
+        {showSmallDrawer && (
+          <Drawer
+            {...defaultArgs}
+            isOpen={showSmallDrawer}
+            onClose={() => setShowSmallDrawer(false)}
+            isFooterRequired
+            _isExpanded={false}
+            size="small"
+            onCloseIconClick={() => setShowSmallDrawer(false)}
+            overlay
+          >
+            <span>Drawer Body Small</span>
+          </Drawer>
+        )}
       </>
     );
   },

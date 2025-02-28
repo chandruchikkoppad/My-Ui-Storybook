@@ -4,7 +4,6 @@ export const isFunction = (functionToCheck: any) => {
   );
 };
 
-
 export const convertTo24Hour = (time12h: string): string => {
   const [time, modifier] = time12h.split(' ');
   if (!time || !modifier) return '00:00';
@@ -40,3 +39,58 @@ export const isValid12HourTime = (timeString: string): boolean => {
   const regex = /^(0[1-9]|1[0-2]):([0-5][0-9])(?:\s?(AM|PM))?$/i;
   return regex.test(timeString);
 };
+
+// Utility to normalize memory values to bytes
+export const UNIT_MULTIPLIERS: Record<string, number> = {
+  B: 1,
+  KB: 1024,
+  MB: 1024 * 1024,
+  GB: 1024 * 1024 * 1024,
+};
+
+// Parses a storage value string and converts it into a normalized value in bytes along with its unit.
+export function normalizeStorageValue(value: string): {
+  normalizedValue: number;
+  unit: string;
+  value: number;
+} {
+  const match = value.match(/^(\d+(?:\.\d+)?)\s*(B|KB|MB|GB)$/i);
+  if (!match) {
+    throw new Error(`Invalid storage value format: ${value}`);
+  }
+
+  const [, numericPart, unit] = match;
+  // Ensure numericPart and unit are defined
+  if (!numericPart || !unit) {
+    throw new Error(`Invalid storage value format: ${value}`);
+  }
+
+  const normalizedValue =
+    parseFloat(numericPart) * (UNIT_MULTIPLIERS[unit.toUpperCase()] || 1);
+
+  return {
+    normalizedValue,
+    unit: unit.toUpperCase(),
+    value: parseFloat(numericPart),
+  };
+}
+
+// Converts a byte value into a readable string with the largest appropriate unit (GB, MB, KB, B).
+export function formatMemoryValue(valueInBytes: number): string {
+  const units = ['GB', 'MB', 'KB', 'B'];
+
+  for (const unit of units) {
+    const factor = UNIT_MULTIPLIERS[unit];
+    if (factor === undefined) {
+      throw new Error(`Missing factor for unit: ${unit}`);
+    }
+
+    if (valueInBytes >= factor || unit === 'B') {
+      const normalizedValue = valueInBytes / factor;
+      const formattedValue = normalizedValue % 1 === 0 ? `${normalizedValue.toFixed(0)}` : `${normalizedValue.toFixed(2)}`;
+      return `${formattedValue} ${unit}`;
+    }
+  }
+  return `${valueInBytes} B`;
+}
+

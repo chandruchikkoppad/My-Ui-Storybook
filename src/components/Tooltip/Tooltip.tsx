@@ -17,6 +17,7 @@ const Tooltip: React.FC<TooltipProps> = ({
   children,
   placement = 'bottom',
   disabled = false,
+  style = {},
 }) => {
   const [isVisible, setIsVisible] = useState(false);
   const titleRef: TitleRef = useRef(null);
@@ -39,11 +40,11 @@ const Tooltip: React.FC<TooltipProps> = ({
   const currentTheme = themeContext?.currentTheme;
   const styles: Position = {
     left: {
-      top: posY,
+      top: posY - 1,
       left: posX - titleWidth - 5,
     },
     right: {
-      top: posY,
+      top: posY - 1,
       left: fromRight + 5,
     },
     top: {
@@ -169,6 +170,7 @@ const Tooltip: React.FC<TooltipProps> = ({
       className={classNames('ff-tooltip-container', currentTheme)}
       onMouseEnter={() => setIsVisible(true)}
       onMouseLeave={() => setIsVisible(false)}
+      style={style}
     >
       {children}
 
@@ -178,7 +180,7 @@ const Tooltip: React.FC<TooltipProps> = ({
         createPortal(
           <div
             ref={titleRef}
-            style={styles[placement]}
+            style={{ ...styles[placement] }}
             className={classNames('ff-tooltip', currentTheme, {
               'ff-tooltip--visible': isVisible,
             })}

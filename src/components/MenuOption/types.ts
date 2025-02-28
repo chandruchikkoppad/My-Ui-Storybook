@@ -1,26 +1,32 @@
+import { ReactNode } from 'react';
+
 interface OptionClick {
   /**
    * The label displayed for the option.
    * @type {string}
    * @required
    */
-  label: string;
+  label: string | ReactNode;
 
   /**
    * The value(s) associated with the option, which can be a single string or an array of strings.
    * @type {Array<string> | string}
    * @required
    */
-  value: Array<string> | string;
+  value: any;
 }
 
 interface OptionType extends OptionClick {
   /**
    * The name of the icon associated with the option.
    * @type {string}
-   * @required
+   * @optional
    */
-  icon: string;
+  icon?: string;
+
+  iconColor?: string;
+
+  name?: string | ReactNode;
 
   /**
    * Indicates whether the option is disabled.
@@ -28,6 +34,12 @@ interface OptionType extends OptionClick {
    * @optional
    */
   disable?: boolean;
+   /**
+   * To hide the option.
+   * @type {boolean}
+   * @optional
+   */
+  hide?: boolean;
 }
 
 interface OptionCardProps {
@@ -40,11 +52,11 @@ interface OptionCardProps {
 
   /**
    * Callback function triggered when an option is clicked.
-   * @param {any} data - The data associated with the clicked option.
+   * @param {OptionClick} data - The data associated with the clicked option.
    * @type {function}
    * @required
    */
-  onClick: (data?: any) => void;
+  onClick: (data: OptionClick) => void;
 
   /**
    * Optional styles applied to the card.
@@ -52,6 +64,48 @@ interface OptionCardProps {
    * @optional
    */
   styles?: React.CSSProperties;
+
+  /**
+   * The z-index of the option card.
+   * @type {number}
+   * @optional
+   */
+  zIndex?: number;
+
+  /**
+   * The position of the menu relative to the triggering element.
+   * @type {dropdownPosition}
+   * @required
+   */
+  menuPosition: any;
+
+  /**
+   * Reference to the menu DOM element.
+   * @type {React.RefObject<HTMLElement>}
+   * @required
+   */
+  menuRef: React.RefObject<HTMLElement>;
+
+  /**
+   * Callback function to close the dropdown.
+   * @type {() => void}
+   * @required
+   */
+  closeDropdown: () => void;
+
+  /**
+   * Placement of the dropdown menu relative to the icon.
+   * @type {dropdownPosition}
+   * @optional
+   */
+  dropdownPlacement?: 'top' | 'down' | 'left' | 'right';
+  /**
+   * Variant for backgroung color of options card.
+   * @type {string}
+   * @optional
+   */
+  variant?: 'primary' | 'default';
+  isAddResourceButton?: boolean;
 }
 
 interface MenuOptionProps {
@@ -100,14 +154,22 @@ interface MenuOptionProps {
 
   /**
    * The placement of the dropdown menu relative to the icon.
-   * @type {'top' | 'left' | 'right' | 'bottom'}
+   * @type {dropdownPosition}
    * @optional
    */
-  dropdownPlacement?: string | 'top' | 'left' | 'right' | 'down';
+  dropdownPlacement?: 'top' | 'down' | 'left' | 'right';
+
+  /**
+   * The variant of the menu option, either 'dark' or 'light'.
+   * @type {'dark' | 'light'}
+   * @default 'light'
+   * @optional
+   */
+  variant?: 'dark' | 'light';
 
   /**
    * Callback function triggered when the icon is clicked.
-   * @type {function}
+   * @type {() => void}
    * @optional
    */
   onClick?: () => void;
@@ -115,10 +177,11 @@ interface MenuOptionProps {
   /**
    * Callback function triggered when an option is clicked.
    * @param {OptionClick} option - The option that was clicked.
-   * @type {function}
+   * @type {(option: OptionClick) => void}
    * @optional
    */
   onOptionClick?: (option: OptionClick) => void;
+
   /**
    * The size of the icon button.
    * @type {number}
@@ -134,11 +197,33 @@ interface MenuOptionProps {
   iconSize?: number;
 
   /**
-   * The border radius of the icon.
+   * The border radius of the icon button.
    * @type {number}
    * @default 7
    */
   iconButtonBorderRadius?: number;
+
+  /**
+   * Providing z-index for the options card.
+   * @type {number}
+   * @optional
+   */
+  zIndex?: number;
+  /**
+   * Variant for backgroung color of options card.
+   * @type {string}
+   * @optional
+   */
+  optionCardVariant?: 'primary' | 'default';
+  targetRef?: string | React.RefObject<HTMLElement> | null;
+  treeRowRef?: React.RefObject<HTMLDivElement | null>;
+  isAddResourceButton?: boolean;
+  /**
+   * to enable or disable the options card.
+   * @type {boolean}
+   * @optional
+   */
+  disabled?: boolean;
 }
 
 interface OptionProps {
@@ -152,7 +237,7 @@ interface OptionProps {
   /**
    * Callback function triggered when the option is clicked.
    * @param {OptionClick} option - The clicked option.
-   * @type {function}
+   * @type {(option: OptionClick) => void}
    * @required
    */
   onClick: (option: OptionClick) => void;

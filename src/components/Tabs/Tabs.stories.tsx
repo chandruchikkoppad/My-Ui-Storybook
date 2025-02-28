@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import Tabs from './Tabs';
 import Typography from '../Typography';
@@ -39,35 +39,53 @@ const TabContentFour = () => (
   </div>
 );
 
+const tabsData = [
+  { id: 'tab-1', label: 'Tab--1', component: <TabContentOne />, count: '02' },
+  { id: 'tab-2', label: 'Tab--2', component: <TabContentTwo />, count: 35 },
+  { id: 'tab-3', label: 'Tab--3', component: <TabContentThree />, count: 205 },
+];
+
 export const DefaultTabs: Story = {
   render: () => {
-    const [activeTabIdDefault, setActiveTabIdDefault] = useState<string>('0');
-
-    const tabsData = [
-      { label: 'Tab--1', component: <TabContentOne /> },
-      { label: 'Tab--2', component: <TabContentTwo /> },
-      { label: 'Tab--3', component: <TabContentThree /> },
-    ];
+    const [activeTabIdDefault, setActiveTabIdDefault] =
+      useState<string>('tab-1');
 
     return (
-      <Tabs
-        tabsData={tabsData}
-        activeTabId={activeTabIdDefault}
-        onTabClick={setActiveTabIdDefault}
-      />
+        <Tabs
+          tabsData={tabsData}
+          activeTabId={activeTabIdDefault}
+          onTabClick={setActiveTabIdDefault}
+        />
     );
   },
 };
 export const CapsuleTabs: Story = {
   render: () => {
-    const [activeTabIdCapsule, setActiveTabIdCapsule] = useState<string>('0');
+    const [activeTabIdCapsule, setActiveTabIdCapsule] =
+      useState<string>('tab-1');
 
     const tabsDataForCapsule = [
-      { label: 'Loremipsum_1', component: <TabContentOne /> },
-      { label: 'Loremipsum_2', component: <TabContentTwo /> },
-      { label: 'Loremipsum_3', component: <TabContentThree /> },
-      { label: 'Loremipsum_4', component: <TabContentFour /> },
-      { label: 'Loremipsum_5', component: <TabContentFour /> },
+      {
+        id: 'tab-1',
+        label: 'Loremipsum_1',
+        component: <TabContentOne />,
+      },
+      {
+        id: 'tab-2',
+        label: 'Loremipsum_2',
+        component: <TabContentTwo />,
+      },
+      {
+        id: 'tab-3',
+        label: 'Loremipsum_3',
+        component: <TabContentThree />,
+      },
+      {
+        id: 'tab-4',
+        label: 'Loremipsum_4',
+        component: <TabContentFour />,
+      },
+      { id: 'tab-5', label: 'Loremipsum_5', component: <TabContentFour /> },
     ];
 
     return (
@@ -83,12 +101,17 @@ export const CapsuleTabs: Story = {
 
 export const TabsWithDisabledTab: Story = {
   render: () => {
-    const [activeTabId, setActiveTabId] = useState<string>('0');
+    const [activeTabId, setActiveTabId] = useState<string>('tab-1');
 
     const tabsDataWithOneDisableAttribute = [
-      { label: 'Tab--1', component: <TabContentOne /> },
-      { label: 'Tab--2', component: <TabContentTwo />, disabled: true },
-      { label: 'Tab--3', component: <TabContentThree /> },
+      { id: 'tab-1', label: 'Tab--1', component: <TabContentOne /> },
+      {
+        id: 'tab-2',
+        label: 'Tab--2',
+        component: <TabContentTwo />,
+        disabled: true,
+      },
+      { id: 'tab-3', label: 'Tab--3', component: <TabContentThree /> },
     ];
 
     return (
@@ -103,13 +126,8 @@ export const TabsWithDisabledTab: Story = {
 
 export const WithoutBorder: Story = {
   render: () => {
-    const [activeTabIdDefault, setActiveTabIdDefault] = useState<string>('0');
-
-    const tabsData = [
-      { label: 'Tab--1', component: <TabContentOne /> },
-      { label: 'Tab--2', component: <TabContentTwo /> },
-      { label: 'Tab--3', component: <TabContentThree /> },
-    ];
+    const [activeTabIdDefault, setActiveTabIdDefault] =
+      useState<string>('tab-1');
 
     return (
       <div style={{ display: 'flex', gap: '10px' }}>
@@ -126,6 +144,32 @@ export const WithoutBorder: Story = {
           activeTabId={activeTabIdDefault}
           onTabClick={setActiveTabIdDefault}
           noBorder={true}
+        />
+      </div>
+    );
+  },
+};
+
+export const WithoutPadding: Story = {
+  render: () => {
+    const [activeTabIdDefault, setActiveTabIdDefault] =
+      useState<string>('tab-1');
+
+    return (
+      <div style={{ display: 'flex', gap: '10px' }}>
+        <Tabs
+          tabsData={tabsData}
+          activeTabId={activeTabIdDefault}
+          onTabClick={setActiveTabIdDefault}
+          noPadding={true}
+        />{' '}
+        <hr />
+        <Tabs
+          variant="capsule"
+          tabsData={tabsData}
+          activeTabId={activeTabIdDefault}
+          onTabClick={setActiveTabIdDefault}
+          noPadding={true}
         />
       </div>
     );

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import ffid from './ffid'; // Adjust the import path if needed
+import { ffid } from './ffid'; // Adjust the import path if needed
 import { useState } from 'react';
 
 const meta: Meta<typeof ffid> = {

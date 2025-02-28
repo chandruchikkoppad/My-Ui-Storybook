@@ -14,7 +14,6 @@
 
     /* Emit */
     "declaration": true /* Generate .d.ts files from TypeScript and JavaScript files in your project. */,
-    // "emitDeclarationOnly": true /* Only output d.ts files and not JavaScript files. */,
     "sourceMap": true /* Create source map files for emitted JavaScript files. */,
     "outDir": "lib" /* Specify an output folder for all emitted files. */,
     "declarationDir": "lib" /* Specify the output directory for generated declaration files. */,
@@ -35,18 +34,12 @@
 
     /* Completeness */
     "skipLibCheck": true /* Skip type checking all .d.ts files. */,
-    "types": ["vite-plugin-svgr/client"],
-    "noEmit": true
-
-    // Path alias
-    // "paths": {
-    //   "@components": ["./src/components/"],
-    //   "@styles": ["./src/assets/styles/"],
-    //   "@icons": ["./src/assets/icons/"],
-    //   "@/*": ["./src/*"]
-    // }
+    "types": [
+      "vite-plugin-svgr/client"
+    ] /* Ensure SVGR typings are available */,
+    "noEmit": false /* Ensure that output files are emitted */,
+    "resolveJsonModule": true
   },
-
   "include": ["src"],
-  "exclude": ["node_modules", "lib"]
+  "exclude": ["node_modules", "lib", "**/*.stories.tsx"]
 }

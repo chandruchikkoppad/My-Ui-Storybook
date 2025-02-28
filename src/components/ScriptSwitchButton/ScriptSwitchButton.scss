@@ -1,0 +1,33 @@
+/* Container Styling */
+.ff-script-switch-container {
+  display: flex;
+  background-color: var(--base-bg-color);
+  height: 24px;
+  width: 48px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  align-items: center;
+  justify-content: center;
+
+  /* Button Styling */
+  .ff-script-switch-button {
+    padding: 0.1px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.3s ease;
+
+    /* Button Hover Effect */
+    &:hover {
+      background-color: var(--hover-color);
+      color: var(--brand-color);
+    }
+  }
+
+  /* Active Button */
+  .ff-script-switch-button.active {
+    background-color: var(--ff-line-number-bg);
+    color: var(--base-bg-color);
+  }
+}

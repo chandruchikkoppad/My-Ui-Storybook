@@ -1,3 +1,4 @@
+import { ReactNode } from 'react';
 import { checkEmpty } from '../../utils/checkEmpty/checkEmpty';
 
 /**
@@ -13,7 +14,7 @@ export interface DirectionalArrow {
   menuOptions: {
     label: string;
     value: string | string[];
-    icon: string;
+    icon?: string;
     disable?: boolean;
   }[];
 }
@@ -33,15 +34,21 @@ export interface AddResourceButtonProps {
     /**
      * direction option: 'top' | 'right' | 'down'
      */
-    direction: string | 'top' | 'right' | 'down';
+    direction: string;
     menuOptions: {
       label: string;
       value: string | string[];
-      icon: string;
+      icon?: string;
       disable?: boolean;
     }[];
   }[];
   zIndex?: number;
+  treeRowRef?: React.RefObject<HTMLDivElement | null>;
+  menuOptionZIndex?: number;
+  onMenuOptionClick?: (option: {
+    label: string | ReactNode;
+    value: any;
+  }) => void;
 }
 
 /**
@@ -53,16 +60,22 @@ export interface AddResourceButtonProps {
  * @property {boolean} isActive - Specifies if the button is in an active state (highlighted when selected).
  */
 export interface DirectionalArrowButtonProps {
-  direction: string | 'top' | 'right' | 'down';
+  direction: 'top' | 'right' | 'down';
   menuOptions: {
     label: string;
     value: string | string[];
-    icon: string;
+    icon?: string;
     disable?: boolean;
   }[];
   onArrowClick: () => void;
+  onMenuOptionClick?: (option: {
+    label: string | ReactNode;
+    value: any;
+  }) => void;
   isActive: boolean;
   variant?: 'primary' | 'secondary';
+  treeRowRef?: React.RefObject<HTMLDivElement | null>;
+  menuOptionZIndex?: number;
 }
 
 /**

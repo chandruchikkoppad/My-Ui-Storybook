@@ -1,0 +1,57 @@
+@use '../../assets/styles/mixins';
+.ff-prompt-container-Block {
+  position: relative;
+  padding-bottom: 32px;
+  background: transparent;
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+  .ff--prompt-header {
+    @include mixins.end-content();
+
+    .ff-prompt-number-bg-color {
+      @include mixins.center-content();
+      width: 24px;
+      height: 24px;
+      background: var(--ff-prompt-number-bg-color);
+      color: var(--text-color);
+      border-radius: 0px 7px 0px 4px;
+    }
+  }
+
+  .ff-prompt-content {
+    padding: 0 32px 0 16px;
+  }
+
+  .ff-prompt-icons {
+    @include mixins.horizontal-space-between();
+    @extend .ff-prompt-content;
+    flex-wrap: wrap;
+  }
+  .ff-prompt-icons-leftside {
+    display: flex;
+    gap: 8px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .ff-prompt-icons-rightside {
+    @include mixins.center-content();
+    .ff-prompt-icons-style {
+      padding: 2px;
+    }
+  }
+
+  &:hover {
+    background-color: var(--hover-color);
+  }
+}
+
+.ff-prompt-container-Block.active {
+  border: 1px solid var(--icons-default-color);
+  background-color: var(--hover-color);
+}
+.ff-prompt-container-Block.active .ff-prompt-icons-leftside,
+.ff-prompt-container-Block:hover .ff-prompt-icons-leftside {
+  opacity: 1;
+}

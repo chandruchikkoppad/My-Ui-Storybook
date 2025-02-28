@@ -2,7 +2,11 @@
 
 .ff-radial-chart-container {
   cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   svg {
+    vertical-align: middle;
     text {
       @extend .font-size-8;
       font-size: var(--fontSize) !important;

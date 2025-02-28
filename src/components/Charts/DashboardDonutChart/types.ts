@@ -14,12 +14,33 @@ export type StatusValue = {
 };
 
 export type ChartItem = {
-    key: string;
-    value: number;
-    color?: string;
-  };
+  key: string;
+  value: string | number;
+  color?: string;
+  percentage?: string | number;
+  version?: number[] | string[];
+  versionColor?: string[];
+  osIcon?: string;
+};
 
-export type LegendType = 'numberLegend' | 'pillLegend' | 'memoryLegend' | 'tableLegend'
+export type NormalizedChartItem = {
+  key: string;
+  value: number | string;
+  color?: string;
+  normalizedValue?: number;
+  unit?: string;
+  labelValue?: number | string;
+  percentage?: string | number;
+  version?: number[] | string[];
+  versionColor?: string[];
+  osIcon?: string;
+};
+
+export type LegendType =
+  | 'numberLegend'
+  | 'pillLegend'
+  | 'memoryLegend'
+  | 'tableLegend';
 
 export type DashboardDonutChartProps = {
   radius: number;
@@ -29,5 +50,29 @@ export type DashboardDonutChartProps = {
   isLegendDetails: boolean;
   gapAngle?: number;
   legendType: LegendType;
-  showOnlyLabel : boolean;
+  apiDataLabel?: string | number;
+  showOnlyLabel?: boolean;
+  unit?: string;
+  showUnit?: boolean;
+  labelFontSize?: number;
+  subLabelFontSize?: number;
+  legendPosition?: 'bottom' | 'right' | 'left';
+  chartGap?: number;
+  legendGap?: number;
+  tableWidth?: number;
+  tableHeight?: number;
+  legendValueFontSize?: number;
+  legendKeyFontSize?: number;
+  legendWithVersionFontSize?: number;
+  versionErrorText?: string;
+  labelYoffSet?: number;
+  subLabelYoffSet?: number;
+  capsuleStyle?: {};
+  legendTruncate?: number;
+  isLegendToolTip?: boolean;
+  containerHeight?: number | string;
+  onSelectedStatus?: (_value: string) => void;
+  selectedStatusKey?: string;
+  setSelectedStatusKey?: (_selectedStatusKey: string) => void;
+  isOnClick?: boolean;
 };

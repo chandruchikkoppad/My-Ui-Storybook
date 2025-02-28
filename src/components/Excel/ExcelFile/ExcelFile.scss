@@ -1,0 +1,61 @@
+.ff-excel {
+  position: relative;
+  .ff-excel-sheet {
+    position: relative;
+    max-width: 100%;
+    top: 0;
+  }
+
+  .ff-excel-sheet-bar {
+    position: static;
+    max-width: 100%;
+    margin-left: 60px;
+    display: flex;
+    height: 32px;
+    align-items: center;
+    color: var(--brand2-color);
+    box-shadow: 0px 0px 4px -1px var(--toggle-strip-shadow);
+
+    .ff-excel-add-sheet-set {
+      position: relative;
+      background-color: var(--tab-bg-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      top: 0;
+      left: 0px;
+      height: 100%;
+
+      .ff-excel-add-sheet-icon {
+        padding: 6px 10px;
+      }
+    }
+
+    .ff-excel-tab-container {
+      height: 32px;
+      display: flex;
+      overflow-x: auto;
+      align-items: center;
+      scrollbar-width: none;
+
+      .ff-excel-tab-list {
+        padding: 8px 9px;
+        height: 100%;
+        min-width: max-content;
+        cursor: pointer;
+        background-color: var(--hover-color);
+        &.active {
+          background-color: var(--excel-sheet-button-color);
+          padding: 8px 9px;
+          height: 100%;
+        }
+
+        &:focus {
+          outline: none;
+          text-decoration: none;
+        }
+      }
+    }
+  }
+}

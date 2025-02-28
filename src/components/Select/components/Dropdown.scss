@@ -1,0 +1,111 @@
+.ff-select-dropdown-wrapper,
+.ff-select-dropdown-mini-modal-wrapper {
+  max-height: 160px;
+  z-index: 999999;
+  position: absolute;
+  min-width: 50px;
+  border-radius: 4px;
+  border: 1px solid var(--ff-select-option-border-color);
+  margin-top: 4px;
+  box-shadow: 0px 1px 4px 0px var(--ff-select-option-wrapper-box-shadow);
+  background-color: var(--ff-select-background-color);
+  overflow: hidden auto;
+
+  &::-webkit-scrollbar {
+    width: 4px;
+    height: 12px;
+
+    &-thumb {
+      background-color: var(--ff-select-scroll-thumb-color);
+      border-radius: 4px;
+    }
+
+    &-track {
+      background: var(--ff-select-scroll-track-bg);
+      border-radius: 4px;
+    }
+  }
+
+  .ff-select-dropdown-option {
+    box-sizing: border-box;
+    cursor: pointer;
+    padding: 0px 8px;
+    border-radius: 4px;
+    min-height: 32px;
+
+    .ff-select-dropdown-text {
+      width: 100%;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+
+    .ff-select-dropdown__icon {
+      margin-right: 4px;
+    }
+
+    .ff-select-dropdown-icon-container {
+      width: calc(100% - 24px);
+      display: flex;
+      flex: 1;
+      align-items: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    &__selected,
+    &:hover {
+      background-color: var(--ff-select-option-hover-color);
+    }
+  }
+
+  .ff-select-no-option {
+    box-sizing: border-box;
+    padding: 0px 8px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    cursor: not-allowed;
+  }
+}
+
+.ff-select-dropdown-modal-wrapper {
+  max-height: 256px;
+}
+
+.ff-select-dropdown-mini-modal-wrapper {
+  display: flex;
+  justify-content: space-between;
+
+  .ff-select-label-minimodal-wrapper {
+    width: calc(50% - 4px);
+  }
+  .ff-select-mini-modal-wrapper {
+    width: 50%;
+    padding: 8px 2px 0px 4px;
+    display: flex;
+    align-items: flex-end;
+    margin-left: 4px;
+    border-left: 1px dashed var(--border-color);
+
+    .ff-select-modal-wrapper {
+      height: fit-content;
+      width: calc(100% - 4px);
+      border-radius: 8px;
+      border: 1px solid var(--ff-select-background-color);
+      box-shadow: 0px 1px 8px 0px var(--ff-select-option-wrapper-box-shadow);
+      border: 1px solid var(--border-color);
+
+      .ff-select-mini-modal-footer {
+        min-height: 32px;
+        border-top: 1px solid var(--border-color);
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 8px;
+        padding-right: 4px;
+      }
+    }
+  }
+}

@@ -14,4 +14,13 @@ export interface DropdownProps {
   zIndex: number;
   withSelectButton?: boolean;
   onSelect?: () => void;
+  labelAccessor?: string;
+  valueAccessor?: string;
+  loadMoreOptions?: () => void;
+  isAllSelected?: boolean;
+  onToggleAllSelect?: (checkedState: boolean) => void;
+  isAllSelect?: boolean;
+  maxDropdownHeight: number;
+  variant?: string;
+  handleIconClick?: () => void;
 }

@@ -1,0 +1,31 @@
+/* Container Styling */
+.ff-switch-container {
+  display: flex;
+  background-color: var(--base-bg-color);
+  height: 24px;
+  width: 48px;
+  border-radius: 5px;
+  border: 1px solid var(--brand-color);
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  overflow: hidden;
+
+  /* Button Styling */
+  .ff-switch-button {
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    /* Button Hover Effect */
+    &:hover {
+      background-color: var(--hover-color);
+      color: var(--brand-color);
+    }
+  }
+
+  /* Active Button */
+  .ff-switch-button.active {
+    background-color: var(--brand-color);
+    color: var(--base-bg-color);
+  }
+}

@@ -23,8 +23,9 @@ const ExpandableMenu: React.FC<ExpandableMenuProps> = ({
   subMenus = [],
   selectedMenu = '',
   onSubMenuClick = () => {},
+  menuExpandStatus
 }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState( menuExpandStatus || false );
   const [isHovered, setIsHovered] = useState(false);
 
   const toggleExpand = () => {

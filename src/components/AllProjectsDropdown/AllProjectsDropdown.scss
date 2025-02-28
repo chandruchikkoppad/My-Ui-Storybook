@@ -4,67 +4,196 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
+
   .ff-all-project-dropdown {
-    background-color: var(--secondary-icon-color);
+    width: fit-content;
+    border-radius: 16px;
     color: var(--expandable-menu-default-bg);
-    height: 24px;
+    line-height: 18px;
     @include mixins.center-content();
-    gap: 10px;
-    padding: 4px;
-    .label-icon {
-      height: 16px;
-      width: 16px;
-      @include mixins.center-content();
+    padding: 3px;
+    cursor: pointer;
+
+    &--selected {
+      background-color: var(--primary-icon-color);
+      border-radius: 20px;
+      .ff-all-project-container {
+        border-radius: 20px;
+        box-shadow: 0px 4px 4px 0px var(--toggle-strip-shadow) inset;
+        background: linear-gradient(
+          90deg,
+          var(--brand-color) 0%,
+          var(--button-background-gradient-color) 100%
+        );
+        text-wrap-mode: nowrap;
+      }
+    }
+
+    &:not(.ff-all-project-dropdown--selected):hover {
+      .projects-label {
+        position: relative;
+        white-space: nowrap;
+        &:hover::after {
+          animation: oscillate-border-width 0.5s ease-in-out forwards;
+        }
+        &::after {
+          content: '';
+          position: absolute;
+          top: 20px;
+          left: 0%;
+          width: 0%;
+          height: 2px;
+          background-color: var(--ff-app-header-menu-border-bottom-color);
+          border-radius: 4px;
+          transition: width 0.15s ease-in-out;
+        }
+      }
+    }
+
+    .ff-all-project-container {
+      display: flex;
+      padding: 4px 8px;
+      gap: 4px;
+      justify-content: center;
+      text-wrap-mode: nowrap;
+
+      .label-icon {
+        height: 16px;
+        width: 16px;
+        @include mixins.center-content();
+      }
+    }
+
+    &.ff-all-project-dropdown--disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      pointer-events: none;  // Disable click events
     }
   }
-  .ff-dropdown {
+
+  .ff-projects-dropdown {
+    width: 202px;
     position: absolute;
-    top: 50px;
+    top: 40px;
     padding: 1px;
     border: 0.5px solid var(--expandable-menu-default-bg);
     border-radius: 4px;
     background-color: var(--secondary-icon-color);
     color: var(--primary-icon-color);
-    .ff-search {
-      margin-bottom: 1px;
-      input {
-        height: 30px;
-        width: inherit;
-        border-radius: 4px;
-        border-style: none;
-        &::placeholder {
-          padding-left: 32px;
-          font-size: 8px;
-          line-height: 12px;
+
+    .ff-dropdown-search-container {
+      .ff-search-container {
+        height: 32px;
+        justify-content: flex-start;
+
+        .ff-search-icon {
+          margin: 0;
+        }
+
+        .ff-vertical-line {
+          height: 12px;
+        }
+
+        .ff-search-input {
+          font-size: 12px;
+          margin-left: 2px;
         }
       }
-      span {
-        position: absolute;
-        top: 15px;
-        left: 20px;
+    }
+
+    .scroll {
+      max-height: 165px;
+      overflow-x: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+
+      &::-webkit-scrollbar {
+        width: 2px;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: var(--primary-icon-color);
+        border-radius: 2px;
       }
     }
-    .scroll {
-      max-height: 124px;
-      overflow-y: scroll;
-    }
+
     .option-card {
-      .projects-options {
+      .ff-projects-options {
         @include mixins.center-content();
         justify-content: flex-start;
         gap: 4px;
+        padding: 1px;
+        margin-top: 1px;
+        white-space: nowrap;
 
-        .projects-icons {
+        .ff-projects-icons {
           @include mixins.center-content();
           height: 24px;
           width: 24px;
+
+          svg {
+            path {
+              fill: var(--primary-icon-color);
+            }
+          }
         }
       }
-      .all-projects-option {
+
+      .ff-projects-options.ff-selected-option,
+      .ff-projects-options:hover {
         background-color: var(--primary-icon-color);
         color: var(--secondary-icon-color);
         border-radius: 4px;
+
+        svg {
+          path {
+            fill: var(--secondary-icon-color);
+          }
+        }
+      }
+
+      .ff-projects-options.ff-option-disabled {
+        opacity: 0.5;
+        pointer-events: none; // Disable pointer events on disabled options
       }
     }
+
+    .ff-all-projects-option,
+    .ff-selected-option {
+      @include mixins.center-content();
+      justify-content: flex-start;
+      gap: 4px;
+      background-color: var(--primary-icon-color);
+      color: var(--secondary-icon-color);
+      border-radius: 4px;
+
+      .ff-projects-icons {
+        svg {
+          path {
+            fill: var(--secondary-icon-color);
+          }
+        }
+      }
+    }
+  }
+
+  &.ff-all-project--disabled {
+    cursor: not-allowed;
+    pointer-events: none;  // Disable pointer events for the entire container
+  }
+}
+
+@keyframes oscillate-border-width {
+  0% {
+    width: 50%;
+    left: 25%;
+  }
+  50% {
+    width: 70%;
+    left: 15%;
+  }
+  100% {
+    width: 50%;
+    left: 25%;
   }
 }

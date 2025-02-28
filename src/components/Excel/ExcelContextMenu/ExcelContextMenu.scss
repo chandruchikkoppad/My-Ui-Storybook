@@ -1,0 +1,27 @@
+.ff-excel-menu {
+  position: absolute;
+  border: 1px solid var(--option-card-border-color);
+  background: var(--option-card-bg-color);
+  border-radius: 4px;
+  margin: 2px;
+  min-height: 32px;
+  min-width: 111px;
+  white-space: nowrap;
+  z-index: 2000;
+
+  .ff-excel-menu-options {
+    color: var(--text-color);
+    cursor: pointer;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    padding: 4px;
+    gap: 8px;
+    &:hover {
+      background-color: var(--hover-color);
+    }
+    label {
+      cursor: pointer;
+    }
+  }
+}

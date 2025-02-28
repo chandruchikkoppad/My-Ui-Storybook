@@ -1,0 +1,296 @@
+import * as React from 'react';
+import classnames from 'classnames';
+import * as Actions from './actions';
+import * as Types from './types';
+import * as Point from './point';
+import useSelector from './use-selector';
+import useDispatch from './use-dispatch';
+import { getCellDimensions } from './util';
+import * as Matrix from './matrix';
+import Select from '../../../Select';
+import AttachmentButton from '../../../AttachmentButton';
+
+type Props = {
+  DataEditor: Types.DataEditorComponent;
+  setContextMenu: React.Dispatch<React.SetStateAction<ContextMenuState>>;
+  attachmentAction?: {
+    addAttachment: (file: File) => Promise<{
+      responseCode: number;
+      responseObject: { name: string; id: string; modifiedOn: string }[];
+    }>;
+    viewAttachment: () => Promise<void>;
+    deleteAttachment: () => Promise<void>;
+  };
+  contextOption?: {
+    open: boolean;
+    options: {
+      label: string;
+      value: string;
+      iconName: string;
+      action: () => void;
+      disable: boolean;
+    }[];
+  };
+};
+
+const ActiveCell: React.FC<Props> = (props) => {
+  const [dropDownValue, setDropDownValue] = React.useState({
+    value: '',
+    name: '',
+  });
+  const [selectOption, setSelectOption] = React.useState<boolean>(false);
+  const [selectedFiles, setSelectedFiles] = React.useState<File[]>([]);
+  const handleFilesChange = async (newFiles: File[]) => {
+    const updatedFiles = [...newFiles];
+    if (updatedFiles.length > 5) {
+      return;
+    }
+    const fileList = new DataTransfer();
+    updatedFiles.forEach((file) => fileList.items.add(file));
+
+    if (props.attachmentAction?.addAttachment) {
+      try {
+        const fileDetails = [];
+        for (const file of newFiles) {
+          const response = await props.attachmentAction?.addAttachment(file);
+          console.log(response);
+          if (response?.responseCode === 200) {
+            response.responseObject?.[0]?.name;
+
+            fileDetails.push({
+              name: response.responseObject?.[0]?.name,
+              fileId: response.responseObject?.[0]?.id,
+              lastModified: response.responseObject?.[0]?.modifiedOn,
+              size: file.size,
+              type: file.type,
+            });
+          } else {
+            fileDetails.push({
+              name: file.name,
+              fileId: undefined,
+              lastModified: file.lastModified,
+              size: file.size,
+              type: file.type,
+            });
+          }
+        }
+        handleChange({
+          ...cell,
+          value: JSON.stringify(fileDetails),
+          style: cell?.style,
+          inputType: cell?.inputType,
+        });
+        setSelectedFiles(updatedFiles);
+      } catch (error) {
+        console.error('Attachment import failed:', error);
+      }
+    }
+  };
+
+  const handleClick = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    const selectedList = (e.target as HTMLElement).innerText;
+    if (selectedList) {
+      //TODO
+    }
+  };
+
+  const rootRef = React.useRef<HTMLDivElement>(null);
+  const dispatch = useDispatch();
+  const setCellData = React.useCallback(
+    (active: Point.Point, data: Types.CellBase) =>
+      dispatch(Actions.setCellData(active, data)),
+    [dispatch]
+  );
+  const activate = React.useCallback(
+    (point: Point.Point) => dispatch(Actions.activate(point)),
+    [dispatch]
+  );
+  const edit = React.useCallback(() => dispatch(Actions.edit()), [dispatch]);
+  const autoFill = React.useCallback(
+    (value: boolean) => dispatch(Actions.autoFill(value)),
+    [dispatch]
+  );
+  const commit = React.useCallback(
+    (changes: Types.CommitChanges<Types.CellBase>) =>
+      dispatch(Actions.commit(changes)),
+    [dispatch]
+  );
+  const view = React.useCallback(() => {
+    dispatch(Actions.view());
+  }, [dispatch]);
+  const active = useSelector((state) => state.active);
+  const mode = useSelector((state) => state.mode);
+  const cell = useSelector((state) =>
+    state.active ? Matrix.get(state.active, state.model.data) : undefined
+  );
+  const dimensions = useSelector((state) => {
+    let dimensionValue = active
+      ? getCellDimensions(active, state.rowDimensions, state.columnDimensions)
+      : undefined;
+    dimensionValue = {
+      top: (dimensionValue?.top ?? 0) + 1, // Note: +1 Because of Active cell width is 2px
+      height: (dimensionValue?.height ?? 0) + 1, // Note: +1 Because of Active cell width is 2px
+      left: (dimensionValue?.left ?? 0) + 1, // Note: +1 Because of Active cell width is 2px
+      width: (dimensionValue?.width ?? 0) + 1, // Note: +1 Because of Active cell width is 2px
+    };
+    return dimensionValue;
+  });
+
+  const hidden = React.useMemo(
+    () => !active || !dimensions,
+    [active, dimensions]
+  );
+
+  const initialCellRef = React.useRef<Types.CellBase | undefined>(undefined);
+  const prevActiveRef = React.useRef<Point.Point | null>(null);
+  const prevCellRef = React.useRef<Types.CellBase | undefined>(undefined);
+
+  const handleChange = React.useCallback(
+    (cell: Types.CellBase) => {
+      if (!active) {
+        return;
+      }
+      setCellData(active, cell);
+    },
+    [setCellData, active]
+  );
+
+  React.useEffect(() => {
+    const root = rootRef.current;
+    if (!hidden && root) {
+      root.focus();
+      setSelectOption((prev) => !prev);
+    }
+  }, [rootRef, hidden, active]);
+
+  React.useEffect(() => {
+    const prevActive = prevActiveRef.current;
+    const prevCell = prevCellRef.current;
+    prevActiveRef.current = active;
+    prevCellRef.current = cell;
+
+    if (!prevActive || !prevCell) {
+      return;
+    }
+
+    const coordsChanged =
+      active?.row !== prevActive.row || active?.column !== prevActive.column;
+    const exitedEditMode = mode !== 'edit';
+
+    if (coordsChanged || exitedEditMode) {
+      const initialCell = initialCellRef.current;
+      if (prevCell !== initialCell) {
+        commit([
+          {
+            prevCell: initialCell || null,
+            nextCell: prevCell,
+          },
+        ]);
+      } else if (!coordsChanged && cell !== prevCell) {
+        commit([
+          {
+            prevCell,
+            nextCell: cell || null,
+          },
+        ]);
+      }
+      initialCellRef.current = cell;
+    }
+  });
+
+  const DataEditor = (cell && cell.DataEditor) || props.DataEditor;
+  const readOnly = cell && cell.readOnly;
+
+  const handleMouseDown = React.useCallback(() => {
+    if (active) {
+      autoFill(true);
+      activate(active);
+    }
+  }, [activate, autoFill, active]);
+
+  const contextClick = React.useCallback(
+    (event: React.MouseEvent) => {
+      event.preventDefault();
+      props.setContextMenu({
+        open: props.contextOption?.open ?? false,
+        position: {
+          x: event.pageX - 450,
+          y: event.pageY - 260,
+        },
+        options: props.contextOption?.options || [],
+      });
+    },
+    [props]
+  );
+
+  return (
+    <div
+      ref={rootRef}
+      className={classnames(
+        'ff-spreadsheet-active-cell',
+        `ff-spreadsheet-active-cell--${mode}`
+      )}
+      style={dimensions}
+      onContextMenu={contextClick}
+      onClick={mode === 'view' && !readOnly ? edit : undefined}
+      tabIndex={0}
+    >
+      {cell?.inputType?.type === 'dropDown' ? (
+        <Select
+          {...cell?.inputType?.inputProps}
+          showOptions={{ open: true, toggle: selectOption }}
+          selectedOption={dropDownValue}
+          optionsList={cell?.inputType?.options || []}
+          height={26}
+          showLabel={false}
+          showBorder={false}
+          optionZIndex={5000}
+          onChange={(value) => {
+            setDropDownValue({ value: value.value, name: value.label });
+            handleChange({
+              ...cell,
+              value: value.value,
+              style: cell?.style,
+              inputType: cell?.inputType ?? { type: 'text' },
+            });
+          }}
+        />
+      ) : cell?.inputType?.type === 'file' ? (
+        <AttachmentButton
+          {...cell?.inputType?.inputProps}
+          label=""
+          onFileListClick={handleClick}
+          selectedFiles={selectedFiles}
+          onFilesChange={handleFilesChange}
+          disabled={false}
+          maxFileSizeMB={5}
+          maxFiles={5}
+          buttonLabel="+ Attachments"
+          buttonVariant="tertiary"
+          deleteButton={true}
+          addAttachmentButton
+        />
+      ) : mode === 'edit' && active ? (
+        <DataEditor
+          row={active.row}
+          column={active.column}
+          cell={cell}
+          onChange={handleChange}
+          exitEditMode={view}
+        />
+      ) : (
+        <input
+          type="text"
+          className="ff-spreadsheet-cell-input"
+          style={{ ...cell?.style }}
+          value={cell?.value}
+          disabled={false}
+        />
+      )}
+
+      <div onMouseDown={handleMouseDown} className="select_dot"></div>
+    </div>
+  );
+};
+
+export default ActiveCell;

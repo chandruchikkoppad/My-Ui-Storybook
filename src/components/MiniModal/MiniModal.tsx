@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback, forwardRef } from 'react';
 import { createPortal } from 'react-dom';
-import { MiniEditModalProps } from './types.js';
+import { MiniEditModalProps, Rect, AvailableSpace } from './types.js';
 import Button from '../Button/Button.js';
 import useEscapeKey from '../../hooks/keyboardevents/useEscKeyEvent.js';
 import useClickOutside from '../../hooks/useClickOutside';
@@ -14,8 +14,8 @@ const MiniModal = forwardRef<HTMLDivElement, MiniEditModalProps>(
       anchorRef,
       headerProps,
       childContent,
-      cancelButtonProps,
-      proceedButtonProps,
+      cancelButtonProps = () => {},
+      proceedButtonProps = () => {},
       footerContent,
       isWrapped = false,
       isAnimated = false,
@@ -29,6 +29,13 @@ const MiniModal = forwardRef<HTMLDivElement, MiniEditModalProps>(
       extraTopSpace,
       extraRightSpace,
       extraLeftSpace,
+      isIconModel,
+      wrapperProperties,
+      arrowProperties,
+      arrowZIndex,
+      overlay,
+      outSideClick,
+      ignoreRefs,
     },
     ref
   ) => {
@@ -36,10 +43,83 @@ const MiniModal = forwardRef<HTMLDivElement, MiniEditModalProps>(
       top: 0,
       left: 0,
     });
+    const [arrowOffset, setArrowOffset] = useState(0);
+    const [increasedIconSize, setIncreasedIconSize] = useState(0);
+    const [arrowRight, setArrowRight] = useState(0);
     const [isVisible, setIsVisible] = useState(false);
     const modalRef = useRef<HTMLDivElement>(null);
+    const {
+      width: modalWidth,
+      height: modalHeight,
+      borderRadius: modalBorderRadius = 4,
+      zIndex: modalZIndex = 99,
+      boxShadow: modalBoxShadow,
+      left: modalLeft,
+      right: modalRight,
+      top: modalTop,
+      padding: modalPadding,
+    } = modalProperties || {};
 
-    //specify for the wrapper div left position
+    const {
+      left: popOverLeft,
+      top: popOverTop,
+      right: popOverRight = -10,
+      size: popOverSize = 10,
+    } = arrowProperties || {};
+    // Function to calculate available space
+    const getAvailableSpace = (rect: Rect): AvailableSpace => {
+      const { top, left, bottom, right } = rect;
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+
+      return {
+        spaceTop: top,
+        spaceLeft: left,
+        spaceRight: viewportWidth - right,
+        spaceBottom: viewportHeight - bottom,
+      };
+    };
+
+    // Helper function to get the anchor element
+    const getAnchorElement = () => {
+      if (typeof anchorRef === 'string') {
+        return document.getElementById(anchorRef);
+      }
+      return anchorRef?.current || null;
+    };
+
+    const anchorElement = getAnchorElement();
+    const anchorRect = anchorElement?.getBoundingClientRect();
+
+    if (!isWrapped && anchorRect) {
+      const availableSpace = getAvailableSpace(anchorRect);
+      switch (modalPosition) {
+        case 'top':
+          if (availableSpace.spaceTop < (modalProperties?.height ?? 150)) {
+            modalPosition = 'bottom';
+          }
+          break;
+        case 'left':
+          if (availableSpace.spaceLeft < (modalProperties?.width ?? 480)) {
+            modalPosition = 'right';
+          }
+          break;
+        case 'right':
+          if (availableSpace.spaceRight < (modalProperties?.width ?? 480)) {
+            modalPosition = 'left';
+          }
+          break;
+        case 'bottom':
+          if (availableSpace.spaceBottom < (modalProperties?.height ?? 150)) {
+            modalPosition = 'top';
+          }
+          break;
+        default:
+          break;
+      }
+    }
+
+    // Specify for the wrapper div left position
     const calculateAnchorRefLeft = (anchorRefLeftNum?: number) => {
       if (anchorRefLeftNum) {
         return anchorRefLeftNum;
@@ -47,7 +127,7 @@ const MiniModal = forwardRef<HTMLDivElement, MiniEditModalProps>(
       return 0;
     };
 
-    //specify for the arrow position in left or top
+    // Specify for the arrow position in left or top
     const getArrowClassName = () => {
       if (leftTopArrow && modalPosition === 'right') {
         return 'left-top-arrow';
@@ -56,13 +136,13 @@ const MiniModal = forwardRef<HTMLDivElement, MiniEditModalProps>(
     };
     const calculatedAnchorRefLeft = calculateAnchorRefLeft(anchorRefLeftNum);
 
-    //specifying for specific wrapper modal position
+    // Specify specific wrapper modal position
     const firstAnchor =
       firstAnchorRef?.current &&
       firstAnchorRef?.current?.getBoundingClientRect().left -
         anchorLeftDistanceForWrapper;
 
-    //specifying the modal top
+    // Specifying the modal top
     const calculateModalTop = () => {
       const safeHeight = modalProperties?.height ?? 0;
       if (modalPosition === 'bottom') {
@@ -71,7 +151,7 @@ const MiniModal = forwardRef<HTMLDivElement, MiniEditModalProps>(
           : modalPositionState.top + (extraTopSpace?.normalModal ?? 10);
       } else if (modalPosition === 'right') {
         return leftTopArrow
-          ? modalPositionState.top - (extraRightSpace?.leftTopArrow ?? 30)
+          ? modalPositionState.top - (extraRightSpace?.leftTopArrow ?? 23)
           : modalPositionState?.top -
               safeHeight / (extraRightSpace?.middleLeftArrow ?? 3.5);
       } else if (modalPosition === 'top') {
@@ -79,12 +159,17 @@ const MiniModal = forwardRef<HTMLDivElement, MiniEditModalProps>(
           modalPositionState.top -
           (safeHeight + (extraTopSpace?.normalModal ?? 10))
         );
+      } else if (modalPosition === 'left') {
+        return leftTopArrow
+          ? modalPositionState.top - (extraRightSpace?.leftTopArrow ?? 25)
+          : modalPositionState?.top -
+              safeHeight / (extraRightSpace?.middleLeftArrow ?? 3.5);
       }
       return modalPositionState.top - safeHeight / 1.5;
     };
     const calculatedModalTop = calculateModalTop();
 
-    //specifying the modal left
+    // Specifying the modal left
     const calculateModalLeft = () => {
       if (modalPosition === 'right') {
         return (
@@ -93,35 +178,66 @@ const MiniModal = forwardRef<HTMLDivElement, MiniEditModalProps>(
       } else if (firstAnchorRef) {
         return firstAnchor;
       } else if (modalPosition === 'left') {
-        return modalPositionState.left - (modalProperties?.width ?? 404) - 15;
+        return modalPositionState.left - (modalProperties?.width ?? 274) - 15;
       } else {
         return modalPositionState.left - (extraLeftSpace?.normal ?? 30);
       }
     };
     const calculatedModalLeft = calculateModalLeft();
 
-    //specifying the modal's escape and enter functionality
+    // Handle escape and enter functionality
     const handleEsc = useEscapeKey('Escape');
     const handleEnter = useEscapeKey('Enter');
-    handleEsc(cancelButtonProps.onClick);
-    handleEnter(proceedButtonProps.onClick);
-    useClickOutside(modalRef, cancelButtonProps.onClick);
+    handleEsc(outSideClick);
+    handleEnter(proceedButtonProps?.onClick);
+    useClickOutside(modalRef, outSideClick, ignoreRefs);
 
-    //calculate the modal position
+    // Calculate the modal position
     const calculatePosition = useCallback(() => {
-      const anchorRect = anchorRef.current?.getBoundingClientRect();
-      if (anchorRect) {
-        const { bottom, left } = anchorRect;
+      const anchorRect = anchorElement?.getBoundingClientRect();
+      const availableSpace = anchorRect && getAvailableSpace(anchorRect);
+      const modalRect = modalRef.current?.getBoundingClientRect();
+      if (isWrapped && anchorRect) {
+        const { height } = anchorRect;
+        if (height > 24) {
+          const diff = height - 24;
+          setIncreasedIconSize(diff);
+        }
+      }
+      if (anchorRect && modalRect && availableSpace) {
+        const { bottom, left, right } = anchorRect;
+        const { height, width } = modalRect;
+        const { spaceBottom } = availableSpace; // Get available space below anchor
         const { scrollX, scrollY } = window;
+
         let topPosition = bottom + scrollY;
-        let leftPosition = left + scrollX;
+        let leftPosition;
+        if (modalPosition == 'right') {
+          leftPosition = right + scrollX - 20;
+        } else {
+          leftPosition = left + scrollX;
+        }
+        if (width < 280) {
+          setArrowRight(6);
+        }
+        let arrowOffset = 0; // Adjust arrow position dynamically
+
+        // If modal height exceeds available space below, position it above
+        if (height > spaceBottom) {
+          const diff = height - spaceBottom;
+          topPosition = topPosition - diff; // Move modal above anchor
+          arrowOffset = diff; // Adjust arrow position
+        }
 
         setModalPositionState({
           top: topPosition,
           left: leftPosition,
         });
+
+        setArrowOffset(arrowOffset);
+        // Store arrow adjustment
       }
-    }, [anchorRef, modalProperties]);
+    }, [anchorElement]);
 
     useEffect(() => {
       const timeoutId = setTimeout(() => {
@@ -138,78 +254,139 @@ const MiniModal = forwardRef<HTMLDivElement, MiniEditModalProps>(
       };
     }, [calculatePosition]);
 
+    const {
+      height: wrapperHeight = 35,
+      top: wrapperTop = -34,
+      width: wrapperWidth = 35,
+      zIndex: wrapperZIndex = 101,
+      boxShadow: wrapperBoxShadow,
+    } = wrapperProperties || {};
+    const { isOverlay, backgroundColorOverlay, zIndexOverlay } = overlay || {};
+
     if (isWrapped && isPopOver) {
       return null;
     }
 
     return createPortal(
-      <div
-        ref={ref || modalRef}
-        className={classNames('ff-mini-edit-modal-container', {
-          modalVisible: isVisible,
-          animatedModal: isAnimated,
-        })}
-        style={{
-          top: `${calculatedModalTop}px`,
-          left: `${calculatedModalLeft}px`,
-        }}
-      >
-        {isPopOver && (
+      <>
+        {isOverlay && (
           <div
-            className={`popover-arrow popover-arrow-${
-              modalPosition === 'right'
-                ? 'left'
-                : modalPosition === 'top'
-                ? 'bottom'
-                : modalPosition === 'left'
-                ? 'right'
-                : 'top'
-            } ${getArrowClassName()}`}
-          />
-        )}
-        {isWrapped && (
-          <div
-            className={'wrapped-div'}
-            style={{ left: `${calculatedAnchorRefLeft}px` }}
+            className={classNames('ff-mini-modal-overlay')}
+            style={{
+              zIndex: zIndexOverlay ?? 98,
+              backgroundColor: backgroundColorOverlay ?? 'transparent',
+            }}
+            onClick={cancelButtonProps?.onClick}
           ></div>
         )}
         <div
-          className="mini-edit-modal"
+          ref={ref || modalRef}
+          className={classNames('ff-mini-edit-modal-container', {
+            modalVisible: isVisible,
+            animatedModal: isAnimated,
+          })}
           style={{
-            minWidth: isWrapped ? '358px' : '',
-            width: `${modalProperties?.width}px`,
-            height: `${modalProperties?.height}px`,
+            top: `${modalTop ?? calculatedModalTop}px`,
+            left: `${modalLeft ?? calculatedModalLeft}px`,
+            right: `${modalRight}px`,
           }}
         >
-          {headerProps ? (
-            <Typography as="p">{headerProps}</Typography>
-          ) : (
-            <Typography as="header">
-              <Typography as="h2">Header text</Typography>
-              <hr />
-            </Typography>
+          {isPopOver && (
+            <div
+              className={`popover-arrow popover-arrow-${
+                modalPosition === 'right'
+                  ? 'left'
+                  : modalPosition === 'top'
+                  ? 'bottom'
+                  : modalPosition === 'left'
+                  ? 'right'
+                  : 'top'
+              } ${getArrowClassName()}`}
+              style={{
+                zIndex: `${arrowZIndex}`,
+                top: `${popOverTop ? popOverTop + arrowOffset : arrowOffset}px`,
+                left: `${popOverLeft && popOverLeft}px`,
+                right: `${popOverRight && popOverRight + arrowRight}px`,
+                borderWidth: `${
+                  modalPosition === 'right'
+                    ? `${popOverSize}px ${popOverSize}px ${popOverSize}px 0`
+                    : modalPosition === 'top'
+                    ? `${popOverSize}px ${popOverSize}px 0 ${popOverSize}px`
+                    : modalPosition === 'left'
+                    ? `${popOverSize}px 0 ${popOverSize}px ${popOverSize}px`
+                    : `0 ${popOverSize}px ${popOverSize}px ${popOverSize}px`
+                }`,
+              }}
+            />
           )}
-          <div className="modal-content">{childContent}</div>
-          {footerContent ? (
-            <Typography as="footer">{footerContent}</Typography>
-          ) : (
-            <footer className="modal-footer">
-              <Button
-                variant="primary"
-                className="btn-cancel"
-                onClick={cancelButtonProps.onClick}
-                label={cancelButtonProps.text}
-              />
-              <Button
-                variant="secondary"
-                className="btn-proceed"
-                label={proceedButtonProps?.text}
-                onClick={proceedButtonProps?.onClick}
-              />
-            </footer>
+          {isWrapped && (
+            <div
+              className={'wrapped-div'}
+              style={{
+                left: `${calculatedAnchorRefLeft}px`,
+                width: `${wrapperWidth + increasedIconSize / 1.2}px`,
+                height: `${wrapperHeight + increasedIconSize}px`,
+                top: `${wrapperTop - increasedIconSize}px`,
+                backgroundColor: isOverlay ? 'white' : 'transparent',
+                zIndex: `${wrapperZIndex}`,
+                boxShadow:
+                  wrapperBoxShadow ??
+                  `0px -3px 4px 0px var(--ff-mini-modal-box-shadow)`,
+              }}
+            ></div>
           )}
+          <div
+            className={classNames('mini-edit-modal', {
+              'mini-edit-modal-wrapper-shadow': !!isWrapped && !modalBoxShadow,
+              'mini-edit-modal-arrow-shadow': !!isPopOver && !modalBoxShadow,
+            })}
+            style={{
+              minWidth: isWrapped ? '190px' : '',
+              width: `${modalWidth}px`,
+              height: `${modalHeight}px`,
+              borderRadius: `${modalBorderRadius}px`,
+              zIndex: `${modalZIndex}`,
+              boxShadow: `${
+                modalBoxShadow ??
+                '0px 4px 8px var(--ff-mini-modal-arrow-shadow)'
+              }`,
+              padding: `${modalPadding ?? 4}px`,
+            }}
+          >
+            {headerProps ? (
+              <Typography as="div">{headerProps}</Typography>
+            ) : isIconModel ? (
+              <></>
+            ) : (
+              <Typography as="header">
+                <Typography as="h2">Header text</Typography>
+                <hr />
+              </Typography>
+            )}
+            {childContent}
+            {footerContent ? (
+              <Typography as="footer">{footerContent}</Typography>
+            ) : isIconModel ? (
+              <></>
+            ) : (
+              <footer className="modal-footer">
+                <Button
+                  variant="primary"
+                  className="btn-cancel"
+                  onClick={cancelButtonProps?.onClick}
+                  label={cancelButtonProps?.text}
+                />
+                <Button
+                  variant="secondary"
+                  className="btn-proceed"
+                  label={proceedButtonProps?.text}
+                  onClick={proceedButtonProps?.onClick}
+                />
+              </footer>
+            )}
+          </div>
         </div>
-      </div>,
+      </>,
       document.body
     );
   }

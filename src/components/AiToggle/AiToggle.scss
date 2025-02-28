@@ -1,0 +1,78 @@
+@use '../../assets/styles/mixins';
+.ff--ai-switch-container {
+  position: relative;
+
+  .ff--ai-switch-checkbox {
+    height: 0;
+    width: 0;
+    display: none;
+
+    &:checked {
+      + .ff--ai-switch-label {
+        background: linear-gradient(
+              261.99deg,
+              var(--brand-color) 15.23%,
+              var(--ff-ai-toggle-bg-color) 89.86%
+            )
+            padding-box,
+          linear-gradient(
+              to left,
+              var(--brand-color),
+              var(--ff-ai-toggle-bg-color)
+            )
+            border-box;
+
+        &:disabled {
+          cursor: not-allowed;
+          color: var(--disable-color);
+          background: var(--disable-color);
+        }
+      }
+    }
+    &:disabled {
+      cursor: not-allowed;
+    }
+  }
+
+  .ff--ai-switch-label {
+    @include mixins.horizontal-space-between();
+    transition: all 0.3s;
+    background: linear-gradient(
+          var(--primary-button-text-color),
+          var(--primary-button-text-color)
+        )
+        padding-box,
+      linear-gradient(to left, var(--brand-color), var(--ff-ai-toggle-bg-color))
+        border-box;
+    position: relative;
+    width: 56px;
+    height: 32px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    padding: 4px;
+    border-radius: 22px;
+    .ff--ai-switch-content {
+      @include mixins.horizontal-space-between();
+      width: 100%;
+
+      .ff--ai-switch-typography {
+        &.left {
+          order: 0;
+        }
+        &.right {
+          order: 2;
+        }
+      }
+
+      .ff--ai-switch-image {
+        order: 1;
+        width: 26px;
+        height: 26px;
+      }
+    }
+    &--disabled {
+      opacity: 0.5;
+      cursor: no-drop;
+    }
+  }
+}

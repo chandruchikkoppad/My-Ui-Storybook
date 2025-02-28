@@ -2,28 +2,72 @@ import React from 'react';
 import RadioButton from '../RadioButton/RadioButton'; // Adjust the import path as necessary
 import './RadioGroup.scss';
 import classNames from 'classnames';
+import Typography from '../Typography';
 
 const RadioGroup: React.FC<RadioGroupProps> = ({
   options,
   name,
   selectedValue,
   onChange,
+  label,
+  isLabel = false,
+  isAsteriskRequired = false,
   className,
+  classNameForLabel,
+  isError = false,
+  errorMessage = '',
+  onBlur = () => {},
+  disabled,
 }) => {
   return (
-    <div className={classNames('ff-radio-group', className)}>
-      {options.map((option) => (
-        <RadioButton
-          key={option.value}
-          label={option.label}
-          name={name}
-          value={option.value}
-          checked={selectedValue === option.value}
-          onChange={() => onChange?.(option)}
-          disabled={option.disabled}
-        />
-      ))}
-    </div>
+    <>
+      <div
+        className={classNames('ff-radio-group', className)}
+        tabIndex={0}
+        onBlur={onBlur}
+      >
+        {isLabel && (
+          <Typography
+            fontWeight="semi-bold"
+            className={classNames(classNameForLabel)}
+          >
+            {' '}
+            {isAsteriskRequired && (
+              <Typography className={classNames('ff-required-asterisk')}>
+                *{' '}
+              </Typography>
+            )}
+            {label}{' '}
+          </Typography>
+        )}
+        {options.map((option) => (
+          <RadioButton
+            key={option.value}
+            label={option.label}
+            showTooltip={option?.showTooltip}
+            tooltipChildren={option?.tooltipChildren}
+            tooltipTitle={option?.tooltipTitle}
+            tooltipPosition={option?.tooltipPosition}
+            name={name}
+            value={option.value}
+            checked={selectedValue === option.value}
+            onChange={() => onChange?.(option)}
+            disabled={disabled || option.disabled}
+          />
+        ))}
+      </div>
+      {isError && (
+        <Typography
+          as="div"
+          lineHeight="15px"
+          fontSize={10}
+          color="var(--error_light)"
+          className="ff-radio-error-msg"
+        >
+          {errorMessage}
+        </Typography>
+      )}
+    </>
   );
 };
 

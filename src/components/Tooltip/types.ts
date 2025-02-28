@@ -29,14 +29,14 @@ interface TooltipProps {
    *
    * @default 'bottom'
    */
-  placement?: 
-    | 'top' 
-    | 'bottom' 
-    | 'left' 
-    | 'right' 
-    | 'top-start' 
-    | 'top-end' 
-    | 'bottom-start' 
+  placement?:
+    | 'top'
+    | 'bottom'
+    | 'left'
+    | 'right'
+    | 'top-start'
+    | 'top-end'
+    | 'bottom-start'
     | 'bottom-end';
 
   /**
@@ -46,15 +46,13 @@ interface TooltipProps {
    * @default false
    */
   disabled?: boolean;
+  /**.
+   * Z-Index is by default 99
+   *
+   * @default 99
+   */
+  zIndex?: number | string;
+  style?: React.CSSProperties;
 }
 
-
-export {
-  TooltipContainerRef,
-  TitleRef,
-  IsTitleEmpty,
-  Position,
-  TooltipProps,
-};
-
-
+export { TooltipContainerRef, TitleRef, IsTitleEmpty, Position, TooltipProps };

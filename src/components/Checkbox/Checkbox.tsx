@@ -14,18 +14,14 @@ const Checkbox: React.FC<CheckboxProps> = ({
   checked: initialChecked = false,
   partial = false,
   onChange,
+  variant,
+  isDefaultHover = false, 
 }) => {
   const [checked, setChecked] = useState(initialChecked);
 
   useEffect(() => {
     setChecked(initialChecked);
   }, [initialChecked]);
-
-  const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (!disabled) {
-      setChecked((prev) => !prev), onChange?.(event);
-    }
-  };
 
   return (
     <label className="ff-checkbox--overlay" htmlFor={id}>
@@ -35,25 +31,28 @@ const Checkbox: React.FC<CheckboxProps> = ({
         id={id}
         name={name}
         checked={checked}
-        onChange={handleCheckboxChange}
+        onChange={onChange}
         disabled={disabled}
       />
       <span
-        className={classNames('ff-checkbox-custom', {
-          'ff-checkbox-checked': checked,
-          'ff-storybook-checkbox--partial': partial && !checked,
-        })}
+     
+     className={classNames('ff-checkbox-custom', {
+      'ff-checkbox-checked': checked,
+      'ff-storybook-checkbox--partial': partial && !checked,
+      [`ff-checkbox--${variant}`]: variant,
+      [`ff-checkbox-checked--${variant}`]: checked && variant,
+      'ff-checkbox-hover-shadow':isDefaultHover,
+    })}
       >
         {checked && (
           <Icon
             name="tick"
-            height={6}
-            width={8}
             color="var(--primary-icon-color)"
+            className="ff-tick-icon"
           />
         )}
       </span>
-      <Typography as="label">{label}</Typography>
+      <Typography as="span">{label}</Typography>
     </label>
   );
 };

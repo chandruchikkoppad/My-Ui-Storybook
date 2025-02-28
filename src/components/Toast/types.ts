@@ -3,7 +3,7 @@ export interface ToasterProps {
   isOpen: boolean;
 
   /**Variant for different type of toast message. */
-  variant: 'success' | 'warning' | 'danger' | 'info' | 'confirm';
+  variant: 'success' | 'warning' | 'danger' | 'info' | 'confirm' | 'alert';
 
   /**Title of the toaster  */
   toastTitle: string;

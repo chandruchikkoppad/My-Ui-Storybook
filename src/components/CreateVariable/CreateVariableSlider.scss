@@ -1,0 +1,20 @@
+.ff-create-variable-slider {
+  padding: 12px 8px;
+  display: flex;
+  transition: all 0.3s ease;
+  flex-direction: column;
+  gap: 24px;
+  transition: all 0.3s ease;
+  .ff-hide-value-content {
+    display: flex;
+    align-items: center;
+  }
+}
+
+.ff-create-slider-footer {
+  width: 100%;
+  gap: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}

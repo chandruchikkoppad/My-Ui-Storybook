@@ -8,6 +8,8 @@
     display: flex;
     justify-content: space-between;
     min-height: 32px;
+    align-items: center;
+    cursor: pointer;
     .header-title {
       padding: 8px;
     }
@@ -39,6 +41,6 @@
   }
 
   .accordion-content {
-    padding: 4px;
+    padding: 8px;
   }
 }

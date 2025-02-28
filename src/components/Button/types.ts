@@ -1,17 +1,30 @@
 import { ReactNode } from 'react';
+import { DynamicObj } from '../CreateVariable/types';
 
 export interface ButtonProps {
   /**
    * Variant of the button
    */
-  variant: 'primary' | 'secondary' | 'tertiary' | 'delete';
+  variant:
+    | 'primary'
+    | 'secondary'
+    | 'tertiary'
+    | 'delete'
+    | 'warning'
+    | 'custom'
+    | 'danger';
   /**
    * What background color to use
    */
   backgroundColor?: string;
   /**
-   * How large should the button be?
+   * What border color to use
    */
+  border?: string | number;
+  /**
+   * What border color to use
+   */
+
   size?: 'small' | 'medium' | 'large';
   /**
    * Button contents
@@ -28,6 +41,11 @@ export interface ButtonProps {
    * Optional click handler
    */
   onClick?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+
+  /**
+   * Optional click handler for Copying the value
+   */
+  onCopy?: (event: React.ClipboardEvent<HTMLButtonElement>) => void;
   /**
    * Button content
    */
@@ -61,5 +79,46 @@ export interface ButtonProps {
    * Give icon name availble in storybook that to be on left side of button
    */
   iconPosition?: 'left' | 'right';
-  transparentBackground?:boolean;
+  transparentBackground?: boolean;
+  /**
+   * form to accept form id in string
+   */
+  form?: string;
+
+  /**
+   * Is the Type ChooseFile for the button
+   */
+  isChooseFile?: boolean;
+
+  /**
+   * Custom Width for the button
+   */
+  buttonWidth?: string;
+
+  /**
+   * Custom Height for the button
+   */
+  buttonHeight?: string;
+
+  /**
+   * selectedfile object will be send.
+   */
+  selectedFile?: File | DynamicObj | null;
+
+  /**
+   * handleCloseIcon function will set to the initial state .
+   */
+  handleCloseIcon?: () => void;
+  /**
+   * create custom button font size .
+   */
+
+  fontSize?: number;
+  /**
+   * create custom button style .
+   */
+  typographyStyle?: React.CSSProperties;
+  /* iconColor prop to set the color of the icon
+   */
+  iconColor?: string;
 }

@@ -1,218 +1,118 @@
+import Typography from '../Typography';
 import Select from './../Select/Select';
 import { StateDropdownProps } from './StateDropdownTypes';
+import './StateDropdown.scss';
 
 const StateDropdown = ({
   value,
-  nodeObj,
   isReviewer = false,
   isApprovePage = false,
   handleStateValueClick,
   handleDropdownOptionsClick,
   disabled = false,
   isOnlyReviewer = false,
-  userHasOnlyViewAccess = false,
+  showBorder = true,
+  zIndex = 100,
 }: StateDropdownProps) => {
-  let currentState = value.toUpperCase();
-  let content;
-  let options;
+  const currentState = value.toUpperCase();
+
   const isReviewerAndClickedOnReviewState: boolean =
-    isReviewer && !isApprovePage && currentState === 'REVIEW' && !nodeObj;
-  let selectedOption: { label: string; value: string } = {
-    label: '',
-    value: '',
+    isReviewer && !isApprovePage && currentState === 'REVIEW';
+
+  //TODO Get proper name from API to dispaly in UI
+  const getOptions = () => {
+    if (isOnlyReviewer && !isApprovePage) {
+      return [
+        { label: 'New', value: 'New' },
+        { label: 'Approve', value: 'Approve' },
+      ];
+    }
+    if (!isReviewer && !isApprovePage) {
+      return [
+        {
+          label: currentState === 'REJECTED' ? 'Rejected' : 'New',
+          value: currentState === 'REJECTED' ? 'Rejected' : 'New',
+        },
+        { label: 'Review', value: 'Review' },
+      ];
+    }
+    if (isReviewer && !isApprovePage) {
+      return [
+        {
+          label: currentState === 'REJECTED' ? 'Rejected' : 'New',
+          value: currentState === 'REJECTED' ? 'Rejected' : 'New',
+        },
+        { label: 'Review', value: 'Review' },
+        { label: 'Approve', value: 'Approve' },
+      ];
+    }
+    if (isReviewer && isApprovePage) {
+      return [
+        { label: 'Review', value: 'Review' },
+        { label: 'Approve', value: 'Approve' },
+        { label: 'Reject', value: 'Reject' },
+      ];
+    }
+    if (isReviewerAndClickedOnReviewState) {
+      return [
+        {
+          label: 'Review',
+          value: 'Review',
+        },
+        {
+          label: 'Approve',
+          value: 'Approve',
+        },
+      ];
+    }
+    return [
+      { label: 'New', value: 'New' },
+      { label: 'Review', value: 'Review' },
+    ];
   };
 
-  if (isOnlyReviewer && !isApprovePage) {
-    options = [
-      {
-        label: 'New',
-        value: 'New',
-      },
-      {
-        label: 'Approve',
-        value: 'Approve',
-      },
-    ];
-  } else if (!isReviewer && !isApprovePage) {
-    options = [
-      {
-        label: currentState === 'REJECTED' ? 'Rejected' : 'New',
-        value: currentState === 'REJECTED' ? 'Rejected' : 'New',
-      },
-      {
-        label: 'Approve',
-        value: 'Approve',
-      },
-    ];
-  } else if (isReviewerAndClickedOnReviewState) {
-    options = [
-      {
-        label: 'Review',
-        value: 'Review',
-      },
-      {
-        label: 'Approve',
-        value: 'Approve',
-      },
-    ];
-  } else if (isReviewer && !isApprovePage) {
-    options = [
-      {
-        label: currentState === 'REJECTED' ? 'Rejected' : 'New',
-        value: currentState === 'REJECTED' ? 'Rejected' : 'New',
-      },
-      {
-        label: 'Review',
-        value: 'Review',
-      },
-      {
-        label: 'Approve',
-        value: 'Approve',
-      },
-    ];
-  } else if (isReviewer && isApprovePage) {
-    options = [
-      {
-        label: 'Review',
-        value: 'Review',
-      },
-      {
-        label: 'Approve',
-        value: 'Approve',
-      },
-      {
-        label: 'Reject',
-        value: 'Reject',
-      },
-    ];
-  } else {
-    options = [
-      {
-        label: 'New',
-        value: 'New',
-      },
-      {
-        label: 'Review',
-        value: 'Review',
-      },
-    ];
-  }
+  const options = getOptions();
 
-  let handleSelectedOption: (value: string) => {
-    label: string;
-    value: string;
-  } = (value) => {
-    return { label: value, value: value };
-  };
-  if (currentState === 'REVIEW') {
-    selectedOption = handleSelectedOption(value);
-  } else if (currentState === 'NEW' && !isApprovePage) {
-    selectedOption = handleSelectedOption(value);
-  } else if (currentState === 'REJECTED' && !isApprovePage) {
-    selectedOption = handleSelectedOption(value);
-  } else {
-    selectedOption = handleSelectedOption(value);
-  }
+  const selectedOption = { label: value, value };
 
-  if (
-    ((currentState === 'NEW' && !isApprovePage) ||
-      (isApprovePage && currentState === 'REVIEW') ||
-      isReviewerAndClickedOnReviewState ||
-      (currentState === 'REJECTED' && !isApprovePage)) &&
-    !userHasOnlyViewAccess
-  ) {
-    content = !disabled ? (
+  const showSelect =
+    (currentState === 'NEW' && !isApprovePage) ||
+    (isApprovePage && currentState === 'REVIEW') ||
+    isReviewerAndClickedOnReviewState ||
+    (currentState === 'REJECTED' && !isApprovePage);
+
+  const content =
+    showSelect && !disabled ? (
       <Select
         label={value}
-        disabled={disabled}
-        onChange={handleDropdownOptionsClick}
+        onChange={(option) => handleDropdownOptionsClick(option)}
         optionsList={options}
         selectedOption={selectedOption}
         showLabel={false}
-        showBorder={true}
+        showBorder={showBorder}
+        disableInput={true}
+        selectedOptionColor="var(--brand-color)"
+        optionZIndex={zIndex}
       />
     ) : (
-      <Select
-        label={value}
-        disabled={true}
-        onChange={handleDropdownOptionsClick}
-        optionsList={options}
-        selectedOption={selectedOption}
-        showLabel={false}
-        showBorder={true}
+      <Typography
+        children={value}
+        className="ff-state-value"
+        onClick={() => {
+          if (
+            value.toLowerCase() === 'review' &&
+            !disabled &&
+            !isApprovePage &&
+            !isReviewer
+          ) {
+            handleStateValueClick();
+          }
+        }}
+        cursor={disabled ? 'text' : 'pointer'}
       />
     );
-  } else if (
-    currentState === 'REVIEW' &&
-    (!isApprovePage || userHasOnlyViewAccess)
-  ) {
-    content = (
-      <Select
-        label={value}
-        disabled={true}
-        onChange={handleDropdownOptionsClick}
-        optionsList={options}
-        selectedOption={selectedOption}
-        showLabel={false}
-        showBorder={true}
-      />
-    );
-  } else if (currentState === 'APPROVED') {
-    content = (
-      <Select
-        label={value}
-        disabled={true}
-        onChange={handleDropdownOptionsClick}
-        optionsList={options}
-        selectedOption={selectedOption}
-        showLabel={false}
-        showBorder={true}
-      />
-    );
-  } else if (currentState === 'REJECTED' && userHasOnlyViewAccess) {
-    content = (
-      <Select
-        label={value}
-        disabled={true}
-        onChange={handleDropdownOptionsClick}
-        optionsList={options}
-        selectedOption={selectedOption}
-        showLabel={false}
-        showBorder={true}
-      />
-    );
-  } else if (currentState === 'NEW' && userHasOnlyViewAccess) {
-    content = (
-      <Select
-        label={value}
-        disabled={true}
-        onChange={handleDropdownOptionsClick}
-        optionsList={options}
-        selectedOption={selectedOption}
-        showLabel={false}
-        showBorder={true}
-      />
-    );
-  } else {
-    content = '';
-  }
 
-  return (
-    <div
-      onClick={() => {
-        if (
-          value.toLowerCase() === 'review' &&
-          !userHasOnlyViewAccess &&
-          !isApprovePage &&
-          !isReviewer
-        ) {
-          handleStateValueClick();
-        }
-      }}
-    >
-      {content}
-    </div>
-  );
+  return <>{content}</>;
 };
 
 export default StateDropdown;

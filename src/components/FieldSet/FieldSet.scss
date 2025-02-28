@@ -1,0 +1,10 @@
+.ff_fieldSet_container {
+  .ff_fieldSet {
+    border:1px solid var(--ff-select-border-color);
+    border-radius: 5px;
+    .ff_legend_container{
+        display: flex;
+        margin-left: 8px
+    }
+  }
+}

@@ -1,150 +1,203 @@
 @use '../../assets/styles/fonts';
 
-.ff-input-container {
+.ff-input-fieldset {
+  display: inline-block;
+  border: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+
+  &--disabled {
+    border: 1px solid var(--input-default-border-color);
+    background: var(--input-disabled-background-color);
+    border-radius: 4px;
+    opacity: 0.5;
+  }
+  .ff-input-container {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+
+    .ff-input {
+      padding: 6px 8px;
+      border: 1px solid var(--input-default-border-color);
+      border-radius: 4px;
+      outline: none;
+      line-height: 18px;
+      @extend .fontSm;
+      &--number {
+        padding: 6px 24px 6px 8px;
+      }
+      &--medium {
+        padding: 10px 9px;
+      }
+      &:disabled {
+        cursor: not-allowed;
+        border: none;
+        background: transparent;
+      }
+      &::placeholder {
+        opacity: 0;
+        @extend .fontXs;
+        line-height: 15px;
+      }
+      &--danger {
+        border-color: var(--input-error-text-color);
+      }
+      &--transparentBackground {
+        background: transparent;
+      }
+      &--no-border {
+        border: none;
+      }
+      &--placeholder {
+        &::placeholder {
+          opacity: 1;
+        }
+      }
+    }
+
+    .ff-input-label-container {
+      @extend .ff-input;
+      display: flex;
+      gap: 2px;
+      position: absolute;
+      border: none;
+      outline: none;
+      line-height: 18px;
+      margin-top: 1px;
+      transition: all 0.3s ease-in-out;
+      &--medium {
+        line-height: 25px;
+      }
+      .ff-input-label {
+        color: var(--input-default-label-color);
+        &--danger {
+          color: var(--input-error-text-color);
+        }
+        &--disabled {
+          color: var(--input-default-border-color);
+          background-color: var(--input-label-bg-color);
+        }
+      }
+
+      .required-asterisk {
+        color: var(--input-error-text-color);
+      }
+    }
+    &:hover {
+      .ff-input-label {
+        color: var(--input-default-label-color);
+        &--no-hover {
+          color: var(--input-default-label-color);
+        }
+        &--disabled {
+          color: var(--input-default-border-color);
+        }
+        &--danger {
+          color: var(--input-error-text-color);
+        }
+      }
+      .ff-input {
+        border-color: var(--brand-color);
+        &--no-hover {
+          border-color: var(--input-default-border-color);
+        }
+        &--disabled {
+          background: transparent;
+          border-color: var(--input-default-border-color);
+        }
+        &--danger {
+          border-color: var(--input-error-text-color);
+        }
+      }
+    }
+    &:focus-within {
+      .ff-input-label-container {
+        top: -9px;
+        @extend .fontXs;
+        background-color: var(--input-label-bg-color);
+        line-height: 15px;
+        padding: 0px 2px;
+        margin-left: 10px;
+      }
+      .ff-input-label {
+        &--primary {
+          color: var(--brand-color);
+        }
+        &--danger {
+          color: var(--input-error-text-color);
+        }
+      }
+      .ff-input {
+        border-color: var(--brand-color);
+
+        &--danger {
+          border-color: var(--input-error-text-color);
+        }
+
+        &::placeholder {
+          opacity: 1;
+          margin-bottom: 1px;
+        }
+      }
+    }
+
+    .ff-input-message {
+      @extend .fontXs;
+      padding: 0px 4px;
+      margin-left: 8px;
+      line-height: 15px;
+      &--space {
+        height: 15px;
+      }
+      &--danger {
+        color: var(--input-error-text-color);
+      }
+    }
+
+    &--float {
+      .ff-input-label-container {
+        //re-written label container code to place it at on border
+        top: -9px;
+        font-size: 10px;
+        background-color: var(--input-label-bg-color);
+        line-height: 15px;
+        padding: 0px 2px;
+        margin-left: 10px;
+      }
+      &--disabled {
+        cursor: not-allowed;
+        .ff-input-label-container {
+          cursor: not-allowed;
+        }
+      }
+    }
+  }
+}
+
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.arrow-container {
+  height: 29px;
   display: flex;
   flex-direction: column;
-  position: relative;
+  position: absolute;
+  justify-content: space-evenly;
+  align-items: center;
+  right: 6px;
+  top: 53%;
+  background: transparent;
+  transform: translateY(-50%);
 
-  .ff-input {
-    padding: 6px 8px;
-    border: 1px solid var(--input-default-border-color);
-    border-radius: 4px;
-    outline: none;
-    line-height: 18px;
-    @extend .fontSm;
-    &:disabled {
-      cursor: not-allowed;
-    }
-    &::placeholder {
-      opacity: 0;
-      line-height: 18px;
-    }
-    &--disabled {
-      background: transparent;
-      border-color: var(--input-default-border-color);
-    }
-    &--danger {
-      border-color: var(--input-error-text-color);
-    }
-    &--transparentBackground {
-      background: transparent;
-    }
-    &--no-border {
-      border: none;
-    }
+  &-label {
+    top: 46%;
   }
-
-  .ff-input-label-container {
-    @extend .ff-input;
-    display: flex;
-    gap: 2px;
-    position: absolute;
-    border: none;
-    outline: none;
-    line-height: 18px;
-    margin-top: 1px;
-    transition: all 0.3s ease-in-out;
-
-    .ff-input-label {
-      color: var(--input-default-label-color);
-      &--danger {
-        color: var(--input-error-text-color);
-      }
-      &--disabled {
-        color: var(--input-default-border-color);
-        background-color: var(--input-label-bg-color);
-      }
-    }
-
-    .required-asterisk {
-      color: var(--input-error-text-color);
-    }
-  }
-  &:hover {
-    .ff-input-label {
-      color: var(--input-hover-border-color);
-      &--no-hover {
-        color: var(--input-default-label-color);
-      }
-      &--disabled {
-        color: var(--input-default-border-color);
-      }
-      &--danger {
-        color: var(--input-error-text-color);
-      }
-    }
-    .ff-input {
-      border-color: var(--input-hover-border-color);
-      &--no-hover {
-        border-color: var(--input-default-border-color);
-      }
-      &--disabled {
-        background: transparent;
-        border-color: var(--input-default-border-color);
-      }
-      &--danger {
-        border-color: var(--input-error-text-color);
-      }
-    }
-  }
-  &:focus-within {
-    .ff-input-label-container {
-      top: -6px;
-      @extend .font-size-8;
-      background-color: var(--input-label-bg-color);
-      line-height: 12px;
-      padding: 0px 2px;
-      margin-left: 10px;
-    }
-    .ff-input-label {
-      &--primary {
-        color: var(--brand-color);
-      }
-      &--danger {
-        color: var(--input-error-text-color);
-      }
-    }
-    .ff-input {
-      &--primary {
-        border-color: var(--brand-color);
-      }
-      &--danger {
-        border-color: var(--input-error-text-color);
-      }
-
-      &::placeholder {
-        opacity: 1;
-        margin-bottom: 1px;
-        @extend .font-size-8;
-      }
-    }
-  }
-
-  .ff-input-message {
-    @extend .font-size-8;
-    padding: 0px 4px;
-    margin-left: 8px;
-    line-height: 12px;
-    &--danger {
-      color: var(--input-error-text-color);
-    }
-  }
-
-  &--float {
-    .ff-input-label-container {
-      //re-written label container code to place it at on border
-      top: -6px;
-      @extend .font-size-8;
-      background-color: var(--input-label-bg-color);
-      line-height: 12px;
-      padding: 0px 2px;
-      margin-left: 10px;
-    }
-    &--disabled {
-      cursor: not-allowed;
-      .ff-input-label-container {
-        cursor: not-allowed;
-      }
-    }
+  &-label-error {
+    top: 15px;
   }
 }

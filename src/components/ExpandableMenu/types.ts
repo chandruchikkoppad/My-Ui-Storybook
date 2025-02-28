@@ -31,4 +31,7 @@ export interface ExpandableMenuProps {
    * optional | onSubMenuClick event to perform action on click of sub menu
    */
   onSubMenuClick?: (subChip: any) => void;
+
+  menuExpandStatus?: boolean;
+  
 }

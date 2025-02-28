@@ -1,4 +1,4 @@
-import { Meta, StoryObj } from '@storybook/react/*';
+import { Meta, StoryObj } from '@storybook/react';
 import DonutChart from './DonutChart';
 
 const meta: Meta<typeof DonutChart> = {
@@ -19,11 +19,12 @@ export const Default: Story = {
     lineWidth: 15,
     legendDetailsType: 'Scripts',
     isLegendDetails: true,
-    statusValues: [
-      { status: 'Passed', value: 60 },
-      { status: 'failed', value: 20 },
-      { status: 'Warning', value: 10 },
-      { status: 'skipped', value: 10 },
+    totalCount: 500,
+    resultStats: [
+      { status: 'passed', percentage: 50, count: 250 },
+      { status: 'failed', percentage: 20, count: 100 },
+      { status: 'warning', percentage: 20, count: 100 },
+      { status: 'skipped', percentage: 10, count: 50 },
     ],
     gapAngle: 0.06,
   },

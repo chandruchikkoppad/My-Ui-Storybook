@@ -1,3 +1,4 @@
+import React from 'react';
 import { getExtension } from './getExtension';
 
 export default {

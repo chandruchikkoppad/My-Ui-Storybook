@@ -14,6 +14,10 @@ const Typography: React.FC<TypographyProps> = ({
   children,
   htmlFor = '',
   onClick = () => {},
+  required = false,
+  style = {},
+  cursor,
+  onDoubleClick = () => {},
 }) => {
   const fontSizeValue =
     typeof fontSize === 'number' ? `${fontSize}px` : fontSize;
@@ -28,9 +32,13 @@ const Typography: React.FC<TypographyProps> = ({
         color,
         textAlign,
         letterSpacing,
+        cursor,
+        ...style,
       }}
       onClick={onClick}
+      onDoubleClick={onDoubleClick}
     >
+      {required && <span className="required-asterisk">*</span>}
       {children}
     </Element>
   );

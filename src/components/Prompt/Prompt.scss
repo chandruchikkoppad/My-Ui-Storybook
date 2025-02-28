@@ -1,0 +1,34 @@
+@use '../../assets/styles/fonts';
+@use '../../assets/styles/mixins';
+
+.ff-prompt-container {
+  @include mixins.center-vertical();
+  margin: 8px;
+  border-top-left-radius: 80px;
+  background: var(--prompt-bg-color);
+  border: 1px solid var(--border-color);
+
+  &.icon-left {
+    flex-direction: row;
+  }
+
+  &.icon-right {
+    flex-direction: row-reverse;
+  }
+}
+
+.ff-prompt-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  @extend .fontSm;
+  background: transparent;
+  line-height: 20px;
+  padding: 0px 8px;
+  width: inherit;
+}
+
+.ff-prompt-icon {
+  padding: 0px 8px;
+  cursor: pointer;
+}

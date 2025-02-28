@@ -1,0 +1,86 @@
+.ff-accordion-table-container-steps {
+  overflow-y: auto;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  .ff-accordion-table {
+    width: 100%;
+    flex-shrink: 0;
+
+    .ff-table-header {
+      text-align: left;
+      padding: 7px 8px;
+      color: var(--text-color);
+      background-color: var(--border-color);
+    }
+
+    &--primary-bg {
+      background-color: var(--table-with-accordion-header-primary-bg);
+    }
+
+    &--secondary-bg {
+      background-color: var(--secondary-bg);
+    }
+
+    &--default-bg {
+      background-color: var(--default-bg);
+    }
+  }
+
+  .ff-accordion-fixed-header {
+    position: sticky;
+    top: 0;
+    z-index: 99;
+    background-color: var(--file-details-bg);
+  }
+
+  .ff-accordion-table-body {
+    flex-grow: 1;
+    overflow-y: auto;
+    overflow: scroll;
+  }
+
+  .ff-accordion-table-body::-webkit-scrollbar {
+    display: none;
+  }
+
+  .ff-accordion-table-body {
+    scrollbar-width: none;
+  }
+
+  .column-table-accordion {
+    width: 100%;
+
+    .accordion-header {
+      display: flex;
+      align-items: center;
+      padding: 4px 8px 4px 24px;
+      position: relative;
+      z-index: 99;
+
+      .accordion-arrow {
+        margin-left: 4px;
+        transition: transform 0.2s ease-in-out;
+        cursor: pointer;
+
+        .steps-arrow-svg>svg:hover {
+          color: var(--text-color) !important;
+        }
+
+        img {
+          height: 30px;
+          width: 35px;
+        }
+      }
+
+      .accordion-arrow.expanded {
+        transform: rotate(90deg);
+      }
+    }
+  }
+}

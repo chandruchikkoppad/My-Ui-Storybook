@@ -10,6 +10,10 @@ export interface SelectProps {
    * If true, the select dropdown will have a label
    */
   showLabel?: boolean;
+  /**
+   * Provide the boolean value if arrow icon is reuired or not
+   */
+  showArrowIcon?: boolean;
 
   /*
    * Options for the select dropdown
@@ -19,7 +23,7 @@ export interface SelectProps {
   /*
    * Selected option for the select dropdown
    */
-  selectedOption?: Option;
+  selectedOption: Option;
 
   /*
    * onChange callback function for handling selected option changes
@@ -30,6 +34,10 @@ export interface SelectProps {
    * If error is true, this message will be displayed
    */
   errorMsg?: string;
+  /*
+   * If error is true, this message will be displayed
+   */
+  error?: boolean;
 
   /*
    * provide the className for the select dropdown
@@ -64,9 +72,99 @@ export interface SelectProps {
    * optionsRequired:false prop removes options from dropdown & shows static label only
    */
   optionsRequired?: boolean;
+
+  /*
+   * selectedOptionColor prop provides the custom color for the selected option
+   */
+  selectedOptionColor?: string;
+
+  /*
+   * Label accessor
+   */
+
+  labelAccessor?: string;
+
+  /*
+   * Value accessor
+   */
+  valueAccessor?: string;
+
+  /*
+   * Provide the custom height for the select container
+   */
+  height?: number;
+
+  /*
+   * Provide the custom width for the select container
+   */
+  width?: number | string;
+
+  /*
+   *  Provide the onBlur functionality for the select
+   */
+  onBlur?: () => void;
+
+  /*
+   * Disable the select component input
+   */
+  disableInput?: boolean;
+
+  /*
+   *  Provide the icon for the select
+   */
+  showIcon?: boolean;
+
+  /*
+   *  Provide the icon name for the select
+   */
+  iconName?: string;
+
+  /**
+   * Provide the placehoder for the select
+   */
+  placeHolder?: string;
+
+  /**
+   * Provide the boolean value if tooltip is reuired or not
+   */
+  showToolTip?: boolean;
+
+  /**
+   * Provide the background color for the select label on the hover state
+   */
+  labelBackgroundColor?: string;
+
+  /**
+   * To close the modal in the select dropdown
+   */
+  onCancelModal?: () => void;
+
+  /**
+   * To close the modal in the select dropdown
+   */
+  onSaveModal?: () => void;
+
+  /**
+   * Pass the custom Jsx for the Modal
+   */
+  modalJSXProps?: ReactNode;
+
+  /**
+   * Pass the recurrence boolean for the exeception cases
+   */
+  recurrence?: boolean;
+
+  /**
+   * Toggles the visibility of dropdown options, when called, toggles the dropdown visibility
+   */
+  showOptions?: { open: boolean; toggle: boolean };
+  /**
+   * Tooltip for input data
+   */
+  tooltip?: boolean;
 }
 
-export interface DrowdownPosition {
+export interface DropdownPosition {
   positionX: number;
   positionY: number;
   width: number;
@@ -80,47 +178,11 @@ export interface SelectState {
   showOptions: boolean;
   options: Option[];
   option: string;
-  dropdownPosition: DrowdownPosition;
+  dropdownPosition: DropdownPosition;
 }
 
-export type SelectAction =
-  | { type: 'FOCUS_INPUT' }
-  | {
-      type: 'BLUR_INPUT';
-      payload: {
-        optionsList: Option[];
-        option: Option['value'];
-      };
-    }
-  | { type: 'MOUSE_ENTER' }
-  | { type: 'MOUSE_LEAVE' }
-  | {
-      type: 'UPDATE_DROPDOWN_POSITION';
-      payload: {
-        positionX: number;
-        positionY: number;
-        width: number;
-        fromBottom: number;
-      };
-    }
-  | {
-      type: 'UPDATE_OPTION';
-      payload: string;
-    }
-  | {
-      type: 'UPDATE_OPTION_LIST';
-      payload: Option[];
-    }
-  | {
-      type: 'SHOW_ERROR';
-      payload: {
-        optionsList: Option[];
-        option: Option['value'];
-      };
-    };
+type OptionValue = any;
 
 export interface Option {
-  label: string | ReactNode;
-  value: string;
-  disabled?: boolean;
+  [key: string]: OptionValue;
 }

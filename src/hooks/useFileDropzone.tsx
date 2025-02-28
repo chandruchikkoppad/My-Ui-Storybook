@@ -21,6 +21,7 @@ const useFileDropzone = (options: DropzoneOptions): DropzoneState => {
     invalidFileMessage,
     fileExistMessage,
     validateMIMEType = false,
+    isApiResponseError,
   } = options;
 
   const [files, setFiles] = useState<FileState>({ accepted: [], rejected: [] });
@@ -56,7 +57,7 @@ const useFileDropzone = (options: DropzoneOptions): DropzoneState => {
       const extensionWithPeriod = getExtensionWithPeriod(file).toLowerCase();
 
       if (validateMIMEType) {
-        if (!validateFileMIMEType(file, extensionWithPeriod)) {
+        if (!validateFileMIMEType(file, extensionWithPeriod) || isApiResponseError ) {
           errors.push({
             message: invalidFileMessage
               ? invalidFileMessage
@@ -167,6 +168,7 @@ const useFileDropzone = (options: DropzoneOptions): DropzoneState => {
     ) => {
       event.preventDefault();
       event.stopPropagation();
+      setIsDragActive(false);
 
       const droppedFiles =
         'dataTransfer' in event

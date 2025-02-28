@@ -1,143 +1,206 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import Icon from '../Icon';
 import Typography from '../Typography';
-import ffid from '../../utils/ffID/ffid';
 import { truncateText } from '../../utils/truncateText/truncateText';
 import './AllProjectsDropdown.scss';
 import classNames from 'classnames';
+import { AllProjectsDropdownProps, optionsType } from './types';
+import Tooltip from '../Tooltip';
+import useClickOutside from '../../hooks/useClickOutside';
+import Search from '../Search';
+import { checkEmpty } from '../../utils/checkEmpty/checkEmpty';
 
-const AllProjectsDropdown = () => {
-  const [showOptions, setShowOptions] = useState(false);
-  const [selectedOptions, setSelectedOptions] = useState({
+const AllProjectsDropdown = ({
+  onClick = () => {},
+  onMenuClick = () => {},
+  options,
+  selectedOption = {
     label: 'All Projects',
     value: 'All Projects',
     iconName: 'all_projects',
-  });
-  const [search, setSearch] = useState(true);
+  },
+  selected = false,
+  placeholder,
+  disabled = false,
+}: AllProjectsDropdownProps) => {
+  const [showOptions, setShowOptions] = useState(false);
+  const [selectedOptions, setSelectedOptions] = useState(selectedOption);
+  const optionsRef = useRef<HTMLDivElement>(null);
+  const [optionsList, setOptionSList] = useState<optionsType[]>(options);
+  const [closeTimeout, setCloseTimeout] = useState<number | null>(null);
 
-  let options = [
-    {
-      label: 'All Projects',
-      value: 'All Projects',
-      iconName: 'all_projects',
-    },
-    {
-      label: 'Pantaloon Project',
-      value: 'Pantaloon Web Project',
-      iconName: 'web_icon',
-    },
-    {
-      label: 'Mobile Project',
-      value: 'Mobile Project',
-      iconName: 'mobile_icon',
-    },
-    {
-      label: 'Web & Mobile Project',
-      value: 'Web & Mobile Project',
-      iconName: 'web&mobile_icon',
-    },
-    {
-      label: 'Sales Force',
-      value: 'Sales Force',
-      iconName: 'sales_force',
-    },
-    {
-      label: 'MS Dynamic',
-      value: 'MS Dynamic',
-      iconName: 'ms_dynamic',
-    },
-    {
-      label: 'Web Service',
-      value: 'Web Service',
-      iconName: '',
-    },
-  ];
-
-  const handleSelect = () => {
-    setShowOptions(!showOptions);
-  };
-
-  const handleSelectOption = (option: {
-    label: string;
-    value: string;
-    iconName: string;
-  }) => {
-    setSelectedOptions(option);
+  const closeOptions = () => {
     setShowOptions(false);
   };
 
-  const handleInput = () => {
-    setSearch(false);
+  const handleMouseEnter = () => {
+    if (!disabled) setShowOptions(true);
   };
 
+  const handleMouseLeave = () => {
+    if (!disabled) {
+      const timeout = setTimeout(() => {
+        closeOptions();
+      }, 250);
+      setCloseTimeout(timeout);
+    }
+  };
+
+  const dropDownMouseEnter = () => {
+    if (closeTimeout) {
+      clearTimeout(closeTimeout);
+      setCloseTimeout(null);
+    }
+  };
+
+  const handleSelectOption = (option: optionsType) => {
+    if (!disabled) {
+      setSelectedOptions(option);
+      closeOptions();
+      onClick(option);
+      setSearchValue('');
+      setOptionSList(options);
+    }
+  };
+
+  const [searchValue, setSearchValue] = useState('');
+  const handleSearch = (query: string) => {
+    if (!disabled) {
+      setSearchValue(query);
+      if (!checkEmpty(query)) {
+        let filterData = options.filter((option) =>
+          option.label.toLowerCase().includes(query.toLowerCase())
+        );
+        setOptionSList(filterData);
+      } else {
+        setSearchValue('');
+        setOptionSList(options);
+      }
+    }
+  };
+
+  useClickOutside(optionsRef, closeOptions);
+
   return (
-    <div className={classNames('ff-all-project')}>
+    <div
+      className={classNames('ff-all-project', {
+        'ff-all-project--disabled': disabled,
+      })}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
       <div
-        onClick={handleSelect}
-        className={classNames('ff-all-project-dropdown')}
+        className={classNames('ff-all-project-dropdown', {
+          ['ff-all-project-dropdown--selected']: selected,
+          ['ff-all-project-dropdown--disabled']: disabled,
+        })}
       >
-        <Typography
-          as={'div'}
-          lineHeight={'18px'}
-          fontSize={12}
-          fontWeight={'regular'}
-          className={classNames('projects-label')}
-        >
-          {truncateText(selectedOptions.label, 12)}
-        </Typography>
-        <div className={classNames('label-icon')}>
-          <Icon
-            name="arrows_down_icon"
-            color="var(--primary-icon-color)"
-            height={8}
-            width={8}
-          />
+        <div className={classNames('ff-all-project-container')}>
+          <Typography
+            as={'div'}
+            lineHeight={'18px'}
+            fontSize={12}
+            fontWeight={selected ? 'semi-bold' : 'regular'}
+            className={classNames('projects-label')}
+            onClick={onMenuClick}
+          >
+            {selectedOptions.label.length <= 12
+              ? selectedOptions.label
+              : truncateText(selectedOptions?.label, 8)}
+          </Typography>
+          <div className={classNames('label-icon')}>
+            <Icon
+              name={showOptions ? 'arrows_top_icon' : 'arrows_down_icon'}
+              color={
+                disabled
+                  ? 'var(--disabled-icon-color)'
+                  : 'var(--primary-icon-color)'
+              }
+              height={8}
+              width={8}
+              hoverEffect={false}
+            />
+          </div>
         </div>
       </div>
-      {showOptions && (
-        <div className={classNames('ff-dropdown')}>
-          <div className={classNames('ff-search')}>
-            {search && <Icon name="search" height={8} width={8} />}
-            <input
-              type="text"
-              placeholder="Search Project"
-              onClick={() => handleInput()}
+      {showOptions && !disabled && (
+        <div
+          className={classNames('ff-projects-dropdown')}
+          ref={optionsRef}
+          onMouseEnter={dropDownMouseEnter}
+        >
+          <div className="ff-dropdown-search-container">
+            <Search
+              onSearch={handleSearch}
+              value={searchValue}
+              isExpand={true}
+              onClose={() => {}}
+              onExpand={() => {}}
+              showClose={false}
+              placeholder={placeholder}
+              disabled={disabled}
             />
+          </div>
+          <div className={classNames('option-card')}>
+            {optionsList.map(
+              (option, index) =>
+                index === 0 && (
+                  <div
+                    key={index}
+                    onClick={() => handleSelectOption(option)}
+                    className={classNames('ff-projects-options', {
+                      ['ff-selected-option']:
+                        selectedOption.label === option.label,
+                      ['ff-option-disabled']: disabled,
+                    })}
+                  >
+                    <div className={classNames('ff-projects-icons')}>
+                      <Icon name={option.iconName} height={12} width={12} />
+                    </div>
+                    <Typography
+                      key={index}
+                      as={'div'}
+                      lineHeight={'30px'}
+                      className="ff-projects-label"
+                    >
+                      {<Tooltip title={option.label}>{option.label}</Tooltip>}
+                    </Typography>
+                  </div>
+                )
+            )}
           </div>
           <div
             className={classNames(
               'option-card',
-              `${options.length > 4 ? 'scroll' : ''}`
+              `${optionsList.length > 4 ? 'scroll' : ''}`
             )}
           >
-            {options.map((option) => (
-              <div
-                key={ffid()}
-                onClick={() => handleSelectOption(option)}
-                className={classNames(
-                  'projects-options',
-                  `${
-                    option.label === 'All Projects' ? 'all-projects-option' : ''
-                  }`
-                )}
-              >
-                <div className={classNames('projects-icons')}>
-                  <Icon
-                    name={option.iconName}
-                    height={12}
-                    width={12}
-                    color={
-                      option.label === 'All Projects'
-                        ? 'var(--secondary-icon-color)'
-                        : 'var(--primary-icon-color);'
-                    }
-                  />
-                </div>
-                <Typography key={ffid()} as={'div'} lineHeight={'30px'}>
-                  {option.label}
-                </Typography>
-              </div>
-            ))}
+            {optionsList.map(
+              (option, index) =>
+                index > 0 && (
+                  <div
+                    key={index}
+                    onClick={() => handleSelectOption(option)}
+                    className={classNames('ff-projects-options', {
+                      ['ff-selected-option']:
+                        selectedOption.label === option.label,
+                      ['ff-option-disabled']: disabled,
+                    })}
+                  >
+                    <div className={classNames('ff-projects-icons')}>
+                      <Icon name={option.iconName} height={12} width={12} />
+                    </div>
+                    <Typography
+                      key={index}
+                      as={'div'}
+                      lineHeight={'30px'}
+                      className="ff-projects-label"
+                    >
+                      {<Tooltip title={option.label}>{option.label}</Tooltip>}
+                    </Typography>
+                  </div>
+                )
+            )}
           </div>
         </div>
       )}

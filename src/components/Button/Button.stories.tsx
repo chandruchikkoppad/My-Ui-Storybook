@@ -45,6 +45,20 @@ export const Delete: Story = {
     variant: 'delete',
   },
 };
+export const Warning: Story = {
+  args: {
+    ...defaultArgs,
+    label: 'Warning',
+    variant: 'warning',
+  },
+};
+export const Danger: Story = {
+  args: {
+    ...defaultArgs,
+    label: 'Danger',
+    variant: 'danger',
+  },
+};
 export const PrimaryWithIcon: Story = {
   args: {
     ...defaultArgs,
@@ -67,6 +81,32 @@ export const TertiaryWithIcon: Story = {
     ...defaultArgs,
     label: 'Tertiary Button',
     variant: 'tertiary',
+    iconName: 'manage_apps',
+  },
+};
+export const CustomButton: Story = {
+  args: {
+    ...defaultArgs,
+    label: 'Website Button',
+    variant: 'custom',
+    border: '1px solid #29102D',
+    typographyStyle: {
+      color: '#29102D',
+    },
+    fontSize: 14,
+    style: {
+      padding: '12px 24px 12px 24px',
+      backgroundColor: '#E9E9E9',
+      borderRadius: '24px',
+    },
+  },
+};
+
+export const DangerWithIcon: Story = {
+  args: {
+    ...defaultArgs,
+    label: 'Danger Button',
+    variant: 'danger',
     iconName: 'manage_apps',
   },
 };

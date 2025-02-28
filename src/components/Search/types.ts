@@ -12,4 +12,17 @@ export interface SearchProps {
    */
   disabled?: boolean;
   width?: number;
+  value: string;
+  isExpand: boolean;
+  onClose: () => void;
+  onExpand: (isExpand: boolean) => void;
+  showClose?: boolean;
+  helperText?: string;
+  showToaster?: boolean;
+  minLength?: number;
+  isAISearch?: boolean;
+  isAISearchClicked?: boolean;
+  handleActiveAiSearch?: () => void;
+  isClear?: boolean
+  handleIsClear?: () => void;
 }

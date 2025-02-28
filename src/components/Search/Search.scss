@@ -1,82 +1,150 @@
 @use '../../assets/styles/fonts';
+@use '../../assets/styles/mixins';
 
-.ff-search-container {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  .ff-search-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    padding: 4px;
-    .ff-icon-container {
-      svg {
-        path {
-          fill: var(--brand-color);
-        }
-      }
+.ff-gradient-border-container {
+  position: relative;
+  padding: 0.8px 1px 0.8px 1px;
+
+  &.ai-search-active {
+    border-radius: 4.5px;
+    background: var(--ai-search-border-color);
+    .ff-search-container {
+      border: none !important;
+      box-shadow: none !important;
     }
   }
-  .ff-search-input {
-    @extend .fontXs;
-    border: none;
-    color: var(--tooltip-bg-color);
-    line-height: 12px;
-    visibility: hidden;
-    transition: width 0.4s ease;
-    &:focus {
-      outline: none;
-      border: none;
+
+  .ff-search-container {
+    background: var(--base-bg-color);
+    @include mixins.horizontal-space-between();
+
+    .ff-search-input-block {
+      @include mixins.center-vertical();
+      transition: width 0.4s ease;
     }
 
-    &:hover {
-      border: none;
-    }
-  }
-  &.disabled {
-    opacity: 0.5;
-  }
-  &.expanded {
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    .ff-vertical-line {
-      height: 8px;
-      width: 1px;
-      position: relative;
-      right: 2px;
-      border-radius: 1px;
-      margin: 8px 0px;
-      background-color: var(--border-color);
-    }
-    .ff-search-input {
-      visibility: visible;
-
-      &::placeholder {
-        color: var(--ff-search-filed-placeholder-text);
-      }
-    }
     .ff-search-icon {
-      padding: 4px;
-      border: none;
-      cursor: default;
-    }
-    .ff-search-clear-button {
-      display: grid;
-      place-items: center;
+      @include mixins.center-content();
       cursor: pointer;
-      width: 22px;
-    }
-    .ff-search-close-icon {
-      margin: 4px;
-      cursor: pointer;
+      border-radius: 4px;
+
+      &:hover {
+        background-color: var(--ff-search-field-hover-color);
+      }
 
       .ff-icon-container {
         svg {
           path {
-            fill: var(--ff-search-filed-close-Icon);
+            fill: var(--brand-color);
+          }
+        }
+      }
+    }
+
+    .ff-search-input {
+      @extend .fontXs;
+      border: none;
+      color: var(--tooltip-bg-color);
+      line-height: 12px;
+      visibility: hidden;
+      transition: width 4s ease;
+
+      &:focus {
+        outline: none;
+        border: none;
+      }
+
+      &:hover {
+        border: none;
+      }
+
+      &.ai-search-placeholder-animation {
+        display: inline-block;
+        overflow: hidden;
+        white-space: nowrap;
+        width: 0;
+        animation: placeholder-width-animation 4s ease-in-out infinite;
+      }
+
+      @keyframes placeholder-width-animation {
+        0% {
+          width: 0%;
+        }
+        50% {
+          width: 100%;
+        }
+        100% {
+          width: 0%;
+        }
+      }
+    }
+
+    &.disabled {
+      opacity: 0.5;
+    }
+
+    &.expanded {
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      background-color: var(--ff-search-filed-bg-color);
+
+      .ff-search-icon {
+        &:hover {
+          background-color: var(--ff-search-filed-bg-color);
+        }
+      }
+
+      .ff-vertical-line {
+        height: 8px;
+        width: 1px;
+        border-radius: 1px;
+        background-color: var(--border-color);
+      }
+
+      .ff-ai-search-icon {
+        cursor: pointer;
+      }
+
+      .ff-search-input {
+        visibility: visible;
+        margin-left: 4px;
+
+        &::placeholder {
+          color: var(--ff-search-filed-placeholder-text);
+        }
+      }
+
+      .ff-search-icon {
+        border: none;
+        cursor: default;
+        margin-right: 4px;
+      }
+
+      .ff-search-clear-button {
+        display: grid;
+        place-items: center;
+        cursor: pointer;
+        width: 22px;
+        padding-top: 1px;
+
+        &.showClose {
+          display: none;
+        }
+      }
+
+      .ff-search-close-icon {
+        margin: 4px;
+        cursor: pointer;
+
+        &.showClose {
+          display: none;
+        }
+
+        .ff-icon-container {
+          svg {
+            path {
+              fill: var(--ff-search-filed-close-Icon);
+            }
           }
         }
       }

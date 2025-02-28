@@ -6,6 +6,25 @@
   align-content: center;
 }
 
+// Horizontal center: Center items horizontally
+@mixin center-horizontal {
+  display: flex;
+  justify-content: center;
+}
+
+// Vertical center: Center items vertically
+@mixin center-vertical {
+  display: flex;
+  align-items: center;
+}
+
+// Align items horizontally with space between them and center them vertically
+@mixin horizontal-space-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 // Mixin for transition effects
 @mixin transition($properties, $duration: 0.3s) {
   transition: $properties $duration;
@@ -18,4 +37,11 @@
   @if $border != none {
     border: $border;
   }
+}
+
+//mixin for end content
+@mixin end-content {
+  display: flex;
+  align-items: center;
+  justify-content: end;
 }

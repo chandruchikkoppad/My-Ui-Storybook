@@ -4,14 +4,17 @@ import '../../assets/styles/_colors.scss';
 import Icon from '../Icon';
 import { ButtonProps } from './types';
 import classNames from 'classnames';
+import Typography from '../Typography';
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (
     {
       variant = 'primary',
       backgroundColor,
+      border,
       size = 'small',
       onClick,
+      onCopy,
       label,
       disabled = false,
       children = null,
@@ -20,22 +23,44 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       style = {},
       iconName,
       iconPosition = 'left',
+      isChooseFile = false,
+      buttonWidth = 'auto',
+      buttonHeight = 'auto',
+      handleCloseIcon,
+      selectedFile,
+      fontSize = 10,
+      typographyStyle,
+
+      iconColor = '',
       ...props
     }: ButtonProps,
     ref
   ) => {
     const renderIcon = () =>
       iconName && (
-        <div>
+        <div
+          onClick={(e) => {
+            if (iconName === 'close') {
+              e.stopPropagation();
+              handleCloseIcon?.();
+            }
+          }}
+        >
           <Icon
-            height={8}
-            width={8}
+            height={isChooseFile ? 14 : 8}
+            width={isChooseFile ? 14 : 8}
             color={
-              variant === 'primary'
-                ? `var(--primary-icon-color)`
-                : `var(--secondary-icon-color)`
+              iconName === 'close'
+                ? 'var(--ff-delete-button-attachment)'
+                : variant === 'danger'
+                ? 'var(--status-rejected-text-color)'
+                : iconColor ||
+                  (variant === 'primary'
+                    ? 'var(--primary-icon-color)'
+                    : 'var(--secondary-icon-color)')
             }
             name={iconName}
+            className="ff-button-icon"
           />
         </div>
       );
@@ -48,15 +73,32 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           `ff-button--${size}`,
           `ff-button--${variant}`,
           `${className}`,
-          'button'
+          { 'ff-button-choose-file': isChooseFile },
+          { 'ff-button-choose-file-text': selectedFile }
         )}
-        style={{ backgroundColor, ...style }}
+        style={{
+          backgroundColor,
+          border,
+          ...style,
+          width: buttonWidth,
+          height: buttonHeight,
+        }}
         onClick={onClick}
+        onCopy={onCopy}
         disabled={disabled}
         {...props}
       >
         {iconPosition === 'left' && renderIcon()}
-        <div className={classNames(`ff-button-${variant}--text`)}>{label}</div>
+        <Typography
+          fontSize={fontSize}
+          style={{ ...typographyStyle }}
+          fontWeight="semi-bold"
+          className={classNames(`ff-button-${variant}--text`, {
+            'ff-button-choose-file-text': selectedFile,
+          })}
+        >
+          {label}
+        </Typography>
         {iconPosition === 'right' && renderIcon()}
         {children}
       </button>

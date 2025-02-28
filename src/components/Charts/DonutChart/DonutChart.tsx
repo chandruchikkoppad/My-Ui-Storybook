@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './DonutChart.scss';
-import { Status, DonutChartProps, StatusValue } from './type';
+import { Status, DonutChartProps, resultStats } from './type';
 
 const calculateArc = (
   x: number,
@@ -38,28 +38,27 @@ const useColorMappings = () => ({
 const DonutChart: React.FC<DonutChartProps> = ({
   radius = 60,
   lineWidth = 15,
-  statusValues = [],
+  resultStats = [],
   gapAngle = 0.06,
   legendDetailsType = '',
   isLegendDetails = true,
+  totalCount,
 }) => {
   const [hoveredStatus, setHoveredStatus] = useState<Status | null>(null);
   const { colorMapping, hoverMapping } = useColorMappings();
-  const total = statusValues?.reduce((acc, { value }) => acc + value, 0);
-  const nonZeroValues = statusValues?.filter(({ value }) => value > 0);
+  const nonZeroValues = resultStats?.filter(({ count }) => count > 0);
   const statusColors = ['passed', 'failed', 'warning', 'skipped'];
   // Calculate angles and gaps
   const TOTAL_GAP_ANGLE = gapAngle * nonZeroValues.length;
   let remainingAngle = 2 * Math.PI - TOTAL_GAP_ANGLE;
-  let currentAngle = Math.PI / 2;
-
+  let currentAngle = -Math.PI / 2;
   const MIN_PERCENTAGE = 1;
   const MIN_ANGLE = (MIN_PERCENTAGE / 100) * (2 * Math.PI);
   let minAngleTotal = 0;
 
   // Adjust for small angles
-  nonZeroValues.forEach(({ value }) => {
-    const valuePercentage = value / total;
+  nonZeroValues.forEach(({ count }) => {
+    const valuePercentage = count / totalCount;
     const angle = Math.max(valuePercentage * (2 * Math.PI), MIN_ANGLE);
     minAngleTotal += angle;
     remainingAngle -= angle;
@@ -71,7 +70,7 @@ const DonutChart: React.FC<DonutChartProps> = ({
   const SVG_PADDING = 4;
   const DONUT_SVG_SIZE = (radius + lineWidth) * 2 + SVG_PADDING * 2;
 
-  const renderArc = (statusValue: StatusValue, endAngle: number, i: number) => {
+  const renderArc = (statusValue: resultStats, endAngle: number, i: number) => {
     const normalizedStatus = statusValue?.status?.toLowerCase() as Status;
     const isFullCircle = nonZeroValues.length === 1;
 
@@ -98,7 +97,11 @@ const DonutChart: React.FC<DonutChartProps> = ({
           strokeWidth={lineWidth}
           onMouseEnter={() => handleMouseEnter(normalizedStatus)}
           onMouseLeave={handleMouseLeave}
-          strokeOpacity={0.8}
+          strokeOpacity={
+            hoveredStatus === null || hoveredStatus === normalizedStatus
+              ? 0.8
+              : 0.3
+          }
         />
         {/* Hover effect */}
         {hoveredStatus === normalizedStatus && (
@@ -115,11 +118,9 @@ const DonutChart: React.FC<DonutChartProps> = ({
   };
 
   const renderLegendItem = (statusKey: Status) => {
-    const statusData = statusValues?.find(
+    const statusData = resultStats?.find(
       (s) => s.status?.toLowerCase() === statusKey?.toLowerCase()
     );
-    const value = Math.round(statusData?.value || 0);
-    const percentage = ((statusData?.value || 0) / total) * 100;
 
     return (
       <div
@@ -129,6 +130,8 @@ const DonutChart: React.FC<DonutChartProps> = ({
             ? 'ff-highlighted'
             : 'ff-fade'
         }`}
+        onMouseEnter={() => handleMouseEnter(statusKey)}
+        onMouseLeave={handleMouseLeave}
       >
         <div className="ff-status-label">
           <div
@@ -145,11 +148,11 @@ const DonutChart: React.FC<DonutChartProps> = ({
         </div>
         <div className="ff-status-details">
           <div className="ff-status-details-script-count">
-            {value}
+            {statusData?.count || 0}
             <span>{legendDetailsType}</span>
           </div>
           <div className="ff-status-details-script-percentage">
-            ({percentage?.toFixed(2)}%)
+            ({statusData?.percentage?.toFixed(2) || 0}%)
           </div>
         </div>
       </div>
@@ -170,9 +173,9 @@ const DonutChart: React.FC<DonutChartProps> = ({
             })`}
           >
             {nonZeroValues?.map((status, i) => {
-              const valuePercentage = status.value / total;
+              const valuePercentage = status.count / totalCount;
               let angle = Math.max(valuePercentage * (2 * Math.PI), MIN_ANGLE);
-              angle += remainingAngle * (valuePercentage / (total / total));
+              angle += remainingAngle * valuePercentage;
               const endAngle = currentAngle + angle;
 
               return renderArc(status, endAngle, i);
@@ -183,11 +186,12 @@ const DonutChart: React.FC<DonutChartProps> = ({
             <text x="0" y="5" textAnchor="middle" fill={colorMapping.skipped}>
               {hoveredStatus
                 ? `${
-                    statusValues?.find(
-                      (s) => s?.status?.toLowerCase() === hoveredStatus
-                    )?.value
+                    resultStats?.find(
+                      (statusValue) =>
+                        statusValue?.status?.toLowerCase() === hoveredStatus
+                    )?.count
                   } ${legendDetailsType}`
-                : `${total} ${legendDetailsType}`}
+                : `${totalCount} ${legendDetailsType}`}
             </text>
             <rect
               x={-17}
@@ -218,11 +222,10 @@ const DonutChart: React.FC<DonutChartProps> = ({
             >
               {hoveredStatus
                 ? `${(
-                    ((statusValues?.find(
-                      (s) => s?.status?.toLowerCase() === hoveredStatus
-                    )?.value || 0) /
-                      total) *
-                    100
+                    resultStats?.find(
+                      (statusValue) =>
+                        statusValue?.status?.toLowerCase() === hoveredStatus
+                    )?.percentage || 0
                   )?.toFixed(2)}%`
                 : '100%'}
             </text>

@@ -1,6 +1,7 @@
 import { Meta, StoryObj } from '@storybook/react';
 import Tooltip from './Tooltip';
 import Icon from '../Icon';
+import React from 'react';
 
 const meta: Meta<typeof Tooltip> = {
   title: 'Components/Tooltip',
@@ -20,7 +21,7 @@ export const Default: Story = {
   args: {
     title: 'Default',
     placement: 'bottom',
-    children: 'Hover on me to check tooltip',
+    children: <Icon name="delete" hoverEffect={true} />,
   },
 };
 
@@ -88,9 +89,9 @@ export const BottomEnd: Story = {
 };
 export const TooltipWithIcon: Story = {
   args: {
-    title: <Icon name="logo" />,
+    title: 'icon',
     placement: 'bottom',
-    children: 'Hover on me to check jsx',
+    children: <Icon name="delete" />,
   },
 };
 

@@ -10,10 +10,11 @@
   box-sizing: border-box;
   margin-block: 4px;
   max-height: 160px;
-
   .ff-multiselect-options-wrapper {
     max-height: 128px;
     overflow-y: auto;
+    border-radius: 2px;
+    overflow-x: hidden;
     &::-webkit-scrollbar {
       width: 4px;
       height: 40px;
@@ -36,11 +37,10 @@
   }
 
   .no-options {
-    @extend .fontMd;
-    color: var(--pop-up-background-blur);
+    color: var(--ff-select-text-color);
     text-align: center;
     margin: 0;
-    padding: 10px;
+    padding: 7px;
     line-height: 12px;
   }
   .dropdown-option-container {

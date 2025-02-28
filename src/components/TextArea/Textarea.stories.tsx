@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import Textarea from './Textarea';
-import { ChangeEvent, useState } from 'react';
+import React ,{ ChangeEvent, useState } from 'react';
 import { checkEmpty } from '../../utils/checkEmpty/checkEmpty';
 const meta: Meta<typeof Textarea> = {
   title: 'Components/Textarea',
@@ -24,6 +24,7 @@ const defaultArgs = {
   cols: 30,
   capacity: 200,
   resize: false,
+  errorText:"Add Description"
 };
 
 export const Default: Story = {
@@ -55,19 +56,28 @@ export const Controlled: Story = {
     const [error, setError] = useState<boolean>(false);
     const [helperText, setHelperText] = useState<string>();
 
+    const handleValidation = (value: string, name: string, isRequired: boolean) => {
+      if (isRequired && checkEmpty(value)) {
+        setError(true);
+        setHelperText(`${name} is required`);
+        return false;
+      }
+      setError(false);
+      setHelperText('');
+      return true;
+    };
+    
     const onChangeHandler = (event: ChangeEvent<HTMLTextAreaElement>) => {
       const value = event.target.value;
-      if (event.target.required) {
-        if (checkEmpty(value)) {
-          setError(true);
-          setHelperText(`${event?.target?.name} is required`);
-        } else {
-          setError(false);
-          setHelperText('');
-        }
-      }
       setValue(value);
+      handleValidation(value, event.target.name, event.target.required);
     };
+    
+    const onBlurHandler = (event: React.FocusEvent<HTMLTextAreaElement>) => {
+      const value = event.target.value;
+      handleValidation(value, event.target.name, event.target.required);
+    };
+
     return (
       <>
         <Textarea
@@ -80,9 +90,10 @@ export const Controlled: Story = {
           label="Description"
           placeholder="Type Your Description Here"
           variant="primary"
-          required={false}
+          required={true}
           error={error}
-          helperText={helperText}
+          onBlur={onBlurHandler}
+          errorText={helperText}
         />
       </>
     );

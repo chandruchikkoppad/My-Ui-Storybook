@@ -1,0 +1,199 @@
+@mixin arrow-style(
+  $size: 6px,
+  $color: var(--ff-connecting-branch-color),
+  $z-index: 2
+) {
+  position: absolute;
+  height: $size;
+  width: $size;
+  background-color: $color;
+  z-index: $z-index;
+}
+
+@mixin container-style(
+  $width: 100%,
+  $height: 25%,
+  $color: var(--ff-connecting-branch-color)
+) {
+  width: $width;
+  height: $height;
+  border: 1px solid $color;
+  border-top: none;
+}
+
+@mixin branch-point(
+  $size: 5px,
+  $color: var(--ff-connecting-branch-color),
+  $position: right,
+  $offset: -2px
+) {
+  position: absolute;
+  height: $size;
+  width: $size;
+  background-color: $color;
+  border-radius: 50%;
+  z-index: 2;
+  #{$position}: $offset;
+  top: calc(50% - 2px);
+}
+
+@mixin branch-arrow(
+  $clip: polygon(0 0, 0% 100%, 100% 50%),
+  $horizontal-pos: right,
+  $offset: -1px
+) {
+  position: absolute;
+  height: 5px;
+  width: 5px;
+  background-color: var(--ff-connecting-branch-color);
+  clip-path: $clip;
+  top: calc(25% - 3px);
+  #{$horizontal-pos}: $offset;
+  z-index: 2;
+}
+
+@mixin datalist-style($reverse: false) {
+  display: flex;
+  padding-top: 4px;
+  height: 24px;
+  justify-content: flex-end;
+  width: 100%;
+  align-items: center;
+  gap: 8px;
+
+  @if $reverse {
+    direction: ltr;
+  }
+  else {
+    direction: rtl;
+  }
+
+  .inner-container {
+    display: flex;
+    flex-direction: row;
+    direction: rtl;
+
+    .ff-connecting-icon,
+    .ff-connecting-text,
+    .ff-connecting-delete-icon {
+      cursor: pointer;
+    }
+  }
+}
+
+@mixin end-arrow-styles($direction: right) {
+  width: 100%;
+  height: 100%;
+  margin-top: 16px;
+  border-top: 1px solid var(--ff-connecting-branch-color);
+  border-#{$direction}: 1px solid var(--ff-connecting-branch-color);
+}
+
+.ff-connecting-branch-grid,
+.ff-connecting-branch-grid-reverse {
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: 24px 180px 40px 180px 24px;
+  height: 66px;
+  margin-bottom: 16px;
+  position: relative;
+
+  .ff-connecting-branch-start-wrapper {
+    position: relative;
+
+    .ff-connecting-branch-arrow {
+      @include arrow-style();
+      clip-path: polygon(0 0, 0% 100%, 100% 50%);
+      top: calc(25% - 3px);
+      right: -1px;
+    }
+
+    .ff-connecting-branch-arrow-reverse {
+      @include arrow-style();
+      left: -1px;
+      top: calc(25% - 3px);
+      clip-path: polygon(0 50%, 100% 100%, 100% 0);
+    }
+
+    .ff-connecting-branch-container {
+      @include container-style();
+      border-right: none;
+      border-bottom-left-radius: 8px;
+    }
+
+    .ff-connecting-branch-container-reverse {
+      @include container-style();
+      border-left: none;
+      border-bottom-right-radius: 8px;
+    }
+  }
+  .ff-environment-run-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .ff-connecting-run-icon,
+    .ff-connecting-run-text {
+      cursor: pointer;
+    }
+  }
+  .ff-connecting-branch-datalist {
+    @include datalist-style();
+  }
+
+  .ff-connecting-branch-datalist-reverse {
+    @include datalist-style(true);
+  }
+
+  .ff-connecting-branch-input-point-wrapper {
+    position: relative;
+
+    .ff-connecting-branch-point {
+      @include branch-point();
+    }
+
+    .ff-connecting-branch-point-reverse {
+      @include branch-point($position: left, $offset: -2px);
+    }
+  }
+
+  .ff-connecting-branch-middle-arrow {
+    height: 0;
+    width: 100%;
+    margin-top: calc(50% - 4px);
+    position: relative;
+
+    .ff-connecting-branch-arrow {
+      @include branch-arrow();
+    }
+
+    .ff-connecting-branch-arrow-reverse {
+      @include branch-arrow(
+        $clip: polygon(0 50%, 100% 100%, 100% 0),
+        $horizontal-pos: left,
+        $offset: -1px
+      );
+    }
+  }
+
+  .ff-connecting-branch-end-arrow {
+    @include end-arrow-styles(right);
+    border-top-right-radius: 8px;
+  }
+
+  .ff-connecting-branch-end-arrow-reverse {
+    @include end-arrow-styles(left);
+    border-top-left-radius: 8px;
+  }
+
+  .ff-connecting-branch-browser-button {
+    height: 32px;
+    display: flex;
+    align-items: center;
+  }
+}
+
+.ff-connecting-branch-grid-reverse {
+  direction: rtl;
+  margin: 0 0 16px 0;
+}

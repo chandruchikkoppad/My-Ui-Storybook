@@ -1,0 +1,23 @@
+@use '../../assets/styles/mixins' as *;
+
+.add-content-button {
+  @include center-content;
+  flex-direction: column;
+  text-align: center;
+  gap: 8px;
+
+  &.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  .icon-container {
+    @include center-content;
+  }
+
+  .typography-label-button {
+    @include center-vertical;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+}

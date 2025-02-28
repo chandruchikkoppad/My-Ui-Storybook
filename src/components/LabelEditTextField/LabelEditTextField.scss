@@ -1,0 +1,94 @@
+@use '../../assets/styles/fonts' as *;
+
+.ff-label-edit-text-field {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  width: 100%;
+  .ff-label-text-field {
+    display: flex;
+    gap: 5px;
+  }
+  .ff-label-text-field-with-dropdown,
+  .ff-label-text-field-without-dropdown {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  .ff-label {
+    position: absolute;
+    top: 0;
+    left: 10px;
+    transform: translateY(-50%);
+    transition: all 0.2s ease;
+    color: var(--label-edit-text-label-color);
+    background: var(--label-edit-text-background-color);
+    padding: 0 4px;
+    @extend .font-size-8;
+  }
+  .ff-textfield-label {
+    @extend .ff-label;
+    top: 5px;
+  }
+
+  .display-text {
+    padding: 4px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+  }
+
+  .ff-text-field,
+  .dropdown {
+    border: 1px solid var(--label-edit-text-label-color);
+    outline: none;
+    width: fit-content;
+    @extend .fontSm;
+  }
+  .ff-text-field {
+    position: relative;
+    padding: 0 4px;
+    border-radius: 4px;
+  }
+  .ff-text-dropdown-field {
+    flex: 2;
+    border: 1px solid var(--label-edit-text-label-color);
+    border-radius: 4px 0 0 4px;
+    border-right: none;
+    border-width: thin;
+    padding-left: 5px;
+    @extend .fontSm;
+    &:focus-visible {
+      outline: none;
+    }
+  }
+  .dropdown {
+    border-radius: 0 4px 4px 0;
+    flex: 1;
+    height: inherit;
+  }
+
+  .ff-icon-container {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    .confirm-icon,
+    .cancel-icon {
+      cursor: pointer;
+    }
+    .disabled-confirm-icon {
+      cursor: default;
+      opacity: 0.5;
+    }
+  }
+
+  .error-text {
+    margin: 0 0 0 5px;
+    color: var(--label-edit-error-text);
+  }
+}
+.custom-edit-text-field {
+  height: 10px;
+  width: 100px;
+}

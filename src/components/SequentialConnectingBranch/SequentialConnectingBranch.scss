@@ -1,0 +1,130 @@
+@mixin item-center {
+  display: flex;
+  align-items: center;
+}
+
+@mixin circle($size, $color) {
+  width: $size;
+  height: $size;
+  border-radius: 50%;
+  background-color: $color;
+}
+
+@mixin arrow($color, $width, $height) {
+  width: $width;
+  height: $height;
+  background-color: $color;
+  clip-path: polygon(100% 50%, 0 100%, 0 0);
+  position: absolute;
+}
+
+.ff-sequential-connecting-branch-wrapper {
+  .ff-connecting-select-branch-wrapper {
+    height: 66px;
+    box-sizing: border-box;
+    width: fit-content;
+    margin-bottom: 16px;
+
+    .ff-select-branch-wrapper {
+      position: relative;
+      display: flex;
+      box-sizing: border-box;
+
+      .ff-sequential-select-branch {
+        width: 240px;
+      }
+
+      .ff-select-branch-arrow {
+        @include item-center;
+        position: relative;
+
+        .ff-branch-arrow-wrapper {
+          margin: 0;
+          width: 40px;
+          border-top: 1px solid var(--ff-connecting-branch-color);
+          position: relative;
+
+          .ff-branch-arrow {
+            @include arrow(var(--ff-connecting-branch-color), 6px, 6px);
+            right: -1px;
+            top: -3px;
+          }
+        }
+
+        .ff-select-branch-point {
+          @include circle(5px, var(--ff-connecting-branch-color));
+          position: absolute;
+          left: -3px;
+          z-index: 102;
+          top: 50%;
+          transform: translateY(-50%);
+        }
+      }
+
+      .ff-select-branch-arrow-down {
+        position: absolute;
+        height: 38px;
+
+        .ff-select-branch-point {
+          @include circle(5px, var(--ff-connecting-branch-color));
+          position: absolute;
+          left: -2px;
+          z-index: 102;
+          top: 50%;
+          transform: translateY(-50%);
+        }
+
+        .ff-select-branch-arrow {
+          width: 0;
+          height: 62px;
+          top: calc(50% + 1px);
+          border-left: 1px solid var(--ff-connecting-branch-color);
+          z-index: 102;
+        }
+      }
+    }
+
+    .ff-select-scope-datalist {
+      box-sizing: border-box;
+      width: 240px;
+      display: flex;
+      justify-content: space-between;
+      margin-top: 2px;
+      padding-left: 4px;
+
+      .ff-scope-wrapper {
+        @include item-center;
+        margin-right: 12px;
+
+        .ff-scope-text {
+          text-transform: capitalize;
+          margin: 0;
+        }
+      }
+
+      .ff-datalist-wrapper {
+        @include item-center;
+
+        #ff-sequential-machine-datalist {
+          @include item-center;
+        }
+
+        .ff-dataset-icon,
+        .ff-run-delete-icon,
+        .ff-datalist-text {
+          cursor: pointer;
+        }
+
+        .ff-datalist-text {
+          margin: 0 8px 0 0;
+        }
+      }
+    }
+  }
+
+  .ff-sequential-branches-wrapper {
+    box-sizing: border-box;
+    width: fit-content;
+    height: fit-content;
+  }
+}

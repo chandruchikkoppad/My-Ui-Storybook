@@ -2,42 +2,71 @@
 @use '../../assets/styles/mixins';
 
 .ff-plus-icon {
-  min-width: 71px;
-  min-height: 24px;
-  border-radius: 12px;
+  border-radius: 16px;
   border-style: none;
   text-align: center;
   text-decoration: none;
   cursor: pointer;
   @include mixins.center-content();
+  background-color: var(--hover-color);
   gap: 8px;
-  background-color: var(--secondary-icon-color);
   padding: 2px 8px 2px 2px;
-  border: 1px solid transparent;
-  .ff-icon-color {
-    path {
-      color: var(--primary-icon-color);
-    }
-  }
-  .icon-name {
-    min-width: 33px;
-    color: var(--primary-icon-color);
+
+  .button-icon {
+    width: 20px;
+    height: 20px;
+    border: 1px solid var(--primary-icon-color);
+    border-radius: 12px;
     @include mixins.center-content();
-  }
-  &:hover {
-    border: 1px solid var(--secondary-icon-color);
-    background-color: var(--hover-color);
-    .icon-name {
-      min-width: 33px;
-      min-height: 20px;
-      font-weight: 600;
-      color: var(--secondary-icon-color);
-      @include mixins.center-content();
-    }
+    background-color: var(--secondary-icon-color);
+
     .ff-icon-color {
       path {
-        color: var(--secondary-icon-color);
+        color: var(--primary-icon-color);
       }
     }
+  }
+
+  .icon-name {
+    color: var(--secondary-icon-color);
+    @include mixins.center-content();
+  }
+
+  &:hover {
+    background-color: var(--secondary-icon-color);
+
+    .icon-name {
+      font-weight: 600;
+      color: var(--primary-icon-color);
+      @include mixins.center-content();
+    }
+
+    .button-icon {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      @include mixins.center-content();
+      background-color: var(--hover-color);
+
+      .ff-icon-color {
+        path {
+          color: var(--secondary-icon-color);
+        }
+      }
+    }
+  }
+}
+
+.ff-plus-no-icon {
+  gap: 0px;
+  padding: 4px 8px 4px 8px;
+  border-radius: 16px;
+
+  .button-icon {
+    display: none;
+  }
+
+  .icon-name {
+    font-weight: normal;
   }
 }

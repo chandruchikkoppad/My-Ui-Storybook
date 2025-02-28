@@ -49,6 +49,9 @@ export interface TextareaProps {
   onBlur?: (event: React.FocusEvent<HTMLTextAreaElement>) => void;
 
   onFocus?: (event: React.FocusEvent<HTMLTextAreaElement>) => void;
+
+  onPaste?: (event: React.ClipboardEvent<HTMLTextAreaElement>) => void;
+  
   /**
    * id to select the textarea field uniquely
    */
@@ -79,4 +82,5 @@ export interface TextareaProps {
    * for resizing purpose
    */
   resize?: boolean;
+  errorText?: string
 }

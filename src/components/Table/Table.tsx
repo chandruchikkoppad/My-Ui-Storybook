@@ -1,138 +1,423 @@
 import './Table.scss';
-// import Checkbox from '../Checkbox';
 import { isFunction } from '../../assets/utils/functionUtils';
 import classNames from 'classnames';
-import { ColumnsProps, DataProps, TableProps ,SelectedItemProps} from './Types';
+import {
+  ColumnsProps,
+  DataProps,
+  TableProps,
+  SelectedItemProps,
+} from './Types';
 import { prepareData } from '../../utils/TableCell/TableCell';
 import Checkbox from '../Checkbox';
-import { checkEmpty } from '../../utils/checkEmpty/checkEmpty';
+import Typography from '../Typography';
+import Icon from '../Icon';
+import { closestCorners, DndContext, DragEndEvent } from '@dnd-kit/core';
+import {
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import {
+  useEffect,
+  useRef,
+  cloneElement,
+  ReactElement,
+  isValidElement,
+  useState,
+} from 'react';
 
-// import NoData from '../NoData/NoData';
+const getColumnWidth = (
+  index: number,
+  column?: { width?: number },
+  columns?: { width?: number }[]
+) => {
+  if (index === 0) return `${index * (column?.width || 0)}px`;
+  if (index === 1) return `${columns?.[0]?.width || 0}px`;
+  return 'auto';
+};
+
+const SortableRow = ({
+  row,
+  columns,
+  tableBodyRowClass,
+  handleOnclick,
+  tableDataTextColor,
+  withCheckbox,
+  onSelectClick,
+  draggable,
+  serialNumber,
+  editMode,
+  isAccordionOpen,
+  accordionContent,
+  columnSticky,
+}: any) => {
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({
+      id: row?._id || row?.id,
+      disabled: row.disabled || !!editMode,
+    });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+  const key = row._id || row.id;
+  return (
+    <>
+      <tr
+        ref={setNodeRef}
+        style={style}
+        key={key}
+        className={classNames(tableBodyRowClass, {
+          'disabled-row': row.disabled,
+        })}
+        id={key}
+      >
+        {columns.map((column: any, index: number) => {
+          const isSticky = columnSticky && (index === 0 || index === 1);
+          return (
+            <td
+              style={{
+                paddingLeft: index === 0 && draggable ? '0px' : '8px',
+                position: isSticky ? 'sticky' : 'static',
+                left: getColumnWidth(index, column, columns),
+                zIndex: isSticky ? 999 : 'auto',
+                backgroundColor: isSticky
+                  ? 'var(--input-label-bg-color)'
+                  : 'transparent',
+              }}
+              key={column.accessor + index}
+              onClick={() => handleOnclick(column, row)}
+              className={classNames(column.className, {
+                'clickable-cell': column.onClick,
+              })}
+            >
+              <Typography
+                as="div"
+                color={tableDataTextColor}
+                className="ff-data-checkbox-container"
+              >
+                {index === 0 && withCheckbox && (
+                  <span className="ff-table-checkbox">
+                    <Checkbox
+                      onChange={(e) => {
+                        onSelectClick(e, row);
+                      }}
+                      checked={row.checked}
+                      disabled={!!row.disabled}
+                    />
+                  </span>
+                )}
+                {index === 0 && draggable && (
+                  <>
+                    <span
+                      className={
+                        row.disabled ? 'ff-table-drag' : 'ff-table-drag-icon'
+                      }
+                      {...listeners}
+                      {...attributes}
+                    >
+                      <Icon name="drag" />
+                    </span>
+                    <Typography color="var(--brand-color)">
+                      {serialNumber}.
+                    </Typography>
+                  </>
+                )}
+                {prepareData(row, column)}
+              </Typography>
+            </td>
+          );
+        })}
+      </tr>
+      {isAccordionOpen ? (
+        <tr className="accordion-row">
+          <td colSpan={columns.length}>
+            <div className="accordion-content">
+              {accordionContent ? accordionContent : null}
+            </div>
+          </td>
+        </tr>
+      ) : null}
+    </>
+  );
+};
 
 const Table = ({
   data = [],
   columns = [],
   headerType,
-  withCheckbox,
+  withCheckbox = false,
   onSelect,
   allSelected,
   partialSelected = false,
   withFixedHeader = true,
   borderWithRadius = false,
-   headerCheckboxDisabled = false,
-  // noDataContent,
-  // noDataImage,
-  // noDataImageSize,
+  headerCheckboxDisabled = false,
+  noDataContent,
   height = '100%',
   className = '',
+  tableHeadClass = '',
+  tableBodyRowClass = '',
+  headerTextColor,
+  tableDataTextColor,
+  headerIconName = '',
+  headerIconOnClick = () => {},
+  draggable = false,
+  onDragEnd,
+  loadMore = () => {},
+  editMode = '',
+  editComponent,
+  getAccordionStatus = () => {},
+  accordionContent,
+  columnSticky = false,
+  onScrollEnd = () => {},
 }: TableProps) => {
-  const hanleOnclick = (column: ColumnsProps, row: DataProps) => {
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  const tableRef = useRef<HTMLTableSectionElement>(null);
+  const [isScrolledToEnd, setIsScrolledToEnd] = useState<boolean>(false);
+
+  useEffect(() => {
+    const scrollContainer = document.getElementById(
+      'ff-table-scroll-container'
+    );
+    const firstNode = document.getElementById('ff-table-first-node');
+    const lastNode = document.getElementById('ff-table-last-node');
+
+    // Exit early if data is empty or elements are missing
+    if (!scrollContainer || !firstNode || !lastNode || !data?.length) {
+      return;
+    }
+
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const direction =
+              entry.target.id === 'ff-table-last-node' ? 'below' : 'above';
+            loadMore(direction);
+          }
+        });
+      },
+      {
+        root: scrollContainer,
+        rootMargin: '8px',
+        threshold: 0.1,
+      }
+    );
+
+    observerRef.current.observe(firstNode);
+    observerRef.current.observe(lastNode);
+
+    return () => {
+      // Cleanup observer
+      observerRef.current?.disconnect();
+    };
+  }, [data, loadMore]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!tableRef.current) return;
+
+      const { scrollTop, scrollHeight, clientHeight } = tableRef.current;
+
+      if (scrollTop + clientHeight >= scrollHeight - 5) {
+        if (!isScrolledToEnd) {
+          setIsScrolledToEnd(true);
+          onScrollEnd(true);
+        }
+      } else {
+        setIsScrolledToEnd(false);
+      }
+    };
+
+    const tableElement = tableRef.current;
+    if (tableElement) {
+      tableElement.addEventListener('scroll', handleScroll);
+    }
+
+    return () => {
+      if (tableElement) {
+        tableElement.removeEventListener('scroll', handleScroll);
+      }
+    };
+  }, [onScrollEnd, isScrolledToEnd]);
+
+  const handleOnclick = (column: ColumnsProps, row: DataProps) => {
     let { onClick, accessor } = column;
     if (onClick && isFunction(onClick)) {
       onClick(accessor, row);
     }
   };
+
   const onSelectClick = (e: object, item: SelectedItemProps) => {
     if (onSelect) {
       onSelect(e, item);
     }
   };
-  if (checkEmpty(data)) return null;
-  
-  return (
-    <div
-      style={{ height: height }}
-      className={classNames(className, {
-        'ff-fixed-header-table': withFixedHeader,
-        'border-borderRadius': borderWithRadius,
-      })}
-    >
-      <table className={classNames(`ff-table`)} cellSpacing={0}>
-        <thead
-          className={classNames({
-            'ff-fixed-header': withFixedHeader,
-          })}
-        >
-          <tr >
-            {/* columns.map((column, index) */}
-            {columns.map((column, index) => (
-              <th
-                className={headerType && `${headerType}-bg`}
-                key={column.header}
-                style={{ width: column?.width }}
-              >
-                <div>
-                   {index === 0 && withCheckbox && (
-                    <span className="ff-table-checkbox">
-                      <Checkbox
-                        onChange={(e) => {
-                          onSelectClick(e, { allSelected: e.target.checked });
-                        }}
-                        checked={
-                          allSelected !== undefined ? allSelected : false
-                        }
-                        partial={!!partialSelected}
-                        disabled={headerCheckboxDisabled}
-                      />
-                    </span>
-                  )} 
 
-                  {column.header}
-                </div>
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {data.length > 0 &&
-            data.map((row: any, index: number) => (
-              <tr key={row.id || index} className={classNames(className,{
-                'disabled-row': row.disabled
-              })} 
-              >                
-                {columns.map((column, i) => {
-                  return (
-                    <td
-                      key={column.accessor + i}
-                      onClick={() => hanleOnclick(column, row)}
-                      className={classNames(column.className, {
-                        'clickable-cell': column.onClick,
-                      })}
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = data.findIndex(
+      (item: any) => item._id === active.id || item.id === active.id
+    );
+    const newIndex = data.findIndex(
+      (item: any) => item._id === over.id || item.id === over.id
+    );
+
+    if (oldIndex === -1 || newIndex === -1) return;
+    if (onDragEnd) onDragEnd(oldIndex, newIndex);
+  };
+
+  return (
+    <DndContext collisionDetection={closestCorners} onDragEnd={handleDragEnd}>
+      <SortableContext
+        disabled={!draggable}
+        items={data?.map((row: any) => row._id || row.id)}
+        strategy={verticalListSortingStrategy}
+      >
+        <div
+          style={{
+            height: height,
+            position: 'relative',
+            overflowX: 'auto',
+            whiteSpace: 'nowrap',
+            scrollbarWidth: draggable ? 'none' : 'auto',
+          }}
+          id="ff-table-scroll-container"
+          className={classNames(className, {
+            'ff-fixed-header-table': withFixedHeader,
+            'border-borderRadius': borderWithRadius,
+          })}
+          ref={tableRef}
+        >
+          <table className={classNames(`ff-table`)} cellSpacing={0}>
+            <thead
+              className={classNames(
+                {
+                  'ff-fixed-header': withFixedHeader,
+                },
+                tableHeadClass
+              )}
+            >
+              <tr>
+                {columns.map((column, index) => (
+                  <th
+                    className={classNames(
+                      `${headerType && `${headerType}-bg`}`,
+                      `${headerTextColor && `${headerTextColor}-color`}`,
+                      {
+                        'sticky-column':
+                          columnSticky && (index === 0 || index === 1),
+                      }
+                    )}
+                    key={column.header}
+                    style={{
+                      width: column?.width,
+                      left: getColumnWidth(index, column, columns),
+                    }}
+                  >
+                    <div className="ff-table-icon">
+                      <Icon
+                        height={14}
+                        width={14}
+                        name={headerIconName}
+                        onClick={headerIconOnClick}
+                      />
+                    </div>
+                    <Typography
+                      style={column?.width && { width: column?.width }}
+                      as="div"
+                      fontWeight="semi-bold"
+                      className="ff-label-checkbox-container"
                     >
-                      <div>
-                        {i === 0 && withCheckbox && (
-                          <span className="ff-table-checkbox">
-                            <Checkbox
-                              onChange={(e) => {
-                                onSelectClick(e, row);
-                              }}
-                              checked={row.checked}
-                              disabled={!!row.disabled}
-                            />
-                          </span>
-                        )}
-                        {prepareData(row, column)}
-                      </div>
-                    </td>
+                      {index === 0 && withCheckbox && (
+                        <span className="ff-table-checkbox">
+                          <Checkbox
+                            onChange={(e) => {
+                              onSelectClick(e, {
+                                allSelected: e.target.checked,
+                              });
+                            }}
+                            checked={
+                              allSelected !== undefined ? allSelected : false
+                            }
+                            partial={!!partialSelected}
+                            disabled={headerCheckboxDisabled}
+                          />
+                        </span>
+                      )}
+
+                      {column.header}
+                    </Typography>
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="ff-fixed-header-table">
+              <tr id="ff-table-first-node" />
+              {data?.length > 0 &&
+                data?.map((row: any, index) => {
+                  const isOpen = getAccordionStatus(
+                    row?.id || row?._id || row?.scriptId
+                  );
+                  return (
+                    <>
+                      {editMode === row._id || editMode === row.id ? (
+                        <tr
+                          key={row?._id || index}
+                          className={classNames(tableBodyRowClass, 'edit-row', {
+                            'disabled-row': row.disabled,
+                          })}
+                        >
+                          <td
+                            colSpan={columns.length}
+                            style={{ padding: '0px' }}
+                          >
+                            {editMode &&
+                              isValidElement(editComponent) &&
+                              cloneElement(editComponent as ReactElement, {
+                                rowData: row,
+                                rowIndex: index + 1,
+                              })}
+                          </td>
+                        </tr>
+                      ) : (
+                        <SortableRow
+                          row={row}
+                          serialNumber={index + 1}
+                          columns={columns}
+                          tableBodyRowClass={tableBodyRowClass}
+                          handleOnclick={handleOnclick}
+                          tableDataTextColor={tableDataTextColor}
+                          withCheckbox={withCheckbox}
+                          onSelectClick={onSelectClick}
+                          draggable={draggable}
+                          columnSticky={columnSticky}
+                          isAccordionOpen={isOpen}
+                          accordionContent={accordionContent}
+                        />
+                      )}
+                    </>
                   );
                 })}
-              </tr>
-            ))}
-        </tbody>
-      </table>
-      {/* {data.length <= 0 && (
-        <div
-          className="no-data-content"
-          style={{ height: `calc(${height} - 50px)` }}
-        >
-          <NoData
-            image={noDataImage ? noDataImage : 'no_data_found'}
-            content={noDataContent}
-            size={noDataImageSize}
-          />
+              <tr id="ff-table-last-node" />
+            </tbody>
+          </table>
+          {data?.length <= 0 && (
+            <div
+              className="no-data-content"
+              style={{ height: `calc(${height} - 50px)` }}
+            >
+              {noDataContent}
+            </div>
+          )}
         </div>
-      )} */}
-    </div>
+      </SortableContext>
+    </DndContext>
   );
 };
 

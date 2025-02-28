@@ -1,17 +1,21 @@
 import { ReactNode, RefObject } from 'react';
-interface ButtonProps {
-  text: string;
-  onClick: () => void;
-}
 interface ModalDimensions {
   width?: number;
   height?: number;
+  borderRadius?: number;
+  zIndex?: number;
+  boxShadow?: string;
+  left?: number;
+  top?: number;
+  padding?: number;
+  right?: number;
 }
 export interface MiniEditModalProps {
   /**
    * A reference to the button element that triggers the modal.
    */
-  anchorRef: RefObject<HTMLButtonElement>;
+  anchorRef?: RefObject<HTMLButtonElement> | string;
+  id?: string | number;
   /**
    * Optional properties for configuring the modal header.
    */
@@ -23,11 +27,11 @@ export interface MiniEditModalProps {
   /**
    * Props for the cancel button inside the modal
    */
-  cancelButtonProps: ButtonProps;
+  cancelButtonProps?: any;
   /**
    * Props for the proceed button inside the modal.
    */
-  proceedButtonProps: ButtonProps;
+  proceedButtonProps?: any;
   /**
    * Optional content for the footer of the modal.
    */
@@ -44,6 +48,10 @@ export interface MiniEditModalProps {
    * Specifies if the modal should behave as a popover with an arrow.
    */
   isPopOver?: boolean;
+  /**
+   * Specifies if the modal should behave as a popover with an arrow.
+   */
+  isIconModel?: boolean;
   /**
    * Sets the position of the modal relative to its anchor.
    * bottom: The modal appears below the anchor.
@@ -85,4 +93,38 @@ export interface MiniEditModalProps {
     normal?: number;
     rightAlignModal?: number;
   };
+  wrapperProperties?: {
+    height?: number;
+    top?: number;
+    width?: number;
+    zIndex?: number;
+    boxShadow?: string;
+  };
+  arrowZIndex?: number;
+  arrowProperties?: {
+    right?: number;
+    left?: number;
+    top?: number;
+    size?: number;
+  };
+  overlay?: {
+    isOverlay?: boolean;
+    zIndexOverlay?: number;
+    backgroundColorOverlay?: string;
+  };
+  outSideClick?: any;
+  ignoreRefs?: Array<React.RefObject<HTMLElement>>
+}
+export interface Rect {
+  top: number;
+  left: number;
+  bottom: number;
+  right: number;
+}
+
+export interface AvailableSpace {
+  spaceTop: number;
+  spaceLeft: number;
+  spaceRight: number;
+  spaceBottom: number;
 }

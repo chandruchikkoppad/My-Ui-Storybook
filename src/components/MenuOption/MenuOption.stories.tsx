@@ -1,35 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import MenuOption from './MenuOption';
 import './MenuOption.scss';
-
-export const DefaultMenuOption: Story = {
-  args: {
-    iconName: 'more',
-    options: [
-      {
-        label: 'StepGroup',
-        icon: 'success',
-        value: [],
-        disable: true,
-      },
-      {
-        label: 'Script',
-        value: ['SCR101', 'SCR102'],
-        icon: 'success',
-      },
-      {
-        label: 'Script',
-        value: ['SCR101', 'SCR102'],
-        icon: 'success',
-      },
-      {
-        label: 'Script',
-        value: ['SCR101', 'SCR102'],
-        icon: 'success',
-      },
-    ],
-  },
-};
+import React, { ReactNode, useRef } from 'react';
+import Icon from '../Icon';
 
 const meta: Meta<typeof MenuOption> = {
   title: 'Components/MenuOption',
@@ -41,218 +14,198 @@ const meta: Meta<typeof MenuOption> = {
   argTypes: {
     iconName: {
       control: 'text',
+      description: 'Name of the icon to display in the button.',
       defaultValue: 'more',
     },
     labelName: {
       control: 'text',
-      defaultValue: 'Controlled Menu',
+      description: 'Label text displayed beside the icon.',
+      defaultValue: 'Menu',
     },
     tooltipTitle: {
       control: 'text',
+      description: 'Tooltip text displayed on hover.',
       defaultValue: 'Select an option',
     },
     tooltipPlacement: {
       control: {
         type: 'select',
-        options: ['top', 'bottom', 'left', 'right'],
+        options: ['top', 'down', 'left', 'right'],
       },
+      description: 'Placement of the tooltip relative to the button.',
       defaultValue: 'top',
     },
     dropdownPlacement: {
       control: {
         type: 'select',
-        options: ['top', 'bottom', 'left', 'right'],
+        options: ['top', 'down', 'left', 'right'],
       },
-      defaultValue: 'bottom',
+      description: 'Placement of the dropdown menu relative to the button.',
+      defaultValue: 'down',
     },
   },
 };
 
 type Story = StoryObj<typeof MenuOption>;
 
+const options = [
+  {
+    label: (
+      <div>
+        hello <Icon name="edit" />
+      </div>
+    ),
+    value: 'opt1',
+    icon: 'success',
+  },
+  { label: 'Option 2', value: 'opt2', icon: 'success' },
+  {
+    label: 'Delete',
+    value: 'deleteOpt',
+    icon: 'delete',
+    iconColor: 'var(--delete-text-color)',
+  },
+];
+
+const handleOptionClick = (option: { label: string | ReactNode }) => {
+  alert(`Option clicked: ${option.label}`);
+};
+
 export const ControlledMenuOption: Story = {
-  render: (args) => {
-    const options = [
-      {
-        label: 'Option1',
-        value: 'opt1',
-        icon: 'success',
-      },
-      {
-        label: 'Option2',
-        value: 'opt2',
-        icon: 'success',
-      },
-      {
-        label: 'Delete option',
-        value: 'deleteOpt',
-        icon: 'delete',
-      },
-    ];
-
-    return (
-      <MenuOption
-        iconName={args.iconName}
-        labelName={args.labelName}
-        options={options}
-        tooltipTitle={args.tooltipTitle}
-        tooltipPlacement={args.tooltipPlacement}
-        dropdownPlacement={args.dropdownPlacement}
-      />
-    );
-  },
-};
-
-// Story for MenuOption with label
-export const MenuOptionWithLabel: Story = {
-  args: {
-    labelName: 'more',
-    iconName: 'more',
-    options: [
-      {
-        label: 'Option1',
-        value: 'opt1',
-        icon: 'success',
-      },
-      {
-        label: 'Option2',
-        value: 'opt2',
-        icon: 'success',
-      },
-    ],
-  },
-};
-
-// Story for MenuOption with disabled hover effect
-export const MenuOptionWithDisabledHoverEffect: Story = {
-  render: () => {
-    const options = [
-      {
-        label: 'StepGroup',
-        icon: 'success',
-        value: [],
-        disable: true,
-      },
-      {
-        label: 'Script',
-        value: ['SCR101', 'SCR102'],
-        icon: 'success',
-      },
-    ];
-    return (
-      <MenuOption
-        iconName="more"
-        tooltipTitle="more options"
-        tooltipPlacement="top"
-        dropdownPlacement="right"
-        options={options}
-      />
-    );
-  },
-};
-
-// Story for MenuOption with tooltip
-export const MenuOptionWithToolTip: Story = {
-  args: {
-    labelName: 'ImpactList',
-    iconName: 'success',
-    tooltipTitle: 'More Info',
-    tooltipPlacement: 'bottom',
-    options: [
-      {
-        label: 'Option1',
-        value: 'opt1',
-        icon: 'success',
-      },
-      {
-        label: 'Option2',
-        value: 'opt2',
-        icon: 'success',
-      },
-    ],
-  },
-};
-
-// Story for MenuOption with 'top' placement
-export const MenuOptionPlacementTop: Story = {
   args: {
     iconName: 'more',
-    labelName: 'Top Placement',
+    labelName: 'Controlled Menu',
+    tooltipTitle: 'Select an option',
     dropdownPlacement: 'top',
-    options: [
-      {
-        label: 'Option1',
-        value: 'opt1',
-        icon: 'success',
+  },
+  render: (args) => {
+    const moreRef = useRef<HTMLDivElement>(null);
+    return (
+      <div ref={moreRef} style={{display:'flex', height:'100vh', alignItems:'center'}}>
+        <MenuOption
+          {...args}
+          options={options}
+          targetRef={moreRef} // Make sure targetRef is passed properly here
+          onOptionClick={handleOptionClick}
+          dropdownPlacement="down" // Dropdown placement for testing
+        />
+      </div>
+    );
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'A controlled `MenuOption` with customizable tooltip and dropdown placement.',
       },
-      {
-        label: 'Option2',
-        value: 'opt2',
-        icon: 'success',
-      },
-    ],
+    },
   },
 };
 
-// Story for MenuOption with 'down' placement
-export const MenuOptionPlacementDown: Story = {
+export const MenuOptionTop: Story = {
   args: {
-    iconName: 'more',
-    labelName: ' Placement',
+    ...ControlledMenuOption.args,
+    dropdownPlacement: 'top',
+  },
+  render: (args) => {
+    const moreRef = useRef<HTMLDivElement>(null);
+    return (
+      <div ref={moreRef}>
+        <MenuOption
+          {...args}
+          options={options}
+          targetRef={moreRef}
+          onOptionClick={handleOptionClick}
+        />
+      </div>
+    );
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Dropdown menu positioned above the button.',
+      },
+    },
+  },
+};
+
+export const MenuOptionBottom: Story = {
+  args: {
+    ...ControlledMenuOption.args,
     dropdownPlacement: 'down',
-    options: [
-      {
-        label: 'Option1',
-        value: 'opt1',
-        icon: 'success',
+  },
+  render: (args) => {
+    return (
+      <div id="more">
+        <MenuOption
+          {...args}
+          options={options}
+          targetRef={'more'}
+          onOptionClick={handleOptionClick}
+        />
+      </div>
+    );
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Dropdown menu positioned below the button.',
       },
-      {
-        label: 'Option2',
-        value: 'opt2',
-        icon: 'success',
-      },
-    ],
+    },
   },
 };
 
-// Story for MenuOption with 'left' placement
-export const MenuOptionPlacementLeft: Story = {
+export const MenuOptionLeft: Story = {
   args: {
-    iconName: 'more',
-    labelName: 'Left Placement',
+    ...ControlledMenuOption.args,
     dropdownPlacement: 'left',
-    options: [
-      {
-        label: 'Option1',
-        value: 'opt1',
-        icon: 'delete',
+  },
+  render: (args) => {
+    const moreRef = useRef<HTMLDivElement>(null);
+    return (
+      <div ref={moreRef}>
+        <MenuOption
+          {...args}
+          options={options}
+          targetRef={moreRef}
+          onOptionClick={handleOptionClick}
+        />
+      </div>
+    );
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Dropdown menu positioned to the left of the button.',
       },
-      {
-        label: 'Option2',
-        value: 'opt2',
-        icon: 'success',
-      },
-    ],
+    },
   },
 };
 
-// Story for MenuOption with 'right' placement
-export const MenuOptionPlacementRight: Story = {
+export const MenuOptionRight: Story = {
   args: {
-    iconName: 'more',
-    dropdownPlacement: 'right',
-    options: [
-      {
-        label: 'Option1',
-        value: 'opt1',
-        icon: 'success',
+    ...ControlledMenuOption.args,
+    dropdownPlacement: 'right', // Proper dropdown placement
+  },
+  render: (args) => {
+    const moreRef = useRef<HTMLDivElement>(null);
+    return (
+      <div ref={moreRef}>
+        <MenuOption
+          {...args}
+          options={options}
+          targetRef={moreRef} // Properly pass ref to targetRef
+          onOptionClick={handleOptionClick}
+        />
+      </div>
+    );
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Dropdown menu positioned to the right of the button.',
       },
-      {
-        label: 'Option2',
-        value: 'opt2',
-        icon: 'success',
-      },
-    ],
+    },
   },
 };
 

@@ -1,4 +1,5 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, forwardRef, useImperativeHandle } from 'react';
+import ReactDOM from 'react-dom';
 import { DayPicker } from 'react-day-picker';
 import { formatInTimeZone } from 'date-fns-tz';
 import TimePicker from './Timepicker';
@@ -13,20 +14,29 @@ import Button from '../Button';
 import Typography from '../Typography';
 import classNames from 'classnames';
 
-const CustomDatePicker: React.FC<DatePickerProps> = ({
-  minDate,
-  maxDate,
-  value,
-  onChange,
-  placeholder = 'Select a date',
-  disabled = false,
-  dateFormat = 'EEEE, dd MMM yyyy',
-  calendarWidth,
-  timezone = 'Asia/Kolkata',
-  timeFormat = 'hh:mm a',
-  error,
-  helperText = '',
-}) => {
+const CustomDatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
+  ({
+    minDate,
+    maxDate,
+    value,
+    onChange,
+    placeholder = 'Select a date',
+    disabled = false,
+    dateFormat = 'EEEE, dd MMM yyyy',
+    calendarWidth,
+    timezone = 'Asia/Kolkata',
+    timeFormat = 'hh:mm a',
+    error,
+    helperText = '',
+    dateOnly = false,
+    className,
+    zIndex = 10,
+    isFilterDatePicker = false,
+    isSelectableDate = false,
+    onBlur,
+  },
+  ref
+) => {
   const [timeValue, setTimeValue] = useState<string>('');
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
   const [isPickerOpen, setIsPickerOpen] = useState<boolean>(false);
@@ -35,16 +45,25 @@ const CustomDatePicker: React.FC<DatePickerProps> = ({
     new Date()
   );
   const [view, setView] = useState<string>('days');
+  const [positionStyles, setPositionStyles] = useState<{
+    top: number | null;
+    left: number | null;
+  }>({ top: null, left: null });
+
+  const selectedDateRef = useRef<Date | undefined>(undefined);
   const [startYear, setStartYear] = useState(() => {
     const currentYear =
       selectedMonth?.getFullYear() ?? new Date().getFullYear();
     return currentYear - (currentYear % 12); // Set to the first year in the 12-year range
   });
-  const [datePickerPosition, setDatePickerPosition] = useState<
-    'top' | 'bottom'
-  >('bottom');
+
   const pickerRef = useRef<HTMLDivElement>(null); // Ref to track the picker
   const containerRef = useRef<HTMLDivElement>(null);
+  useImperativeHandle(ref, () => pickerRef.current as HTMLDivElement, []);
+
+  useEffect(() => {
+    selectedDateRef.current = selectedDate;
+  }, [selectedDate]);
 
   useEffect(() => {
     if (value) {
@@ -76,32 +95,39 @@ const CustomDatePicker: React.FC<DatePickerProps> = ({
 
   useEffect(() => {
     const adjustPosition = () => {
-      if (containerRef.current && pickerRef.current) {
-        const relativeRect = containerRef.current.getBoundingClientRect();
-        const absoluteRect = pickerRef.current.getBoundingClientRect();
+      if (containerRef.current) {
+        const containerRect = containerRef.current.getBoundingClientRect();
+        const spacing = 8;
 
-        const spaceBelow = window.innerHeight - relativeRect.bottom;
-        const spaceAbove = relativeRect.top;
+        let top = containerRect.bottom + spacing;
+        let left = containerRect.left;
 
-        // Check if there is more space above than below
-        if (
-          spaceBelow < absoluteRect.height &&
-          spaceAbove >= absoluteRect.height
-        ) {
-          setDatePickerPosition('top');
-        } else {
-          setDatePickerPosition('bottom');
+        if (pickerRef.current) {
+          const pickerHeight = pickerRef.current.offsetHeight;
+          const pickerWidth = pickerRef.current.offsetWidth;
+
+          if (window.innerHeight - containerRect.bottom < pickerHeight) {
+            top = containerRect.top - pickerHeight - spacing;
+          }
+          if (window.innerWidth - containerRect.left < pickerWidth) {
+            left = containerRect.right - pickerWidth;
+          }
         }
+
+        setPositionStyles({ top, left });
       }
     };
 
-    // Initial check
-    adjustPosition();
+    if (isPickerOpen) {
+      adjustPosition();
+      setTimeout(() => {}, 200);
+      window.addEventListener('resize', () => {});
+    }
 
-    // Adjust position on window resize
-    window.addEventListener('resize', adjustPosition);
-    return () => window.removeEventListener('resize', adjustPosition);
-  }, []);
+    return () => {
+      window.removeEventListener('resize', adjustPosition);
+    };
+  }, [isPickerOpen]);
 
   const calendarStyle = {
     '--rdp-day-width': calendarWidth ? `${calendarWidth / 7 - 4}px` : undefined,
@@ -121,22 +147,30 @@ const CustomDatePicker: React.FC<DatePickerProps> = ({
   };
 
   const handleDaySelect = (date: Date | undefined) => {
-    if (!timeValue || !date) {
-      // if need to set time to current time in case no time selected
-      const now = new Date();
-      date?.setHours(now.getHours(), now.getMinutes(), now.getSeconds());
-
-      setSelectedDate(date);
+    if (dateOnly) {
+      if (!isSelectableDate || date) {
+        setSelectedDate(date);
+        onChange(date);
+      }
+      resetAndCloseDatePicker();
     } else {
-      const [hoursStr, minutesStr] = timeValue.split(':');
-      date.setHours(parseInt(hoursStr ? hoursStr : '0', 10) || 0);
-      date.setMinutes(parseInt(minutesStr ? minutesStr : '0', 10) || 0);
-      setSelectedDate(date);
+      if (!timeValue || !date) {
+        // if need to set time to current time in case no time selected
+        const now = new Date();
+        date?.setHours(now.getHours(), now.getMinutes(), now.getSeconds());
+
+        setSelectedDate(date);
+      } else {
+        const [hoursStr, minutesStr] = timeValue.split(':');
+        date.setHours(parseInt(hoursStr ? hoursStr : '0', 10) || 0);
+        date.setMinutes(parseInt(minutesStr ? minutesStr : '0', 10) || 0);
+        setSelectedDate(date);
+      }
     }
   };
 
   const handleSave = () => {
-    onChange(selectedDate);
+    onChange(selectedDateRef.current);
     resetAndCloseDatePicker();
   };
 
@@ -151,6 +185,9 @@ const CustomDatePicker: React.FC<DatePickerProps> = ({
       pickerRef.current &&
       !pickerRef.current.contains(event.target as Node)
     ) {
+      if(onBlur){
+        onBlur(value);
+      }
       resetAndCloseDatePicker();
     }
   };
@@ -210,6 +247,40 @@ const CustomDatePicker: React.FC<DatePickerProps> = ({
     }
   };
 
+  const isDisabledDate = (
+    year: number | null,
+    month: number | null,
+    minDate?: Date,
+    maxDate?: Date
+  ): boolean => {
+    const isMinDateValid = minDate instanceof Date && !isNaN(minDate.getTime());
+    const isMaxDateValid = maxDate instanceof Date && !isNaN(maxDate.getTime());
+
+    if (isMinDateValid) {
+      if (year !== null && year < minDate.getFullYear()) return true;
+      if (
+        year !== null &&
+        month !== null &&
+        year === minDate.getFullYear() &&
+        month < minDate.getMonth()
+      )
+        return true;
+    }
+
+    if (isMaxDateValid) {
+      if (year !== null && year > maxDate.getFullYear()) return true;
+      if (
+        year !== null &&
+        month !== null &&
+        year === maxDate.getFullYear() &&
+        month > maxDate.getMonth()
+      )
+        return true;
+    }
+
+    return false;
+  };
+
   useEffect(() => {
     if (isPickerOpen && view === 'years') {
       const currentYear =
@@ -248,17 +319,36 @@ const CustomDatePicker: React.FC<DatePickerProps> = ({
   const CustomMonthGrid: React.FC = () => {
     return (
       <div className="ff-custom-month_grid">
-        {months.map((month: string, index: number) => (
-          <div
-            key={index}
-            onClick={() => handleMonthSelect(index)}
-            className={classNames('ff-custom-month', {
-              'ff-custom-month--selected': index === selectedMonth?.getMonth(),
-            })}
-          >
-            <Typography>{month}</Typography>
-          </div>
-        ))}
+        {months.map((month: string, index: number) => {
+          const isDisabled = isDisabledDate(
+            selectedMonth?.getFullYear() || null,
+            index,
+            minDate,
+            maxDate
+          );
+
+          return (
+            <div
+              key={index}
+              onClick={() => !isDisabled && handleMonthSelect(index)}
+              className={classNames('ff-custom-month', {
+                'ff-custom-month--selected':
+                  index === selectedMonth?.getMonth(),
+                'ff-custom-month--disabled': isDisabled,
+              })}
+            >
+              <Typography
+                color={
+                  index === selectedMonth?.getMonth()
+                    ? 'var(--primary-button-text-color)'
+                    : undefined
+                }
+              >
+                {month}
+              </Typography>
+            </div>
+          );
+        })}
       </div>
     );
   };
@@ -273,7 +363,7 @@ const CustomDatePicker: React.FC<DatePickerProps> = ({
         onClick={onClick}
         disabled={disabled}
       >
-        <Icon name="left_arrow_icon" height={12} width={12} />
+        <Icon name="left_arrow_icon" height={20} width={20} />
       </button>
     );
   };
@@ -287,7 +377,7 @@ const CustomDatePicker: React.FC<DatePickerProps> = ({
         onClick={onClick}
         disabled={disabled}
       >
-        <Icon name="right_arrow_icon" height={12} width={12} />
+        <Icon name="right_arrow_icon" height={20} width={20} />
       </button>
     );
   };
@@ -296,23 +386,37 @@ const CustomDatePicker: React.FC<DatePickerProps> = ({
   const CustomYearGrid: React.FC = () => {
     return (
       <div className="ff-custom-year_grid">
-        {years.map((year: number) => (
-          <div
-            key={year}
-            onClick={() => handleYearSelect(year)}
-            className={classNames('ff-custom-year', {
-              'ff-custom-year--selected': year === selectedMonth?.getFullYear(),
-            })}
-          >
-            <Typography>{year}</Typography>
-          </div>
-        ))}
+        {years.map((year: number) => {
+          const isDisabled = isDisabledDate(year, null, minDate, maxDate);
+
+          return (
+            <div
+              key={year}
+              onClick={() => !isDisabled && handleYearSelect(year)}
+              className={classNames('ff-custom-year', {
+                'ff-custom-year--selected':
+                  year === selectedMonth?.getFullYear(),
+                'ff-custom-year--disabled': isDisabled,
+              })}
+            >
+              <Typography
+                color={
+                  year === selectedMonth?.getFullYear()
+                    ? 'var(--primary-button-text-color)'
+                    : undefined
+                }
+              >
+                {year}
+              </Typography>
+            </div>
+          );
+        })}
       </div>
     );
   };
 
   return (
-    <div className="ff-date-picker" ref={containerRef}>
+    <div className={`ff-date-picker ${className}`} ref={containerRef}>
       <div className="ff-datepicker-input-container">
         <div className="ff-input-with-icon ff-date-input-field">
           <Icon
@@ -325,7 +429,9 @@ const CustomDatePicker: React.FC<DatePickerProps> = ({
             value={value ? formatInTimeZone(value, timezone, dateFormat) : ''}
             readOnly
             placeholder={placeholder}
-            className="ff-date-input"
+            className={
+              isFilterDatePicker ? 'ff-filter-date-input' : 'ff-date-input'
+            }
             disabled={disabled}
             onClick={handleDateInputClick}
           />
@@ -340,99 +446,113 @@ const CustomDatePicker: React.FC<DatePickerProps> = ({
           )}
         </div>
 
-        <div className="ff-input-with-icon ff-time-input-field">
-          <Icon
-            name={'clock_icon'}
-            hoverEffect={false}
-            className="ff-clock-icon"
-          />
-          <input
-            type="text"
-            placeholder="Select time"
-            className="ff-time-input"
-            value={value ? formatInTimeZone(value, timezone, timeFormat) : ''}
-            disabled={disabled}
-            onClick={handleDateInputClick}
-            readOnly
-          />
-        </div>
+        {!dateOnly && (
+          <div className="ff-input-with-icon ff-time-input-field">
+            <Icon
+              name={'clock_icon'}
+              hoverEffect={false}
+              className="ff-clock-icon"
+            />
+            <input
+              type="text"
+              placeholder="Select time"
+              className={
+                isFilterDatePicker ? 'ff-filter-time-input' : 'ff-time-input'
+              }
+              value={value ? formatInTimeZone(value, timezone, timeFormat) : ''}
+              disabled={disabled}
+              onClick={handleDateInputClick}
+              readOnly
+            />
+          </div>
+        )}
       </div>
 
-      {isPickerOpen && (
-        <div
-          className="ff-date-picker-container"
-          ref={pickerRef}
-          style={{
-            top: datePickerPosition === 'top' ? 'auto' : '110%',
-            bottom: datePickerPosition === 'top' ? '110%' : 'auto',
-          }}
-        >
-          <div className="ff-calendar-container">
-            <DayPicker
-              style={calendarStyle}
-              className="ff-calendar"
-              mode="single"
-              selected={selectedDate}
-              onSelect={handleDaySelect}
-              month={selectedMonth}
-              onMonthChange={(month) => {
-                if (view === 'days') {
-                  setSelectedMonth(month);
-                }
-              }}
-              onNextClick={handleNextClick}
-              onPrevClick={handlePrevClick}
-              disableNavigation={view === 'months'}
-              disabled={[
-                {
-                  before: new Date(minDate ? minDate : ''),
-                  after: new Date(maxDate ? maxDate : ''),
-                },
-              ]}
-              timeZone={timezone}
-              components={{
-                CaptionLabel: (props) => <CustomCaption {...props} />,
-                PreviousMonthButton: (props) => <CustomPrevButton {...props} />,
-                NextMonthButton: (props) => <CustomNextButton {...props} />,
-                ...(view === 'months'
-                  ? {
-                      MonthGrid: () => <CustomMonthGrid />,
-                    }
-                  : {}),
-                ...(view === 'years'
-                  ? {
-                      MonthGrid: () => <CustomYearGrid />,
-                    }
-                  : {}),
-              }}
-            />
-            <TimePicker
-              value={timeValue}
-              onChange={handleTimeChange}
-              minTime={minTime}
-              maxTime={maxTime}
-              onErrorChange={setTimeError}
-            />
-          </div>
-          <div className="ff-date-picker-controls">
-            <Button
-              className="ff-date-picker-button"
-              variant="secondary"
-              onClick={handleCancel}
-              label="Cancel"
-            />
-            <Button
-              className="ff-date-picker-button"
-              variant="primary"
-              onClick={handleSave}
-              label="Save"
-              disabled={timeError}
-            />
-          </div>
-        </div>
-      )}
+      {isPickerOpen &&
+        !!top &&
+        ReactDOM.createPortal(
+          <div
+            className="ff-date-picker-container"
+            ref={pickerRef}
+            style={{
+              zIndex,
+              top: `${positionStyles.top}px`,
+              left: `${positionStyles.left}px`,
+            }}
+          >
+            <div className="ff-calendar-container">
+              <DayPicker
+                style={calendarStyle}
+                className="ff-calendar"
+                mode="single"
+                selected={selectedDate}
+                onSelect={handleDaySelect}
+                month={selectedMonth}
+                onMonthChange={(month) => {
+                  if (view === 'days') {
+                    setSelectedMonth(month);
+                  }
+                }}
+                onNextClick={handleNextClick}
+                onPrevClick={handlePrevClick}
+                disableNavigation={view === 'months'}
+                disabled={[
+                  {
+                    before: new Date(minDate ? minDate : ''),
+                    after: new Date(maxDate ? maxDate : ''),
+                  },
+                ]}
+                timeZone={timezone}
+                components={{
+                  CaptionLabel: (props) => <CustomCaption {...props} />,
+                  PreviousMonthButton: (props) => (
+                    <CustomPrevButton {...props} />
+                  ),
+                  NextMonthButton: (props) => <CustomNextButton {...props} />,
+                  ...(view === 'months'
+                    ? {
+                        MonthGrid: () => <CustomMonthGrid />,
+                      }
+                    : {}),
+                  ...(view === 'years'
+                    ? {
+                        MonthGrid: () => <CustomYearGrid />,
+                      }
+                    : {}),
+                }}
+              />
+              {!dateOnly && (
+                <TimePicker
+                  value={timeValue}
+                  onChange={handleTimeChange}
+                  minTime={minTime}
+                  maxTime={maxTime}
+                  onErrorChange={setTimeError}
+                />
+              )}
+            </div>
+            {!dateOnly && (
+              <div className="ff-date-picker-controls">
+                <Button
+                  className="ff-date-picker-button"
+                  variant="secondary"
+                  onClick={handleCancel}
+                  label="Cancel"
+                />
+                <Button
+                  className="ff-date-picker-button"
+                  variant="primary"
+                  onClick={handleSave}
+                  label="Save"
+                  disabled={timeError}
+                />
+              </div>
+            )}
+          </div>,
+          document.body
+        )}
     </div>
   );
-};
+});
 
 export default CustomDatePicker;

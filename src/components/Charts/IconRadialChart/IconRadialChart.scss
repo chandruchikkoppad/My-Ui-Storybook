@@ -1,0 +1,30 @@
+@use '../../../assets/styles/fonts';
+
+.ff-icon-radial-chart-container {
+  position: relative;
+  cursor: pointer; 
+  svg {
+    .ff-radial-chart-icon-padding {
+      padding: 0px;
+    }
+
+    text {
+      @extend .fontXs;
+      font-size: var(--fontSize) !important;
+      font-weight: 400;
+    }
+  }
+
+  path {
+    transition: stroke-opacity 0.2s;
+  }
+
+  .ff-icon-radial-chart-tooltip {
+    position: fixed;
+    padding: 5px;
+    border-radius: 4px;
+    pointer-events: none;
+    background-color: var(--tooltip-bg-color);
+    color: var(--tooltip-text-color);
+  }
+}

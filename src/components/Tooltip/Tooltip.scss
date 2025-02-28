@@ -1,8 +1,9 @@
 @use '../../assets/styles/fonts';
 
 .ff-tooltip-container {
-  cursor: auto;
-  display: inline-block;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
 }
 
 .ff-tooltip {
@@ -16,8 +17,9 @@
   color: var(--tooltip-text-color);
   text-align: center;
   border-radius: 5px;
-  padding: 6px 12px;
+  padding: 4px 8px;
   opacity: 0;
+  z-index: 10000;
 
   &--visible {
     opacity: 1;

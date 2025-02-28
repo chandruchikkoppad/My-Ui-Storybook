@@ -1,0 +1,63 @@
+.ff-machine-input-field-wrapper {
+  min-width: 100px;
+  height: 32px;
+  position: relative;
+  cursor: pointer;
+
+  .cursor-event-none {
+    pointer-events: none;
+  }
+
+  .ff-machine-input-field,
+  .ff-machine-input-field-reverse {
+    height: 100%;
+    width: 100%;
+    border: 1px solid var(--ff-machine-input-field-border-color);
+    padding: 0 8px 0 0;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    &:hover {
+      border-color: var(--ff-connecting-branch-color);
+    }
+
+    .ff-machine-icon-text-wrapper,
+    .ff-machine-icon-text-wrapper-reverse {
+      display: flex;
+      align-items: center;
+
+      .ff-machine-icon {
+        margin-left: 4px;
+      }
+
+      .ff-machine-text-reverse,
+      .ff-machine-text {
+        max-width: fit-content;
+      }
+
+      .ff-machine-text-reverse {
+        direction: ltr;
+      }
+    }
+
+    .ff-machine-icon-text-wrapper-reverse {
+      flex-direction: row-reverse;
+    }
+  }
+
+  .ff-machine-input-field-reverse {
+    flex-direction: row-reverse;
+  }
+
+  .ff-machine-input-label {
+    position: absolute;
+    top: -6px;
+    left: 8px;
+    background-color: var(--ff-machine-input-field-label-color);
+    border-radius: 4px;
+    padding: 1px 2px;
+    height: 12px;
+  }
+}

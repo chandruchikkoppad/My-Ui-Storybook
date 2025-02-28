@@ -50,13 +50,18 @@ export interface InputProps {
   /**
    * onChange, onKeyDown, onBlur, onFocus actions
    */
-  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>, item?: any) => void;
 
   onKeyDown?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
 
   onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
 
   onFocus?: (event: React.FocusEvent<HTMLInputElement>) => void;
+
+  onClick?: (event: React.MouseEvent<HTMLInputElement>) => void;
+
+  onKeyUp?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
+
   /**
    * id to select the input field uniquely
    */
@@ -66,12 +71,30 @@ export interface InputProps {
    */
   autoComplete?: 'on' | 'off';
   /**
+   * if true, input field is in autofocus state
+   */
+  autoFocus?: boolean;
+  /**
    *  minimum and maximum values for the number type input field and their functions
    */
-  minValue?: number;
-  maxValue?: number;
+  minValue?: string | number;
+  maxValue?: string | number;
   /**
    * background of the input field prop
    */
   transparentBackground?: boolean;
+  /**
+   * size for the input field
+   */
+  size?: 'small' | 'medium';
+  /**
+   * isLabelRequired for the input field without label,showing placeholder
+   */
+  isLabelRequired?: boolean;
+  /**
+   * optional '15px' reserve helperText space prop for the input field
+   */
+  reserveHelperTextSpace?: boolean;
+
+  setUpdatedNumberValue?: (value: number) => void;
 }

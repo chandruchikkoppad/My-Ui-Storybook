@@ -9,6 +9,9 @@ const FilePreview: React.FC<FilePreviewProps> = ({
   error,
   onRemoveClick,
   onReplaceClick,
+  onUploadFile,
+  isUploadIcon,
+  isRemoveDisabled = false,
 }) => {
   return (
     <div key={file.name} className="ff-file-details__item">
@@ -48,25 +51,43 @@ const FilePreview: React.FC<FilePreviewProps> = ({
         <div className="ff-file-actions__icon-replace">
           <Tooltip title="Replace">
             <Icon
-              name="replace"
+              name="replace_file"
               color={'var(--icons-default-color)'}
               height={16}
               width={16}
+              hoverEffect
               onClick={() => onReplaceClick(file)}
             />
           </Tooltip>
         </div>
         <div className="ff-file-actions__icon-remove">
-          <Tooltip title="Remove">
+          <Tooltip disabled={isRemoveDisabled} title="Remove">
             <Icon
-              name="remove"
+              disabled={isRemoveDisabled}
+              name="close_pill"
               height={16}
               width={16}
-              color={'var(--default-icon-color)'}
+              hoverEffect
               onClick={() => onRemoveClick(file)}
             />
           </Tooltip>
         </div>
+        {isUploadIcon && (
+          <div className="ff-file-actions__icon-remove">
+            <Tooltip title="Upload">
+              <Icon
+                name="upload_pill"
+                height={16}
+                width={16}
+                hoverEffect
+                color={'var(--default-icon-color)'}
+                onClick={() => {
+                  onUploadFile && onUploadFile();
+                }}
+              />
+            </Tooltip>
+          </div>
+        )}
       </div>
     </div>
   );

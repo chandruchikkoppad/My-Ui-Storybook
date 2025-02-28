@@ -1,0 +1,101 @@
+$ff-status-colors: (
+  passed: var(--ff-card-passed-status-bg-color),
+  failed: var(--ff-card-failed-status-bg-color),
+  warning: var(--ff-card-warning-status-bg-color),
+  skipped: var(--ff-card-skipped-status-bg-color),
+  flaky: var(--ff-card-flaky-status-bg-color),
+  total: var(--card-total-defect-color),
+  defect: var(--card-defect-density),
+  open: var(--ff-card-failed-status-bg-color),
+  closed: var(--ff-card-passed-status-bg-color),
+  quality: var(--ff-card-warning-status-bg-color),
+);
+
+.ff-card-container {
+  height: 78px;
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  overflow: hidden;
+  cursor: pointer;
+
+  &:hover {
+    @each $state, $color in $ff-status-colors {
+      &.#{$state} {
+        border-color: $color;
+        .ff-status-bar {
+          border-right: 1px solid $color;
+        }
+      }
+    }
+  }
+
+  .ff-status-bar {
+    width: 12%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    border-right: 1px solid var(--border-color);
+    border-radius: 3px;
+
+    .ff-status-text {
+      transform: rotate(-90deg);
+      transform-origin: center;
+      display: flex;
+      align-items: start;
+      height: 16px;
+      width: 6px;
+    }
+  }
+
+  @each $state, $color in $ff-status-colors {
+    &.#{$state} {
+      .ff-status-bar {
+        background-color: $color;
+        color: var(--base-bg-color);
+      }
+
+      .ff-content {
+        .ff-number {
+          color: $color;
+        }
+      }
+
+      &.toggled {
+        background-color: $color;
+        border: 1px solid $color;
+
+        .ff-status-bar {
+          border-right: 1px solid $color;
+          background-color: var(--base-bg-color);
+          color: $color;
+        }
+
+        .ff-content {
+          background-color: $color;
+        }
+      }
+    }
+  }
+
+  .ff-content {
+    height: 100%;
+    flex: 1;
+    padding: 0px 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    .ff-number {
+      margin-bottom: 4px;
+      color: inherit;
+    }
+  }
+
+  .ff-content.red-background {
+    gap: 8px;
+  }
+}

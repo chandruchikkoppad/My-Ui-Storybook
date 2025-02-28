@@ -3,3 +3,15 @@
   flex-direction: row;
   gap: 12px;
 }
+.ff-radio-label-wrapper {
+  position: relative;
+  top: 2px;
+}
+.ff-required-asterisk {
+  color: var(--input-error-text-color);
+}
+
+.ff-radio-error-msg {
+  padding-left: 8px;
+  letter-spacing: 0.5px;
+}

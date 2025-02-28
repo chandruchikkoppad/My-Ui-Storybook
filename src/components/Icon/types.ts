@@ -7,4 +7,9 @@ export interface IconProps {
   onClick?: (data?: any) => void;
   hoverEffect?: boolean;
   disabled?: boolean;
+  variant?: "dark" | "light" | 'danger';
+  x?:string;
+  y?:string;
+  chartIcon?:boolean
+  tabIndex?: number
 }

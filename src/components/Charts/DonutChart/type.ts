@@ -8,16 +8,18 @@ export type Status =
   | 'Skipped'
   | 'Warning';
 
-export type StatusValue = {
+export type resultStats = {
   status: Status;
-  value: number;
+  percentage: number;
+  count: number;
 };
 
 export type DonutChartProps = {
   radius: number;
   lineWidth: number;
-  statusValues: StatusValue[];
+  resultStats: resultStats[];
   legendDetailsType: string;
   isLegendDetails: boolean;
   gapAngle?: number;
+  totalCount: number;
 };

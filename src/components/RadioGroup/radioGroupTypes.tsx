@@ -17,6 +17,29 @@ interface Option {
    * Optional.
    */
   disabled?: boolean;
+
+  /**
+   * Indicates whether the radio button show the tooltip.
+   * Optional.
+   */
+  showTooltip?: boolean;
+
+  /**
+   * The content of the tooltip.
+   * Optional.
+   */
+  tooltipChildren?: React.ReactNode;
+
+  /**
+   * The content of the tooltip.
+   * Optional.
+   */
+  tooltipTitle?: React.ReactNode;
+
+  /**
+   * The position of the tooltip
+   */
+  tooltipPosition?: 'top' | 'bottom' | 'left' | 'right';
 }
 
 /**
@@ -47,8 +70,40 @@ interface RadioGroupProps {
   onChange?: (option: Option) => void;
 
   /**
+   * Provides a label at starting position when the string is passed.
+   * Optional.
+   */
+  label?: string;
+
+  /**
+   * if isLabel is true then we can display label if not then extra space is not added.
+   * Optional.
+   */
+  isLabel?: boolean;
+
+  /**
+   * if isAsteriskRequired is true then we can display asterisk if not then extra space is not added.
+   * Optional.
+   */
+  isAsteriskRequired?: boolean;
+
+  /**
    * Additional class names to apply to the radio group for custom styling.
    * Optional.
    */
   className?: string;
+
+  /**
+   * Additional class names to apply to the radio group Label for custom styling.
+   * Optional.
+   */
+  classNameForLabel?: string;
+
+  isError?: boolean;
+
+  errorMessage?: string;
+
+  onBlur?: () => void;
+
+  disabled?: boolean;
 }

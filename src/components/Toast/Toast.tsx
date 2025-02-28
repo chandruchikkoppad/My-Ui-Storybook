@@ -22,14 +22,15 @@ const Toaster: React.FC<ToasterProps> = ({
 
   const iconMap = {
     success: 'success',
-    info: 'info',
+    info: 'toast_info',
     warning: 'warning',
     danger: 'error',
     confirm: 'delete',
+    alert: 'alert',
   };
 
   const getToasterIcon = (
-    variant: 'success' | 'warning' | 'danger' | 'info' | 'confirm'
+    variant: 'success' | 'warning' | 'danger' | 'info' | 'confirm' | 'alert'
   ) => {
     const name = iconMap[variant];
     return <Icon name={name} height={40} width={40} />;

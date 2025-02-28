@@ -1,5 +1,14 @@
+import React, { ComponentType } from 'react';
 import LazyLoad from './LazyLoad';
-const { FixedSizeList } = LazyLoad;
+const { FixedSizeList: _FixedSizeList } = LazyLoad;
+
+const FixedSizeList = _FixedSizeList as unknown as ComponentType<{
+  height: number;
+  itemCount: number;
+  itemSize: number;
+  width: number;
+  children: (props: { index: number; style: React.CSSProperties }) => JSX.Element;
+}>;
 const Row = ({
   index,
   style,

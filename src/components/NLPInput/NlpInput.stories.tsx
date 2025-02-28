@@ -1,8 +1,8 @@
+import React, { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import NlpInput from './NlpInput';
-// import { useState } from 'react';
-// import { Option } from '../NLPInput/type';
-
+import { nlpList, filterSearchData } from './sampleData';
+import { NlpChipsAccordionProps } from './types';
 const meta: Meta<typeof NlpInput> = {
   title: 'Components/NlpInput',
   component: NlpInput,
@@ -14,74 +14,97 @@ const meta: Meta<typeof NlpInput> = {
 
 type Story = StoryObj<typeof NlpInput>;
 
-export const Primary: Story = {
+// Refactor primaryNlp to utilize args for control panel
+export const PrimaryNlp: Story = {
   args: {
-    label: 'NLP Input',
-    optionsList: [
-      {
-        desc: 'randomNumber',
-        displayName: 'randomNumber',
-        failMessage: 'randomNumber has failed',
-        isNonPE: false,
-        name: 'randomNumber',
-        nlpName: 'randomNumber',
-        nlpType: 'PROGRAM_ELEMENTS',
-        packageName: 'com.tyss.optimize.programelement.LIC3813PJT1001.Logics',
-        parentId: 'PKJ1017',
-        passMessage: 'randomNumber has passed',
-        programElementId: 'PRG_ELE1001',
-        projectId: 'PJT1001',
-        returnType: 'java.lang.Integer',
-        searchName: 'randomNumber',
-        stepInputs: [{}], // Placeholder, replace with actual data if needed
-        toolTip: 'Logics : randomNumber',
-        _class: 'com.tyss.optimize.data.models.db.model.ProgramElementNlp',
-        _id: 'PE_NLPdbed27d0-b05a-4354-b9d3-c2f85307b4f2',
-      },
-      {
-        desc: 'randomNumber',
-        displayName: 'randomNumber',
-        failMessage: 'randomNumber has failed',
-        isNonPE: false,
-        name: 'randomNumber',
-        nlpName: 'randomNumber',
-        nlpType: 'PROGRAM_ELEMENTS',
-        packageName: 'com.tyss.optimize.programelement.LIC3813PJT1001.Logics',
-        parentId: 'PKJ1017',
-        passMessage: 'randomNumber has passed',
-        programElementId: 'PRG_ELE1001',
-        projectId: 'PJT1001',
-        returnType: 'java.lang.Integer',
-        searchName: 'randomNumber',
-        stepInputs: [
-          { name: 'Range Of The Number', type: 'java.lang.Integer' },
-        ], // Placeholder, replace with actual data if needed
-        toolTip: 'Logics : randomNumber',
-        _class: 'com.tyss.optimize.data.models.db.model.ProgramElementNlp',
-        _id: 'PE_NLPdbed27d0-b05a-4354-b9d3-c2f85307b4f2',
-      },
-      {
-        description: '',
-        displayName: 'Open Browser 1',
-        failMessage: 'Open Browser is failed',
-        imported: false,
-        libraryId: 'LIB1002',
-        name: 'Open Browser',
-        nlpName: 'Open Browser',
-        nlpType: 'STEP_GROUP',
-        parentId: 'STP_GRP1001',
-        passMessage: 'Open Browser is passed',
-        path: '/Root/Open and Close Browser/Open Browser',
-        platform: 'Web',
-        projectId: 'PJT1001',
-        returnType: 'void',
-        searchName: 'Open Browser',
-        stepInputs: [], // Empty array for step inputs
-        toolTip: 'Open and Close Browser : Open Browser : Web',
-        _class: 'com.tyss.optimize.data.models.db.model.StepGroupNlp',
-        _id: 'SG_NLP1001',
-      },
-    ],
+    label: 'Search NLP',
+    leftIcon: 'ai_search',
+    rightIcon: 'help_icon',
+    rightIconColor: 'var(--nlp-color)',
+    containerWidth: '1000px',
+    value: '',
+    optionsList: nlpList,
+  },
+  render: (args) => {
+    const [inputValue, setInputValue] = useState(args.value);
+    const [optionList, setOptionList] = useState(args.optionsList);
+
+    const handleChange = (e) => {
+      setInputValue(e.target.value);
+      setOptionList(nlpList);
+    };
+
+    const handleSelect = (e) => {
+      setInputValue(e.displayName);
+    };
+
+    return (
+      <NlpInput
+        {...args}
+        value={inputValue}
+        onChange={handleChange}
+        onSelect={handleSelect}
+        optionsList={optionList}
+        webServiceClick={() => {
+          alert('webServiceClick!');
+        }}
+        onHelpIconClick={() => {
+          alert('Help icon clicked!!');
+        }}
+        aiIconClick={() => {
+          alert('aiIconClick!');
+        }}
+      />
+    );
+  },
+};
+
+export const NlpChipsAccordion: Story = {
+  args: {
+    label: 'Search NLP',
+    leftIcon: 'ai_search',
+    rightIcon: 'help_icon',
+    rightIconColor: 'var(--nlp-color)',
+    containerWidth: '1000px',
+    value: '',
+    optionsList: nlpList,
+  },
+  render: (args) => {
+    const [inputValue, setInputValue] = useState(args.value);
+    const [optionList, setOptionList] = useState(args.optionsList);
+    const [filterData] = useState(filterSearchData);
+    const handleChange = (e) => {
+      setInputValue(e.target.value);
+      setOptionList(nlpList);
+    };
+
+    const handleSelect = (e) => {
+      setInputValue(e.displayName);
+    };
+    const selectedChips = (data: NlpChipsAccordionProps) => {
+      console.warn('selectedChipsData', data);
+    };
+
+    return (
+      <NlpInput
+        {...args}
+        value={inputValue}
+        onChange={handleChange}
+        onSelect={handleSelect}
+        optionsList={optionList}
+        chipOptionList={filterData}
+        selectedChips={selectedChips}
+        webServiceClick={() => {
+          alert('webServiceClick!');
+        }}
+        onHelpIconClick={() => {
+          alert('Help icon clicked!!');
+        }}
+        aiIconClick={() => {
+          alert('aiIconClick!');
+        }}
+      />
+    );
   },
 };
 
@@ -93,44 +116,70 @@ export const Disable: Story = {
   },
 };
 
-// export const WithInitialValue: Story = {
-//   args: {
-//     label: 'NLP Input',
-//     selectedOption: { label: 'Option 2', value: '2' },
-//     optionsList: [
-//       { label: 'NLP 1', value: '1' },
-//       { label: 'NLP 2', value: '2' },
-//       { label: 'NLP 3', value: '3' },
-//     ],
-//   },
-// };
+export const apiFetch: Story = {
+  render: () => {
+    const [value, setValue] = useState('');
+    const [optionsList, setOptionsList] = useState<any>([]);
+    const [page, setPage] = useState(0);
 
-// export const OptionSelection: Story = {
-//   render: () => {
-//     const optionsList = [
-//       { label: 'NLP 1', value: '1' },
-//       { label: 'NLP 2', value: '2' },
-//       { label: 'NLP 3', value: '3' },
-//     ];
+    const handleChange = (e: any) => {
+      const value = e.target.value || '';
+      setTimeout(() => {
+        fetch(
+          `https://reqres.in/api/users?page=${value.length % 2 === 0 ? 1 : 2}`
+        )
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error('Network response was not ok');
+            }
+            return response.json();
+          })
+          .then((data) => {
+            setOptionsList([...data.data, ...data.data]);
+            console.log('Fetched Users:', data.data);
+          })
+          .catch((error) => {
+            console.error('Error fetching users:', error);
+          });
+      }, 3000);
+      setValue(e.target.value);
+    };
 
-//     const [selectedOption, setSelectedOption] = useState<Option>({
-//       label: 'NLP 2',
-//       value: '2',
-//     });
+    const loadMore = () => {
+      fetch(
+        `https://reqres.in/api/users?page=${value.length % 2 === 0 ? 1 : 2}`
+      )
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then((data) => {
+          const userData = data.data;
+          setOptionsList([...optionsList, ...userData]);
+          console.log('Fetched Users:', data.data);
+        })
+        .catch((error) => {
+          console.error('Error fetching users:', error);
+        });
+      setPage(page + 1);
+    };
 
-//     const handleChange = (option: Option) => {
-//       setSelectedOption(option);
-//     };
-
-//     return (
-//       <NlpInput
-//         label="NLP Input"
-//         optionsList={optionsList}
-//         selectedOption={selectedOption}
-//         onChange={handleChange}
-//       />
-//     );
-//   },
-// };
+    return (
+      <NlpInput
+        onChange={handleChange}
+        rightIconColor={''}
+        optionsList={optionsList}
+        value={value}
+        onSelect={function (e: any): void {
+          throw new Error('Function not implemented.');
+        }}
+        rightIcon="success"
+        loadMoreOptions={loadMore}
+      />
+    );
+  },
+};
 
 export default meta;

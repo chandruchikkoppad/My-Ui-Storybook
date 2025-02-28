@@ -1,7 +1,16 @@
 import { ComponentProps } from 'react';
-import ReCAPTCHA from 'react-google-recaptcha';
-
-export interface RecaptchaProps extends Omit<ComponentProps<typeof ReCAPTCHA>, 'onChange'> {
+// Fix ReCAPTCHA type by casting to a compatible type
+type FixedReCAPTCHA = React.ComponentType<{
+  sitekey: string;
+  onChange: (token: string | null) => void;
+  className?: string;
+  theme?: 'light' | 'dark';
+  size?: 'compact' | 'normal' | 'invisible';
+  tabindex?: number;
+  badge?: 'bottomright' | 'bottomleft' | 'inline';
+}>;
+export interface RecaptchaProps
+  extends Omit<ComponentProps<FixedReCAPTCHA>, 'onChange'> {
   /**
    * Callback function that receives the verification token
    */
@@ -19,4 +28,3 @@ export interface RecaptchaProps extends Omit<ComponentProps<typeof ReCAPTCHA>, '
    */
   sitekey: string;
 }
-

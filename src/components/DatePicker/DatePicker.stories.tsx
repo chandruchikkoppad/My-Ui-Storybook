@@ -1,6 +1,7 @@
+import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import CustomDatePicker from './DatePicker';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 
 const meta: Meta<typeof CustomDatePicker> = {
   title: 'Components/DatePicker',
@@ -36,7 +37,7 @@ const meta: Meta<typeof CustomDatePicker> = {
     },
     onChange: {
       description: 'Function to handle date selection',
-      action: 'changed', 
+      action: 'changed',
     },
     placeholder: {
       description: 'Placeholder text for the input field',
@@ -60,14 +61,15 @@ const meta: Meta<typeof CustomDatePicker> = {
     },
     calendarWidth: {
       description: 'Custom width for the calendar in pixel',
-      control: "number"
+      control: 'number',
     },
     error: {
       description: 'Displays the input field in an error state',
       control: 'boolean',
     },
     helperText: {
-      description: 'Helper text to show below the input, often used for error messages',
+      description:
+        'Helper text to show below the input, often used for error messages',
       control: 'text',
     },
   },
@@ -82,28 +84,42 @@ export const Default: Story = {
   render: (args) => {
     const [date, setDate] = useState<Date | undefined>();
 
-    return(
+    return <CustomDatePicker {...args} value={date} onChange={setDate} />;
+  },
+};
+
+// Default story for DatePicker
+export const FilterDatePicker: Story = {
+  render: (args) => {
+    const [date, setDate] = useState<Date | undefined>();
+
+    return (
       <CustomDatePicker
         {...args}
         value={date}
         onChange={setDate}
+        isFilterDatePicker
       />
-    )
-  }
+    );
+  },
 };
 
 // Start Date Filter story
 export const StartDateFilter: Story = {
   render: (args) => {
     const [startDate, setStartDate] = useState<Date | undefined>();
+    const startDateRef = useRef<HTMLDivElement>(null);
 
+ 
     return (
       <CustomDatePicker
         {...args}
+        ref={startDateRef}
         value={startDate}
         onChange={setStartDate}
-        calendarWidth = {240}
+        calendarWidth={240}
         maxDate={new Date()} // Disable future dates for start date picker
+        timezone='Europe/Paris'
       />
     );
   },
@@ -143,7 +159,7 @@ export const EndDateInput: Story = {
 export const ScheduleDateInput: Story = {
   args: {
     error: false,
-    helperText: "Error"
+    helperText: 'Error',
   },
 
   render: (args) => {
@@ -157,5 +173,72 @@ export const ScheduleDateInput: Story = {
         minDate={new Date()} // Set minimum date to today
       />
     );
-  }
+  },
+};
+
+export const Dateonly: Story = {
+  render: (args) => {
+    const [selectedDate, setSelectDate] = useState<Date | undefined>();
+
+    console.log(selectedDate);
+    return (
+      <CustomDatePicker
+        {...args}
+        value={selectedDate}
+        onChange={setSelectDate}
+        calendarWidth={240}
+        dateOnly
+      />
+    );
+  },
+};
+
+export const PastOneYear: Story = {
+  render: (args) => {
+    const [selectedDate, setSelectDate] = useState<Date | undefined>();
+
+    return (
+      <>
+        <CustomDatePicker
+          {...args}
+          value={selectedDate}
+          onChange={setSelectDate}
+          calendarWidth={240}
+          maxDate={new Date()}
+          minDate={
+            new Date(new Date().setFullYear(new Date().getFullYear() - 1))
+          }
+          dateOnly
+          dateFormat="dd MMM yyyy"
+        />
+        <button onClick={()=>setSelectDate(undefined)}>clear</button>
+      </>
+    );
+  },
+};
+
+
+export const DashboardFilter: Story = {
+  render: (args) => {
+    const [selectedDate, setSelectDate] = useState<Date | undefined>();
+
+    return (
+      <>
+        <CustomDatePicker
+          {...args}
+          value={selectedDate}
+          onChange={setSelectDate}
+          calendarWidth={240}
+          maxDate={new Date()}
+          minDate={
+            new Date(new Date().setFullYear(new Date().getFullYear() - 1))
+          }
+          dateOnly
+          dateFormat="dd MMM yyyy"
+          isSelectableDate
+        />
+        <button onClick={()=>setSelectDate(undefined)}>clear</button>
+      </>
+    );
+  },
 };

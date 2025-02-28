@@ -1,10 +1,10 @@
 // getEncryptData.stories.tsx
 import { useState } from 'react';
-import getEncryptData from './getEncryptedData';
+import { getEncryptedData } from './getEncryptedData';
 
 export default {
   title: 'Utils/getEncryptedData',
-  component: getEncryptData,
+  component: getEncryptedData,
 };
 
 export const InteractivePlayground = () => {
@@ -13,7 +13,7 @@ export const InteractivePlayground = () => {
   const [encryptedData, setEncryptedData] = useState<string | null>(null);
 
   const handleEncrypt = () => {
-    const result = getEncryptData(data, publicKey);
+    const result = getEncryptedData(data, publicKey);
     setEncryptedData(result.toString());
   };
 

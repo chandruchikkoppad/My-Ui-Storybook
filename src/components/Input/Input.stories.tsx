@@ -1,3 +1,4 @@
+import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import Input from './Input';
 import { ChangeEvent, useState } from 'react';
@@ -50,6 +51,107 @@ export const DisabledWithValue: Story = {
   },
 };
 
+export const AutoFocusInput: Story = {
+  args: {
+    ...defaultArgs,
+    label: 'Name',
+    variant: 'primary',
+    type: 'text',
+    value: '',
+    required: true,
+    autoFocus: true,
+  },
+};
+
+export const WithoutLabel: Story = {
+  render: () => {
+    const [value, setValue] = useState('');
+    const [error, setError] = useState<boolean>(false);
+    const [helperText, setHelperText] = useState<string>();
+
+    const onChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
+      const value = event.target.value;
+      if (event.target) {
+        if (value.length <= 0) {
+          setError(true);
+          setHelperText(`${event?.target?.name} is required`);
+        } else if (value.length >= 10) {
+          setError(true);
+          setHelperText(`Name should be within 10 characters`);
+        } else {
+          setError(false);
+          setHelperText('');
+        }
+      }
+      setValue(value);
+    };
+
+    return (
+      <>
+        <Input
+          {...defaultArgs}
+          type="text"
+          onChange={onChangeHandler}
+          disabled={false}
+          value={value}
+          name="Name"
+          label="Name"
+          placeholder="Enter name here"
+          variant="primary"
+          required={true}
+          error={error}
+          helperText={helperText}
+          isLabelRequired={false}
+        />
+      </>
+    );
+  },
+};
+
+export const withNumber: Story = {
+  render: () => {
+    const [value, setValue] = useState<number>(0);
+    const [error, setError] = useState<boolean>(false);
+    const [helperText, setHelperText] = useState<string>();
+
+    const onChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
+      const inputValue = event.target.value;
+      setValue(parseInt(inputValue));
+      if (event.target) {
+        if (value <= -2 || value >= 111) {
+          setError(true);
+          setHelperText(`value is out of range`);
+        } else {
+          setError(false);
+          setHelperText('');
+        }
+      }
+    };
+
+    return (
+      <>
+        <Input
+          {...defaultArgs}
+          type="number"
+          minValue="-2"
+          maxValue="111"
+          onChange={onChangeHandler}
+          disabled={false}
+          value={value}
+          name="Value"
+          label="Value"
+          placeholder="Enter value here"
+          variant="primary"
+          required={true}
+          error={error}
+          helperText={helperText}
+          setUpdatedNumberValue={(value) => setValue(value)}
+        />
+      </>
+    );
+  },
+};
+
 export const Controlled: Story = {
   render: () => {
     const [value, setValue] = useState('');
@@ -58,7 +160,7 @@ export const Controlled: Story = {
 
     const onChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
       const value = event.target.value;
-      if (event.target.required) {
+      if (event.target) {
         if (value.length <= 0) {
           setError(true);
           setHelperText(`${event?.target?.name} is required`);

@@ -1,247 +1,214 @@
 @use '../../assets/styles/fonts';
 
-// todo color need to be add into style guide
-@mixin transition-all($time: 0.3s) {
-  transition: opacity $time ease-out, transform $time ease-out,
-    font-size $time ease-out, padding $time ease-out;
+@mixin svg-path-style($fill-color: var(--ff-select-brand-color)) {
+  svg {
+    path {
+      fill: $fill-color;
+      transition: all 0.18s ease;
+    }
+  }
 }
 
-@mixin absolute-position($top: auto, $right: auto, $bottom: auto, $left: auto) {
-  position: absolute;
-  top: $top;
-  right: $right;
-  bottom: $bottom;
-  left: $left;
-}
+@mixin select-state-style($color) {
+  border-color: $color;
 
-@mixin opacity-style($opacity: 1, $color: null, $border-color-arg: null) {
-  opacity: $opacity;
-
-  @if $color {
+  .ff-select-labels {
     color: $color;
   }
 
-  @if $border-color-arg {
-    border-color: $border-color-arg;
+  .ff-select-arrows-wrapper {
+    .ff-select-arrows {
+      @include svg-path-style($color);
+    }
   }
 }
 
 .ff-select-wrapper {
-  position: relative;
+  min-height: 24px;
+  min-width: 50px;
 
   .ff-select {
-    @extend .fontSm;
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    min-height: 32px;
-    min-width: 100px;
+    height: 100%;
+    border: 1px solid var(--ff-select-border-color);
+    border-radius: 4px;
     display: flex;
-    align-items: end;
+    align-items: center;
+    justify-content: space-between;
     position: relative;
+    box-sizing: border-box;
 
-    &-fieldset {
-      margin: 0;
-      padding: 25px 0px 0px 8px;
-      border: 1px solid transparent;
-      box-sizing: border-box;
-      height: 100%;
-      width: 100%;
-      border-radius: 4px;
-      display: block;
+    &:hover {
+      border-color: var(--ff-select-brand-color);
 
-      &--border-radius {
-        border-radius: 0px 4px 4px 0px;
+      .ff-select-labels {
+        color: var(--ff-select-default-color);
       }
 
-      &--no-label {
-        padding: 30px 0px 0px 8px;
-      }
-
-      &--default {
-        @include opacity-style(0, null, var(--ff-select-border-color));
-      }
-
-      &--active {
-        @include opacity-style(1, null, var(--ff-select-brand-color));
-      }
-
-      &--option {
-        opacity: 1;
-      }
-
-      &--no-border {
-        border-color: transparent;
-      }
-
-      &--error {
-        border-color: var(--error-light);
-      }
-
-      .ff-select-legend {
-        @extend .font-size-8;
-        padding: 0 2px;
-        letter-spacing: 0.5px;
-
-        &--default {
-          @include transition-all(0.3s);
-          opacity: 0;
-        }
-
-        &--active {
-          @include transition-all(0.25s);
-          @include opacity-style(1, var(--ff-select-brand-color));
-        }
-
-        &--option {
-          @include opacity-style(1, var(--ff-select-default-color));
-        }
-
-        &--error {
-          color: var(--error-light);
-        }
-
-        &--required {
-          margin-right: 2px;
+      .ff-select-arrows-wrapper {
+        .ff-select-arrows {
+          @include svg-path-style(var(--ff-select-text-hover-color));
         }
       }
     }
 
-    &-input {
+    .ff-select-input-icon {
+      margin-left: 6px;
+    }
+
+    .ff-select-inputField {
       @extend .fontSm;
-      @include absolute-position(6px, auto, auto, auto);
-      width: calc(100% - 38px);
-      min-height: calc(100% - 8px);
-      padding: 0 28px 0 8px;
-      border-radius: 4px;
-      border: 1px solid transparent;
-      z-index: 100;
-      background: transparent;
+      width: 100%;
+      height: 100%;
+      padding: 0 0 0 8px;
+      border: none;
       outline: none;
-      color: var(--ff-select-text-color);
+      letter-spacing: 0.5px;
+      z-index: 10;
+      background: transparent;
+      position: relative;
+
+      &__disabled {
+        cursor: not-allowed;
+        color: var(--ff-select-border-color);
+      }
+
+      &__readonly {
+        cursor: pointer;
+      }
+
+      &__icon {
+        width: calc(100% - 12px);
+        padding: 4;
+      }
+    }
+
+    .ff-select-arrows-wrapper {
+      cursor: pointer;
+      height: 100%;
+      padding: 0 8px 0 0;
+      display: flex;
+      align-items: center;
+
+      .ff-select-arrows {
+        @include svg-path-style(var(--ff-select-border-color));
+      }
+
+      &__disabled {
+        cursor: not-allowed;
+        border-color: var(--ff-select-border-color);
+      }
+    }
+
+    .ff-select-labels {
+      @extend .fontSm;
+      position: absolute;
+      left: 8px;
+      color: var(--ff-select-border-color);
+      letter-spacing: 0.5px;
+      line-height: 18px;
+      transition: 0.18s ease all;
+      border-radius: 4px;
+
+      &__icon {
+        left: 24px;
+      }
+
+      &__active {
+        transform: translateY(-16px);
+        transition: 0.18s ease all;
+        background-color: var(--ff-select-background-color);
+        padding: 0 2px;
+        z-index: 20;
+        left: 8px;
+      }
+    }
+
+    &__focus {
+      border-color: var(--ff-select-brand-color);
 
       &:hover {
-        ~ .ff-select-label {
-          color: var(--ff-select-text-hover-color);
+        @include select-state-style(var(--ff-select-brand-color));
+      }
+
+      .ff-select-labels {
+        @extend .font-size-8;
+        transform: translateY(-16px);
+        transition: 0.18s ease all;
+        color: var(--ff-select-brand-color);
+        background-color: var(--ff-select-background-color);
+        padding: 0 2px;
+        line-height: 18px;
+        z-index: 100000;
+        left: 8px;
+      }
+
+      .ff-select-arrows-wrapper {
+        .ff-select-arrows {
+          transform: rotate(180deg);
+          transition: 0.18s ease all;
+          @include svg-path-style(var(--ff-select-brand-color));
+        }
+      }
+    }
+
+    &__disabled {
+      cursor: not-allowed;
+
+      &:hover {
+        @include select-state-style(var(--ff-select-border-color));
+      }
+    }
+
+    &__error {
+      border-color: var(--error_light);
+
+      &:hover {
+        border-color: var(--error_light);
+
+        .ff-select-labels {
+          color: var(--error_light);
+        }
+
+        .ff-select-arrows-wrapper {
+          .ff-select-arrows {
+            @include svg-path-style(var(--ff-select-default-color));
+          }
         }
       }
 
-      &--border-radius {
-        border-radius: 0px 4px 4px 0px;
-      }
-
-      &--default {
-        @include opacity-style(1, null, var(--ff-select-border-color));
-
+      &__focused {
         &:hover {
-          border-color: var(--ff-select-text-color);
-
-          ~ .ff-select-fieldset--option {
-            border-color: var(--ff-select-text-color);
-
-            .ff-select-legend--option {
-              color: var(--ff-select-text-color);
+          .ff-select-arrows-wrapper {
+            .ff-select-arrows {
+              @include svg-path-style(var(--ff-select-brand-color));
             }
           }
         }
       }
 
-      &--no-label {
-        min-height: calc(100% - 2px);
-        margin-top: 0px;
-        top: 0px;
-      }
-
-      &--active {
-        border-color: transparent;
-
-        &:hover {
-          border-color: transparent;
-        }
-      }
-
-      &--no-border {
-        border: none;
-        border-color: transparent;
-
-        &:hover {
-          border-color: transparent;
-
-          ~ .ff-select-fieldset--no-border {
-            border-color: transparent;
-          }
-        }
-      }
-
-      &--disable {
-        border-color: var(--ff-select-border-color);
-
-        &:hover {
-          border-color: var(--ff-select-border-color);
-
-          ~ .ff-select-label--default {
-            color: var(--ff-select-default-color);
-          }
-        }
-      }
-
-      &--error {
-        border-color: var(--error-light);
-
-        &:hover {
-          border-color: var(--error-light);
-        }
-      }
-    }
-
-    &-label {
-      @include absolute-position(13px, auto, auto, 8px);
-      z-index: 1;
-      font-size: 12px;
-      top: 60%;
-      padding-left: 8px;
-
-      &--default {
-        @include transition-all;
-        @include opacity-style(1, var(--ff-select-default-color));
-
-        transform: translateY(-50%);
-      }
-
-      &--active {
+      .ff-select-labels {
         @extend .font-size-8;
-        @include transition-all;
-        opacity: 0;
-        transform: translateY(-150%);
-        padding: 0 6px;
-      }
-
-      &--required {
-        margin-right: 2px;
+        transform: translateY(-16px);
+        transition: 0.3s ease all;
+        color: var(--error_light);
+        background-color: var(--ff-select-background-color);
+        padding: 0 2px;
+        line-height: 18px;
+        left: 8px;
       }
     }
 
-    &-arrow {
-      position: absolute;
-      top: 60%;
-      height: 100%;
-      right: 10px;
-      transform: rotateX(180deg) translateY(50%);
-      cursor: pointer;
+    &__no_border {
+      border-color: transparent;
 
-      &--no-label {
-        top: 50%;
-      }
-
-      &--down {
-        transform: rotateX(0deg) translateY(-50%);
-        z-index: 101;
+      &:hover {
+        border-color: transparent;
       }
     }
   }
 
-  &-error-text {
-    @include absolute-position(auto, auto, -14px, 12px);
-    white-space: nowrap;
+  .ff-select-error-msg {
+    padding-left: 8px;
+    letter-spacing: 0.5px;
   }
 }

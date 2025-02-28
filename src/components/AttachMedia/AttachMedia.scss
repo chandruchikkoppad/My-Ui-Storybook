@@ -1,0 +1,80 @@
+.ff-attach-media-container {
+  position: relative;
+  display: inline-block;
+
+  .ff-media-wrapper {
+    position: relative;
+    width: 79px;
+    height: 75px;
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .ff-hover-icons {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      background-color: rgba(0, 0, 0, 0.7);
+      transition: opacity 0.4s ease;
+
+      .ff-top-icons {
+        position: absolute;
+        top: 1px;
+        right: 1px;
+        display: flex;
+        gap: 4px;
+
+        .ff-icon-container {
+          width: 8px;
+          height: 8px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          cursor: pointer;
+          border-radius: 4px;
+          background-color: transparent;
+          transition: background-color 0.3s ease;
+        }
+      }
+
+      .ff-expand-icon-container {
+        width: 24px;
+        height: 24px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        border-radius: 4px;
+        background-color: transparent;
+        transition: background-color 0.3s ease;
+      }
+    }
+
+    &:hover .ff-hover-icons {
+      opacity: 1;
+    }
+
+    &:hover .ff-icon-container,
+    &:hover .ff-top-icons .ff-icon-container {
+      border-radius: 4px;
+      background-color: var(--ff-icon-hover-bg-color);
+    }
+
+    &:hover .ff-expand-icon-container {
+      background-color: var(--ff-icon-hover-bg-color);
+    }
+    .ff-media-text {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+}

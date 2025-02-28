@@ -1,0 +1,227 @@
+.connecting-branch-container {
+  .ff-connecting-branch-grid-container {
+    display: grid;
+    grid-template-columns:
+      minmax(100px, 0.5fr) minmax(240px, 1.5fr) minmax(130px, 0.8fr)
+      5fr;
+    grid-auto-rows: auto;
+
+    .ff-selectedMachines {
+      display: contents;
+    }
+
+    .ff-selectedMachines-input {
+      grid-column: 2 / 3;
+      display: grid;
+    }
+
+    .ff-input-box-container {
+      margin-bottom: 24px;
+      width: 100%;
+    }
+    .ff-input-box-aligned {
+      margin-bottom: 40px;
+    }
+
+    .ff-machine-instance-row {
+      display: contents;
+    }
+
+    .ff-selectedMachines-connecting-line {
+      grid-column: 3 / 4;
+      position: relative;
+
+      .ff-line {
+        position: absolute;
+        height: 1px;
+        background-color: var(--brand-color);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+      }
+
+      .ff-left-icon {
+        height: 8px;
+        width: 8px;
+        background-color: var(--brand-color);
+        border-radius: 50%;
+        margin-right: 5px;
+      }
+      .ff-left-icon-aligned {
+        position: relative;
+        left: -4px;
+      }
+      .ff-selectedMachines-connecting-line-text {
+        position: absolute;
+        top: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: var(--brand-color);
+        color: var(--tooltip-text-color);
+        padding: 4px;
+        border-radius: 12px;
+        text-align: center;
+      }
+
+      .ff-right-icon {
+        width: 0;
+        height: 0;
+        border-top: 3.8px solid transparent;
+        border-bottom: 3.8px solid transparent;
+        border-left: 12px solid var(--brand-color);
+        position: absolute;
+        right: -1px;
+      }
+
+      &.ff-second-line {
+        position: relative;
+        margin-left: 20px;
+      }
+      .ff-vertical-line {
+        position: absolute;
+        left: 24px;
+        top: 0;
+        width: 1px;
+        height: auto;
+        background-color: var(--brand-color);
+      }
+    }
+
+    .ff-machine-instance {
+      grid-column: 4 / 5;
+    }
+    .ff-machine-env-button {
+      padding: 4px 0;
+      margin-bottom: 16px;
+    }
+    .ff-selectedMachines-connecting-line {
+      margin-top: 16px;
+    }
+
+    .ff-selectedMachines-connecting-line.ff-no-instance-line {
+      margin-top: 16px;
+    }
+
+    .ff-selectedMachines-connecting-line.ff-no-instance-line .ff-line {
+      width: 100%;
+      background-color: var(--brand-color);
+      height: 1px;
+      position: relative;
+    }
+
+    .ff-run-level-execution-dataset {
+      height: 66px;
+      margin-bottom: 8px;
+      border-radius: 4px;
+      margin-bottom: 16px;
+      position: relative;
+
+      .ff-curved-connector {
+        position: absolute;
+        left: -70px;
+        transform: translateX(-50%);
+        width: 40px;
+        height: 0;
+
+        .ff-curve {
+          position: relative;
+          width: 80px;
+          height: 0;
+          border: 1px dashed var(--brand-color);
+          border-top: none;
+          border-right: none;
+          border-bottom-left-radius: 8px;
+          display: flex;
+          flex-direction: column-reverse;
+
+          .ff-curve-right-icon {
+            width: 0;
+            height: 0;
+            border-top: 3.8px solid transparent;
+            border-bottom: 3.8px solid transparent;
+            border-left: 12px solid var(--brand-color);
+            margin-left: 78px;
+            position: absolute;
+            bottom: -4px;
+          }
+
+          .ff-selectedMachines-connecting-line-text {
+            position: absolute;
+            left: 50%;
+            top: 75px;
+            transform: translateX(-50%);
+            background-color: var(--brand-color);
+            color: var(--tooltip-text-color);
+            font-weight: 400;
+            font-size: 8px;
+            padding: 4px;
+            border-radius: 12px;
+            text-align: center;
+            width: 44px;
+          }
+        }
+
+        .ff-connector-0 {
+          border: none;
+          bottom: 3px;
+        }
+
+        .ff-curve-right-icon-0 {
+          display: none;
+        }
+      }
+    }
+
+    .ff-select-machine-input {
+      grid-column: 2 / 3;
+    }
+
+    .ff-grid-item.ff-dynamic-item {
+      grid-column: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      place-self: first baseline;
+      top: 1px;
+      left: 20px;
+    }
+
+    .ff-script-count-container {
+      grid-column: 1;
+      align-self: center;
+      background-color: var(--brand-color);
+      color: var(--tooltip-text-color);
+      text-align: center;
+      border-radius: 4px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 4px;
+
+      .ff-script-count-box {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+      }
+    }
+  }
+}
+// Styles for stories
+.ff-parent-node-container {
+  border: 1px solid green;
+  height: 30px;
+  border-radius: 10px;
+  padding: 2px;
+}
+.ff-child-node-container {
+  border: 1px solid red;
+  height: 40px;
+  width: 300px;
+  border-radius: 10px;
+  padding: 8px;
+}

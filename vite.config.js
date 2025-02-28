@@ -11,20 +11,29 @@ export default {
       },
     }),
   ],
-
-  // resolve: {
-  //   alias: {
-  //     '@components': path.resolve(__dirname, './src/components'),
-  //     '@styles': path.resolve(__dirname, './src/assets/styles'),
-  //     '@icons': path.resolve(__dirname, './src/assets/icons'),
-  //   },
-  // },
-
-  // css: {
-  //   preprocessorOptions: {
-  //     scss: {
-  //       additionalData: `@import "./src/assets/styles/_colors.scss";`,
-  //     },
-  //   },
-  // },
+  build: {
+    // Minify code using Terser for production builds
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true, // Remove console logs in production
+        pure_funcs: ['console.info', 'console.debug'], // More aggressive removal of console functions
+      },
+      mangle: true, // Mangle variable names to reduce size
+    },
+    // Chunk size warning limit (in KB)
+    chunkSizeWarningLimit: 500,
+    rollupOptions: {
+      output: {
+        // Code Splitting: Split vendor libraries into their own chunk
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            return 'vendor';
+          }
+        },
+        // Add content hash for better caching
+        chunkFileNames: '[name]-[hash].js',
+      },
+    },
+  },
 };

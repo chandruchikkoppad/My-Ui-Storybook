@@ -1,0 +1,26 @@
+.ff-variable-dropdown {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--variable-dropdown-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 3px;
+  overflow: hidden;
+  overflow-y: auto;
+  &.absolute {
+    position: absolute;
+    top: 34px;
+  }
+  &.relative {
+    position: relative;
+  }
+}
+.ff-variable-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  cursor: pointer;
+  &:hover {
+    background-color: var(--hover-color);
+  }
+}

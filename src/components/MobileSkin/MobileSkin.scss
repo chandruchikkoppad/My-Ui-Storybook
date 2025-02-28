@@ -1,0 +1,70 @@
+@use '../../assets/styles/fonts';
+@use '../../assets/styles/mixins' as *;
+
+.ff-mobileskin-wrapper {
+  @include center-content;
+  flex-direction: column;
+  transition: gap 0.3s ease-in-out; 
+  &.portrait {
+    gap: 30px;
+  }
+
+  &.landscape {
+    gap: 38px;
+  }
+
+  .ff-mobileskin-container {
+    @extend .ff-mobileskin-wrapper;
+    transition:
+      width 0.3s ease-in-out,
+      height 0.3s ease-in-out;
+    .ff-mobile-container {
+      @include center-content;
+      border: 8px solid var(--text-color);
+      border-radius: 30px;
+      position: relative;
+      overflow: hidden;
+      transition:
+        width 0.3s ease-in-out,
+        height 0.3s ease-in-out;
+
+      &::-webkit-scrollbar {
+        width: 0;
+        height: 0;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background-color: transparent;
+      }
+      .ff-mobile-image-container {
+        @include center-content;
+        overflow: hidden;
+        transition:
+          width 0.3s ease-in-out,
+          height 0.3s ease-in-out;
+      }
+    }
+  }
+
+  .ff-nav-bar {
+    height: 32px;
+    padding: 8px;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    border: 1px solid var(--brand-color);
+    border-radius: 24px;
+    transition: all 0.3s ease-in-out;
+  }
+  .ff-nav-bar-icon {
+    height: 16px;
+    padding: 8px;
+    border-right: 1px solid var(--brand-color);
+    @include center-content;
+    transition: all 0.3s ease-in-out;
+
+    &.last-icon {
+      border-right: none;
+    }
+  }
+}

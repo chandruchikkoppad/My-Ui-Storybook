@@ -12,87 +12,95 @@
   transition: $properties $duration;
 }
 
-.ff-radio {
-  @extend .fontSm;
-  position: relative;
-  color: var(--text-color);
+.ff-radio-wrapper {
   display: flex;
   align-items: center;
-  cursor: pointer;
-  .ff-radio-input {
-    display: none;
-  }
-  .ff-radio-custom {
-    box-sizing: content-box;
-    @include circle(14px, 1px solid var(--radio-button-border)); //todo
+  gap: 4px;
+
+  .ff-radio {
+    @extend .fontSm;
     position: relative;
-    margin-right: 8px;
-    @include transition(border-color, background-color);
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    .ff-radio-input {
+      display: none;
+    }
+    .ff-radio-custom {
+      box-sizing: content-box;
+      @include circle(14px, 1px solid var(--radio-button-border)); //todo
+      position: relative;
+      margin-right: 8px;
+      @include transition(border-color, background-color);
 
-    &::before {
-      content: '';
-      @include circle(12px);
-      background: #fbfdff; //todo
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      @include transition(background-color);
+      &::before {
+        content: '';
+        @include circle(12px);
+        background: #fbfdff; //todo
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        @include transition(background-color);
+      }
+
+      &::after {
+        content: '';
+        @include circle(16px, 4px solid #f7edff); //todo
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        opacity: 0;
+        @include transition(opacity);
+      }
     }
 
-    &::after {
-      content: '';
-      @include circle(16px, 4px solid #f7edff); //todo
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      opacity: 0;
-      @include transition(opacity);
+    &:hover .ff-radio-custom {
+      border: 1px solid var(--brand-color);
+      &::before {
+        background-color: var(--drawer-footer-bg);
+      }
+      &::after {
+        opacity: 1;
+        @include transition(opacity);
+      }
     }
-  }
+    .ff-radio-input:checked + .ff-radio-custom {
+      border-color: var(--brand-color);
 
-  &:hover .ff-radio-custom {
-    border: 1px solid var(--brand-color);
-    &::before {
+      &::before {
+        background: var(--brand-color);
+        height: 12px;
+        width: 12px;
+      }
+    }
+    .ff-radio-input:disabled + .ff-radio-custom {
+      border: 1px solid var(--radio-button-border);
+      &::before {
+        background: var(--drawer-footer-bg);
+      }
+
+      &::after {
+        border: 4px solid var(--radio-button-hover);
+        opacity: 0;
+        @include transition(opacity);
+      }
+    }
+
+    .ff-radio-input:checked:disabled + .ff-radio-custom {
+      border-color: var(--brand-color);
       background-color: var(--drawer-footer-bg);
+      &::before {
+        background: var(--brand-color);
+      }
     }
-    &::after {
-      opacity: 1;
-      @include transition(opacity);
+    &--disabled {
+      cursor: default;
+      .ff-radio-custom {
+        opacity: 0.5;
+      }
     }
-  }
-  .ff-radio-input:checked + .ff-radio-custom {
-    border-color: var(--brand-color);
-
-    &::before {
-      background: var(--brand-color);
-      height: 12px;
-      width: 12px;
-    }
-  }
-  .ff-radio-input:disabled + .ff-radio-custom {
-    border: 1px solid var(--radio-button-border);
-    &::before {
-      background: var(--drawer-footer-bg);
-    }
-
-    &::after {
-      border: 4px solid var(--radio-button-hover);
-      opacity: 0;
-      @include transition(opacity);
-    }
-  }
-
-  .ff-radio-input:checked:disabled + .ff-radio-custom {
-    border-color: var(--brand-color);
-    background-color: var(--drawer-footer-bg);
-    &::before {
-      background: var(--brand-color);
-    }
-  }
-  &--disabled {
-    cursor: default;
-    opacity: 0.5;
   }
 }

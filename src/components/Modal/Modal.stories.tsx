@@ -1,7 +1,9 @@
+import React, { useState } from 'react';
+
 import type { Meta, StoryObj } from '@storybook/react';
 import Modal from './Modal';
-import { useState } from 'react';
 import Button from '../Button';
+import { useKeyboardActions } from '../../utils/keyBoardActionUtil/UseKeyboardActions';
 
 const meta: Meta<typeof Modal> = {
   title: 'Components/Modal',
@@ -26,12 +28,19 @@ export const DefaultModalStory: Story = {
     footerContent: <Button variant="primary" label="continue" />,
     customWidth: '660px',
     customHeight: 'auto',
+    border: '1px solid #E79B0866',
   },
 };
 
 export const Controlled: Story = {
   render: () => {
     const [openModal, setModal] = useState(false);
+    useKeyboardActions([
+      {
+        key: 'Enter',
+        action: () => alert('Enter key was pressed.'),
+      },
+    ]);
     return (
       <>
         <Button
@@ -57,6 +66,7 @@ export const Controlled: Story = {
             footerContent={<Button variant="primary" label="continue" />}
             customWidth="660px"
             customHeight="auto"
+            border="1px solid var(--warning-modal-border-color)"
           />
         )}
       </>

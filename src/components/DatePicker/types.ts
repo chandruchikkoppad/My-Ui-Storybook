@@ -58,6 +58,27 @@ export interface DatePickerProps {
    * Helper text to display below the input field, used for error messages or instructions.
    */
   helperText?: string | undefined;
+
+  /**
+   * Select only date .
+   */
+  dateOnly?: boolean;
+
+  className?: string;
+
+  zIndex?: number;
+  /**
+   * Default: false, if true, displayed with border radius and color required for the filter date picker.
+   */
+  isFilterDatePicker?: boolean;
+  /**
+   * The selected date don't want to be deselected .
+   */
+  isSelectableDate?: boolean
+  /**
+   * Function to handle onBlur for datepicker.
+   */
+  onBlur?: (date: DateValue) => void;
 }
 
 export type DateValue = Date | undefined;

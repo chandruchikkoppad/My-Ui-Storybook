@@ -1,0 +1,56 @@
+@use '../../assets/styles/fonts';
+@use '../../assets/styles/colors';
+
+.ff-accordion-table-container {
+  overflow-y: auto;
+  .ff-accordion-table {
+    height: 32px;
+    width: 100%;
+    .ff-table-header,
+    .ff-table-cell {
+      text-align: left;
+    }
+    .ff-table-header {
+      color: var(--text-color);
+      border-bottom: 1px solid var(--slider-table-color);
+    }
+    .ff-table-body {
+      .ff-table-row:hover {
+        background-color: var(--hover-color);
+      }
+    }
+    &--primary-bg {
+      background-color: var(--table-with-accordion-header-primary-bg);
+    }
+    &--secondary-bg {
+      background-color: var(--secondary-bg);
+    }
+    &--default-bg {
+      background-color: var(--default-bg);
+    }
+  }
+  .ff-accordion-fixed-header {
+    position: sticky;
+    top: 0;
+    z-index: 99;
+    background-color: var(--file-details-bg);
+  }
+  .column-table-accordion {
+    width: 100%;
+    .accordion-header {
+      height: 32px;
+      display: flex;
+      align-items: center;
+      .accordion-arrow {
+        img {
+          height: 30px;
+          width: 35px;
+        }
+      }
+    }
+  }
+}
+
+thead .ff-table-row {
+  height: 32px !important;
+}

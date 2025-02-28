@@ -18,7 +18,6 @@ const TimePicker: React.FC<TimePickerProps> = ({
   const [period, setPeriod] = useState<string | undefined>('AM');
   const [timeFieldError, setTimeFieldError] = useState<boolean>(false);
   const [isPeriodDropdownOpen, setIsPeriodDropdownOpen] = useState(false);
-  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
   const inputRef = useRef<HTMLInputElement>(null);
   const periodRef = useRef<HTMLDivElement>(null);
 
@@ -173,10 +172,6 @@ const TimePicker: React.FC<TimePickerProps> = ({
 
   const togglePeriodDropdown = () => {
     setIsPeriodDropdownOpen((prev) => !prev);
-    if (periodRef.current) {
-      const { top, left, height } = periodRef.current.getBoundingClientRect();
-      setDropdownPosition({ top: top + height, left: left });
-    }
   };
 
   const handlePeriodChange = (option: string) => {
@@ -322,14 +317,7 @@ const TimePicker: React.FC<TimePickerProps> = ({
           </div>
 
           {isPeriodDropdownOpen && (
-            <ul
-              className="ff-time-period-options"
-              style={{
-                top: `${dropdownPosition.top}px`,
-                left: `${dropdownPosition.left}px`,
-              }}
-              role="listbox"
-            >
+            <ul className="ff-time-period-options" role="listbox">
               <Typography
                 as="li"
                 className="ff-option-item"

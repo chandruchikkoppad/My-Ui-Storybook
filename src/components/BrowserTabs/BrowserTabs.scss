@@ -1,0 +1,97 @@
+@use '../../assets/styles//mixins';
+
+.ff-browser-tabs-container {
+  box-sizing: border-box;
+
+  .ff-browser-tab-row {
+    display: flex;
+    background-color: #f5f6fc; //todo need to replace this color once it is available in the design system
+    overflow: hidden;
+
+    .ff-tab-button-container {
+      display: flex;
+      overflow: hidden;
+
+      .ff-tab-wrapper {
+        flex-grow: 1;
+        max-width: 100%;
+        @include mixins.center-vertical();
+        &.active {
+          background-color: var(--primary-button-text-color);
+          font-weight: bold;
+        }
+
+        .ff-tab-button {
+          flex-shrink: 1;
+          flex-grow: 1;
+          background: none;
+          border: none;
+          cursor: pointer;
+          transition:
+            width 0.3s ease,
+            padding 0.3s ease;
+          &.shrink {
+            @include mixins.center-content();
+          }
+
+          &:not(.shrink) {
+            @include mixins.horizontal-space-between();
+            .ff-tab-content {
+              width: 100%;
+            }
+          }
+
+          .ff-tab-content {
+            @include mixins.horizontal-space-between();
+            overflow: hidden;
+            gap: 8px;
+            .ff-tab-icon {
+              width: 16px;
+              height: 16px;
+            }
+            .ff-tab-label-container {
+              display: flex;
+              flex: 1;
+              overflow: hidden;
+
+              .ff-tab-label {
+                display: inline-block;
+                max-width: 100%;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                overflow: hidden;
+              }
+            }
+
+            .ff-close-icon {
+              color: var(--brand-color);
+              flex-shrink: 0;
+            }
+          }
+        }
+
+        .ff-tab-separator {
+          max-width: 1px;
+          background-color: #d1d1d1; //todo need to replace this color once it is available in the design system
+          padding: 0 0.5px;
+          .wide-browser-tab {
+            margin: 0 4px;
+          }
+          .narrow-browser-tab {
+            margin: 0 1px;
+          }
+        }
+      }
+    }
+
+    .ff-tab-plus-icon {
+      cursor: pointer;
+      padding: 8px;
+
+      &:hover {
+        background-color: #71347b1a; //todo need to replace this color once it is available in the design system
+        border-radius: 4px;
+      }
+    }
+  }
+}

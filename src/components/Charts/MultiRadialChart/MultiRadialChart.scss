@@ -1,0 +1,84 @@
+@use '../../../assets/styles/fonts';
+
+.ff-multi-radial-chart-container {
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  &.ff-multi-radial-chart-number {
+    flex-direction: column;
+  }
+
+  &.ff-multi-radial-chart-pill {
+    flex-direction: row;
+  }
+
+  .ff-center-first-text {
+    @extend .font-size-20;
+    color: var(--text-color);
+    font-weight: 600;
+  }
+  .ff-center-text {
+    color: var(--text-color);
+    font-weight: 400;
+  }
+  .ff-center-text-tooltip {
+    @extend .fontSm;
+    font-weight: 600;
+  }
+  .ff-multi-radial-tooltip {
+    position: absolute;
+    @extend .fontSm;
+    font-weight: 400;
+    background-color: var(--tooltip-bg-color);
+    color: var(--primary-icon-color);
+    padding: 5px 10px;
+    border-radius: 4px;
+    pointer-events: none;
+    z-index: 1000;
+  }
+  .ff-legend-container {
+    display: grid;
+    gap: 10px;
+
+    &.ff-number-legend {
+      grid-template-columns: repeat(3, 1fr);
+      margin-top: 21px;
+      .ff-legend-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+
+    &.ff-pill-legend {
+      grid-template-columns: auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      margin-left: 8px;
+
+      .ff-legend-item {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+
+        .ff-legend-capsule {
+          background-color: var(--status-success-text-color);
+          color: var(--text-color);
+          border-radius: 15px;
+          min-width: 21px;
+          height: 15px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+
+        .ff-legend-key {
+          margin-left: 8px;
+          color: var(--text-color);
+        }
+      }
+    }
+  }
+}

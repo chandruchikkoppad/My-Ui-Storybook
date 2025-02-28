@@ -11,7 +11,6 @@ const ColorBox = ({
   border,
   variable,
 }: ColorBoxProps) => {
-  console.log('🚀 ~ variable:', variable);
   const opacityPercentage = opacity ? `${Math.round(opacity * 100)}%` : '';
 
   const boxStyle = {

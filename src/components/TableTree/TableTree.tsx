@@ -1,220 +1,246 @@
-/* eslint-disable */
-// @ts-nocheck
-import React, { ReactNode, useLayoutEffect, useRef, useState } from 'react';
-import { prepareData } from '../../utils/TableCell/TableCell';
-import Icon from '../Icon';
-import { checkEmpty } from '../../utils/checkEmpty/checkEmpty';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
-import Checkbox from '../Checkbox';
 import './TableTree.scss';
+import type { TreeTableProps } from './types';
+import TableHead from './Components/TableHead';
+import TableBody from './Components/TableBody';
+import { TreeNodeProps } from '../../ComponentProps/TreeNodeProps';
 
-interface ColumnDataProps {
-  name: string;
-  accessor: string;
-  width: string;
-  isClickable?: boolean;
-  minWidth?: string;
-  cell?: (e: any) => JSX.Element | string | ReactNode;
-}
-
-interface ObjectProps {
-  [key: string]: any;
-}
-
-interface TableTreeProps {
-  withCheckBox: boolean;
-  columnsData: Array<ColumnDataProps>;
-  treeData: Array<ObjectProps>;
-  onClick?: (
-    event: React.MouseEvent<HTMLDivElement, MouseEvent>,
-    data: any
-  ) => void;
-}
-
-const TableTree = ({
-  columnsData,
+const TreeTable: React.FC<TreeTableProps> = ({
   treeData,
-  withCheckBox,
-  onClick = () => {},
-}: TableTreeProps) => {
-  const [expandedNodes, setExpandedNodes] = useState<Set<ObjectProps>>(
-    new Set()
+  columnsData,
+  selected = [],
+  select = null,
+  onChange,
+  onClick,
+  onExpand,
+  loadMore = () => {},
+  tableBorder,
+  height = 'calc(100vh - 134px)',
+  newNode,
+  onAddConfirm = (_name) => {},
+  onAddCancel = () => {},
+  handleEditFieldError,
+  loading = false,
+  rootNode,
+  getContentLength,
+  pagination = true,
+  selectedNode,
+  tableHeaderBgColor = 'var(--border-color)',
+  hideOnDisable = false,
+}) => {
+  const [expanding, setExpanding] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<'above' | 'below' | null>(null);
+
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null); // Reference for scroll container
+  const [prevScrollTop, setPrevScrollTop] = useState<number | null>(null);
+  const previousTreeDataRef = useRef([]);
+
+  // Handle load more data for pagination
+  const loadMoreAbove = () => {
+    if (loading || isLoading === 'above') return;
+    setIsLoading('above');
+    setPrevScrollTop(containerRef.current?.scrollTop ?? null);
+
+    // Trigger the loadMore callback for data loading from above
+    loadMore('above');
+  };
+
+  const loadMoreBelow = () => {
+    if (loading || isLoading === 'below') return;
+    setIsLoading('below');
+
+    // Trigger the loadMore callback for data loading from below
+    loadMore('below');
+  };
+
+  const handleScroll = useCallback(() => {
+    const container = containerRef.current;
+    if (!loading && container) {
+      setTimeout(() => {
+        const currentScrollTop = container.scrollTop;
+
+        const previousTreeData = previousTreeDataRef.current;
+
+        if (previousTreeData.length > 0 && isLoading === 'above') {
+          const allRows = Array.from(
+            container.querySelectorAll('.ff-table-tree-row')
+          );
+          let addedRowsCount = 0;
+          if (getContentLength) {
+            addedRowsCount = getContentLength;
+          } else {
+            for (let i = 0; i < treeData.length; i++) {
+              if (previousTreeData[0] === treeData[i]) break;
+              addedRowsCount++;
+            }
+          }
+
+          // Calculate the total height of the newly added rows
+          const totalAddedHeight = treeData
+            .slice(0, addedRowsCount - (currentScrollTop > 5 ? 0 : 1))
+            .reduce((heightSum: number, _: any, index: number) => {
+              const rowHeight =
+                allRows[index]?.getBoundingClientRect().height || 0;
+              return heightSum + rowHeight;
+            }, 0);
+
+          // Adjust scroll position when data is loaded above
+          if (isLoading === 'above') {
+            container.scrollTop = prevScrollTop + totalAddedHeight;
+          }
+        }
+        previousTreeDataRef.current = treeData;
+      }, 0);
+    }
+  }, [loading, isLoading, treeData]);
+
+  useEffect(() => {
+    const scrollContainer = document.getElementById(
+      'ff-table-tree-scroll-container'
+    );
+    const lastNode = document.getElementById('ff-table-tree-last-node');
+    const firstNode = document.getElementById('ff-table-tree-first-node');
+
+    if (
+      !scrollContainer ||
+      !lastNode ||
+      !firstNode ||
+      !treeData?.length ||
+      !pagination
+    )
+      return;
+
+    const isLastResourceBelow = !!treeData[treeData.length - 1]?.lastResource;
+    const isLastResourceAbove = !!treeData[0]?.lastResource;
+
+    // Clean up old observer before creating a new one
+    observerRef.current?.disconnect();
+    const observerCallback = (entries: IntersectionObserverEntry[]) => {
+      entries.forEach((entry) => {
+        const nodeId = entry.target.id;
+        const direction =
+          nodeId === 'ff-table-tree-last-node' ? 'below' : 'above';
+
+        if (entry.isIntersecting) {
+          if (direction === 'below' && !isLoading && !isLastResourceBelow) {
+            loadMoreBelow();
+          } else if (
+            direction === 'above' &&
+            !isLoading &&
+            !isLastResourceAbove
+          ) {
+            loadMoreAbove();
+          }
+        }
+      });
+    };
+
+    observerRef.current = new IntersectionObserver(observerCallback, {
+      root: scrollContainer,
+      rootMargin: '30px',
+      threshold: 1,
+    });
+
+    if (!isLastResourceBelow) observerRef.current.observe(lastNode);
+    if (!isLastResourceAbove) observerRef.current.observe(firstNode);
+
+    if (previousTreeDataRef.current.length === 0) {
+      previousTreeDataRef.current = treeData;
+    }
+
+    return () => {
+      observerRef.current?.disconnect();
+    };
+  }, [treeData, loadMore, isLoading]);
+
+  useEffect(() => {
+    if (!loading && isLoading) {
+      if (isLoading === 'above' && pagination) {
+        handleScroll();
+      } else {
+        previousTreeDataRef.current = treeData;
+      }
+      setIsLoading(null);
+    }
+  }, [loading]);
+
+  useEffect(() => {
+    if (!loading && expanding) {
+      setExpanding(null);
+    }
+  }, [loading]);
+  const handleToggleExpand = useCallback(
+    (node: TreeNodeProps) => {
+      if (expanding) return;
+      setExpanding(node.key);
+      onExpand?.(node);
+    },
+    [onExpand, expanding]
   );
 
-  useLayoutEffect(() => {
-    const defaultExpanded: Set<ObjectProps> = new Set();
+  const handleCheckBoxChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>, node: TreeNodeProps) => {
+      if (expanding) return;
+      onChange?.(e, node);
+    },
+    [onChange, expanding]
+  );
 
-    // Recursive function to add nodes and their children to the expanded set
-    const expandNodeRecursively = (node: ObjectProps) => {
-      if (node.expanded) {
-        // Add the node to the expanded set
-        defaultExpanded.add(node);
-
-        // If the node has children, recursively expand them as well
-        if (node.children) {
-          node.children.forEach((child: ObjectProps) =>
-            expandNodeRecursively(child)
-          );
-        }
-      }
-    };
-
-    // Iterate over the treeData to check which nodes should be expanded
-    treeData.forEach((node) => {
-      expandNodeRecursively(node);
-    });
-
-    // Set the expanded nodes state
-    setExpandedNodes(defaultExpanded);
-  }, [treeData]);
-  // Function to calculate total children height
-  const calculateTotalChildrenHeight = (node: any): number => {
-    if (!node.children || node.children.length === 0) {
-      return 1;
-    }
-    // Start with 1 for the current node and  node itself is included in the height calculation before considering its children.
-    let totalHeight = 1;
-    if (expandedNodes.has(node)) {
-      node.children.forEach((child: any) => {
-        totalHeight += calculateTotalChildrenHeight(child);
-      });
-    }
-    return totalHeight;
-  };
-
-  const TreeNode = ({ node, level, isLast }: any) => {
-    const nodeRef = useRef<HTMLTableRowElement | null>(null);
-    const [nodeHeight, setNodeHeight] = useState<number>(0);
-    const [totalChildrenHeight, setTotalChildrenHeight] = useState<number>(0);
-
-    const isExpanded = expandedNodes.has(node);
-
-    useLayoutEffect(() => {
-      if (nodeRef.current) {
-        const observer = new ResizeObserver(() => {
-          // Update nodeHeight when the size of the element changes
-          const currentHeight = nodeRef.current?.offsetHeight || 0;
-          setNodeHeight(currentHeight);
-
-          // Calculate total children height
-          const childrenHeight = calculateTotalChildrenHeight(node);
-          setTotalChildrenHeight(childrenHeight);
-        });
-
-        // Start observing the current node
-        observer.observe(nodeRef.current);
-
-        return () => {
-          observer.disconnect();
-        };
-      }
-    }, [isExpanded, node]);
-
-    const handleToggleExpand = () => {
-      setExpandedNodes((prev) => {
-        const newExpandedNodes = new Set(prev);
-        if (newExpandedNodes.has(node)) {
-          newExpandedNodes.delete(node); // Collapse the node
-        } else {
-          newExpandedNodes.add(node); // Expand the node
-        }
-        return newExpandedNodes;
-      });
-    };
-    const renderRowData = (columnsData: any) => {
-      return columnsData.map((column: any) => {
-        if (column.accessor === 'title') {
-          return (
-            <td className="ff-title-container">
-              <span className="ff-toggle-folder" onClick={handleToggleExpand}>
-                {node.folder && (
-                  <span
-                    className={`ff-toggle-arrow-icon ${
-                      isExpanded ? 'ff-expanded' : 'ff-collapsed'
-                    }`}
-                  >
-                    <Icon name="arrows_down_icon" height={12} width={12} />
-                  </span>
-                )}
-              </span>
-
-              <div
-                className="ff-title"
-                style={{ fontWeight: node.folder ? 600 : 400 }}
-                onClick={(event) => onClick(event, node)}
-              >
-                {withCheckBox && <Checkbox />}
-                {prepareData(node, column)}
-              </div>
-            </td>
-          );
-        } else if (column.accessor) {
-          return (
-            <td key={column.accessor} style={{ maxWidth: column.width }}>
-              {prepareData(node, column)}
-            </td>
-          );
-        }
-      });
-    };
-    return (
-      <>
-        <tr
-          ref={nodeRef}
-          className={`ff-node-li ${node.children ? 'ff-has-children' : ''} ${
-            isLast ? 'ff-is-last' : ''
-          }`}
-          style={
-            {
-              '--level': level,
-              '--node-height': `${nodeHeight}px`,
-              '--total-children-height': `${
-                totalChildrenHeight * nodeHeight
-              }px`,
-            } as React.CSSProperties
-          }
-        >
-          {renderRowData(columnsData)}
-        </tr>
-
-        {/* Render children only if the node is expanded */}
-        {isExpanded &&
-          !checkEmpty(node?.children) &&
-          renderTree(node.children, level + 1)}
-      </>
-    );
-  };
-
-  const renderTree = (nodes: any, level = 0) => {
-    return nodes.map((node: any, index: number) => {
-      const isLast = index === nodes.length - 1;
-      return <TreeNode key={index} node={node} level={level} isLast={isLast} />;
-    });
-  };
+  const handleRowClick = useCallback(
+    (e: React.MouseEvent<HTMLTableRowElement>, node: TreeNodeProps) => {
+      if (expanding) return;
+      onClick?.(e, node);
+    },
+    [onClick, expanding]
+  );
 
   return (
-    <div className="ff-tree-container">
-      <table>
-        <thead>
-          <tr>
-            {columnsData.map((column: any, index) => (
-              <th
-                key={column.accessor}
-                style={
-                  index === 0
-                    ? { minWidth: column.width }
-                    : { width: column.width }
-                }
-              >
-                {column.name}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>{renderTree(treeData)}</tbody>
-      </table>
+    <div className="tree-table-wrap">
+      <div
+        className={`table-scrollable ${treeData.length ? '' : 'table-empty'}`}
+        ref={containerRef} // Bind ref to the scrollable container
+        id="ff-table-tree-scroll-container"
+        style={
+          {
+            '--table-height': treeData.length ? height : 'auto',
+            border: tableBorder,
+          } as React.CSSProperties
+        }
+      >
+        <table className="tree-table">
+          <TableHead
+            columnsData={columnsData}
+            rootNode={rootNode}
+            onCheckBoxChange={handleCheckBoxChange}
+            selected={selected}
+            selectedNode={selectedNode}
+            tableHeaderBgColor={tableHeaderBgColor}
+            hideOnDisable={hideOnDisable}
+          />
+
+          <TableBody
+            flattenedTreeData={treeData}
+            rootNode={rootNode?.node}
+            columnsData={columnsData}
+            selected={selected}
+            select={select}
+            onRowClick={handleRowClick}
+            onToggleExpand={handleToggleExpand}
+            onCheckBoxChange={handleCheckBoxChange}
+            newNode={newNode}
+            onAddConfirm={onAddConfirm}
+            onAddCancel={onAddCancel}
+            handleEditFieldError={handleEditFieldError}
+            expanding={expanding}
+            selectedNode={selectedNode}
+            hideOnDisable={hideOnDisable}
+          />
+        </table>
+      </div>
     </div>
   );
 };
 
-export default TableTree;
+export default TreeTable;

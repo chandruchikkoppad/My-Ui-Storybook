@@ -1,7 +1,14 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import AppHeader from './AppHeader';
+import {
+  appHeaderMenuItemProps,
+  appHeaderSubMenuItemProps,
+  appHeaderQuickMenuItemProps,
+  appHeaderHiddenMenuItemProps,
+} from './types';
 import Icon from '../Icon';
-import { useState } from 'react';
+import React, { useState } from 'react';
+import { optionsType } from '../AllProjectsDropdown/types';
 
 const meta: Meta<typeof AppHeader> = {
   title: 'Components/AppHeader',
@@ -21,82 +28,441 @@ const defaultArgs = {
     </div>
   ),
 };
-
-const headerMenuItems = [
+const projectList = [
   {
-    menuName: 'Dashboard',
-    subMenuItems: [],
+    label: 'test',
+    value: 'test',
+    iconName: 'web_icon',
   },
   {
-    menuName: 'Repo',
+    label:
+      'Pantaloon Project Pantaloon Web Project Pantaloon Web Project Pantaloon Web Project Pantaloon Web Project',
+    value:
+      'Pantaloon Web Project Pantaloon Web Project Pantaloon Web Project Pantaloon Web Project',
+    iconName: 'web_icon',
+  },
+  {
+    label: 'Mobile Project',
+    value: 'Mobile Project',
+    iconName: 'mobile_icon',
+  },
+  {
+    label: 'Web & Mobile Project',
+    value: 'Web & Mobile Project',
+    iconName: 'web&mobile_icon',
+  },
+  {
+    label: 'Sales Force',
+    value: 'Sales Force',
+    iconName: 'sales_force',
+  },
+  {
+    label: 'MS Dynamic',
+    value: 'MS Dynamic',
+    iconName: 'ms_dynamic',
+  },
+  {
+    label: 'Test',
+    value: 'test',
+    iconName: 'mobile_icon',
+  },
+  {
+    label: 'Web Service',
+    value: 'Web Service',
+    iconName: '',
+  },
+];
+const headerMenuItems = [
+  {
+    label: 'Dashboard',
+    path: '/dashboard',
     subMenuItems: [
       {
-        subMenuName: 'Elements',
-        quickMenuItems: [],
+        label: 'Dashboard',
+        path: '',
       },
       {
-        subMenuName: 'Program Elements',
-        quickMenuItems: [],
+        label: 'Analytics',
+        path: '',
+      },
+    ],
+  },
+  {
+    label: 'Repo',
+    path: '/repository/elements',
+    subMenuItems: [
+      {
+        label: 'Elements',
+        path: '/repository/elements',
+        hiddenMenuItems: [
+          { label: 'Defects', value: 'Defects', icon: 'defects' },
+          {
+            label: 'Configuration',
+            value: 'Configuration',
+            icon: 'configuration',
+          },
+          {
+            label: 'Approval Request',
+            value: 'Approval Request',
+            icon: 'approval_pending',
+          },
+        ],
       },
       {
-        subMenuName: 'Step Groups',
+        label: 'Program Elements',
+        path: '/repository/program-elements',
+        hiddenMenuItems: [
+          { label: 'Defects', value: 'Defects', icon: 'defects' },
+          {
+            label: 'Configuration',
+            value: 'Configuration',
+            icon: 'configuration',
+          },
+          {
+            label: 'Approval Request',
+            value: 'Approval Request',
+            icon: 'approval_pending',
+          },
+        ],
+      },
+      {
+        label: 'Step Groups',
+        path: '/repository/step-group',
+        hiddenMenuItems: [
+          { label: 'Defects', value: 'Defects', icon: 'defects' },
+          {
+            label: 'Configuration',
+            value: 'Configuration',
+            icon: 'configuration',
+          },
+          {
+            label: 'Approval Request',
+            value: 'Approval Request',
+            icon: 'approval_pending',
+          },
+        ],
         quickMenuItems: [
+          { label: 'Elements', path: '#elements', iconName: 'element' },
           {
-            quickMenuName: 'Success Icon',
-            quickMenuIconName: 'success',
+            label: 'Project Elements',
+            path: '#project-element',
+            iconName: 'project_element',
+          },
+          { label: 'Test Data', path: '#test-data', iconName: 'test_data' },
+          { label: 'Variables', path: '#variable', iconName: 'variable' },
+          { label: 'Parameters', path: '#parameters', iconName: 'parameters' },
+          {
+            label: 'Data Provider',
+            path: '#data-provider',
+            iconName: 'data_provider',
           },
           {
-            quickMenuName: 'Warning Icon',
-            quickMenuIconName: 'warning',
-          },
-          {
-            quickMenuName: 'Info Icon',
-            quickMenuIconName: 'info',
+            label: 'Web Service',
+            path: '#web-service',
+            iconName: 'web_service_icon',
           },
         ],
       },
     ],
   },
   {
-    menuName: 'Test Data',
-    subMenuItems: [],
+    label: 'Test Data',
+    path: '/test-data',
   },
   {
-    menuName: 'Test Dev',
+    label: 'Test Dev',
+    path: '/test-dev/scripts',
     subMenuItems: [
       {
-        subMenuName: 'Scripts',
+        label: 'Scripts',
+        path: '/test-dev/scripts',
+        hiddenMenuItems: [
+          { label: 'Defects', value: 'Defects', icon: 'defects' },
+          {
+            label: 'Configuration',
+            value: 'Configuration',
+            icon: 'configuration',
+          },
+          {
+            label: 'Approval Request',
+            value: 'Approval Request',
+            icon: 'approval_pending',
+          },
+        ],
         quickMenuItems: [
+          { label: 'Elements', path: '#elements', iconName: 'element' },
           {
-            quickMenuName: 'Delete Icon',
-            quickMenuIconName: 'delete',
+            label: 'Project Elements',
+            path: '#project-element',
+            iconName: 'project_element',
+          },
+          { label: 'Step Groups', path: '#step-group', iconName: 'step_group' },
+          { label: 'Test Data', path: '#test-data', iconName: 'test_data' },
+          { label: 'Variables', path: '#variable', iconName: 'variable' },
+          {
+            label: 'Pre-post Conditions',
+            path: '#pre-post-conditions',
+            iconName: 'pre_post_condition',
           },
           {
-            quickMenuName: 'Details Icon',
-            quickMenuIconName: 'details',
+            label: 'Data Provider',
+            path: '#data-provider',
+            iconName: 'data_provider',
           },
           {
-            quickMenuName: 'Sun Icon',
-            quickMenuIconName: 'sun_icon',
+            label: 'Depends on script',
+            path: '#depends-on-script',
+            iconName: 'depends_on_script',
           },
           {
-            quickMenuName: 'Moon Stars Icon',
-            quickMenuIconName: 'moon_stars_icon',
+            label: 'Web Service',
+            path: '#web-service',
+            iconName: 'web_service_icon',
           },
           {
-            quickMenuName: 'Impact List Icon',
-            quickMenuIconName: 'impactList',
+            label: 'Authorization',
+            path: '#authorization',
+            iconName: 'authorization_icon',
           },
         ],
       },
       {
-        subMenuName: 'Executions',
-        quickMenuItems: [],
+        label: 'Executions',
+        path: '/test-dev/execution-dashboard',
+      },
+    ],
+  },
+  {
+    label: 'Suites',
+    path: '/suites/suites',
+    subMenuItems: [
+      {
+        label: 'Suites',
+        path: '/suites/suites',
+        hiddenMenuItems: [
+          {
+            label: 'Approval Request',
+            value: 'Approval Request',
+            icon: 'approval_pending',
+          },
+        ],
+        quickMenuItems: [
+          {
+            label: 'Test Data Set',
+            path: '#test-data-set',
+            iconName: 'test_data_set',
+          },
+          {
+            label: 'Variable Set',
+            path: '#variable-set',
+            iconName: 'variable_set',
+          },
+          {
+            label: 'Email Group',
+            path: '#email-group',
+            iconName: 'email_group',
+          },
+          { label: 'Labels', path: '#labels', iconName: 'label_icon' },
+        ],
+      },
+      {
+        label: 'Scheduled Executions',
+        path: '',
+      },
+    ],
+  },
+  {
+    label: 'Web Service',
+    path: '/webservice/restapi',
+    subMenuItems: [
+      {
+        label: 'Rest API',
+        path: '/webservice/restapi',
+        quickMenuItems: [
+          { label: 'Variables', path: '#variable', iconName: 'variable' },
+          { label: 'History', path: '#history', iconName: 'history' },
+        ],
+      },
+      {
+        label: 'Snippets',
+        path: '/webservice/snippets',
+      },
+      {
+        label: 'Executions',
+        path: '/webservice/executions',
+      },
+    ],
+  },
+  {
+    label: 'Defects',
+    path: '/defects',
+  },
+  {
+    label: 'Configuration',
+    path: '/configuration',
+    subMenuItems: [
+      {
+        label: 'Environment Config.',
+        path: '',
+        hiddenMenuItems: [
+          { label: 'Web Service', value: 'Web Service', icon: 'defects' },
+          {
+            label: 'Configuration',
+            value: 'Configuration',
+            icon: 'configuration',
+          },
+          {
+            label: 'Approval Request',
+            value: 'Approval Request',
+            icon: 'approval_pending',
+          },
+        ],
+      },
+      {
+        label: 'Execution Config.',
+        path: '',
+        hiddenMenuItems: [
+          { label: 'Web Service', value: 'Web Service', icon: 'defects' },
+          {
+            label: 'Configuration',
+            value: 'Configuration',
+            icon: 'configuration',
+          },
+          {
+            label: 'Approval Request',
+            value: 'Approval Request',
+            icon: 'approval_pending',
+          },
+        ],
+      },
+      {
+        label: 'User Management',
+        path: '',
+        hiddenMenuItems: [
+          { label: 'Web Service', value: 'Web Service', icon: 'defects' },
+          {
+            label: 'Configuration',
+            value: 'Configuration',
+            icon: 'configuration',
+          },
+          {
+            label: 'Approval Request',
+            value: 'Approval Request',
+            icon: 'approval_pending',
+          },
+        ],
+      },
+      {
+        label: 'Templates',
+        path: '',
+        hiddenMenuItems: [
+          { label: 'Web Service', value: 'Web Service', icon: 'defects' },
+          {
+            label: 'Configuration',
+            value: 'Configuration',
+            icon: 'configuration',
+          },
+          {
+            label: 'Approval Request',
+            value: 'Approval Request',
+            icon: 'approval_pending',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    label: 'Approval Request',
+    path: '/approval-request',
+    subMenuItems: [
+      {
+        label: 'Scripts',
+        path: '',
+        hiddenMenuItems: [
+          { label: 'Web Service', value: 'Web Service', icon: 'defects' },
+          { label: 'Defects', value: 'Defects', icon: 'defects' },
+          {
+            label: 'Configuration',
+            value: 'Configuration',
+            icon: 'configuration',
+          },
+        ],
+        quickMenuItems: [
+          { label: 'Variables', path: '#variable', iconName: 'variable' },
+          {
+            label: 'Data Provider',
+            path: '#data-provider',
+            iconName: 'data_provider',
+          },
+          {
+            label: 'Depends on script',
+            path: '#depends-on-script',
+            iconName: 'depends_on_script',
+          },
+          {
+            label: 'Web Service',
+            path: '#web-service',
+            iconName: 'web_service_icon',
+          },
+        ],
+      },
+      {
+        label: 'Elements',
+        path: '',
+        hiddenMenuItems: [
+          { label: 'Web Service', value: 'Web Service', icon: 'defects' },
+          { label: 'Defects', value: 'Defects', icon: 'defects' },
+          {
+            label: 'Configuration',
+            value: 'Configuration',
+            icon: 'configuration',
+          },
+        ],
+      },
+      {
+        label: 'Step Groups',
+        path: '',
+        hiddenMenuItems: [
+          { label: 'Web Service', value: 'Web Service', icon: 'defects' },
+          { label: 'Defects', value: 'Defects', icon: 'defects' },
+          {
+            label: 'Configuration',
+            value: 'Configuration',
+            icon: 'configuration',
+          },
+        ],
+        quickMenuItems: [
+          { label: 'Parameters', path: '#parameters', iconName: 'parameters' },
+          { label: 'Variables', path: '#variable', iconName: 'variable' },
+          {
+            label: 'Data Provider',
+            path: '#data-provider',
+            iconName: 'data_provider',
+          },
+          {
+            label: 'Web Service',
+            path: '#web-service',
+            iconName: 'web_service_icon',
+          },
+        ],
+      },
+      {
+        label: 'Variables',
+        path: '',
+        hiddenMenuItems: [
+          { label: 'Web Service', value: 'Web Service', icon: 'defects' },
+          { label: 'Defects', value: 'Defects', icon: 'defects' },
+          {
+            label: 'Configuration',
+            value: 'Configuration',
+            icon: 'configuration',
+          },
+        ],
       },
     ],
   },
 ];
-const headerHiddenMenuItems = ['Configuration', 'Approval Request'];
+
 const headerRightSideContent = (
   <div>
     <Icon name="logo" />
@@ -112,40 +478,78 @@ export const SampleAppHeader: Story = {
       </div>
     ),
     appHeaderMenuItems: headerMenuItems,
-    appHeaderHiddenMenuItems: headerHiddenMenuItems,
     selectedMenu: 'Repo',
   },
 };
 export const Controlled: Story = {
   render: () => {
-    const [selectedMenuItem, setSelectedMenuItem] = useState('Test Data');
+    const [selectedMenuItem, setSelectedMenuItem] = useState('All Projects');
     const [selectedSubMenuItem, setSelectedSubMenuItem] = useState('');
     const [selectedQuickMenuItem, setSelectedQuickMenuItem] = useState('');
-    const handleMenuClick = (item: string) => {
-      setSelectedMenuItem(item);
+    const [selectedHiddenMenuItems, setSelectedHiddenMenuItems] = useState<
+      appHeaderHiddenMenuItemProps[]
+    >([]);
+    const [selectedProject, setSelectedProject] = useState({
+      label: 'All Projects',
+      value: 'All Projects',
+      iconName: 'all_projects',
+    });
+    const handleMenuClick = (item: appHeaderMenuItemProps) => {
+      setSelectedMenuItem(item.label);
     };
-    const handleSubMenuClick = (item: string) => {
-      setSelectedSubMenuItem(item);
+
+    const handleSubMenuClick = (item: appHeaderSubMenuItemProps) => {
+      setSelectedSubMenuItem(item.label);
+      const selectedMainMenu = headerMenuItems.find(
+        (menu) => menu.label === selectedMenuItem
+      );
+
+      if (selectedMainMenu?.subMenuItems) {
+        const selectedSubMenu = selectedMainMenu.subMenuItems.find(
+          (subMenu) => subMenu.label === item.label
+        ) as appHeaderSubMenuItemProps;
+        let hiddenMenuArray: appHeaderHiddenMenuItemProps[] = [];
+        if (selectedSubMenu?.hiddenMenuItems) {
+          hiddenMenuArray = selectedSubMenu.hiddenMenuItems;
+          console.log('Hidden menu items:', hiddenMenuArray);
+        }
+        setSelectedHiddenMenuItems(hiddenMenuArray);
+        console.log('Selected main menu:', selectedSubMenu);
+      }
     };
-    const handleQuickMenuClick = (item: string) => {
-      setSelectedQuickMenuItem(item);
+
+    const handleQuickMenuClick = (item: appHeaderQuickMenuItemProps) => {
+      setSelectedQuickMenuItem(item.iconName);
+    };
+    const handleProjectClick = (item: optionsType) => {
+      setSelectedProject(item);
+    };
+    const handleProjectDropdownLabelClick = () => {
+      setSelectedMenuItem('All Projects');
     };
 
     return (
       <>
         <div>
           <AppHeader
+            width='1120px'
+            borderRadius='8px'
             logoIconName="fireflink_icon"
+            leftContent={headerRightSideContent}
             rightContent={headerRightSideContent}
             appHeaderMenuItems={headerMenuItems}
-            appHeaderHiddenMenuItems={headerHiddenMenuItems}
-            projectsList={[]}
+            appHeaderHiddenMenuItems={selectedHiddenMenuItems}
+            projectsList={projectList}
             selectedMenu={selectedMenuItem}
             selectedSubMenu={selectedSubMenuItem}
             selectedQuickMenu={selectedQuickMenuItem}
+            selectedProject={selectedProject}
             onMenuClick={handleMenuClick}
             onSubMenuClick={handleSubMenuClick}
             onQuickMenuClick={handleQuickMenuClick}
+            onProjectMenuClick={handleProjectClick}
+            onProjectDropdownLabelClick={handleProjectDropdownLabelClick}
+            disabled
           />
         </div>
       </>

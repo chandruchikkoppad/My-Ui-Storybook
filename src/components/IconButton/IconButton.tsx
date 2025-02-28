@@ -1,28 +1,45 @@
-import React from 'react';
+import { forwardRef } from 'react';
 import Icon from '../Icon';
 import './IconButton.scss';
 import classNames from 'classnames';
 import Typography from '../Typography';
 import { IconButtonProps } from './types';
 
-const IconButton: React.FC<IconButtonProps> = ({
+const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(({
   label,
-  iconName = 'plus_icon',
+  iconName = 'plus_user_icon',
   onClick,
-}) => {
+  iconHide = false,
+  isDisable = false
+}, ref) => {
   return (
-    <button onClick={onClick} className={classNames('ff-plus-icon')}>
-      <Icon
-        height={20}
-        width={20}
-        name={iconName}
-        className={'ff-icon-color'}
-      />
-      <Typography as="div" textAlign="center" className="icon-name">
+    <button 
+      disabled={isDisable}
+      onClick={onClick} 
+      className={classNames('ff-plus-icon', { 'ff-plus-no-icon': iconHide })}
+      ref={ref}
+    >
+      { !iconHide && (
+        <div className={classNames('button-icon')}>
+          <Icon
+            height={12}
+            width={12}
+            name={iconName}
+            className={'ff-icon-color'}
+          />
+        </div>
+      )}
+      <Typography
+        as="div"
+        textAlign="center"
+        className="icon-name"
+        fontWeight="semi-bold"
+        lineHeight='20px'
+      >
         {label}
       </Typography>
     </button>
   );
-};
+});
 
 export default IconButton;

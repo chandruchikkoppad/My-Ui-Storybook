@@ -1,67 +1,295 @@
-.ff-app-header {
+.ff-app-header-main {
   display: flex;
-  justify-content: space-between;
-  background-color: var(--brand-color);
-  padding-left: 8px;
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
-  .ff-app-header-logo-icon {
-    padding: 8px;
-    height: 24px;
-  }
-  .ff-app-header-nav-bar {
+
+  .ff-app-header {
     display: flex;
-    align-items: center;
+    z-index: 999;
+    flex-basis: 100%;
+    justify-content: space-between;
     background-color: var(--brand-color);
-    transform: translateY(12px);
-    border-radius: 20px;
-    padding: 5px;
-    .ff-app-header-nav-bar-items {
+    padding-left: 8px;
+    height: 40px;
+    pointer-events: initial;
+
+    &--disabled {
+      pointer-events: none;
+      opacity: 0.5;
+    }
+
+    .ff-app-header-left-container {
+      display: flex;
+
+      .ff-app-header-logo-icon {
+        padding: 4px;
+        height: 24px;
+      }
+    }
+
+    .ff-app-header-nav-bar {
       display: flex;
       align-items: center;
-      .ff-app-header-nav-bar-item {
-        margin-left: 8px;
-        color: var(--ff-header-text-color);
-        cursor: pointer;
+      justify-content: center;
+      background-color: var(--brand-color);
+      transform: translateY(12px);
+      border-radius: 20px;
+      padding: 4px;
+      padding-bottom: 16px;
+
+      .ff-app-header-nav-bar-items {
         display: flex;
-        &--selected {
-          padding: 3px;
-          background-color: var(--primary-icon-color);
-          border-radius: 20px;
-          .ff-app-header-nav-bar-item-label {
-            background-color: var(--brand-color);
-            border-radius: 20px;
-            padding: 4px 8px;
-          }
-        }
-        .ff-app-header-submenu-container {
+        align-items: center;
+
+        .ff-app-header-nav-bar-item {
+          margin-left: 8px;
+          padding: 7px;
+          color: var(--ff-header-text-color);
+          cursor: pointer;
           display: flex;
-          .ff-app-header-nav-bar-submenu-item {
-            color: var(--ff-header-submenu-text-color);
-            align-content: center;
-            padding-left: 8px;
-            &--selected{
-              color: var(--ff-header-submenu-highlight-text-color);
+          position: relative;
+          flex: 1 1 auto;
+          overflow: hidden;
+          transition: flex-grow 1s ease, opacity 1s ease, max-width 1s ease;
+          max-width: 150px;
+
+          &:not(.ff-app-header-nav-bar-item--selected):hover {
+            transform: scale(1.1);
+            &::after {
+              animation: oscillate-border-width 0.5s ease-in-out forwards;
             }
           }
-          .ff-app-header-quickmenu-container {
-            display: flex;
-            align-items: center;
+
+          &::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 25%;
+            width: 0%;
+            height: 2px;
+            background: var(--ff-app-header-menu-border-bottom-color);
+            border-radius: 4px;
+            transition: width 0.15s ease-in-out;
           }
+
+          .ff-app-header-nav-bar-item-label {
+            white-space: nowrap;
+            align-content: center;
+          }
+
+          &--selected {
+            padding: 3px;
+            background-color: var(--primary-icon-color);
+            border-radius: 20px;
+            flex-grow: 12;
+            max-width: 700px;
+            opacity: 1;
+
+            &:hover {
+              margin-top: 0px;
+            }
+
+            .ff-app-header-nav-bar-item-label {
+              box-shadow: 0px 4px 4px 0px var(--toggle-strip-shadow) inset;
+              background: linear-gradient(
+                90deg,
+                var(--brand-color) 0%,
+                var(--button-background-gradient-color) 100%
+              );
+              border-radius: 20px;
+              padding: 4px 8px;
+            }
+
+            :last-child {
+              margin-right: 3px;
+            }
+
+            :first-child {
+              margin: 0;
+            }
+          }
+
+          &--disabled {
+            cursor: not-allowed;
+            opacity: 0.5;
+            pointer-events: none;
+          }
+
+          .ff-app-header-submenu-container {
+            display: flex;
+
+            .ff-app-header-nav-bar-submenu-item {
+              color: var(--ff-header-submenu-text-color);
+              align-content: center;
+              position: relative;
+              white-space: nowrap;
+
+              &:hover {
+                color: var(--ff-header-submenu-highlight-text-color);
+              }
+
+              &:not(
+                  .ff-app-header-nav-bar-submenu-item--selected
+                ):hover::after {
+                animation: oscillate-border-width 0.5s ease-in-out forwards;
+              }
+
+              &::after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 25%;
+                width: 0%;
+                height: 2px;
+                border-radius: 4px;
+                transition: width 0.15s ease-in-out;
+                background: var(--ff-app-header-submenu-border-bottom-color);
+              }
+
+              padding-left: 8px;
+
+              &--selected {
+                color: var(--ff-header-submenu-highlight-text-color);
+
+                &::after {
+                  content: '';
+                  position: absolute;
+                  bottom: 0;
+                  left: 20%;
+                  width: 70%;
+                  height: 2px;
+                  border-radius: 4px;
+                  box-shadow: 0px 1px 0.2px 0px
+                    var(--ff-app-header-item-shadow-color);
+                  background: var(--ff-app-header-submenu-border-bottom-color);
+                }
+              }
+
+              &--disabled {
+                cursor: not-allowed;
+                opacity: 0.5;
+                pointer-events: none;
+              }
+            }
+
+            .ff-app-header-quickmenu-container {
+              display: flex;
+              align-items: center;
+              overflow: hidden;
+
+              .ff-app-header-nav-bar-quickmenu-item {
+                margin-right: 8px;
+
+                &:last-child {
+                  margin: 0px;
+                }
+
+                .ff-tooltip-container {
+                  display: inline;
+
+                  .ff-icon-container {
+                    padding: 4px;
+                  }
+                }
+
+                &--selected {
+                  background: var(--brand-color);
+                  border-radius: 5px;
+
+                  :hover {
+                    background: transparent;
+                  }
+
+                  svg path {
+                    fill: var(--primary-button-text-color);
+                  }
+                }
+
+                &--disabled {
+                  cursor: not-allowed;
+                  opacity: 0.5;
+                  pointer-events: none;
+                }
+              }
+            }
+          }
+        }
+
+        .more-menu {
+          width: 40px;
+          margin-left: 8px;
+          display: flex;
+          justify-content: center;
+
+          .ff-app-header-more-icon {
+            svg {
+              path {
+                fill: var(--primary-icon-color);
+              }
+              cursor: pointer;
+            }
+          }
+
+          &--disabled {
+            cursor: not-allowed;
+            opacity: 0.5;
+            pointer-events: none;
+          }
+        }
+
+        .more-menu .ff-menuicon-container {
+          width: 40px !important;
+          height: 32px !important;
+          border-radius: 16px !important;
         }
       }
     }
-    .ff-app-header-more-icon {
-      svg {
-        path {
-          fill: var(--primary-icon-color);
-        }
-        cursor: pointer;
+
+    .ff-app-header-left-content,
+    .ff-app-header-right-content {
+      height: 24px;
+      padding: 8px;
+      align-content: center;
+
+      &--disabled {
+        opacity: 0.5;
+        pointer-events: none;
       }
     }
   }
-  .ff-app-header-right-content {
-    height: 24px;
-    padding: 8px;
+}
+
+@keyframes oscillate-border-width {
+  0% {
+    width: 50%;
+    left: 25%;
+  }
+  50% {
+    width: 70%;
+    left: 15%;
+  }
+  100% {
+    width: 50%;
+    left: 25%;
+  }
+}
+
+@keyframes quickmenu-expand {
+  from {
+    max-height: 0;
+    opacity: 0;
+  }
+  to {
+    max-height: 500px;
+    opacity: 1;
+  }
+}
+
+@keyframes quickmenu-collapse {
+  from {
+    max-height: 500px;
+    opacity: 1;
+  }
+  to {
+    max-height: 0;
+    opacity: 0;
   }
 }

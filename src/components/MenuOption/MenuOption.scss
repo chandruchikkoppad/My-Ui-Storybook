@@ -3,7 +3,6 @@
 .ff-menu-option-container {
   cursor: pointer;
   position: relative;
-
   .ff-icon-label {
     display: flex;
     align-items: center;
@@ -15,6 +14,20 @@
       cursor: pointer;
       &:hover {
         background-color: var(--hover-color);
+        .ff-menuicon-container-add-resource{
+        box-shadow: 0px 1px 4px 0px var(--ff-select-option-wrapper-box-shadow);
+        }
+      }
+      &.dark {
+        background-color: var(--brand-color);
+        &:hover {
+          background-color: var(--menu-variant-dark-icon-color);
+          svg {
+            path {
+              fill: var(--brand-color);
+            }
+          }
+        }
       }
     }
 
@@ -27,43 +40,88 @@
       &:hover {
         background-color: var(--brand-color);
       }
+      &.dark {
+        background-color: var(--menu-variant-dark-icon-color);
+      }
     }
   }
+}
 
-  .ff-option-card {
-    position: absolute;
-    border: 1px solid var(--option-card-border-color);
-    background: var(--option-card-bg-color);
-    border-radius: 4px;
-    margin: 2px;
-    min-height: 32px;
-    min-width: 111px;
-    z-index: 100000;
-    white-space: nowrap;
-
-    .ff-options {
-      @extend .fontSm;
+.ff-option-card {
+  position: absolute;
+  margin: 4px;
+  border: 1px solid var(--option-card-border-color);
+  background: var(--option-card-bg-color);
+  overflow: hidden;
+  min-height: 32px;
+  min-width: 110px;
+  width: max-content;
+  border-radius: 4px;
+  box-shadow: 0px 1px 4px 0px var(--ff-select-option-wrapper-box-shadow);
+  .ff-options {
+    @extend .fontSm;
+    cursor: pointer;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    padding: 4px;
+    gap: 8px;
+    &:hover {
+      background-color: var(--hover-color);
+    }
+    label {
       cursor: pointer;
-      border-radius: 4px;
-      display: flex;
-      align-items: center;
-      padding: 8px;
-      line-height: 16px;
-      gap: 8px;
-      &:hover {
-        background-color: var(--hover-color);
-      }
-      label {
-        cursor: pointer;
+    }
+  }
+  &--primary {
+    background: var(--brand-color);
+    color: var(--primary-button-text-color);
+    svg {
+      path {
+        fill: var(--primary-icon-color);
       }
     }
-
-    .ff-disable-option {
-      opacity: 0.5;
-      cursor: no-drop;
-      label {
-        cursor: no-drop;
+    :hover {
+      color: var(--brand-color);
+      svg {
+        path {
+          fill: var(--brand-color);
+        }
       }
     }
   }
+  &--default {
+    background: var(--brand-color);
+    color: var(--primary-button-text-color);
+    svg {
+      path {
+        fill: var(--primary-icon-color);
+      }
+    }
+    :hover {
+      color: var(--brand-color);
+      svg {
+        path {
+          fill: var(--brand-color);
+        }
+      }
+    }
+    .ff-options {
+      &:hover {
+        background-color: var(--base-bg-color);
+      }
+    }
+  }
+
+  .ff-disable-option {
+    opacity: 0.5;
+    cursor: no-drop;
+    label {
+      cursor: no-drop;
+    }
+  }
+}
+
+.ff-menu-parent-hover {
+  background-color: var(--hover-color) !important;
 }

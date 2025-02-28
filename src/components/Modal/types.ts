@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode } from 'react';
 
 export interface ModalProps {
   isOpen: boolean;
@@ -34,6 +34,10 @@ export interface ModalProps {
   /***Content to be displayed inside the modal */
   children: ReactNode;
   isFooterDisplayed: boolean;
-  customWidth: string;
+  customWidth?: string;
   customHeight?: string;
+  zIndex?: number;
+  boxShadow?: string;
+  border?: string;
+  background?: string;
 }

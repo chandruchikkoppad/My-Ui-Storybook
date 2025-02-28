@@ -10,13 +10,29 @@
     border-radius: 4px;
     padding: 0;
     position: relative;
+    justify-content: space-between;
+
+    .ff-input-with-dropdown--left {
+      display: flex;
+      flex-direction: row-reverse;
+    }
+
+    .ff-input-with-dropdown--right {
+      display: flex;
+      flex-direction: row;
+    }
+    .ff-floating-input--left-dropdown {
+      width: 698px;
+    }
 
     .ff-floating-label-input-container {
+      display: flex;
+      flex: 1;
       .ff-floating-label {
         position: absolute;
         z-index: 9;
         color: var(--input-default-border-color);
-        top: 7px;
+        top: 6px;
         left: 7px;
         @extend .fontSm;
         transition: all 0.3s ease-in-out;
@@ -36,7 +52,7 @@
       }
 
       .ff-floating-input {
-        position: relative;
+        width: 100%;
         padding: 6px 7px;
         line-height: 18px;
         border: none;
@@ -44,7 +60,6 @@
         border-right: 1px solid var(--input-default-border-color);
         border-radius: 4px 0 0 4px;
         @extend .fontSm;
-        top: 1px;
 
         &::-webkit-outer-spin-button,
         &::-webkit-inner-spin-button {
@@ -61,6 +76,11 @@
         &--error {
           border-color: var(--input-error-text-color);
         }
+        &--left-dropdown {
+          &::placeholder {
+            opacity: 1;
+          }
+        }
       }
     }
 
@@ -76,18 +96,33 @@
     }
 
     .ff-floating-dropdown {
-      min-width: 120px;
+      width: 100%;
       border: none;
       outline: none;
       margin: 0;
+
       &:disabled {
         cursor: not-allowed;
       }
+      &:hover {
+        background-color: var(--dropdown-bg-color);
+      }
+    }
+
+    .ff-floating-dropdown--left {
+      min-width: 94px;
+    }
+    .seperatorline {
+      height: 26px;
+      margin-top: 3px;
+      border-right: 0.5px solid var(--brand-color);
+      flex-shrink: 0;
+      border-radius: 2px;
     }
   }
   &:hover {
     .ff-input-with-dropdown {
-      border-color: var(--input-hover-border-color);
+      border-color: var(--brand-color);
 
       &--filled {
         border-color: var(--input-default-border-color);
@@ -98,7 +133,7 @@
       &--error {
         border-color: var(--input-error-text-color);
       }
-      .ff-floating-label {
+      &--left .ff-floating-label {
         color: var(--input-hover-border-color);
         &--filled {
           color: var(--input-default-border-color);
@@ -111,7 +146,7 @@
         }
       }
       .ff-floating-input {
-        border-color: var(--input-hover-border-color);
+        border-color: var(--brand-color);
         &--filled {
           border-color: var(--input-default-border-color);
         }
@@ -133,12 +168,12 @@
       }
 
       .ff-floating-label {
-        top: -6px;
+        top: -9px;
         background-color: var(--input-label-bg-color);
         padding: 0px 2px;
         color: var(--input-active-text-color);
-        line-height: 12px;
-        font-size: 8px !important;
+        line-height: 15px;
+        font-size: 10px !important;
 
         &--error {
           color: var(--input-error-text-color);
@@ -161,11 +196,11 @@
         border-color: var(--input-active-text-color);
         .ff-floating-label {
           //re-written label container code to place it at on border
-          top: -6px;
+          top: -9px;
           background-color: var(--input-label-bg-color);
           padding: 0px 2px;
-          line-height: 12px;
-          font-size: 8px !important;
+          line-height: 15px;
+          font-size: 10px !important;
         }
       }
     }
@@ -179,7 +214,7 @@
 
   .ff-helper-text {
     color: var(--input-error-text-color);
-    @extend .font-size-8;
+    @extend .fontXs;
     padding: 0 11px;
   }
 }

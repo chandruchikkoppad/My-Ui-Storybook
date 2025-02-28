@@ -19,7 +19,9 @@ export interface InputWithDropdownProps {
   /**
    * value | input field value
    */
-  value?: number;
+  value?: string | number;
+
+  type?: 'text' | 'password' | 'number' | 'email' | 'url' | 'time';
 
   /**
    * variants to set color/style of the input field
@@ -74,12 +76,18 @@ export interface InputWithDropdownProps {
   /**
    * onChange handler for dropdown changes
    */
-  onDropdownChangeHandler?: (option: Option) => void;
+  onDropdownChangeHandler?: (option: any) => void;
 
   /**
    * onInputBlurHandler action for input field
    */
   onInputBlurHandler?: (event: React.FocusEvent<HTMLInputElement>) => void;
+
+  onFocus?: (event: React.FocusEvent<HTMLInputElement>) => void;
+
+  onClick?: (event: React.MouseEvent<HTMLInputElement>) => void;
+
+  onKeyUp?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
 
   /**
    * id to select the input field uniquely
@@ -106,4 +114,8 @@ export interface InputWithDropdownProps {
    * optionsRequired:false prop removes options from dropdown & shows static label only
    */
   optionsRequired?: boolean;
+
+  dropdownPosition?: 'left' | 'right';
+  leftDropDownPositionZindex?: number;
+  rightDropDownPositionZindex?: number;
 }

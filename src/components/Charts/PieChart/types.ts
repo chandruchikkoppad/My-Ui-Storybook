@@ -5,8 +5,8 @@ export type Status = {
 
 export interface PieChartProps {
   radius: number;
-  data: Array<{ label: string; value: number }>; 
-  colors: string[]; 
+  data: Array<{ label: string; value: number | string }>;
+  colors: string[];
   chartBorder: boolean;
 }
 

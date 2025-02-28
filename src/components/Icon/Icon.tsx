@@ -1,43 +1,90 @@
+import { forwardRef, useEffect, useRef } from 'react';
 import classNames from 'classnames';
 import Components from './iconList';
 import './Icons.scss';
 import { IconProps } from './types';
 
-const Icon = ({
-  name,
-  height,
-  width,
-  onClick = () => {},
-  color = '#808080',
-  hoverEffect = false,
-  className = '',
-  disabled = false,
-  ...props
-}: IconProps) => {
-  const IconComponent = Components[name];
+const Icon = forwardRef<HTMLSpanElement, IconProps>(
+  (
+    {
+      name,
+      height,
+      width,
+      onClick = () => {},
+      color = 'var(--brand-color)', // Default color
+      hoverEffect = false,
+      className = '',
+      disabled = false,
+      variant = 'light',
+      x,
+      y,
+      chartIcon = false,
+      tabIndex = -1,
+      ...props
+    },
+    ref
+  ) => {
+    const IconComponent = Components[name];
 
-  const iconHeight = height ? height : 16;
-  const iconWidth = width ? width : 16;
+    const iconHeight = height || 16;
+    const iconWidth = width || 16;
 
-  if (!IconComponent) {
-    return null;
-  }
+    if (!IconComponent) {
+      return null;
+    }
+    const iconRef = useRef<SVGSVGElement | null>(null);
 
+    useEffect(() => {
+      if (iconRef.current) {
+        if (x !== undefined) {
+          iconRef.current.setAttribute('x', String(x));
+        }
+        if (y !== undefined) {
+          iconRef.current.setAttribute('y', String(y));
+        }
+      }
+    }, [x, y]);
 
-  return (
-    <span
-      onClick={disabled ? () => {} : onClick}
-      style={{ height: `${iconHeight}px`, width: `${iconWidth}px` }}
-      className={classNames('ff-icon-container', {
-        'ff-icon-click': !!hoverEffect,
+    const iconColor =
+      variant === 'dark' ? 'var(--ff-icon-color-dark-variant)' : color;
+
+    const baseProps = {
+      ref: iconRef,
+      onClick: disabled ? () => {} : onClick,
+      style: { height: `${iconHeight}px`, width: `${iconWidth}px` },
+      className: classNames('ff-icon-container', {
+        'ff-icon-click': hoverEffect,
         'ff-icon-disabled': disabled,
+        'ff-icon-dark': variant === 'dark',
+        'ff-icon-danger': variant === 'danger',
         [className]: !!className,
-      })}
-      {...props}
-    >
-      <IconComponent height="100%" width="100%" style={{ color: color }} />
-    </span>
-  );
-};
+      }),
+      tabIndex: tabIndex,
+      ...props,
+    };
+
+    return (
+      <>
+        {chartIcon === false ? (
+          <span {...baseProps} ref={ref}>
+            <IconComponent
+              height="100%"
+              width="100%"
+              style={{ color: iconColor }}
+            />
+          </span>
+        ) : (
+          <svg {...baseProps}>
+            <IconComponent
+              style={{ color: color }}
+              height={height}
+              width={width}
+            />
+          </svg>
+        )}
+      </>
+    );
+  }
+);
 
 export default Icon;
