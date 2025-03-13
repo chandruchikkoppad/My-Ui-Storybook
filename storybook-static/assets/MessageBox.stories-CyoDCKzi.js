@@ -1,0 +1,10 @@
+import{j as t}from"./jsx-runtime-SKoiH9zj.js";import{T as p}from"./Typography-DdMJCn-_.js";import{c as l}from"./index-NZcV-alF.js";import"./index-DJO9vBfz.js";const r=({content:o,isVisible:s,maxWidth:n=300,onClick:m,isClickable:i=!0,arrowPosition:a="left"})=>t.jsx("div",{onClick:m,style:{width:`${n}px`,"--triangle-position":`${n-4}px`},className:l("ff-chat-msg-box",{visible:s,hidden:!s,pointer:i,default:!i,"chat-arrow-left":a==="left","chat-arrow-right":a!=="left"}),children:t.jsx("div",{className:l("content",`arrow-${a}`),children:t.jsx(p,{children:o})})});try{r.displayName="MessageBox",r.__docgenInfo={description:"",displayName:"MessageBox",props:{content:{defaultValue:null,description:"",name:"content",required:!1,type:{name:"ReactNode"}},isVisible:{defaultValue:null,description:"",name:"isVisible",required:!0,type:{name:"boolean"}},maxWidth:{defaultValue:{value:"300"},description:"",name:"maxWidth",required:!1,type:{name:"number"}},onClick:{defaultValue:null,description:"",name:"onClick",required:!1,type:{name:"((event: MouseEvent<HTMLInputElement, MouseEvent>) => void)"}},isClickable:{defaultValue:{value:"true"},description:"",name:"isClickable",required:!1,type:{name:"boolean"}},arrowPosition:{defaultValue:{value:"left"},description:"",name:"arrowPosition",required:!1,type:{name:"enum",value:[{value:'"right"'},{value:'"left"'}]}}}}}catch{}const y={title:"Components/MessageBox",component:r,parameters:{layout:"centered"},tags:["autodocs"]},e={args:{content:"1. How To Create a New Project?",isVisible:!0,maxWidth:300,onClick:()=>alert("Message box clicked!"),isClickable:!1,arrowPosition:"right"}};var c,d,u;e.parameters={...e.parameters,docs:{...(c=e.parameters)==null?void 0:c.docs,source:{originalSource:`{
+  args: {
+    content: '1. How To Create a New Project?',
+    isVisible: true,
+    maxWidth: 300,
+    onClick: () => alert('Message box clicked!'),
+    isClickable: false,
+    arrowPosition: 'right'
+  }
+}`,...(u=(d=e.parameters)==null?void 0:d.docs)==null?void 0:u.source}}};const b=["Default"];export{e as Default,b as __namedExportsOrder,y as default};

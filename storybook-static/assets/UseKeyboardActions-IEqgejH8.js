@@ -1,0 +1,1 @@
+import{r as d}from"./index-DJO9vBfz.js";const r=e=>{d.useEffect(()=>{const o=t=>{e.forEach(({key:n,action:s})=>{t.key===n&&s()})};return window.addEventListener("keydown",o),()=>{window.removeEventListener("keydown",o)}},[e])};try{r.displayName="useKeyboardActions",r.__docgenInfo={description:"",displayName:"useKeyboardActions",props:{}}}catch{}export{r as u};

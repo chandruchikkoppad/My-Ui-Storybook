@@ -1,0 +1,1 @@
+const f=(e,r)=>{if(e===r)return!0;if(e==null||r==null||typeof e!="object"||typeof r!="object")return!1;const s=Array.isArray(e),a=Array.isArray(r);if(s!==a)return!1;const n=s?e:Object.keys(e),c=a?r:Object.keys(r);if(n.length!==c.length)return!1;if(s)return n.every((y,t)=>f(y,c[t]));{const y=new Set(c);return n.every(t=>y.has(t)&&f(e[t],r[t]))}};export{f as c};

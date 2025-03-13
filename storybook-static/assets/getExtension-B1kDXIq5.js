@@ -1,0 +1,1 @@
+const s=n=>{if(typeof n=="string"&&n.includes(".")){const t=n.split(".").pop();return t!==n?t:""}return n instanceof File?n.name.split(".").pop():""},i=n=>{if(typeof n=="string"&&n.includes(".")){const t=n.slice(n.lastIndexOf("."));return t!==n?t:""}if(n instanceof File){const t=n.name.lastIndexOf(".");return t!==-1?n.name.slice(t):""}return""};export{i as a,s as g};

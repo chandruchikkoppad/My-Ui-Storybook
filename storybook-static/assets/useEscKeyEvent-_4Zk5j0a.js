@@ -1,0 +1,1 @@
+import{r as t}from"./index-DJO9vBfz.js";function n(e){return o=>{const s=r=>{(r==null?void 0:r.key)===e&&o()};t.useEffect(()=>(window.addEventListener("keydown",s),()=>{window.removeEventListener("keydown",s)}),[e,o])}}try{n.displayName="useEscapeKey",n.__docgenInfo={description:"",displayName:"useEscapeKey",props:{}}}catch{}export{n as u};

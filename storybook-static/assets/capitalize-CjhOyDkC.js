@@ -1,0 +1,1 @@
+const e=a=>{var r,c;return a?((r=a.charAt(0))==null?void 0:r.toUpperCase())+((c=a==null?void 0:a.slice(1))==null?void 0:c.toLowerCase()):""};try{e.displayName="capitalize",e.__docgenInfo={description:"",displayName:"capitalize",props:{}}}catch{}export{e as c};

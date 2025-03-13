@@ -1,0 +1,4 @@
+import{j as c}from"./jsx-runtime-SKoiH9zj.js";import{r}from"./index-DJO9vBfz.js";const i=r.createContext(void 0),a=({children:e,theme:n})=>{const[t,o]=r.useState(n||"ff-light-theme"),s=m=>o(m);return r.useEffect(()=>(document.body.className=t,()=>{document.body.className=""}),[t]),c.jsx(i.Provider,{value:{currentTheme:t,setCurrentTheme:o,applyTheme:s},children:e})};try{Context.displayName="Context",Context.__docgenInfo={description:`Context lets components pass information deep down without explicitly
+passing props.
+
+Created from {@link createContext}`,displayName:"Context",props:{}}}catch{}try{a.displayName="ThemeProvider",a.__docgenInfo={description:"",displayName:"ThemeProvider",props:{theme:{defaultValue:null,description:"",name:"theme",required:!1,type:{name:"enum",value:[{value:'"ff-light-theme"'},{value:'"ff-dark-theme"'},{value:'"ff-grey-theme"'},{value:'"ff-blue-theme"'}]}}}}}catch{}export{a as T,i as a};

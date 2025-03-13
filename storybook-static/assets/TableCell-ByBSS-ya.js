@@ -1,0 +1,1 @@
+const o=(s,e,t,l)=>{let r=s[e.accessor];if(e.cell){const c=s._id||s.id;return e.cell({value:r,row:s,column:e.accessor,index:t,tableType:l,...c&&{refId:c}})}else return e.accessor||r&&typeof r!="object"?r:"--"};export{o as p};

@@ -1,0 +1,1 @@
+.ff-avatar{border-radius:50%;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;background-color:var(--ff-avatar-background-color)}.ff-avatar--small{width:32px;height:32px}.ff-avatar--medium{width:48px;height:48px}.ff-avatar--large{width:64px;height:64px}.ff-avatar .ff-avatar-label{font-weight:700;text-align:center}

@@ -1,0 +1,9 @@
+import{j as r}from"./jsx-runtime-SKoiH9zj.js";import{r as m}from"./index-DJO9vBfz.js";class o extends m.Component{constructor(a){super(a),this.state={hasError:!1}}static getDerivedStateFromError(){return{hasError:!0}}componentDidCatch(a,h){console.error("ErrorBoundary caught an error:",a,h)}render(){return this.state.hasError?this.props.fallback:this.props.children}}try{o.displayName="ErrorBoundary",o.__docgenInfo={description:"",displayName:"ErrorBoundary",props:{fallback:{defaultValue:null,description:"",name:"fallback",required:!0,type:{name:"ReactNode"}}}}}catch{}const p=({shouldThrow:n})=>{if(n)throw new Error("An intentional error occurred!");return r.jsx("div",{children:"No errors here!"})},g={title:"Components/ErrorBoundary",component:o,parameters:{layout:"centered"},tags:["autodocs"]},e={render:()=>r.jsx(o,{fallback:r.jsx("div",{children:"Something went wrong!"}),children:r.jsx(p,{shouldThrow:!0})})},t={render:()=>r.jsx(o,{fallback:r.jsx("div",{children:"Something went wrong!"}),children:r.jsx(p,{shouldThrow:!1})})};var s,d,c;e.parameters={...e.parameters,docs:{...(s=e.parameters)==null?void 0:s.docs,source:{originalSource:`{
+  render: () => <ErrorBoundary fallback={<div>Something went wrong!</div>}>\r
+            <ErrorProneComponent shouldThrow={true} />\r
+        </ErrorBoundary>
+}`,...(c=(d=e.parameters)==null?void 0:d.docs)==null?void 0:c.source}}};var i,l,u;t.parameters={...t.parameters,docs:{...(i=t.parameters)==null?void 0:i.docs,source:{originalSource:`{
+  render: () => <ErrorBoundary fallback={<div>Something went wrong!</div>}>\r
+            <ErrorProneComponent shouldThrow={false} />\r
+        </ErrorBoundary>
+}`,...(u=(l=t.parameters)==null?void 0:l.docs)==null?void 0:u.source}}};const y=["WithError","WithoutError"];export{e as WithError,t as WithoutError,y as __namedExportsOrder,g as default};

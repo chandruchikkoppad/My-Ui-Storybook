@@ -1,0 +1,1 @@
+const r=t=>t==null?!0:typeof t=="string"?t.trim().length===0:Array.isArray(t)?t.length===0:typeof t=="object"?t instanceof Map||t instanceof Set?t.size===0:Object.keys(t).length===0:!1;export{r as c};

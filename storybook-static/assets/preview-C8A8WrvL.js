@@ -1,0 +1,1 @@
+import"./jsx-runtime-SKoiH9zj.js";import"./index-DJO9vBfz.js";const{useGlobals:o}=__STORYBOOK_MODULE_PREVIEW_API__,_=()=>{const[{themes:e,selectedTheme:t}]=o();return{themes:e,selectedTheme:t}},l=Object.freeze(Object.defineProperty({__proto__:null},Symbol.toStringTag,{value:"Module"}));export{_ as b,l as p};
