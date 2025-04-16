@@ -59,7 +59,7 @@ interface ExcelFileProps {
    * - 'show' to display the toolbar
    * - 'hide' to hide the toolbar
    */
-  toolbar?: 'show' | 'hide';
+  toolbar?: 'show' | 'disable' | 'hide';
 
   /**
    * Controls whether the sheet navigation bar (tabs) is shown or hidden.
@@ -123,14 +123,15 @@ interface ExcelFileProps {
    */
   rowContextEnable?: boolean;
 
+  minimumColumnWidth?: number;
+
   attachmentAction?: {
-    addAttachment: (file: File) => Promise<{
-      responseCode: number;
-      responseObject: { name: string; id: string; modifiedOn: string }[];
-    }>;
-    viewAttachment: () => Promise<void>;
-    deleteAttachment: () => Promise<void>;
+    addAttachment: (file: File) => Promise<string>;
+    viewAttachment: (fileId: string) => Promise<string>;
+    deleteAttachment: (fileId: string) => Promise<string>;
   };
+
+  disableDeleteOption?: boolean;
 }
 
 const ExcelFile: React.FC<ExcelFileProps> = ({
@@ -147,20 +148,20 @@ const ExcelFile: React.FC<ExcelFileProps> = ({
   onSave = () => Promise.resolve(),
   onSaveInfoChange,
   attachmentAction = {
-    addAttachment: () =>
-      Promise.resolve({ responseCode: 0, responseObject: [] }),
-    viewAttachment: () => Promise.resolve(),
-    deleteAttachment: () => Promise.resolve(),
+    addAttachment: () => Promise.resolve(''),
+    viewAttachment: () => Promise.resolve(''),
+    deleteAttachment: () => Promise.resolve(''),
   },
   onSaveDelay = 3000,
   columnContextEnable = true,
   rowContextEnable = true,
+  minimumColumnWidth = 100,
+  disableDeleteOption = false,
 }) => {
   const [sheetNames, setSheetNames] = useState<string[]>([]);
   const [saveInfo, setSaveInfo] = useState<string>('');
   const [contextMenu, setContextMenu] = React.useState<ContextMenuState>({
     open: false,
-    position: { x: 0, y: 0 },
     options: [
       { label: '', value: '', iconName: '', action: () => {}, disable: false },
     ],
@@ -214,10 +215,10 @@ const ExcelFile: React.FC<ExcelFileProps> = ({
       payload.forEach((sheet) => {
         const sheetName = sheet.sheetName;
         const json = sheet.data;
-        const maxRows = Math.max(rowCount, json.length + 2);
+        const maxRows = Math.max(rowCount, json.length);
         const maxCols = Math.max(
           colCount,
-          Math.max(...json.map((row) => row.length)) + 2
+          Math.max(...json.map((row) => row.length))
         );
 
         let spreadsheetData: Matrix.Matrix<CellBase> = Array.from(
@@ -333,7 +334,7 @@ const ExcelFile: React.FC<ExcelFileProps> = ({
   useEffect(() => {
     setSaveInfo('Saving...');
     debounceDispatch(handleSaveData());
-  }, [worksheetsData]);
+  }, [worksheetsData, pageRef.current]);
 
   const debounceDispatch = React.useCallback(
     debounce((val) => {
@@ -508,7 +509,7 @@ const ExcelFile: React.FC<ExcelFileProps> = ({
 
     let remainingSheets = worksheetsData;
 
-    let updatedData = replaceKeyValueByKeyName(
+    const updatedData = replaceKeyValueByKeyName(
       remainingSheets,
       name,
       updatedSheetValue,
@@ -572,7 +573,6 @@ const ExcelFile: React.FC<ExcelFileProps> = ({
         event.stopPropagation();
         setContextMenu({
           open: false,
-          position: { x: 0, y: 0 },
           options: [
             {
               label: '',
@@ -663,7 +663,6 @@ const ExcelFile: React.FC<ExcelFileProps> = ({
     if (contextMenu.open) {
       setContextMenu({
         open: false,
-        position: { x: 0, y: 0 },
         options: [
           {
             label: '',
@@ -697,6 +696,7 @@ const ExcelFile: React.FC<ExcelFileProps> = ({
               data={selectedSheetData}
               columnContextEnable={columnContextEnable}
               rowContextEnable={rowContextEnable}
+              minimumColumnWidth={minimumColumnWidth}
               onEvaluatedDataChange={onEvaluateChange}
               workRef={workRef}
             />
@@ -740,7 +740,7 @@ const ExcelFile: React.FC<ExcelFileProps> = ({
                           );
                         }
                       }}
-                      contentEditable={editingSheet === index}
+                      contentEditable={editable && editingSheet === index}
                       onBlur={(e) => {
                         handleNameChange(e, index, name);
                       }}
@@ -763,6 +763,7 @@ const ExcelFile: React.FC<ExcelFileProps> = ({
               contextMenu={contextMenu}
               position={position}
               editable={editable}
+              disableDeleteOption={disableDeleteOption}
             />
           )}
           <Toastify />

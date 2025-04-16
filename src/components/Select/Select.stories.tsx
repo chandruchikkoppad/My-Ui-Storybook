@@ -314,6 +314,7 @@ export const updateOptionFromOutside: Story = {
           selectedOption={selectedOption}
           onChange={handleChange}
           showLabel={false}
+          noResultsMessage="No License Available"
         />
         <RadioGroup
           selectedValue={selectedRadioOption}
@@ -563,6 +564,70 @@ export const RecurrenceModal: Story = {
             <h1>modal</h1>
           </>
         }
+      />
+    );
+  },
+};
+
+export const SelectWithCloseIcon: Story = {
+  render: () => {
+    const Recurrence_Initial_State = [
+      { label: 'Once', value: 'Once' },
+      { label: 'Hourly', value: 'Hourly' },
+      { label: 'Daily', value: 'Daily' },
+      {
+        label: `Weekly on `,
+        value: 'Weekly',
+      },
+      {
+        label: `Monthly on`,
+        value: 'Monthly',
+      },
+      {
+        label: 'Every Weekday (Monday-Friday)',
+        value: 'Weekday',
+      },
+      {
+        label: 'Custom recurrence',
+        value: 'custom',
+        recurrence: true,
+      },
+      {
+        label: 'Continuous',
+        value: 'Continuous',
+      },
+    ];
+
+    const [selectedOption, setSelectedOption] = useState<Option>({
+      label: <p style={{ color: 'red' }}>custom recurrence</p>,
+      value: 'custom recurrence',
+    });
+
+    const handleChange = (option: Option) => {
+      setSelectedOption(option);
+    };
+
+    return (
+      <Select
+        label="Option"
+        optionsList={Recurrence_Initial_State}
+        selectedOption={selectedOption}
+        recurrence
+        onChange={(option: Option) => {
+          if (option.label.toLowerCase() !== 'custom recurrence') {
+            const tempArr = [...Recurrence_Initial_State];
+            tempArr.splice(6, 1);
+            setSelectedOption(tempArr);
+          }
+        }}
+        modalJSXProps={
+          <>
+            <h1>modal</h1>
+          </>
+        }
+        showArrowIcon={false}
+        showClearIcon={true}
+        handelClear={() => setSelectedOption({ label: '', value: '' })}
       />
     );
   },

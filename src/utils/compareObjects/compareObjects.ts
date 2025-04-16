@@ -18,6 +18,11 @@ export const compareObjects = (
     return false;
   }
 
+  // Handle Date comparison
+  if (obj1 instanceof Date && obj2 instanceof Date) {
+    return obj1.getTime() === obj2.getTime();
+  }
+
   // Handle array comparison
   const isArray1 = Array.isArray(obj1);
   const isArray2 = Array.isArray(obj2);

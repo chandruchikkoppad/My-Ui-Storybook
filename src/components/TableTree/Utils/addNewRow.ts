@@ -5,14 +5,17 @@ export const addNewRow = (
   newNode: {
     action?: 'addAbove' | 'addBelow' | 'addInside';
     sourceId?: string;
+    payloadSourceId?: string;
     error?: string;
     value?: string;
     label?: string;
     options?: [];
     selectedOption?: string;
     type?: 'input' | 'inputWithDropdown';
+    confirmIconTooltip?: string;
+    cancelIconTooltip?: string;
   },
-  rootNode: TreeNodeProps,
+  rootNode: TreeNodeProps
 ) => {
   const {
     sourceId,
@@ -23,6 +26,9 @@ export const addNewRow = (
     type,
     options,
     selectedOption,
+    confirmIconTooltip,
+    cancelIconTooltip,
+    payloadSourceId,
   } = newNode;
 
   if (!sourceId || !action) return treeData;
@@ -32,8 +38,8 @@ export const addNewRow = (
     value: option,
   }));
   const convertedSelectedOption = selectedOption
-  ? { label: selectedOption, value: selectedOption }
-  : undefined;
+    ? { label: selectedOption, value: selectedOption }
+    : undefined;
 
   const nodeMap = new Map(treeData.map((node) => [node.key, node]));
   if (rootNode) {
@@ -43,11 +49,16 @@ export const addNewRow = (
 
   if (!sourceNode) return treeData;
 
+  let payloadSourceNode;
+  if (payloadSourceId) {
+    payloadSourceNode = nodeMap.get(payloadSourceId);
+  }
+
   const updatedTreeData = [...treeData];
   const sourceIndex = treeData.findIndex((node) => node.key === sourceId);
 
   const newNodeBase = {
-    hierarchy: sourceNode.hierarchy,
+    hierarchy: payloadSourceNode?.hierarchy ?? sourceNode.hierarchy,
     sourceId: sourceNode.key,
     isNewNode: true,
     key: 'new-node',
@@ -57,6 +68,8 @@ export const addNewRow = (
     type,
     options: convertedOptions,
     selectedOption: convertedSelectedOption,
+    confirmIconTooltip,
+    cancelIconTooltip,
   };
 
   switch (action) {

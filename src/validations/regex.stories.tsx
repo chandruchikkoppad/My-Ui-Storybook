@@ -67,6 +67,10 @@ import {
   DYNAMIC_VALUE_TYPE_REGEX,
   DYNAMIC_VALUE_WITH_VALID_BRACKETS_REGEX,
   CERTIFICATES_NAME_REGEX,
+  CHECK_CAMEL_CASE,
+  START_END_WHITESPACE_REGEX,
+  ALPHA_NUM_REGEX,
+  EMAIL_VALIDATION_REGEX,
 } from './regex';
 
 export default {
@@ -417,6 +421,26 @@ export const Playground = () => {
       name: 'CERTIFICATES_NAME_REGEX',
       regex: CERTIFICATES_NAME_REGEX,
       description: 'Validates cetificates & host name.',
+    },
+    {
+      name: 'CHECK_CAMEL_CASE',
+      regex: CHECK_CAMEL_CASE,
+      description: 'Regular expression to check word is camel case or not',
+    },
+    {
+      name: 'START_END_WHITESPACE_REGEX',
+      regex: START_END_WHITESPACE_REGEX,
+      description: 'Starting and Ending Whitespace Validation Only.',
+    },
+    {
+      name: 'ALPHA_NUM_REGEX',
+      regex: ALPHA_NUM_REGEX,
+      description: 'Alphanumeric Validation with specific Order.',
+    },
+    {
+      name: 'EMAIL_VALIDATION_REGEX',
+      regex:  EMAIL_VALIDATION_REGEX,
+      description: 'Email Validation.',
     },
   ];
 

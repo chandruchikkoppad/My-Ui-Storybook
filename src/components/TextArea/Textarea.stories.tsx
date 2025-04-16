@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import Textarea from './Textarea';
-import React ,{ ChangeEvent, useState } from 'react';
+import React, { ChangeEvent, useState } from 'react';
 import { checkEmpty } from '../../utils/checkEmpty/checkEmpty';
 const meta: Meta<typeof Textarea> = {
   title: 'Components/Textarea',
@@ -24,7 +24,7 @@ const defaultArgs = {
   cols: 30,
   capacity: 200,
   resize: false,
-  errorText:"Add Description"
+  errorText: 'Add Description',
 };
 
 export const Default: Story = {
@@ -56,7 +56,11 @@ export const Controlled: Story = {
     const [error, setError] = useState<boolean>(false);
     const [helperText, setHelperText] = useState<string>();
 
-    const handleValidation = (value: string, name: string, isRequired: boolean) => {
+    const handleValidation = (
+      value: string,
+      name: string,
+      isRequired: boolean
+    ) => {
       if (isRequired && checkEmpty(value)) {
         setError(true);
         setHelperText(`${name} is required`);
@@ -66,13 +70,13 @@ export const Controlled: Story = {
       setHelperText('');
       return true;
     };
-    
+
     const onChangeHandler = (event: ChangeEvent<HTMLTextAreaElement>) => {
       const value = event.target.value;
       setValue(value);
       handleValidation(value, event.target.name, event.target.required);
     };
-    
+
     const onBlurHandler = (event: React.FocusEvent<HTMLTextAreaElement>) => {
       const value = event.target.value;
       handleValidation(value, event.target.name, event.target.required);
@@ -94,6 +98,28 @@ export const Controlled: Story = {
           error={error}
           onBlur={onBlurHandler}
           errorText={helperText}
+        />
+      </>
+    );
+  },
+};
+
+export const ReadOnlyTextArea: Story = {
+  render: () => {
+    const [value, setValue] = useState<string>(
+      'If you want to use a ref instead of a useState for storing facetQueries, you can use useRef. This is useful when:\nYou don’t need re-renders when facetQueries updates.\nYou want to mutate the value withou'
+    );
+
+    return (
+      <>
+        <Textarea
+          {...defaultArgs}
+          disabled={false}
+          value={value}
+          label="Description"
+          variant="primary"
+          placeholder=""
+          readOnly
         />
       </>
     );

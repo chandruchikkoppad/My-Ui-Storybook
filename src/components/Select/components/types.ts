@@ -21,6 +21,8 @@ export interface DropdownProps {
   modalJSXProps?: ReactNode;
   recurrence?: boolean;
   showArrowIcon?: boolean;
+  showClearIcon?: boolean;
+  noResultsMessage?:string
 }
 
 export const dropdownDefaultCSSData = {

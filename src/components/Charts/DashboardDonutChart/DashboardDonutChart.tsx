@@ -220,47 +220,16 @@ const DashboardDonutChart: React.FC<DashboardDonutChartProps> = ({
     return nonZeroValues.map((item) => {
       const valuePercentage = toNumber(item.value) / total;
       const baseAngle = Math.max(valuePercentage * totalAngle, MIN_ANGLE);
-      const extraAngle = remainingAngleCalc * (valuePercentage / total);
+      const extraAngle = remainingAngleCalc * valuePercentage;
       const angle = baseAngle + extraAngle;
       const startAngle = currAngle;
       const endAngle = currAngle + angle;
       currAngle = endAngle + gapAngle;
       let subArcs = null;
-      if (
-        (!item.version ||
-          !Array.isArray(item.version) ||
-          item.version.length === 0) &&
-        versionErrorText
-      ) {
-        subArcs = [
-          {
-            randomColor: 'var(--tooltip-bg-color)',
-            value: versionErrorText,
-            startAngle: startAngle,
-            endAngle: endAngle,
-            opacity: 0.2,
-          },
-        ];
-      } else if (
-        item.version &&
-        Array.isArray(item.version) &&
-        item.version.length > 0
-      ) {
-        const uniqueVersions = getUniqueVersions(item);
-        if (uniqueVersions.length > 0) {
-          const count = uniqueVersions.length;
-          const subAngle = (endAngle - startAngle) / count;
-          subArcs = uniqueVersions.map((ver, j) => ({
-            randomColor: ver.color,
-            value: ver.ver,
-            startAngle: startAngle + j * subAngle,
-            endAngle: startAngle + (j + 1) * subAngle,
-          }));
-        }
-      }
       return { item, startAngle, endAngle, subArcs };
     });
   }, [nonZeroValues, total, gapAngle, MIN_ANGLE, versionErrorText]);
+
 
   const handleSegmentMouseEnter = (originalIndex: number) => {
     setHoveredItemIndex(originalIndex);
@@ -611,8 +580,9 @@ const DashboardDonutChart: React.FC<DashboardDonutChartProps> = ({
       const parent = computedArcs.find(
         (arc) => arc.item.originalIndex === hoveredVersion.parentIndex
       );
-      const versionVal =
-        parent?.subArcs?.[hoveredVersion.subIndex]?.value ?? '';
+      const versionVal = Array.isArray(parent?.item?.version)
+        ? parent.item.version[hoveredVersion.subIndex]
+        : '';
       return (
         <div
           className="ff-donut-chart-tooltip"
@@ -638,9 +608,9 @@ const DashboardDonutChart: React.FC<DashboardDonutChartProps> = ({
               : hoveredItem?.value}
           </Typography>
           {hoveredItem?.version && (
-            <Typography>{`Version: ${hoveredItem.version.join(
-              ', '
-            )}`}</Typography>
+            <Typography>
+              {`Version: ${hoveredItem.version.join(', ')}`}
+            </Typography>
           )}
         </div>
       );

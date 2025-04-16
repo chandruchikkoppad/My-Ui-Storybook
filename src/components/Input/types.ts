@@ -1,3 +1,5 @@
+import { IconProps } from '../Icon/types';
+
 export interface InputProps {
   /**
    * Name | name of the input field
@@ -51,17 +53,11 @@ export interface InputProps {
    * onChange, onKeyDown, onBlur, onFocus actions
    */
   onChange?: (event: React.ChangeEvent<HTMLInputElement>, item?: any) => void;
-
   onKeyDown?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
-
   onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
-
   onFocus?: (event: React.FocusEvent<HTMLInputElement>) => void;
-
   onClick?: (event: React.MouseEvent<HTMLInputElement>) => void;
-
   onKeyUp?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
-
   /**
    * id to select the input field uniquely
    */
@@ -69,13 +65,13 @@ export interface InputProps {
   /**
    * if on, suggestion popup will be displayed
    */
-  autoComplete?: 'on' | 'off';
+  autoComplete?: 'on' | 'off' | 'new-password';
   /**
    * if true, input field is in autofocus state
    */
   autoFocus?: boolean;
   /**
-   *  minimum and maximum values for the number type input field and their functions
+   * minimum and maximum values for the number type input field and their functions
    */
   minValue?: string | number;
   maxValue?: string | number;
@@ -88,7 +84,7 @@ export interface InputProps {
    */
   size?: 'small' | 'medium';
   /**
-   * isLabelRequired for the input field without label,showing placeholder
+   * isLabelRequired for the input field without label, showing placeholder
    */
   isLabelRequired?: boolean;
   /**
@@ -97,4 +93,20 @@ export interface InputProps {
   reserveHelperTextSpace?: boolean;
 
   setUpdatedNumberValue?: (value: number) => void;
+  /**
+   * Flag to determine if error messages and error styling should be displayed immediately.
+   */
+  displayErrorImmediately?: boolean;
+  /**
+   * Flag to determine if search icon for input needs to displayed or not.
+   */
+  showSearchIcon?: boolean;
+  /**
+   * Icon props.
+   */
+  searchIconProps?: IconProps;
+  /**
+   * Function to search url on icon click.
+   */
+  handleSearchIconClick?: (e: any) => void;
 }

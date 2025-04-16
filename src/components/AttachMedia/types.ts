@@ -29,4 +29,8 @@ export interface AttachMediaProps {
   fileName?: string;
 
   fileId: string;
+
+  thumbnailMediaSrc?: string;
+
+  isDelete: boolean;
 }

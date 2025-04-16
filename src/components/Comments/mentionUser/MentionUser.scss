@@ -1,0 +1,37 @@
+.select-section {
+  background: var(--base-bg-color);
+  border: 1px solid var(--ff-mini-modal-border);
+  border-radius: 8px;
+  padding: 5px 0;
+  width: 200px;
+  z-index: 99999;
+  position: absolute;
+  top: var(--top);
+  left: var(--left);
+  box-shadow: 0 4px 12px var(--toggle-strip-color);
+
+  .select-group {
+    max-height: 38vh;
+    width: 100%;
+    border: none;
+    overflow-y: auto;
+
+    .mention-option {
+      display: block;
+      padding: 8px 12px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .user-not-found {
+      display: block;
+      padding: 8px 12px;
+      transition: background 0.2s;
+      cursor: not-allowed;
+    }
+
+    .mention-option.hovered {
+      background: var(--ff-progress-bar-bg-color);
+    }
+  }
+}

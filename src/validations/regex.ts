@@ -218,6 +218,41 @@ const XML_FILE_TYPE_VALIDATION =
 const JAVASCRIPT_FILE_TYPE_VALIDATION =
   /^\s*(function|const|let|var)\b|\b(return|if|for|while|switch|case)\b.*[{}]/s;
 
+// Verify the Camel Case Format
+const CHECK_CAMEL_CASE = /^[a-z]+([A-Z][a-z]*)*$/;
+
+// To detect "@" character as last char in Comment box
+const DETECT_AT_CHAR_IN_COMMENT = /@\w+/g;
+
+// To detect "@" character inbetween string
+const DETECT_AT_CHAR_BETWEEN_STRINGS_IN_COMMENT = /(?:^|\s)(@[\w]*)$/;
+
+// To detect @username that are either at the start of the input or right after a space
+const DETECT_MENTIONED_USERNAME_AFTER_SPACE = /(?:^|\s)(@[\w]*)$/;
+
+// To detect @username that are either at the start of the input or right after a space also allowing special characters
+const DETECT_MENTIONED_USERNAME_AFTER_SPACE_SPECIAL_CHARS_ALLOWED =
+  /(?:^|\s)(@[\w]*)$/;
+
+// To detect @username right before the caret position
+const DETECT_MENTIONED_USERNAME_BEFORE_CARET = /(?:^|\s)(@\S+)$/;
+
+// Starting and Ending Whitespace Validation Only.
+const START_END_WHITESPACE_REGEX = /^[^\s].*[^\s]$/;
+
+// Alphanumeric Validation with specific Order
+const ALPHA_NUM_REGEX = /^[a-zA-Z0-9 ]+$/;
+
+//Detect "@" at the start and after a space [Ex: "@hello" and "some text @username"]
+const DETECT_AT_CHAR_AT_START = /(?:^|\s)@[^@\s]*$/;
+
+//To check if textBeforeCaret ends with an @ followed by a word without spaces [Ex: "@hello" and "some text @username"]
+const CHECK_AT_FOLLOWED_BY_WORD = /@(\S*)$/;
+//To detect word starting with "@"
+const DETECT_WORD_START_WITH_AT = /(\@\w+)/;
+//To check email validations 
+const EMAIL_VALIDATION_REGEX = /^[a-zA-Z0-9](?!.*[._-]{2})[a-zA-Z0-9._-]*[a-zA-Z0-9]@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
 export {
   DYNAMIC_VALUE__PLACEHOLDER_REGEX,
   DYNAMIC_VALUE_PATTERN_REGEX,
@@ -293,4 +328,16 @@ export {
   BODY_TAG_TYPE_VALIDATION,
   XML_FILE_TYPE_VALIDATION,
   JAVASCRIPT_FILE_TYPE_VALIDATION,
+  CHECK_CAMEL_CASE,
+  DETECT_AT_CHAR_IN_COMMENT,
+  DETECT_AT_CHAR_BETWEEN_STRINGS_IN_COMMENT,
+  DETECT_MENTIONED_USERNAME_AFTER_SPACE,
+  DETECT_MENTIONED_USERNAME_AFTER_SPACE_SPECIAL_CHARS_ALLOWED,
+  DETECT_MENTIONED_USERNAME_BEFORE_CARET,
+  START_END_WHITESPACE_REGEX,
+  ALPHA_NUM_REGEX,
+  DETECT_AT_CHAR_AT_START,
+  CHECK_AT_FOLLOWED_BY_WORD,
+  DETECT_WORD_START_WITH_AT,
+  EMAIL_VALIDATION_REGEX
 };

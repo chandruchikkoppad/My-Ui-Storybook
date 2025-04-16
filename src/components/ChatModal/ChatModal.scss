@@ -9,7 +9,7 @@
   position: fixed;
   border-radius: 50%;
   cursor: pointer;
-  z-index: 999999;
+  z-index: 9999999;
   transition: transform 0.3s ease;
 }
 
@@ -41,7 +41,7 @@
   transform: scale(0.5);
   transform-origin: bottom right;
   transition: transform 0.4s ease-in-out, opacity 0.4s ease-in-out;
-  z-index: 99999;
+  z-index: 9999999;
 
   &:after {
     content: '';

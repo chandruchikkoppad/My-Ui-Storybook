@@ -10,7 +10,9 @@ export const PLAIN_TEXT_MIME = 'text/plain';
 export const FOCUS_WITHIN_SELECTOR = ':focus-within';
 
 /** Move the cursor of given input element to the input's end */
-export function moveCursorToEnd(el: HTMLInputElement): void {
+export function moveCursorToEnd(
+  el: HTMLInputElement | HTMLTextAreaElement
+): void {
   el.selectionStart = el.selectionEnd = el.value.length;
 }
 

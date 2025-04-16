@@ -116,6 +116,7 @@ export const PillLegend: Story = {
     lineCap: 'round',
     legendType: 'pillLegend',
     isLegendDetails: true,
+    isPillValueVisible:false,
     labelFontSize: 12,
     subLabelFontSize: 8,
     chartToLegendGap: '16px',

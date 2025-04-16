@@ -3,6 +3,7 @@ import { TreeNodeProps as TreeNode } from '../../ComponentProps/TreeNodeProps';
 
 interface NewNode {
   sourceId?: string;
+  payloadSourceId?: string;
   action?: 'addAbove' | 'addBelow' | 'addInside';
   type?: 'input' | 'inputWithDropdown';
   options?: [];
@@ -10,6 +11,8 @@ interface NewNode {
   value?: string;
   error?: string;
   label?: string;
+  confirmIconTooltip?: string;
+  cancelIconTooltip?: string;
 }
 
 declare type JSX = ReactNode | JSX.Element[] | string | null;
@@ -29,6 +32,9 @@ export interface TableCellProps {
   isExpanding?: boolean;
   columnTextColor?: string;
   hideOnDisable?: boolean;
+  scriptLengthTruncate: number;
+  addModuleInputWidth?: number;
+  addModuleSelectWidth?: number;
 }
 export type RootNode = {
   node: any;
@@ -66,6 +72,9 @@ export interface TableBodyProps {
   rootNode: TreeNode;
   selectedNode?: string;
   hideOnDisable?: boolean;
+  scriptLengthTruncate: number;
+  addModuleInputWidth?: number;
+  addModuleSelectWidth?: number;
 }
 
 export interface TableRowProps {
@@ -83,6 +92,9 @@ export interface TableRowProps {
   isExpanding?: boolean;
   selectedNode?: string;
   hideOnDisable?: boolean;
+  scriptLengthTruncate: number;
+  addModuleInputWidth?: number;
+  addModuleSelectWidth?: number;
 }
 
 export interface Column {
@@ -122,6 +134,10 @@ export interface TreeTableProps {
   selectedNode?: string;
   tableHeaderBgColor?: string;
   hideOnDisable?: boolean;
+  freezeColumns?: number;
+  scriptLengthTruncate?: number;
+  addModuleInputWidth?: number;
+  addModuleSelectWidth?: number;
 }
 
 type OptionValue = any;

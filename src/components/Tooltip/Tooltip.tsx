@@ -22,6 +22,7 @@ const Tooltip: React.FC<TooltipProps> = ({
   const [isVisible, setIsVisible] = useState(false);
   const titleRef: TitleRef = useRef(null);
   const tooltipContainerRef: TooltipContainerRef = useRef(null);
+  const [finalPlacement, setFinalPlacement] = useState(placement);
   const [tooltipContainerPosition, setTooltipContainerPosition] = useState({
     posX: 0,
     fromRight: 0,
@@ -108,60 +109,47 @@ const Tooltip: React.FC<TooltipProps> = ({
   }, []);
 
   const calculateDim = () => {
-    if (tooltipContainerRef.current) {
-      const computedStyle = window.getComputedStyle(
-        tooltipContainerRef.current
-      );
-      if (
-        computedStyle.display === 'none' ||
-        computedStyle.visibility === 'hidden' ||
-        computedStyle.opacity === '0'
-      ) {
-        setIsVisible(false);
-        return;
-      }
-    }
-    if (titleRef.current) {
-      setTitleDimensions({
-        height: titleRef.current.offsetHeight,
-        width: titleRef.current.offsetWidth,
-      });
+    if (!tooltipContainerRef.current || !titleRef.current) return;
+
+    const rect = tooltipContainerRef.current.getBoundingClientRect();
+    const titleHeight = titleRef.current.offsetHeight;
+    const titleWidth = titleRef.current.offsetWidth;
+
+    setChildrenContainerHeight(rect.height);
+
+    const spaceAbove = rect.top;
+    const spaceBelow = window.innerHeight - rect.bottom;
+
+    // Determine placement flip only for basic top/bottom
+    if (placement === 'bottom' && spaceBelow < titleHeight + 10) {
+      setFinalPlacement('top');
+    } else if (placement === 'top' && spaceAbove < titleHeight + 10) {
+      setFinalPlacement('bottom');
+    } else {
+      setFinalPlacement(placement);
     }
 
-    if (tooltipContainerRef.current && titleRef.current) {
-      const rect = tooltipContainerRef.current.getBoundingClientRect();
-      setChildrenContainerHeight(rect.height);
-      const leftSpaceAvailable =
-        rect.left +
-        window.scrollX +
-        tooltipContainerRef.current.offsetWidth / 2 -
-        titleRef.current.offsetWidth / 2;
-      const rightSpaceAvailable =
-        window.innerWidth -
-        rect.right +
-        tooltipContainerRef.current.offsetWidth / 2 -
-        titleRef.current.offsetWidth / 2;
-      let posX = rect.left + window.scrollX;
+    const posX = rect.left + window.scrollX;
+    const fromRight = rect.right;
 
-      if (leftSpaceAvailable < 0) {
-        posX -= leftSpaceAvailable;
-      }
-      if (rightSpaceAvailable < 0) {
-        posX += rightSpaceAvailable;
-      }
+    setTooltipContainerPosition({
+      posX,
+      fromRight,
+      posY: rect.top,
+      width: tooltipContainerRef.current.offsetWidth,
+      fromBottom: window.innerHeight - tooltipContainerRef.current.offsetTop,
+    });
 
-      setTooltipContainerPosition({
-        posX,
-        fromRight: rect.right,
-        posY: rect.top,
-        width: tooltipContainerRef.current.offsetWidth,
-        fromBottom: window.innerHeight - tooltipContainerRef.current.offsetTop,
-      });
-    }
+    setTitleDimensions({
+      height: titleHeight,
+      width: titleWidth,
+    });
   };
 
   useEffect(() => {
-    calculateDim();
+    if (isVisible) {
+      calculateDim();
+    }
   }, [isVisible]);
 
   return (
@@ -180,7 +168,7 @@ const Tooltip: React.FC<TooltipProps> = ({
         createPortal(
           <div
             ref={titleRef}
-            style={{ ...styles[placement] }}
+            style={{ ...styles[finalPlacement] }}
             className={classNames('ff-tooltip', currentTheme, {
               'ff-tooltip--visible': isVisible,
             })}

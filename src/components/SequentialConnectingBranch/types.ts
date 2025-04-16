@@ -1,5 +1,10 @@
 import { Option } from '../Select/types';
 
+export type EnvironmentVariableMaps = {
+  testDataSetMap: Record<string, string>;
+  globalVariableMap: Record<string, string>;
+  projectVariableMap: Record<string, string>;
+};
 export interface SequentialConnectingBranchProps {
   machineInstances: ExecutionContext[] | {}[];
   machineColumnWidth?: number;
@@ -30,7 +35,8 @@ export interface SequentialConnectingBranchProps {
   integrationInstance?: IntegrationInstance;
   zIndex?: number;
   placeholder?: string;
-  maxRunCount?:number;
+  maxRunCount?: number;
+  environmentVariableMaps?: EnvironmentVariableMaps;
 }
 
 export interface IntegrationInstance {

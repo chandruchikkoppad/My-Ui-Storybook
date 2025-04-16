@@ -18,6 +18,7 @@ const RowIndicator: Types.RowIndicatorComponent = ({
   addRowBottom,
   deleteRow,
   rowContextEnable,
+  selectedRow,
   cell,
 }) => {
   const dispatch = useDispatch();
@@ -25,10 +26,37 @@ const RowIndicator: Types.RowIndicatorComponent = ({
     (state) => state.rowDimensions[row]?.height || 32
   );
 
-  const onMouseUpDrag = React.useCallback(
-    (event: React.MouseEvent) => {
-      onSelect(row, event.shiftKey);
+  const options = React.useMemo(() => {
+    return [
+      {
+        label: 'Add Row Top',
+        value: 'Add Row Top',
+        iconName: 'plus_icon',
+        action: addRowTop,
+        disable: cell?.contextDisable?.['Add Row Top'] ?? false,
+      },
+      {
+        label: 'Add Row Bottom',
+        value: 'Add Row Bottom',
+        iconName: 'plus_icon',
+        action: addRowBottom,
+        disable: cell?.contextDisable?.['Add Row Bottom'] ?? false,
+      },
+      {
+        label: 'Delete Row',
+        value: 'Delete Row',
+        iconName: 'delete',
+        action: deleteRow,
+        disable: cell?.contextDisable?.['Delete Row'] ?? false,
+      },
+    ];
+  }, [selectedRow]);
 
+  const handleMouseDrag = React.useCallback(
+    (event: React.MouseEvent, isUp: boolean) => {
+      const getTargetRow = isUp ? row : row - 1;
+      const targetRow = Math.max(getTargetRow, 0);
+      onSelect(targetRow, event.shiftKey);
       const startY = event.clientY;
       const initialHeight = rowHeight;
 
@@ -37,7 +65,7 @@ const RowIndicator: Types.RowIndicatorComponent = ({
           32,
           initialHeight + (moveEvent.clientY - startY)
         );
-        dispatch(Actions.setRowHeight(row, newHeight));
+        dispatch(Actions.setRowHeight(targetRow, newHeight));
       };
 
       const onMouseUp = () => {
@@ -50,39 +78,7 @@ const RowIndicator: Types.RowIndicatorComponent = ({
       document.addEventListener('mouseup', onMouseUp);
       dispatch(Actions.dragEnd());
     },
-    [onSelect, rowHeight, row]
-  );
-
-  const onMouseDownDrag = React.useCallback(
-    (event: React.MouseEvent) => {
-      let downDragRow = 0;
-      if (row !== 0) {
-        downDragRow = row - 1;
-      }
-      onSelect(downDragRow, event.shiftKey);
-
-      const startY = event.clientY;
-      const initialHeight = rowHeight;
-
-      const onMouseMove = (moveEvent: MouseEvent) => {
-        const newHeight = Math.max(
-          32,
-          initialHeight + (moveEvent.clientY - startY)
-        );
-        dispatch(Actions.setRowHeight(downDragRow, newHeight));
-      };
-
-      const onMouseUp = () => {
-        document.removeEventListener('mousemove', onMouseMove);
-        document.removeEventListener('mouseup', onMouseUp);
-        dispatch(Actions.dragEnd());
-      };
-
-      document.addEventListener('mousemove', onMouseMove);
-      document.addEventListener('mouseup', onMouseUp);
-      dispatch(Actions.dragEnd());
-    },
-    [onSelect, rowHeight, row]
+    [rowHeight, row]
   );
 
   const activate = React.useCallback(
@@ -94,74 +90,36 @@ const RowIndicator: Types.RowIndicatorComponent = ({
     (event: React.MouseEvent) => {
       onSelect(row, event.shiftKey);
     },
-    [onSelect, row]
+    [row]
   );
 
   const contextClick = React.useCallback(
     (event: React.MouseEvent) => {
       event.preventDefault();
-
       onSelect(row, event.shiftKey);
-
-      const options = [
-        {
-          label: 'Add Row Top',
-          value: 'Add Row Top',
-          iconName: 'plus_icon',
-          action: () => {
-            addRowTop();
-          },
-          disable: cell?.contextDisable?.['Add Row Top'] ?? false,
-        },
-        {
-          label: 'Add Row Bottom',
-          value: 'Add Row Bottom',
-          iconName: 'plus_icon',
-          action: () => {
-            addRowBottom();
-          },
-          disable: cell?.contextDisable?.['Add Row Bottom'] ?? false,
-        },
-        {
-          label: 'Delete Row',
-          value: 'Delete Row',
-          iconName: 'delete',
-          action: () => {
-            deleteRow();
-          },
-          disable: cell?.contextDisable?.['Delete Row'] ?? false,
-        },
-      ];
-
-      if (selected) {
-        setContextMenu({
-          open: rowContextEnable,
-          position: {
-            x: event.pageX,
-            y: event.pageY,
-          },
-          options: options,
-        });
-      } else {
-        setContextMenu({
-          open: false,
-          position: {
-            x: event.pageX,
-            y: event.pageY,
-          },
-          options: options,
-        });
-      }
+      setContextMenu({
+        open: rowContextEnable,
+        options,
+      });
     },
-    [cell, selected, row]
+    [row, rowContextEnable, options, selectedRow]
   );
+
+  React.useEffect(() => {
+    if (selectedRow !== undefined) {
+      setContextMenu((prev) => ({
+        open: prev.open,
+        options,
+      }));
+    }
+  }, [row, rowContextEnable, options, selectedRow]);
 
   return (
     <th
       className={classNames('ff-spreadsheet-header', {
         'ff-spreadsheet-header--selected': selected,
       })}
-      style={{ height: `${rowHeight}px`, minWidth: '60px' }} //Dynamic value, Inline Styling required
+      style={{ height: `${rowHeight}px`, minWidth: '60px' }}
       onClick={handleClick}
       onContextMenu={contextClick}
       tabIndex={0}
@@ -171,13 +129,13 @@ const RowIndicator: Types.RowIndicatorComponent = ({
       </Typography>
       <div
         className="drag-row-selector drag-row-down"
-        onMouseDown={onMouseUpDrag}
+        onMouseDown={(e) => handleMouseDrag(e, true)}
         onDoubleClick={() => dispatch(Actions.setRowHeight(row, 32))}
         onClick={() => activate({ row, column: -1 })}
       />
       <div
         className="drag-row-selector drag-row-up"
-        onMouseDown={onMouseDownDrag}
+        onMouseDown={(e) => handleMouseDrag(e, false)}
         onDoubleClick={() => dispatch(Actions.setRowHeight(row, 32))}
         onClick={() => activate({ row, column: -1 })}
       />
@@ -198,16 +156,20 @@ export const enhance = (
     const cell = useSelector((state) =>
       state.active ? Matrix.get(state.active, state.model.data) : undefined
     );
+    const selectedRow = useSelector((state) => state.selectedRow ?? undefined);
+
     const selectEntireRow = React.useCallback(
       (row: number, extend: boolean) =>
         dispatch(Actions.selectEntireRow(row, extend)),
       [dispatch]
     );
+
     return (
       <RowIndicatorComponent
         {...props}
         selected={selected}
         cell={cell}
+        selectedRow={selectedRow}
         onSelect={selectEntireRow}
       />
     );

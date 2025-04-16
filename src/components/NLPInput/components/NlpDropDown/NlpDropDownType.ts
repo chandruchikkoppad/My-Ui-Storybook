@@ -1,3 +1,4 @@
+import { ReactNode } from 'react';
 import { DrowdownPosition, NlpRenderOption } from '../../types';
 
 export interface NlpDropDownListProps {
@@ -65,4 +66,19 @@ export const nlpDropdownDefaultCSSData = {
   optionHeight: 32,
   selectInputHeight: 38,
   dropDownWrapperPadding: 0,
+};
+
+export type OptionType = {
+  label?: ReactNode;
+  value?: string;
+  displayName?: string;
+  videoSrc?: string;
+  description?: string;
+  nlpType?: string;
+  path?: string;
+  platform?: string;
+  stepInputs?: { type?: string; name?: string }[];
+  returnType?: string;
+  name?: string;
+  nlpName?: string;
 };

@@ -19,7 +19,13 @@ export const getTreeDetails = (
     | 'start'
     | 'addAbove'
     | 'addBelow'
-    | 'expandAll',
+    | 'expandAll'
+    | 'collapseAll'
+    | 'show'
+    | 'hide'
+    | 'clone'
+    | 'delete'
+    | 'create',
   oldData: TreeNode[],
   newData: TreeNode[],
   sourceId?: string
@@ -51,6 +57,7 @@ export const getTreeDetails = (
       break;
     case 'expand':
     case 'expandAll':
+    case 'collapseAll':
     case 'collapse':
       const actionIndex = getIndex();
       if (actionIndex === undefined) {
@@ -87,6 +94,11 @@ export const getTreeDetails = (
       ];
       break;
     case 'start':
+    case 'show':
+    case 'hide':
+    case 'clone':
+    case 'create':
+    case 'delete':
       if (!checkEmpty(newData)) {
         root = newData[0];
         treeDataList = newData.slice(1);

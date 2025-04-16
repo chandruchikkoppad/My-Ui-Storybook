@@ -80,9 +80,17 @@ const FileDropzone: React.FC<FileDropzoneProps> = ({
           onReplaceClick={handleReplaceClick}
           onUploadFile={onUploadFile}
           isUploadIcon={isUploadIcon}
+          error={invalidFileMessage}
+          isError={isApiResponseError}
         />
       )),
-    [acceptedFiles, handleRemoveClick, handleReplaceClick,isUploadIcon,onUploadFile]
+    [
+      acceptedFiles,
+      handleRemoveClick,
+      handleReplaceClick,
+      isUploadIcon,
+      onUploadFile,
+    ]
   );
 
   useEffect(() => {
@@ -109,7 +117,13 @@ const FileDropzone: React.FC<FileDropzoneProps> = ({
           isUploadIcon={isUploadIcon}
         />
       )),
-    [rejectedFiles, handleRemoveClick, handleReplaceClick, isUploadIcon,onUploadFile]
+    [
+      rejectedFiles,
+      handleRemoveClick,
+      handleReplaceClick,
+      isUploadIcon,
+      onUploadFile,
+    ]
   );
 
   return (

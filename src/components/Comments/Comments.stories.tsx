@@ -17,17 +17,20 @@ const meta: Meta<typeof Comments> = {
 type Story = StoryObj<typeof Comments>;
 export const basicCommentWithOutData: Story = {
   render: () => {
-    const handleCommentsDataChange = (_inputValue: string) => {
-    };
+    const handleCommentsDataChange = (_inputValue: string) => {};
 
-    const handleAddComment = (_newComment: CommentType, _parentNode: CommentType | null) => {
-    };
+    const handleAddComment = (
+      _newComment: CommentType,
+      _parentNode: CommentType | null
+    ) => {};
 
-    const handleEditComment = (_commentId: string, _updatedDescription: string, _updatedNode: CommentType | null) => {
-    };
+    const handleEditComment = (
+      _commentId: string,
+      _updatedDescription: string,
+      _updatedNode: CommentType | null
+    ) => {};
 
-    const handleDelete = (_id: string | number) => {
-    };
+    const handleDelete = (_id: string | number) => {};
 
     return (
       <Comments
@@ -41,25 +44,20 @@ export const basicCommentWithOutData: Story = {
   },
 };
 
-
 export const basicCommentWithData: Story = {
   render: () => {
-    const handleCommentsDataChange = (_inputValue: string) => {
-    };
+    const handleCommentsDataChange = (_inputValue: string) => {};
     const handleAddComment = (
       _newComment: CommentType,
       _parentNode: CommentType | null
-    ) => {
-    };
+    ) => {};
 
     const handleEditComment = (
       _commentId: string,
       _updatedDescription: string,
       _updatedNode: CommentType | null
-    ) => {
-    };
-    const handleDelete = (_id: string | number) => {
-    };
+    ) => {};
+    const handleDelete = (_id: string | number) => {};
     return (
       <Comments
         isDisable

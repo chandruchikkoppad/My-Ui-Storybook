@@ -15,8 +15,8 @@ type Story = StoryObj<typeof ProgressBar>;
 
 export const DashBoardProgressBar: Story = {
   args: {
-    progressPercentage: 75,
     color: 'var(--brand-color)',
-    label: '200 MB',
+    totalMemory: '1 GB',
+    usedMemory:  '200 MB',
   },
 };

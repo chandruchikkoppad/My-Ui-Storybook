@@ -36,7 +36,7 @@ export const DefaultPrompt: Story = {
           iconWidth={24}
           iconColor="var(--brand-color)"
           value={promptValue}
-          onChange={handlePromptChange}
+          onPromptChange={handlePromptChange}
           submitPrompt={() => alert('enter button clicked')}
         />
       </div>

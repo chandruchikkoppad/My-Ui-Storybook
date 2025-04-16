@@ -88,4 +88,12 @@ export const NotExecuted: Story = {
   },
 };
 
+export const Default: Story = {
+  args: {
+    ...defaultArgs,
+    label: 'Any Status',
+    status: 'default',
+  },
+};
+
 export default meta;

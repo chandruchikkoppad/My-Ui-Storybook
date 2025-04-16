@@ -110,6 +110,7 @@ $blue-theme: (
   checkbox-border-color: #b5b5b5,
   checkbox-partial-color: #ffffff,
   checkbox-hover-color: #f7edff,
+  checkbox-hover-box-shadow-color: #c6bccc,
   multi-select-border: #a3a3a380,
   multi-select-label-bg: #ffffff,
   text-color-light: #1e161f80,
@@ -151,7 +152,8 @@ $blue-theme: (
   status-button-bg-terminated: #f7d9d9,
   status-button-bg-partiallyExecuted: #dee7f1,
   status-button-bg-aborted: #f7d9d9,
-  status-button-bg-notExecuted:#C4C3C3,
+  status-button-bg-notExecuted: #c4c3c3,
+  status-button-bg-default: #f5f5f5,
   status-button-text-passed: #016102,
   status-button-text-failed: #c50303,
   status-button-text-running: #434db8,
@@ -160,7 +162,8 @@ $blue-theme: (
   status-button-text-terminated: #c50303,
   status-button-text-partiallyExecuted: #0d69d4,
   status-button-text-aborted: #c50303,
-  status-button-text-notExecuted:#3C3838,
+  status-button-text-notExecuted: #3c3838,
+  status-button-text-default: #757575,
   // TODO:: Need to change the color code values of below 7 color (N/A in DS)
   ff-select-option-border-color: #c2d2fb,
   ff-select-option-wrapper-box-shadow: #592f7c33,
@@ -203,6 +206,7 @@ $blue-theme: (
   details-page-value-color: #808080,
   table-header-text-color: #3c3838,
   table-column-text-color: #3c3838,
+  line-loader-bg-color: #191919,
   // TODO:: Need to change the color code values of below 7 color (N/A in DS)
   ff-machine-input-field-border-color: #f1ebf2,
   ff-machine-input-field-text-color: #1e161f,
@@ -224,6 +228,8 @@ $blue-theme: (
   delete-icon-color: #e42525,
   ff-icon-hover-fill-color: #edecf8,
   ff-icon-color-dark-variant: #ffffff,
+  ff-icon-hover-color-dark-variant: #f7ecf8,
+  ff-icon-selected-color: #f7ecf8,
   ff-icon-color-danger-variant: #a912241a,
   ff-avatar-background-color: #434db8,
   ff-avatar-icon-color: #ffffff,
@@ -299,6 +305,8 @@ $blue-theme: (
   ai-search-icon-color: #bcbcbc,
   default-chip-count-background-color: #f4e7f4,
   chatbot-icon-hover-color: #f4cbfa,
+  state-dropdown-bg-color: #dcd1e5,
+  disable-icon-btn-bg-color: #9747ff,
 
   select-chart-highlight-color: #00000066,
   partially-failures: #ffe207,
@@ -309,6 +317,11 @@ $blue-theme: (
   line-chart-data: #4c90ff,
   step-group-card-background: linear-gradient(to right, #3e11f3, #ff00e1),
   step-group-disclaimer-background: #ff8b0033,
+  media-preview-corner-gradient:
+    linear-gradient(to left bottom, #5e5e5e 0%, #c4c4c400 45%),
+  ai-prompt-input-bg-shadow: #71347b99,
+  ai-prompt-input-border: #a98db5,
+  selenium-icon-color: #2cb134,
 );
 
 :root {

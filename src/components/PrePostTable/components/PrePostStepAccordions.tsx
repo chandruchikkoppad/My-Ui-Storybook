@@ -18,7 +18,7 @@ const PrePostStepAccordions: FC<PrePostStepAccordionsProps> = ({
   const marginLeft = `${8 * level}px`;
 
   const getPadding = useCallback(
-    (type: string) => (['PRE', 'POST'].includes(type) ? '4px 8px' : '7px 8px'),
+    (type: string) => (['PRE', 'POST','Group'].includes(type) ? '6px 8px' : '7px 8px'),
     []
   );
 
@@ -51,14 +51,14 @@ const PrePostStepAccordions: FC<PrePostStepAccordionsProps> = ({
                         {item.displayOrder}.{truncateText(item.name, 40)}
                       </Typography>
                     </Tooltip>
-                    {['PRE', 'POST'].includes(item.type) && (
+                    {['PRE', 'POST','Group'].includes(item.type) && (
                       <div className={`pre-accordion-arrow ${isExpanded ? 'expanded' : ''}`}>
                         <Icon
                           name="arrow_right"
                           className="pre-arrow-svg"
                           color={isExpanded ? 'var(--brand-color)' : 'var(--default-color)'}
-                          width={16}
-                          height={16}
+                          width={12}
+                          height={12}
                           onClick={() => handleStepGroupExpand?.(item)}
                         />
                       </div>

@@ -40,7 +40,7 @@ export const handleTreeNodeSect = (
     if (!node) return 'none';
 
     const totalChildren =
-      (node.resourceCount ?? 0) + (node.subContainerCount ?? 0);
+      (node.resourceCount ?? 0) + (node.subContainerCount ?? 0) + (node.conditionCount ?? 0);
 
     if (totalChildren === 0) {
       // Leaf node: use its own selected status

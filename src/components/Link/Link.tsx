@@ -14,8 +14,9 @@ const Link = forwardRef<HTMLInputElement, LinkProps>(
       name = '',
       label,
       disabled = false,
+      disableLinkIcon = false,
       required = false,
-      placeholder = 'Enter input',
+      placeholder = 'Attach Link',
       value,
       error,
       helperText,
@@ -33,6 +34,7 @@ const Link = forwardRef<HTMLInputElement, LinkProps>(
       isLabelRequired = true,
       onClick,
       onKeyUp,
+      isViewMode = false,
       ...props
     },
     ref
@@ -102,7 +104,7 @@ const Link = forwardRef<HTMLInputElement, LinkProps>(
               `${className}`
             )}
             placeholder={placeholder}
-            disabled={disabled}
+            disabled={isViewMode || disabled}
             onChange={onChange}
             onFocus={onFocus}
             onBlur={onBlur}
@@ -117,7 +119,11 @@ const Link = forwardRef<HTMLInputElement, LinkProps>(
 
           <div className="input-link-icon">
             <Tooltip title="Click here to navigate">
-              <Icon name="link" onClick={error ? () => {} : handleClickLink} />
+              <Icon
+                name="link"
+                disabled={error || !isValueFilled || disableLinkIcon}
+                onClick={error ? () => {} : handleClickLink}
+              />
             </Tooltip>
           </div>
         </div>

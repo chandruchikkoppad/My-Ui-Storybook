@@ -1,7 +1,11 @@
 export interface AttachmentUploaderProps {
   label: string;
   selectedFiles: File[];
-  onFilesChange: (files: File[]) => void;
+  onFilesChange: (
+    files: File[],
+    selectedFile?: File[],
+    changeType?: 'ADD' | 'DELETE'
+  ) => void;
   disabled?: boolean;
   maxFileSizeMB?: number;
   maxFiles?: number;
@@ -17,4 +21,9 @@ export interface AttachmentUploaderProps {
   buttonDisplayType?: 'attachment' | 'icon';
   isInfoIconRequired?: boolean;
   multiple?: boolean;
+  attachmentInfoTooltip?: string;
+  selectedFileMessage?: string;
+  required?: boolean;
+  errorMessage?: string;
+  onBlur?: (event?: React.FocusEvent<HTMLInputElement>) => void;
 }

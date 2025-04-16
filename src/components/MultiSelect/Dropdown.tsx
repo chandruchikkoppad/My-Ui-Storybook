@@ -1,4 +1,4 @@
-import { forwardRef, useContext, useMemo } from 'react';
+import { forwardRef, useContext, useEffect, useMemo, useState } from 'react';
 import { dropdownDefaultCSSData, DropdownProps } from './dropdownTypes';
 import './Dropdown.scss';
 import { ThemeContext } from '../ThemeProvider/ThemeProvider';
@@ -14,6 +14,7 @@ import {
 } from '../../utils/getSelectOptionValue/getSelectOptionValue';
 import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
 import type { Option } from './MultiSelectTypes';
+import { useKeyboardActions } from '../../utils/keyBoardActionUtil/UseKeyboardActions';
 
 const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
   (
@@ -26,6 +27,7 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
       withSelectButton,
       labelAccessor = 'label',
       valueAccessor = 'value',
+      searchAccessor = valueAccessor,
       loadMoreOptions,
       isAllSelected,
       onToggleAllSelect,
@@ -33,12 +35,14 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
       maxDropdownHeight: _maxDropdownHeight,
       variant,
       handleIconClick,
+      noResultsMessage,
     },
     ref
   ) => {
+    const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
     const filteredOptions = options
       ? options.filter((option) =>
-          getValue(option, valueAccessor)
+          getValue(option, searchAccessor)
             ?.toLowerCase()
             .includes(searchedKeyword.toLowerCase())
         )
@@ -95,6 +99,52 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
         }
       },
     });
+    useKeyboardActions([
+      {
+        key: 'ArrowDown',
+        action: () => {
+          setFocusedIndex((prev) =>
+            prev === null ? 0 : (prev + 1) % filteredOptions.length
+          );
+        },
+      },
+      {
+        key: 'ArrowUp',
+        action: () => {
+          setFocusedIndex((prev) =>
+            prev === null
+              ? filteredOptions.length - 1
+              : (prev - 1 + filteredOptions.length) % filteredOptions.length
+          );
+        },
+      },
+      {
+        key: 'Enter',
+        action: () => {
+          if (focusedIndex !== null) {
+            handleOptionChange(
+              filteredOptions[focusedIndex] as Option[],
+              !filteredOptions[focusedIndex]?.isChecked
+            );
+          }
+        },
+      },
+    ]);
+
+    useEffect(() => {
+      if (focusedIndex !== null) {
+        const optionElement = document.querySelector(
+          `.dropdown-option-container:nth-child(${focusedIndex + 1})`
+        );
+
+        if (optionElement) {
+          optionElement.scrollIntoView({
+            behavior: 'smooth',
+            block: 'nearest',
+          });
+        }
+      }
+    }, [focusedIndex]);
 
     return (
       <div
@@ -131,7 +181,7 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
               </Typography>
             ) : (
               <Typography textAlign="center" as="p" className="no-options">
-                No Result Found
+                {noResultsMessage || 'No Result Found'}
               </Typography>
             )
           ) : (
@@ -148,11 +198,14 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
                 </div>
               )}
 
-              {filteredOptions.map((info: Option) => (
+              {filteredOptions.map((info: Option, index) => (
                 <div
                   role="option"
-                  className={`dropdown-option-container`}
+                  className={`dropdown-option-container${
+                    info.isDisabled ? ' disabled' : ''
+                  } ${focusedIndex === index ? 'focused' : ''}`}
                   key={getLabel(info, labelAccessor)}
+                  onMouseEnter={() => setFocusedIndex(null)}
                   onClick={(e: React.MouseEvent<HTMLDivElement>) => {
                     const target = e.target as HTMLInputElement;
                     if (target.type === 'checkbox') {

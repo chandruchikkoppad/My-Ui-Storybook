@@ -497,6 +497,46 @@ const ColorPalette: ColorPaletteType = [
     colorCode: ' #FF8B0033',
     variable: 'step-group-disclaimer-background',
   },
+  {
+    name: 'state dropdown bg color',
+    colorCode: ' #dcd1e5',
+    variable: 'state-dropdown-bg-color',
+  },
+  {
+    name: 'checkbox hover box shadow color',
+    colorCode: ' #c6bccc',
+    variable: 'checkbox-hover-box-shadow-color',
+  },
+  {
+    name: 'disable icon btn bg color',
+    colorCode: ' #9747FF',
+    variable: 'state-dropdown-bg-color',
+  },
+  {
+    name: 'media preview corner gradient',
+    colorCode: 'linear-gradient(to left bottom, #5e5e5e 0%, #c4c4c400 45%)',
+    variable: 'media-preview-corner-gradient',
+  },
+  {
+    name: 'Ai-prompt-input-bg-shadow',
+    colorCode: '#71347b99',
+    variable: 'ai-prompt-input-bg-shadow',
+  },
+  {
+    name: 'Ai-prompt-input-border',
+    colorCode: '#a98db5',
+    variable: 'ai-prompt-input-border',
+  },
+  {
+    name: 'selenium-icon-color',
+    colorCode: ' #2cb134',
+    variable: 'selenium-icon-color',
+  },
+  {
+    name: 'line-loader-bg',
+    colorCode: '#191919',
+    variable: '--line-loader-bg',
+  },
 ];
 
 export default ColorPalette;

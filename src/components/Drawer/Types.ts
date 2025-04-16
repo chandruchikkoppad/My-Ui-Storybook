@@ -46,6 +46,10 @@ export interface DrawerProps {
    */
   onClose?: () => void;
   /**
+   * Function to go back in the drawer
+   */
+  onBackButtonClick?: () => void;
+  /**
    * Size of the drawer medium = 550px large = 850px
    */
   size?: 'small' | 'medium' | 'large' | 'x-large';
@@ -61,7 +65,7 @@ export interface DrawerProps {
    * To show the edit button on the header
    */
   showEditButton?: boolean;
-/**
+  /**
    * To show the transition effect while the drawer comes
    */
   showTransition?: boolean;
@@ -158,4 +162,11 @@ export interface DrawerProps {
    * Callback function returns a boolean value when the drawer is collapsed.
    */
   onCollapse?: (value: boolean) => void;
+
+  /**This optional boolean prop determines whether the drawer body displays a scrollbar when its content overflows. */
+  isScrollBar?: boolean;
+  /**
+   *To  Close the drawer when clicking outside of it.
+   */
+  isClickOutside?: boolean;
 }

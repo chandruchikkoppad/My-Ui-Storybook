@@ -65,7 +65,7 @@ const useFileDropzone = (options: DropzoneOptions): DropzoneState => {
             code: 'file-invalid-type',
           });
         }
-      } else if (accept && !accept.includes(extensionWithPeriod)) {
+      } else if (accept && !accept.includes(extensionWithPeriod) || isApiResponseError) {
         errors.push({
           message: invalidFileMessage
             ? invalidFileMessage

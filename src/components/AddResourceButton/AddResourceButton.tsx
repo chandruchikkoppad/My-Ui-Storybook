@@ -78,7 +78,8 @@ const AddResourceButton = ({
       .map((arrow: { direction: string }) => arrow.direction)
       .sort()
       .join('-');
-    return `ff-${directions}`;
+    const arrowCountClass = validArrows.length === 2 ? 'ff-two-arrows' : '';
+  return `ff-${directions} ${arrowCountClass}`;
   };
 
   return (

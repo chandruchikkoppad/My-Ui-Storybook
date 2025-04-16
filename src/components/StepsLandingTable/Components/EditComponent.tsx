@@ -3,8 +3,9 @@ import Button from '../../Button';
 import Typography from '../../Typography';
 import Select from '../../Select';
 import Form from '../../Form/Forms';
-import './StepInnerTable.scss';
 import { FormValues } from './Types';
+import './EditComponent.scss';
+import Icon from '../../Icon';
 
 //?DEMO COMPONENT
 const EditComponent = ({ rowData, rowIndex, handleAdd, handleCancel }: any) => {
@@ -14,17 +15,19 @@ const EditComponent = ({ rowData, rowIndex, handleAdd, handleCancel }: any) => {
   return (
     <section className={'edit_depends_on_script'}>
       <header className={'edit_depends_on_script__header'}>
-        <div>
-          <Typography color="var(--nlp-option-color)" lineHeight="18px">
+        <div className="edit_depends_on_script__header_text">
+          <Typography
+            as="div"
+            color="var(--nlp-option-color)"
+            lineHeight="18px"
+          >
             {rowIndex}.{rowData?.name}
           </Typography>
+          <Icon name="go_to_script" />
         </div>
-        <div className={'edit_depends_on_script__header__link'}>
-          <Typography
-            children="Go to script"
-            color="var(--nlp-color)"
-            fontWeight="semi-bold"
-          />
+        <div className={'edit_depends_on_script__header_buttons'}>
+          <Button variant="tertiary" children="Cancel" onClick={handleCancel} />
+          <Button variant="primary" type="submit" label="Update" />
         </div>
       </header>
       <Form<FormValues>
@@ -64,14 +67,6 @@ const EditComponent = ({ rowData, rowIndex, handleAdd, handleCancel }: any) => {
                   trigger('ifFailed');
                 }}
               />
-              <div className={'edit_depends_on_script__form__button'}>
-                <Button
-                  variant="tertiary"
-                  children="Cancel"
-                  onClick={handleCancel}
-                />
-                <Button variant="primary" type="submit" label="Update" />
-              </div>
             </div>
           );
         }}

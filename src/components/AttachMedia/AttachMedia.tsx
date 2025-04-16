@@ -14,6 +14,8 @@ const AttachMedia: React.FC<AttachMediaProps> = ({
   height = '75px',
   width = '79px',
   fileName,
+  thumbnailMediaSrc,
+  isDelete,
 }) => {
   const handleDeleteClick = () => {
     if (onDeleteClick) {
@@ -23,7 +25,10 @@ const AttachMedia: React.FC<AttachMediaProps> = ({
   return (
     <div className="ff-attach-media-container" style={{ height, width }}>
       <div className="ff-media-wrapper" style={{ height, width }}>
-        <img src={mediaSrc} alt="Attached" />
+        <img
+          src={thumbnailMediaSrc ? thumbnailMediaSrc : mediaSrc}
+          alt="Attached"
+        />
         <div className="ff-hover-icons">
           <div className="ff-top-icons">
             <div className="ff-icon-container">
@@ -37,17 +42,19 @@ const AttachMedia: React.FC<AttachMediaProps> = ({
                 />
               </Tooltip>
             </div>
-            <div className="ff-icon-container">
-              <Tooltip title="Delete" placement="bottom">
-                <Icon
-                  name="delete"
-                  height={10}
-                  width={10}
-                  color="var(--ff-delete-button-attachment)"
-                  onClick={handleDeleteClick}
-                />
-              </Tooltip>
-            </div>
+            {isDelete && (
+              <div className="ff-icon-container">
+                <Tooltip title="Delete" placement="bottom">
+                  <Icon
+                    name="delete"
+                    height={10}
+                    width={10}
+                    color="var(--ff-delete-button-attachment)"
+                    onClick={handleDeleteClick}
+                  />
+                </Tooltip>
+              </div>
+            )}
           </div>
           <div className="ff-expand-icon-container">
             <Tooltip title="Maximize" placement="bottom">

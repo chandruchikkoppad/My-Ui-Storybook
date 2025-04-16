@@ -122,6 +122,7 @@ $dark-theme: (
   checkbox-border-color: #b5b5b5,
   checkbox-partial-color: #ffffff,
   checkbox-hover-color: #f7edff,
+  checkbox-hover-box-shadow-color: #c6bccc,
   multi-select-border: #a3a3a380,
   multi-select-label-bg: #ffffff,
   text-color-light: #1e161f80,
@@ -153,7 +154,8 @@ $dark-theme: (
   status-button-bg-terminated: #f7d9d9,
   status-button-bg-partiallyExecuted: #dee7f1,
   status-button-bg-aborted: #f7d9d9,
-  status-button-bg-notExecuted:#C4C3C3,
+  status-button-bg-notExecuted: #c4c3c3,
+  status-button-bg-default: #f5f5f5,
   status-button-text-passed: #016102,
   status-button-text-failed: #c50303,
   status-button-text-running: #434db8,
@@ -162,8 +164,8 @@ $dark-theme: (
   status-button-text-terminated: #c50303,
   status-button-text-partiallyExecuted: #0d69d4,
   status-button-text-aborted: #c50303,
-  status-button-text-notExecuted:#3C3838,
-
+  status-button-text-notExecuted: #3c3838,
+  status-button-text-default: #757575,
   // TODO:: Need to change the color code values of below 10 color (N/A in DS)
   ff-select-option-border-color: #ded1e5,
   ff-select-option-wrapper-box-shadow: #592f7c33,
@@ -242,11 +244,14 @@ $dark-theme: (
     linear-gradient(90deg, #592f7c 0%, #741ebb 100%),
   table-header-text-color: #252c37,
   table-column-text-color: #200624,
+  line-loader-bg-color: #191919,
   ff-delete-button-attachment: #a91224,
   email-table-border-color: #959595,
   ff-icon-hover-fill-color: #f7ecf8,
   ff-icon-color-danger-variant: #a912241a,
   ff-icon-color-dark-variant: #ffffff,
+  ff-icon-hover-color-dark-variant: #f7ecf8,
+  ff-icon-selected-color: #f7ecf8,
   avatar-background-color: #71347b,
   avatar-icon-color: #ffffff,
 
@@ -374,12 +379,19 @@ $dark-theme: (
   testcase-bg: #fbfcfd,
   testcase-status-color: #b73e3e,
   ai-prompt-bg: #fbf5ff,
+  state-dropdown-bg-color: #dcd1e5,
+  disable-icon-btn-bg-color: #9747ff,
 
   postman-color: #fd6c35,
   export-collection-bg: #faf4fe,
   ff-app-header-item-shadow-color: #00000029,
   step-group-card-background: linear-gradient(to right, #3e11f3, #ff00e1),
   step-group-disclaimer-background: #ff8b0033,
+  media-preview-corner-gradient:
+    linear-gradient(to left bottom, #5e5e5e 0%, #c4c4c400 45%),
+  ai-prompt-input-bg-shadow: #71347b99,
+  ai-prompt-input-border: #a98db5,
+  selenium-icon-color: #2cb134,
 );
 
 :root {

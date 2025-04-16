@@ -28,7 +28,13 @@ export type CellBase<Value = any> = {
 
 type InputType = {
   type: 'dropDown' | 'text' | 'file';
-  options?: { disable: boolean; label: string; name: string; value: string }[];
+  options?: {
+    disable: boolean;
+    label: string;
+    name: string;
+    value: string;
+    color: string;
+  }[];
   inputProps?: {};
 };
 
@@ -168,6 +174,7 @@ export type TableProps = React.PropsWithChildren<{
   columns: number;
   /** Whether column indicators are hidden */
   hideColumnIndicators?: boolean | null;
+  useTableRef: (ref: React.RefObject<HTMLTableElement>) => void;
 }>;
 
 /** Type of the Spreadsheet Table component */
@@ -209,14 +216,11 @@ export type RowIndicatorProps = {
 
   rowContextEnable: boolean;
   cell?: CellBase;
+  selectedRow?: number;
 };
 
 export type ContextMenuState = {
   open: boolean;
-  position: {
-    x: number;
-    y: number;
-  };
   options: optionsType[];
 };
 
@@ -235,6 +239,7 @@ export type RowIndicatorComponent = React.ComponentType<RowIndicatorProps>;
 export type ColumnIndicatorProps = {
   /** The column the indicator indicates */
   column: number;
+  minimumColumnWidth: number;
   /** A custom label for the indicator as provided in columnLabels */
   label?: React.ReactNode | null;
   /** Whether the entire column in selected */
@@ -253,6 +258,7 @@ export type ColumnIndicatorProps = {
   addColumnRight: () => void;
   columnContextEnable: boolean;
   cell?: CellBase;
+  selectedColumn?: number;
 };
 
 /** Type of the ColumnIndicator component */
@@ -277,3 +283,23 @@ export type CommitChanges<Cell extends CellBase = CellBase> = Array<{
 }>;
 
 export type CreateFormulaParser = (data: Matrix<CellBase>) => void;
+
+export type AttachmentApi = {
+  createdBy?: string;
+  modifiedBy?: string;
+  createdByUname?: string;
+  modifiedByUname?: string;
+  createdOn?: string;
+  modifiedOn?: string;
+  state?: string;
+  searchKey?: string;
+  parentId?: string;
+  sourceId?: string;
+  inputAction?: string;
+  id: string;
+  name: string;
+  projectId?: string;
+  folder?: boolean;
+  executionOrder?: number;
+  imported?: boolean;
+};

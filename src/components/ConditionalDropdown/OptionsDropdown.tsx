@@ -10,6 +10,7 @@ const OptionsDropdown:FC<OptionsDropdownProps> = ({
     filteredOptions= [],
     position = 'relative',
     width = '300px',
+    zIndex = 1000,
   }): ReactNode => {
     return (
       <div
@@ -20,8 +21,9 @@ const OptionsDropdown:FC<OptionsDropdownProps> = ({
                 top: dropdownPosition.top + 30,
                 left: dropdownPosition.left - 30,
                 width,
+                zIndex,
               }
-            : { width }
+            : { width,zIndex }
         }
       >
         {filteredOptions?.map((option: dynamicObject): ReactNode => {

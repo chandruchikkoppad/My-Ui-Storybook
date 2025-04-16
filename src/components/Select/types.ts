@@ -1,5 +1,4 @@
 import { ReactNode } from 'react';
-
 export interface SelectProps {
   /*
    * Label for the select dropdown
@@ -34,10 +33,6 @@ export interface SelectProps {
    * If error is true, this message will be displayed
    */
   errorMsg?: string;
-  /*
-   * optional 'error' prop to show error state
-   */
-  error?: boolean;
 
   /*
    * provide the className for the select dropdown
@@ -57,7 +52,7 @@ export interface SelectProps {
   /*
    * Provide disable prop for the providing border radius at right side
    */
-  borderRadius?: boolean;
+  borderRadius?: string;
 
   /*
    * Provide boolean value to show border or not
@@ -92,7 +87,7 @@ export interface SelectProps {
   /*
    * Provide the custom height for the select container
    */
-  height?: number;
+  height?: number ;
 
   /*
    * Provide the custom width for the select container
@@ -162,8 +157,26 @@ export interface SelectProps {
    * Tooltip for input data
    */
   tooltip?: boolean;
-}
 
+  /**
+   * Provide the boolean value if close icon is reuired or not
+   */
+  showClearIcon?: boolean;
+
+  /**
+   * Handel function for clearing the selected data
+   */
+  handelClear?: () => void;
+
+  /**
+   * Handle background color
+   */
+  background?: string;
+ /**
+   * No Result message
+   */
+  noResultsMessage?: string;
+}
 export interface DropdownPosition {
   positionX: number;
   positionY: number;

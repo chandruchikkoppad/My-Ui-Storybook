@@ -32,6 +32,10 @@ export interface LinkProps {
    */
   disabled?: boolean;
   /**
+ * to disable the link icon
+ */
+  disableLinkIcon?: boolean;
+  /**
    * if true, input field will be mandatory
    */
   required?: boolean;
@@ -91,4 +95,7 @@ export interface LinkProps {
    * isLabelRequired for the input field without label,showing placeholder
    */
   isLabelRequired?: boolean;
+
+  // If isViewMode is true, then input field is not editable but Icon is clickable
+  isViewMode?: boolean;
 }

@@ -1,8 +1,8 @@
 import React from 'react';
-import RadioButton from '../RadioButton/RadioButton'; // Adjust the import path as necessary
 import './RadioGroup.scss';
 import classNames from 'classnames';
 import Typography from '../Typography';
+import RadioButton from '../RadioButton';
 
 const RadioGroup: React.FC<RadioGroupProps> = ({
   options,
@@ -50,7 +50,9 @@ const RadioGroup: React.FC<RadioGroupProps> = ({
             tooltipPosition={option?.tooltipPosition}
             name={name}
             value={option.value}
-            checked={selectedValue === option.value}
+            checked={
+              selectedValue?.toLowerCase() === option.value?.toLowerCase()
+            }
             onChange={() => onChange?.(option)}
             disabled={disabled || option.disabled}
           />

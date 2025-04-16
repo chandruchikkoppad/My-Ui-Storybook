@@ -1,6 +1,5 @@
 import React from 'react';
 import './RadioButton.scss';
-import classNames from 'classnames';
 import Tooltip from '../Tooltip';
 import Typography from '../Typography';
 import RadioButtonProps from './radioButtonTypes';
@@ -25,9 +24,7 @@ const RadioButton: React.FC<RadioButtonProps> = ({
         event.stopPropagation()
       }
     >
-      <label
-        className={classNames('ff-radio', { 'ff-radio--disabled': disabled })}
-      >
+      <label className={`ff-radio ${disabled ? 'ff-radio--disabled' : ''}`}>
         <input
           disabled={disabled}
           type="radio"
@@ -38,7 +35,9 @@ const RadioButton: React.FC<RadioButtonProps> = ({
           onBlur={onBlur}
           className="ff-radio-input"
         />
-        <span className="ff-radio-custom" />
+        <div className="ff-radio-custom">
+          <div className="ff-radio-custom-fill"></div>
+        </div>
         <Typography color="var(--text-color)" children={label} />
       </label>
       {showTooltip && (

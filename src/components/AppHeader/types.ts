@@ -2,13 +2,13 @@ import { ReactNode } from 'react';
 import { optionsType } from '../AllProjectsDropdown/types';
 export interface AppHeaderProps {
   width?: string;
-  borderRadius?:string;
+  borderRadius?: string;
   logoIconName: string;
   leftContent?: ReactNode;
   rightContent?: ReactNode;
   projectsList?: optionsType[];
   appHeaderMenuItems: appHeaderMenuItemProps[];
-  appHeaderHiddenMenuItems?: appHeaderHiddenMenuItemProps[];
+  appHeaderHiddenMenuItems?: appHeaderMenuItemProps[];
   selectedMenu: string;
   selectedSubMenu?: string;
   selectedQuickMenu?: string;
@@ -18,16 +18,19 @@ export interface AppHeaderProps {
   onQuickMenuClick?: (text: any) => void;
   onProjectMenuClick?: (text: any) => void;
   onProjectDropdownLabelClick?: () => void;
-  onMoreMenuOptionClick?: (text: any) => void;
-  disabled?:boolean;
+  onMoreMenuOptionClick?: (text: any, callback: () => void) => void;
+  disabled?: boolean;
 }
 export interface appHeaderMenuItemProps {
+  iconName?: string;
   label: string;
   path?: string;
   disable?: boolean;
   disableText?: string;
   hide?: boolean;
   access?: string;
+  isReviewer?:  boolean;
+  entityPendingCounts?: { [key: string]: number };
   subMenuItems?: appHeaderSubMenuItemProps[];
 }
 export interface appHeaderSubMenuItemProps {

@@ -51,4 +51,6 @@ export interface AccordionProps {
   className?: string;
 
   iconColor?: string;
+
+  highlightText?: string;
 }

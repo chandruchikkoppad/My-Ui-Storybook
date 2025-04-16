@@ -159,7 +159,7 @@ const ExcelToolBar: React.FC<ExcelToolBarProps> = ({
               disabled={disable}
               height={24}
               showLabel={false}
-              optionZIndex={1000}
+              optionZIndex={2000}
               onChange={(e) => {
                 setSelectedFontFamily({ label: e.label, value: e.label });
                 setFontFamily(data, e.value);
@@ -176,7 +176,7 @@ const ExcelToolBar: React.FC<ExcelToolBarProps> = ({
               disabled={disable}
               height={24}
               showLabel={false}
-              optionZIndex={1000}
+              optionZIndex={2000}
               required={false}
               onChange={(e) => {
                 setSelectedFontSize({ label: e.label, value: e.value });
@@ -323,7 +323,7 @@ const ExcelToolBar: React.FC<ExcelToolBarProps> = ({
                 iconName="arrow_down"
                 targetRef={borderMenuRef}
                 iconSize={12}
-                zIndex={1000}
+                zIndex={2000}
                 options={borderTypeIcon}
                 tooltipPlacement="top"
                 onOptionClick={(e) => {

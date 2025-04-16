@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { useEffect, useState } from 'react';
 import { StoryObj, Meta } from '@storybook/react';
 import Table from './Table';
@@ -8,6 +8,8 @@ import EditComponent from './EditComponent';
 import { DynamicObj } from '../CreateVariable/types';
 import { FormValues } from './Types';
 import Typography from '../Typography';
+import Button from '../Button';
+
 const meta: Meta<typeof Table> = {
   title: 'Components/Table',
   component: Table,
@@ -764,14 +766,25 @@ export const ScrollToCallBack: Story = {
         width: '20%',
       },
     ];
+    const tableRef = useRef<HTMLTableSectionElement>(null);
+
+    const scrollFun = () => {
+      if (tableRef.current) {
+        const tableCurrent = tableRef.current;
+        tableCurrent.scrollTop = tableCurrent.scrollHeight;
+      }
+    };
 
     return (
       <>
+        <Button variant="primary" label="Click To Scroll" onClick={scrollFun} />
+
         <Table
           data={SampleData || []}
           columns={columnsData}
           headerType="secondary"
           withFixedHeader
+          tableRef={tableRef}
           noDataContent={
             <Typography
               fontWeight="semi-bold"

@@ -30,6 +30,11 @@ const defaultArgs = {
 };
 const projectList = [
   {
+    label: 'All Projects',
+    value: 'All Projects',
+    iconName: 'all_projects',
+  },
+  {
     label: 'test',
     value: 'test',
     iconName: 'web_icon',
@@ -94,53 +99,17 @@ const headerMenuItems = [
       {
         label: 'Elements',
         path: '/repository/elements',
-        hiddenMenuItems: [
-          { label: 'Defects', value: 'Defects', icon: 'defects' },
-          {
-            label: 'Configuration',
-            value: 'Configuration',
-            icon: 'configuration',
-          },
-          {
-            label: 'Approval Request',
-            value: 'Approval Request',
-            icon: 'approval_pending',
-          },
-        ],
+        
       },
       {
         label: 'Program Elements',
         path: '/repository/program-elements',
-        hiddenMenuItems: [
-          { label: 'Defects', value: 'Defects', icon: 'defects' },
-          {
-            label: 'Configuration',
-            value: 'Configuration',
-            icon: 'configuration',
-          },
-          {
-            label: 'Approval Request',
-            value: 'Approval Request',
-            icon: 'approval_pending',
-          },
-        ],
+        
       },
       {
         label: 'Step Groups',
         path: '/repository/step-group',
-        hiddenMenuItems: [
-          { label: 'Defects', value: 'Defects', icon: 'defects' },
-          {
-            label: 'Configuration',
-            value: 'Configuration',
-            icon: 'configuration',
-          },
-          {
-            label: 'Approval Request',
-            value: 'Approval Request',
-            icon: 'approval_pending',
-          },
-        ],
+        
         quickMenuItems: [
           { label: 'Elements', path: '#elements', iconName: 'element' },
           {
@@ -176,19 +145,7 @@ const headerMenuItems = [
       {
         label: 'Scripts',
         path: '/test-dev/scripts',
-        hiddenMenuItems: [
-          { label: 'Defects', value: 'Defects', icon: 'defects' },
-          {
-            label: 'Configuration',
-            value: 'Configuration',
-            icon: 'configuration',
-          },
-          {
-            label: 'Approval Request',
-            value: 'Approval Request',
-            icon: 'approval_pending',
-          },
-        ],
+        
         quickMenuItems: [
           { label: 'Elements', path: '#elements', iconName: 'element' },
           {
@@ -239,13 +196,7 @@ const headerMenuItems = [
       {
         label: 'Suites',
         path: '/suites/suites',
-        hiddenMenuItems: [
-          {
-            label: 'Approval Request',
-            value: 'Approval Request',
-            icon: 'approval_pending',
-          },
-        ],
+        
         quickMenuItems: [
           {
             label: 'Test Data Set',
@@ -304,70 +255,22 @@ const headerMenuItems = [
       {
         label: 'Environment Config.',
         path: '',
-        hiddenMenuItems: [
-          { label: 'Web Service', value: 'Web Service', icon: 'defects' },
-          {
-            label: 'Configuration',
-            value: 'Configuration',
-            icon: 'configuration',
-          },
-          {
-            label: 'Approval Request',
-            value: 'Approval Request',
-            icon: 'approval_pending',
-          },
-        ],
+        
       },
       {
         label: 'Execution Config.',
         path: '',
-        hiddenMenuItems: [
-          { label: 'Web Service', value: 'Web Service', icon: 'defects' },
-          {
-            label: 'Configuration',
-            value: 'Configuration',
-            icon: 'configuration',
-          },
-          {
-            label: 'Approval Request',
-            value: 'Approval Request',
-            icon: 'approval_pending',
-          },
-        ],
+        
       },
       {
         label: 'User Management',
         path: '',
-        hiddenMenuItems: [
-          { label: 'Web Service', value: 'Web Service', icon: 'defects' },
-          {
-            label: 'Configuration',
-            value: 'Configuration',
-            icon: 'configuration',
-          },
-          {
-            label: 'Approval Request',
-            value: 'Approval Request',
-            icon: 'approval_pending',
-          },
-        ],
+        
       },
       {
         label: 'Templates',
         path: '',
-        hiddenMenuItems: [
-          { label: 'Web Service', value: 'Web Service', icon: 'defects' },
-          {
-            label: 'Configuration',
-            value: 'Configuration',
-            icon: 'configuration',
-          },
-          {
-            label: 'Approval Request',
-            value: 'Approval Request',
-            icon: 'approval_pending',
-          },
-        ],
+        
       },
     ],
   },
@@ -378,15 +281,7 @@ const headerMenuItems = [
       {
         label: 'Scripts',
         path: '',
-        hiddenMenuItems: [
-          { label: 'Web Service', value: 'Web Service', icon: 'defects' },
-          { label: 'Defects', value: 'Defects', icon: 'defects' },
-          {
-            label: 'Configuration',
-            value: 'Configuration',
-            icon: 'configuration',
-          },
-        ],
+        
         quickMenuItems: [
           { label: 'Variables', path: '#variable', iconName: 'variable' },
           {
@@ -409,28 +304,12 @@ const headerMenuItems = [
       {
         label: 'Elements',
         path: '',
-        hiddenMenuItems: [
-          { label: 'Web Service', value: 'Web Service', icon: 'defects' },
-          { label: 'Defects', value: 'Defects', icon: 'defects' },
-          {
-            label: 'Configuration',
-            value: 'Configuration',
-            icon: 'configuration',
-          },
-        ],
+        
       },
       {
         label: 'Step Groups',
         path: '',
-        hiddenMenuItems: [
-          { label: 'Web Service', value: 'Web Service', icon: 'defects' },
-          { label: 'Defects', value: 'Defects', icon: 'defects' },
-          {
-            label: 'Configuration',
-            value: 'Configuration',
-            icon: 'configuration',
-          },
-        ],
+        
         quickMenuItems: [
           { label: 'Parameters', path: '#parameters', iconName: 'parameters' },
           { label: 'Variables', path: '#variable', iconName: 'variable' },
@@ -449,15 +328,7 @@ const headerMenuItems = [
       {
         label: 'Variables',
         path: '',
-        hiddenMenuItems: [
-          { label: 'Web Service', value: 'Web Service', icon: 'defects' },
-          { label: 'Defects', value: 'Defects', icon: 'defects' },
-          {
-            label: 'Configuration',
-            value: 'Configuration',
-            icon: 'configuration',
-          },
-        ],
+        
       },
     ],
   },
@@ -511,10 +382,8 @@ export const Controlled: Story = {
         let hiddenMenuArray: appHeaderHiddenMenuItemProps[] = [];
         if (selectedSubMenu?.hiddenMenuItems) {
           hiddenMenuArray = selectedSubMenu.hiddenMenuItems;
-          console.log('Hidden menu items:', hiddenMenuArray);
         }
         setSelectedHiddenMenuItems(hiddenMenuArray);
-        console.log('Selected main menu:', selectedSubMenu);
       }
     };
 
@@ -549,7 +418,7 @@ export const Controlled: Story = {
             onQuickMenuClick={handleQuickMenuClick}
             onProjectMenuClick={handleProjectClick}
             onProjectDropdownLabelClick={handleProjectDropdownLabelClick}
-            disabled
+            // disabled
           />
         </div>
       </>

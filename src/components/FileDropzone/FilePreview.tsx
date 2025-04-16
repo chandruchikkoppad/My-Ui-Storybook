@@ -12,6 +12,7 @@ const FilePreview: React.FC<FilePreviewProps> = ({
   onUploadFile,
   isUploadIcon,
   isRemoveDisabled = false,
+  isError=false,
 }) => {
   return (
     <div key={file.name} className="ff-file-details__item">
@@ -35,7 +36,7 @@ const FilePreview: React.FC<FilePreviewProps> = ({
               {file?.name}
             </Typography>
           </Tooltip>
-          {error && (
+          {isError && (
             <Typography
               fontSize={8}
               color={'var(--error-light)'}

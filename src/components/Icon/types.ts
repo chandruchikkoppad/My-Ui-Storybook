@@ -6,10 +6,11 @@ export interface IconProps {
   color?: string;
   onClick?: (data?: any) => void;
   hoverEffect?: boolean;
+  isSelected?: boolean;
   disabled?: boolean;
-  variant?: "dark" | "light" | 'danger';
-  x?:string;
-  y?:string;
-  chartIcon?:boolean
-  tabIndex?: number
+  variant?: 'dark' | 'light' | 'danger';
+  x?: string;
+  y?: string;
+  chartIcon?: boolean;
+  tabIndex?: number;
 }

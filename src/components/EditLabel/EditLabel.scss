@@ -11,6 +11,14 @@
       padding: 0;
       position: relative;
       justify-content: space-between;
+
+      &--danger{
+        border-color: var(--input-error-text-color);
+  
+        .ff-add-module-input {
+          border-color: var(--input-error-text-color) !important;
+        }
+      }
     }
 
     .ff-add-module-dropdown {
@@ -38,6 +46,14 @@
 
         .ff-add-module-input {
           border-color: var(--nlp-color);
+        }
+
+        &--danger{
+          border-color: var(--input-error-text-color);
+
+          .ff-add-module-input {
+            border-color: var(--input-error-text-color);
+          }
         }
       }
     }

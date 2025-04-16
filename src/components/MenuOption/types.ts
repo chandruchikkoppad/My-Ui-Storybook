@@ -16,7 +16,7 @@ interface OptionClick {
   value: any;
 }
 
-interface OptionType extends OptionClick {
+export interface OptionType extends OptionClick {
   /**
    * The name of the icon associated with the option.
    * @type {string}
@@ -34,12 +34,23 @@ interface OptionType extends OptionClick {
    * @optional
    */
   disable?: boolean;
-   /**
+  /**
    * To hide the option.
    * @type {boolean}
    * @optional
    */
   hide?: boolean;
+  tooltipForOption?: string;
+  tooltipPlacementForOption?:
+    | 'top'
+    | 'left'
+    | 'right'
+    | 'bottom'
+    | 'top-start'
+    | 'top-end'
+    | 'bottom-start'
+    | 'bottom-end'
+    | undefined;
 }
 
 interface OptionCardProps {
@@ -98,7 +109,7 @@ interface OptionCardProps {
    * @type {dropdownPosition}
    * @optional
    */
-  dropdownPlacement?: 'top' | 'down' | 'left' | 'right';
+  dropdownPlacement?: 'top' | 'down' | 'left' | 'right' | 'bottomLeft';
   /**
    * Variant for backgroung color of options card.
    * @type {string}
@@ -157,7 +168,7 @@ interface MenuOptionProps {
    * @type {dropdownPosition}
    * @optional
    */
-  dropdownPlacement?: 'top' | 'down' | 'left' | 'right';
+  dropdownPlacement?: 'top' | 'down' | 'left' | 'right' | 'bottomLeft';
 
   /**
    * The variant of the menu option, either 'dark' or 'light'.

@@ -38,6 +38,7 @@
       .ff-app-header-nav-bar-items {
         display: flex;
         align-items: center;
+        margin-right: 8px;
 
         .ff-app-header-nav-bar-item {
           margin-left: 8px;
@@ -218,6 +219,7 @@
           margin-left: 8px;
           display: flex;
           justify-content: center;
+          padding-left: 8px;
 
           .ff-app-header-more-icon {
             svg {

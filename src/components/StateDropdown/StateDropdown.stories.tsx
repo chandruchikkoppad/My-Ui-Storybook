@@ -23,7 +23,7 @@ export const Disable: Story = {
     isReviewer: true,
     isApprovePage: false,
     disabled: true,
-    showBorder: true,
+    showBorder: false,
   },
 };
 
@@ -36,6 +36,7 @@ export const Review: Story = {
     isReviewer: true,
     isApprovePage: true,
     disabled: false,
+    showBorder: false,
   },
 };
 
@@ -48,6 +49,7 @@ export const Reject: Story = {
     isReviewer: false,
     isApprovePage: false,
     disabled: false,
+    showBorder: false,
   },
 };
 
@@ -60,6 +62,7 @@ export const Approved: Story = {
     isReviewer: false,
     isApprovePage: false,
     disabled: false,
+    showBorder: false,
   },
 };
 
@@ -82,7 +85,7 @@ export const NewState: Story = {
         handleDropdownOptionsClick={handleDropdownOptionsClick}
         disabled={false}
         isOnlyReviewer={false}
-        showBorder={true}
+        showBorder={false}
       />
     );
   },

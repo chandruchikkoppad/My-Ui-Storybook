@@ -57,7 +57,6 @@ const Template: StoryFn<VariableSuggestionInputDropDownProps> = (args) => {
         onCreateVariableClick={() => setOpenCreateVariable(true)}
         ref={inputRef}
         symbol="@"
-        showAddVariableIcon
         handleClearInput={() => setInputValue('')}
       />
       {openCreateVariable && (
@@ -158,6 +157,173 @@ export const DropdownOnHash: Story = {
           label="Select Path Using #"
           placeholder="Enter # to search files"
           isHash
+          zIndex={9999}
+          truncateTextValue={34}
+          dataFiles={testData}
+          dropdownWidth="100%"
+          setHashInputValue={setHashInputValue}
+          hashInputValue={hashInputValue || {}}
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+        />
+      </>
+    );
+  },
+};
+
+export const DropdownOnHashAndDollar: Story = {
+  render: () => {
+    const [hashInputValue, setHashInputValue] =
+      useState<dynamicObject | null>();
+    const [value, setValue] = useState<string>('');
+    const testData = [
+      {
+        _id: '1',
+        name: 'File1.txt',
+        actualPath: '/documents/File1.txt',
+        searchKey: 'file1',
+        parentId: 'root',
+      },
+      {
+        _id: '2',
+        name: 'File2.doc',
+        actualPath: '/documents/File2.doc',
+        searchKey: 'file2',
+        parentId: 'root',
+      },
+      {
+        _id: '3',
+        name: 'Image1.png',
+        actualPath: '/images/Image1.png',
+        searchKey: 'image1',
+        parentId: 'folder1',
+      },
+      {
+        _id: '4',
+        name: 'Presentation.ppt',
+        actualPath: '/presentations/Presentation.ppt',
+        searchKey: 'presentation',
+        parentId: 'folder2',
+      },
+      {
+        _id: '5',
+        name: 'Spreadsheet.xlsx',
+        actualPath: '/spreadsheets/Spreadsheet.xlsx',
+        searchKey: 'spreadsheet',
+        parentId: 'folder3',
+      },
+      {
+        _id: '6',
+        name: 'Code.js',
+        actualPath: '/projects/Code.js',
+        searchKey: 'code',
+        parentId: 'folder4',
+      },
+    ];
+
+    const variableData = [
+      {
+        name: 'BrowserCapability',
+        value: '---',
+      },
+      {
+        name: 'Capability',
+        value: '---',
+      },
+      {
+        name: 'Web_HubURL',
+        value: 'http://localhost:4444/wd/hub',
+      },
+      {
+        name: 'Capability2',
+        value: '---',
+      },
+      {
+        name: 'URL',
+        value: '---',
+      },
+    ];
+
+    return (
+      <>
+        <VariableSuggestionInputDropDown
+          label="Select Path Using # or variable using $"
+          placeholder="Select Path Using # or variable using $"
+          isHash
+          zIndex={9999}
+          truncateTextValue={34}
+          dataFiles={testData}
+          dropdownWidth="100%"
+          setHashInputValue={setHashInputValue}
+          hashInputValue={hashInputValue || {}}
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          showAddVariableIcon
+          variableList={variableData}
+          handleClearInput={() => setValue('')}
+        />
+      </>
+    );
+  },
+};
+
+export const DropdownOnlyHashNoCreateVarIcon: Story = {
+  render: () => {
+    const [hashInputValue, setHashInputValue] =
+      useState<dynamicObject | null>();
+    const [value, setValue] = useState<string>('');
+    const testData = [
+      {
+        _id: '1',
+        name: 'File1.txt',
+        actualPath: '/documents/File1.txt',
+        searchKey: 'file1',
+        parentId: 'root',
+      },
+      {
+        _id: '2',
+        name: 'File2.doc',
+        actualPath: '/documents/File2.doc',
+        searchKey: 'file2',
+        parentId: 'root',
+      },
+      {
+        _id: '3',
+        name: 'Image1.png',
+        actualPath: '/images/Image1.png',
+        searchKey: 'image1',
+        parentId: 'folder1',
+      },
+      {
+        _id: '4',
+        name: 'Presentation.ppt',
+        actualPath: '/presentations/Presentation.ppt',
+        searchKey: 'presentation',
+        parentId: 'folder2',
+      },
+      {
+        _id: '5',
+        name: 'Spreadsheet.xlsx',
+        actualPath: '/spreadsheets/Spreadsheet.xlsx',
+        searchKey: 'spreadsheet',
+        parentId: 'folder3',
+      },
+      {
+        _id: '6',
+        name: 'Code.js',
+        actualPath: '/projects/Code.js',
+        searchKey: 'code',
+        parentId: 'folder4',
+      },
+    ];
+
+    return (
+      <>
+        <VariableSuggestionInputDropDown
+          label="Varaible Value"
+          placeholder="Edit Variable value or Select Path using #"
+          isHash
+          isOnlyHash={true}
           zIndex={9999}
           truncateTextValue={34}
           dataFiles={testData}

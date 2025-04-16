@@ -1,6 +1,6 @@
 import { useSortable } from '@dnd-kit/sortable';
 import classNames from 'classnames';
-import { FC, useMemo } from 'react';
+import { FC, useMemo, memo } from 'react';
 import { prepareData } from '../../../utils/TableCell/TableCell';
 import Checkbox from '../../Checkbox';
 import Icon from '../../Icon';
@@ -19,7 +19,7 @@ const DraggableTableRow: FC<TableMainRow> = ({
   withCheckbox,
   onSelectClick,
   draggable,
-  indexNumber,
+  indexNumber = 0,
   dataLength = 0,
   viewModeId,
   ViewComponent,
@@ -31,7 +31,7 @@ const DraggableTableRow: FC<TableMainRow> = ({
   const rowId = row?._id || row?.stepId;
   const isDragDisabled =
     isDisabled || dataLength <= 1 || row.cascaded === 'cascaded';
-
+  let serialNumber = (indexNumber + 1).toString();
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({
       id: rowId,
@@ -101,7 +101,7 @@ const DraggableTableRow: FC<TableMainRow> = ({
                   </div>
                 )}
                 {prepareData(row, column, indexNumber)}
-                {firstColumn && ['PRE', 'POST'].includes(row.type) && (
+                {firstColumn && ['PRE', 'POST', 'Group'].includes(row.type) && (
                   <div
                     className={`pre-accordion-arrow ${
                       expanded ? 'expanded' : ''
@@ -112,10 +112,12 @@ const DraggableTableRow: FC<TableMainRow> = ({
                       color={
                         expanded ? 'var(--brand-color)' : 'var(--default-color)'
                       }
-                      width={16}
-                      height={16}
+                      width={12}
+                      height={12}
                       className="pre-arrow-svg"
-                      onClick={() => handleStepGroupExpand?.(row)}
+                      onClick={() => {
+                        handleStepGroupExpand?.({ ...row, serialNumber });
+                      }}
                     />
                   </div>
                 )}
@@ -140,4 +142,4 @@ const DraggableTableRow: FC<TableMainRow> = ({
   );
 };
 
-export default DraggableTableRow;
+export default memo(DraggableTableRow);

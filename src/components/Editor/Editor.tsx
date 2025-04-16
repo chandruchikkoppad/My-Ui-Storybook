@@ -26,6 +26,7 @@ const Editor = forwardRef<any, EditorProps>(
       isRequisiteType = false,
       onPaste,
       showVariableDropdown = true,
+      defaultValue,
     },
     ref
   ) => {
@@ -157,24 +158,21 @@ const Editor = forwardRef<any, EditorProps>(
           if (textUntilPosition.endsWith('ff.')) {
             suggestions.push(
               {
-                label: 'GLOBAL',
-                kind: monaco.languages.CompletionItemKind.Property,
-                insertText: 'GLOBAL',
-                detail: 'Global variable scope',
+                label: 'getVariable',
+                kind: monaco.languages.CompletionItemKind.Method,
+                insertText: 'getVariable(${1:variableName})',
+                insertTextRules:
+                  monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+                detail: 'Get a variable value',
                 range,
               },
               {
-                label: 'LOCAL',
-                kind: monaco.languages.CompletionItemKind.Property,
-                insertText: 'LOCAL',
-                detail: 'Local variable scope',
-                range,
-              },
-              {
-                label: 'PROJECT_ENVIRONMENT',
-                kind: monaco.languages.CompletionItemKind.Property,
-                insertText: 'PROJECT_ENVIRONMENT',
-                detail: 'Project environment scope',
+                label: 'setVariable',
+                kind: monaco.languages.CompletionItemKind.Method,
+                insertText: 'setVariable(${1:variableName}, ${2:value})',
+                insertTextRules:
+                  monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+                detail: 'Set a variable value',
                 range,
               },
               {
@@ -185,73 +183,6 @@ const Editor = forwardRef<any, EditorProps>(
                 insertTextRules:
                   monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
                 detail: 'Make your http requests',
-                range,
-              }
-            );
-          }
-
-          if (textUntilPosition.endsWith('ff.GLOBAL.')) {
-            suggestions.push(
-              {
-                label: 'get',
-                kind: monaco.languages.CompletionItemKind.Method,
-                insertText: "get('${1:variableName}')",
-                insertTextRules:
-                  monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-                detail: 'Get a global variable value',
-                range,
-              },
-              {
-                label: 'set',
-                kind: monaco.languages.CompletionItemKind.Method,
-                insertText: "set('${1:variableName}', ${2:value})",
-                insertTextRules:
-                  monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-                detail: 'Set a global variable value',
-                range,
-              }
-            );
-          }
-          if (textUntilPosition.endsWith('ff.LOCAL.')) {
-            suggestions.push(
-              {
-                label: 'get',
-                kind: monaco.languages.CompletionItemKind.Method,
-                insertText: "get('${1:variableName}')",
-                insertTextRules:
-                  monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-                detail: 'Get a local variable value',
-                range,
-              },
-              {
-                label: 'set',
-                kind: monaco.languages.CompletionItemKind.Method,
-                insertText: "set('${1:variableName}', ${2:value})",
-                insertTextRules:
-                  monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-                detail: 'Set a local variable value',
-                range,
-              }
-            );
-          }
-          if (textUntilPosition.endsWith('ff.PROJECT_ENVIRONMENT.')) {
-            suggestions.push(
-              {
-                label: 'get',
-                kind: monaco.languages.CompletionItemKind.Method,
-                insertText: "get('${1:variableName}')",
-                insertTextRules:
-                  monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-                detail: 'Get a project environment variable value',
-                range,
-              },
-              {
-                label: 'set',
-                kind: monaco.languages.CompletionItemKind.Method,
-                insertText: "set('${1:variableName}', ${2:value})",
-                insertTextRules:
-                  monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-                detail: 'Set a project environment variable value',
                 range,
               }
             );
@@ -316,7 +247,9 @@ const Editor = forwardRef<any, EditorProps>(
                 endLineNumber: position.lineNumber,
                 endColumn: position.column,
               },
-              text: `{${type}_${suggestion}}`,
+              text: `{${type}${
+                type === '_startforloop' ? '' : '_'
+              }${suggestion}}`,
             },
           ]);
           setShowDropdown(false);
@@ -347,11 +280,17 @@ const Editor = forwardRef<any, EditorProps>(
       } else {
         // Existing flow for variable insertion
         handleSelectSuggestion(
-          option?.name,
+          option.parentVariableType === 'STEPGROUP' ? 'SGV' : option?.name,
           option?.type === 'GLOBAL'
             ? 'GV'
             : option?.type === 'LOCAL'
             ? 'LV'
+            : option?._id?.includes('PARAMETER')
+            ? 'SGP'
+            : option?.type === '_startforloop'
+            ? 'FLV_for:'
+            : option?.type === 'DATAPROVIDER'
+            ? 'DPV'
             : 'PEV'
         );
       }
@@ -441,6 +380,7 @@ const Editor = forwardRef<any, EditorProps>(
     return (
       <div style={{ width, height }} className="ff-editor-container">
         <MonacoEditor
+          defaultValue={defaultValue}
           height={height}
           width={width}
           language={language}

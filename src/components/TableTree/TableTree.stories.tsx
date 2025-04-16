@@ -349,6 +349,7 @@ export const ControlledCheckBox: Story = {
         tableBorder="1px solid #f1f1f1"
         rootNode={rootNode}
         handleEditFieldError={handleCustomError}
+        freezeColumns={1}
       />
     );
   },

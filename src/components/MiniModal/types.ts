@@ -10,6 +10,7 @@ interface ModalDimensions {
   padding?: number;
   right?: number;
 }
+export type ModalPosition = 'bottom' | 'right' | 'top' | 'left';
 export interface MiniEditModalProps {
   /**
    * A reference to the button element that triggers the modal.
@@ -57,7 +58,7 @@ export interface MiniEditModalProps {
    * bottom: The modal appears below the anchor.
    * right: The modal appears to the right of the anchor.
    */
-  modalPosition?: 'bottom' | 'right' | 'top' | 'left';
+  modalPosition?: ModalPosition;
   /**
    * Adds a top-left aligned arrow to the modal when its position is set to `'right'`.
    */
@@ -113,7 +114,7 @@ export interface MiniEditModalProps {
     backgroundColorOverlay?: string;
   };
   outSideClick?: any;
-  ignoreRefs?: Array<React.RefObject<HTMLElement>>
+  ignoreRefs?: Array<React.RefObject<HTMLElement>>;
 }
 export interface Rect {
   top: number;

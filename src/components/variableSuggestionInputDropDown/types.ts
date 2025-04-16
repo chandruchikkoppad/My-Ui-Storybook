@@ -138,6 +138,10 @@ export interface VariableSuggestionInputDropDownProps {
    */
   isHash?: boolean;
   /**
+   * If true, only hash dropdown will be shown without create variable icon.
+   */
+  isOnlyHash?: boolean;
+  /**
    * Options for the dropdown when `isHash` is true.
    */
   dataFiles?: dynamicObject[];
@@ -154,6 +158,8 @@ export interface VariableSuggestionInputDropDownProps {
 
   getSelectedVariable?: (option: string) => void;
   symbol?: string;
+
+  clearIcon?:boolean
 }
 
 export interface OptionsDropdownProps {

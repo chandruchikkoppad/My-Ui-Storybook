@@ -12,6 +12,7 @@ import Input from '../Input';
 import { VariableSuggestionInputDropDownProps, dynamicObject } from './types';
 import './VariableSuggestionInputDropDown.scss';
 import OptionsDropdown from './OptionsDropdown';
+import Tooltip from '../Tooltip';
 
 const VariableSuggestionInputDropDown = forwardRef<
   HTMLInputElement,
@@ -31,6 +32,7 @@ const VariableSuggestionInputDropDown = forwardRef<
       dropdownWidth = '100%',
       dropdownHeight = '150px',
       isHash = false,
+      isOnlyHash = false,
       dataFiles = [],
       showAddVariableIcon = true,
       helperText = '',
@@ -43,6 +45,7 @@ const VariableSuggestionInputDropDown = forwardRef<
       getSelectedVariable = () => {},
       symbol = '$',
       type = 'text',
+      clearIcon = true,
       ...props
     },
     ref
@@ -70,9 +73,12 @@ const VariableSuggestionInputDropDown = forwardRef<
     useEffect(() => {
       if (isHash) {
         setShowDropdown(value.startsWith('#'));
-      } else {
-        setShowCreateVariableIcon(!value?.includes(symbol));
       }
+      const selectedHashValue = dataFiles?.find((file) => file.name === value);
+      const selectedDollarValue = variableList?.find(
+        (file) => file?.name === value
+      );
+
       if (value.startsWith('#') && isHash) {
         const searchQuery = value.slice(1).toLowerCase();
         const filtered = dataFiles.filter((file) =>
@@ -80,6 +86,24 @@ const VariableSuggestionInputDropDown = forwardRef<
         );
         setFilteredOptions(filtered);
         setShowDropdown(true);
+      }
+      const isHashSelected =
+        selectedHashValue !== null && value.startsWith('#');
+      const isDollarSelected =
+        selectedDollarValue !== null && value.startsWith('$');
+      const additionalText =
+        value.length > (selectedDollarValue?.name.length || 0);
+      if (isOnlyHash) {
+        setShowCreateVariableIcon(false);
+      } else {
+        setShowCreateVariableIcon(
+          (value.includes('$') ||
+            value.includes('#') ||
+            isHashSelected ||
+            additionalText ||
+            (isDollarSelected && additionalText)) &&
+            !(isDollarSelected && !additionalText)
+        );
       }
     }, [value]);
     const updateCursorPosition = () => {
@@ -142,7 +166,9 @@ const VariableSuggestionInputDropDown = forwardRef<
       const nextDollarAfterCursor = input.indexOf(symbol, cursorPosit);
 
       if (lastDollarBeforeCursor !== -1) {
-        if (cursorPosit === lastDollarBeforeCursor + 1) {
+        if (isOnlyHash && input[lastDollarBeforeCursor] === '$') {
+          showDropdown = false;
+        } else if (cursorPosit === lastDollarBeforeCursor + 1) {
           showDropdown = true;
           searchString = '';
         } else {
@@ -213,27 +239,32 @@ const VariableSuggestionInputDropDown = forwardRef<
             required={required}
             {...formProps}
           />
-          {!checkEmpty(value) &&
-            !isHash &&
-            showCreateVariableIcon &&
-            showAddVariableIcon && (
-              <>
-                <Icon
-                  onClick={handleClearInput}
-                  name="close"
-                  height={16}
-                  width={16}
-                  hoverEffect
-                />
-                <Icon
-                  onClick={onCreateVariableClick}
-                  name="variable"
-                  height={16}
-                  width={16}
-                  hoverEffect
-                />
-              </>
-            )}
+          {!checkEmpty(value) && !isOnlyHash && (
+            <>
+              {clearIcon && (
+                <Tooltip title="Cancel" style={{ zIndex: 99999 }}>
+                  <Icon
+                    onClick={handleClearInput}
+                    name="close"
+                    height={16}
+                    width={16}
+                    hoverEffect
+                  />
+                </Tooltip>
+              )}
+              {showCreateVariableIcon && showAddVariableIcon && (
+                <Tooltip title="Create as Variable" style={{ zIndex: 99999 }}>
+                  <Icon
+                    onClick={onCreateVariableClick}
+                    name="variable"
+                    height={16}
+                    width={16}
+                    hoverEffect
+                  />
+                </Tooltip>
+              )}
+            </>
+          )}
         </div>
         {result?.showDropdown && isFocused && (
           <VariableDropdown

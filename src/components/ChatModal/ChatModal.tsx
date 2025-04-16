@@ -115,7 +115,10 @@ const ChatModal: React.FC<ChatModalProps> = ({
                     </div>
                     <div className="header-right">
                       <span className="action">
-                        <Tooltip title="Clear chat" placement="top">
+                        <Tooltip
+                          title="Clear chat"
+                          placement="bottom"
+                        >
                           <Icon
                             height={16}
                             width={16}
@@ -126,7 +129,10 @@ const ChatModal: React.FC<ChatModalProps> = ({
                         </Tooltip>
                       </span>
                       <span className="action">
-                        <Tooltip title="Close" placement="top">
+                        <Tooltip
+                          title="Close"
+                          placement="bottom"
+                        >
                           <Icon
                             height={16}
                             width={16}

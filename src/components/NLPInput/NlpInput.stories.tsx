@@ -79,7 +79,7 @@ export const NlpChipsAccordion: Story = {
     };
 
     const handleSelect = (e) => {
-      setInputValue(e.displayName);
+      setInputValue(e?.displayName || e?.name);
     };
     const selectedChips = (data: NlpChipsAccordionProps) => {
       console.warn('selectedChipsData', data);

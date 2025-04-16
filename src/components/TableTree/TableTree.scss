@@ -1,5 +1,6 @@
 :root {
   --table-height: calc(100vh - 134px);
+  --frozen-column-width: 0px;
 }
 
 .tree-table-space-block {
@@ -49,7 +50,7 @@
     width: 8px;
 
     &::after {
-      width: 22px;
+      width: 26px;
       left: -10px;
     }
   }
@@ -58,10 +59,10 @@
     position: absolute;
     content: '';
     width: 1px;
-    height: 40px;
+    height: 32px;
     background: var(--tree-connecting-lines-color);
     left: 50%;
-    top: -8px !important;
+    top: -14px !important;
     z-index: 99;
   }
 
@@ -69,18 +70,18 @@
     position: absolute;
     content: '';
     width: 1px;
-    height: 12px;
+    height: 22px;
     background: var(--tree-connecting-lines-color);
     left: 50%;
-    top: -4px;
+    top: -14px;
     z-index: -1;
   }
 
-  &.folder {
-    &.last-node::before {
-      height: 13px;
-    }
-  }
+  // &.folder {
+  //   &.last-node::before {
+  //     height: 13px;
+  //   }
+  // }
 
   //Todo uncomment the following code when we are highlighting the tree table nodes on hover
   /* Hover background for all elements of the same level */
@@ -144,6 +145,20 @@
   /* Adjust height as needed */
   overflow-y: auto;
   position: relative;
+  scrollbar-width: 1px;
+  &::-webkit-scrollbar {
+    width: 5px; /* Vertical scrollbar width */
+    height: 5px; /* Horizontal scrollbar height */
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color:var(--description-text); /* Scrollbar color */
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    margin-left: var(--frozen-column-width);
+  }
 
   &.table-empty {
     scrollbar-width: none;
@@ -173,7 +188,7 @@
     .tree-table-td-content-text {
       display: inline-flex;
       align-items: center;
-      margin-left: 4px;
+      // margin-left: 4px;
 
       .table-tree-root-cell {
         padding-left: 5px;
@@ -216,8 +231,8 @@
       }
 
       .ff-add-button-container {
-        height: 20px;
-        width: 22px;
+        height: 24px;
+        width: 24px;
       }
     }
 
@@ -231,9 +246,9 @@
         width: 16px;
       }
 
-      .ff-hovered-add-button--primary {
-        margin-right: 20px;
-      }
+      // .ff-hovered-add-button--primary {
+      //   margin-right: 20px;
+      // }
     }
 
     &::after {
@@ -296,10 +311,18 @@
       }
 
       .tree-table-td-content {
-        padding-left: 4px;
+        // padding-left: 4px;
+
+        .tree-table-td-content-select{
+          height: 24px;
+          width: 24px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
 
         .tree-table-td-content-text {
-          margin-left: 4px;
+          // margin-left: 4px;
         }
       }
     }
@@ -325,7 +348,6 @@
       width: 12px;
       transition: transform 0.3s ease;
       cursor: pointer;
-
       path {
         fill: var(--brand-color);
       }

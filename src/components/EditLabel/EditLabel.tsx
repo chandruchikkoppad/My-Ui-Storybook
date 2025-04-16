@@ -8,6 +8,8 @@ import type { EditLabelProps, Option } from './types';
 import Tooltip from '../Tooltip';
 import Toaster from '../Toast';
 import HighlightText from '../HighlightText';
+import { truncateText } from '../../utils/truncateText/truncateText';
+import Typography from '../Typography';
 
 const EditLabel = ({
   id = '',
@@ -32,6 +34,11 @@ const EditLabel = ({
   cursor = 'pointer',
   isOnBlurTrue = false,
   handleOnChange,
+  handleTriggerDoubleClick,
+  truncatedTextCount = 25,
+  confirmIconTooltip = 'Create',
+  cancelIconTooltip = 'Cancel',
+  inlineValidationError = false,
 }: EditLabelProps) => {
   const [isEditing, setIsEditing] = useState(!value);
   const [text, setText] = useState(value ?? '');
@@ -44,6 +51,7 @@ const EditLabel = ({
   const containerRef = useRef<HTMLDivElement | null>(null);
   const cancelRef = useRef<HTMLDivElement | null>(null);
   const confirmRef = useRef<HTMLDivElement | null>(null);
+  const isThrowingError = showError && isEditing ? true : false;
 
   const isValueFilled = !checkEmpty(text);
 
@@ -53,6 +61,14 @@ const EditLabel = ({
 
     if (typeof handleOnChange === 'function') {
       handleOnChange(e);
+    }
+    if (inlineValidationError && isThrowingError) {
+      const errorMessage = handleCustomError ? handleCustomError(newValue) : '';
+      if (errorMessage) {
+        setShowError(errorMessage);
+      } else {
+        setShowError('');
+      }
     }
   };
 
@@ -68,6 +84,10 @@ const EditLabel = ({
     }
     setIsEditing(true);
     setIsEditable && setIsEditable(id);
+
+    if (handleTriggerDoubleClick) {
+      handleTriggerDoubleClick();
+    }
   };
 
   const handleSingleClick = () => {
@@ -158,6 +178,7 @@ const EditLabel = ({
       if (isEditable) {
         setIsEditing(true);
       } else {
+        setText(value);
         setIsEditing(false);
       }
     }
@@ -176,7 +197,12 @@ const EditLabel = ({
     >
       {isEditing && (setIsEditable ? isEditable : true) ? (
         <div className="ff-add-module-edit-container">
-          <fieldset className="ff-add-module-input-with-dropdown">
+          <fieldset
+            className={classNames('ff-add-module-input-with-dropdown', {
+              'ff-add-module-input-with-dropdown--danger':
+                isThrowingError && inlineValidationError,
+            })}
+          >
             <div
               className={classNames('ff-add-module-input-container', {
                 'ff-add-module-input-container--float': isValueFilled,
@@ -219,16 +245,18 @@ const EditLabel = ({
                 showLabel={false}
                 showBorder={false}
                 onChange={onDropdownChangeHandler}
-                optionZIndex={999999}
+                optionZIndex={9999}
                 width={selectFieldWidth}
                 height={24}
                 className="ff-add-module-dropdown"
                 selectedOptionColor="var(--nlp-color)"
+                tooltip={true}
+                showToolTip={true}
               />
             )}
           </fieldset>
           <div className="ff-module-icon-container">
-            <Tooltip title="Confirm" placement={'bottom'}>
+            <Tooltip title={confirmIconTooltip} placement={'bottom'}>
               <Icon
                 className="icons"
                 name="update_icon"
@@ -245,11 +273,11 @@ const EditLabel = ({
                 disabled={isDisable?.confirm}
               />
             </Tooltip>
-            <Tooltip title="Cancel" placement={'bottom'}>
+            <Tooltip title={cancelIconTooltip} placement={'bottom'}>
               <Icon
                 className="icons"
-                name="close"
-                onClick={()=>!isDisable.cancel && handleCancel()}
+                name="edit_label_close"
+                onClick={() => !isDisable.cancel && handleCancel()}
                 color={
                   isDisable.cancel
                     ? 'var(--default-color)'
@@ -277,20 +305,30 @@ const EditLabel = ({
             onClick={handleClick}
           >
             {checkEmpty(highlightText) ? (
-              text
+              truncateText(text, truncatedTextCount)
             ) : (
-              <HighlightText text={text} highlight={highlightText} />
+              <HighlightText
+                text={truncateText(text, truncatedTextCount)}
+                highlight={truncateText(highlightText, truncatedTextCount)}
+              />
             )}
           </span>
         </Tooltip>
       )}
-      <Toaster
-        isOpen={toasts.error}
-        variant="danger"
-        toastTitle="Error!"
-        toastMessage={showError}
-        onCancelClick={() => handleToastToggle('error')}
-      />
+      {inlineValidationError && showError && isEditing && (
+        <Typography as="p" fontSize={8} className="error-text">
+          {showError}
+        </Typography>
+      )}
+      {!inlineValidationError && (
+        <Toaster
+          isOpen={toasts.error}
+          variant="danger"
+          toastTitle="Error!"
+          toastMessage={showError}
+          onCancelClick={() => handleToastToggle('error')}
+        />
+      )}
     </div>
   );
 };

@@ -9,17 +9,16 @@ import { getCellDimensions } from './util';
 import * as Matrix from './matrix';
 import Select from '../../../Select';
 import AttachmentButton from '../../../AttachmentButton';
+import { checkEmpty } from '../../../../utils/checkEmpty/checkEmpty';
+import { toast } from '../../../Toastify/Toastify';
 
 type Props = {
   DataEditor: Types.DataEditorComponent;
   setContextMenu: React.Dispatch<React.SetStateAction<ContextMenuState>>;
   attachmentAction?: {
-    addAttachment: (file: File) => Promise<{
-      responseCode: number;
-      responseObject: { name: string; id: string; modifiedOn: string }[];
-    }>;
-    viewAttachment: () => Promise<void>;
-    deleteAttachment: () => Promise<void>;
+    addAttachment: (file: File) => Promise<string>;
+    viewAttachment: (fileId: string) => Promise<string>;
+    deleteAttachment: (fileId: string) => Promise<string>;
   };
   contextOption?: {
     open: boolean;
@@ -34,66 +33,6 @@ type Props = {
 };
 
 const ActiveCell: React.FC<Props> = (props) => {
-  const [dropDownValue, setDropDownValue] = React.useState({
-    value: '',
-    name: '',
-  });
-  const [selectOption, setSelectOption] = React.useState<boolean>(false);
-  const [selectedFiles, setSelectedFiles] = React.useState<File[]>([]);
-  const handleFilesChange = async (newFiles: File[]) => {
-    const updatedFiles = [...newFiles];
-    if (updatedFiles.length > 5) {
-      return;
-    }
-    const fileList = new DataTransfer();
-    updatedFiles.forEach((file) => fileList.items.add(file));
-
-    if (props.attachmentAction?.addAttachment) {
-      try {
-        const fileDetails = [];
-        for (const file of newFiles) {
-          const response = await props.attachmentAction?.addAttachment(file);
-          console.log(response);
-          if (response?.responseCode === 200) {
-            response.responseObject?.[0]?.name;
-
-            fileDetails.push({
-              name: response.responseObject?.[0]?.name,
-              fileId: response.responseObject?.[0]?.id,
-              lastModified: response.responseObject?.[0]?.modifiedOn,
-              size: file.size,
-              type: file.type,
-            });
-          } else {
-            fileDetails.push({
-              name: file.name,
-              fileId: undefined,
-              lastModified: file.lastModified,
-              size: file.size,
-              type: file.type,
-            });
-          }
-        }
-        handleChange({
-          ...cell,
-          value: JSON.stringify(fileDetails),
-          style: cell?.style,
-          inputType: cell?.inputType,
-        });
-        setSelectedFiles(updatedFiles);
-      } catch (error) {
-        console.error('Attachment import failed:', error);
-      }
-    }
-  };
-
-  const handleClick = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
-    const selectedList = (e.target as HTMLElement).innerText;
-    if (selectedList) {
-      //TODO
-    }
-  };
-
   const rootRef = React.useRef<HTMLDivElement>(null);
   const dispatch = useDispatch();
   const setCellData = React.useCallback(
@@ -155,11 +94,125 @@ const ActiveCell: React.FC<Props> = (props) => {
     [setCellData, active]
   );
 
+  const [dropDownValue, setDropDownValue] = React.useState({
+    value: '',
+    name: '',
+  });
+  const [selectOption, setSelectOption] = React.useState<boolean>(false);
+  const [allOption, setAllOption] = React.useState<
+    {
+      disable: boolean;
+      label: JSX.Element;
+      value: string;
+    }[]
+  >();
+  const [selectedFiles, setSelectedFiles] = React.useState<File[]>([]);
+
+  const handleFilesChange = async (
+    newFiles: File[],
+    selected?: File[],
+    actionType?: string
+  ) => {
+    if (newFiles.length > 5) {
+      toast.info('Cannot upload more than 5 files.');
+      return;
+    }
+
+    if (props.attachmentAction?.addAttachment && selected) {
+      try {
+        if (actionType === 'ADD' && cell?.inputType?.type === 'file') {
+          const parsedFiles: File[] = !checkEmpty(cell.value)
+            ? JSON.parse(cell.value)
+            : [];
+          for (const file of selected) {
+            const response = await props.attachmentAction?.addAttachment(file);
+            if (!checkEmpty(response)) {
+              parsedFiles.push(JSON.parse(response));
+            }
+          }
+          handleChange({
+            ...cell,
+            value: JSON.stringify(parsedFiles),
+            style: cell?.style,
+            inputType: cell?.inputType,
+          });
+          setSelectedFiles(parsedFiles);
+        } else if (actionType === 'DELETE') {
+          const parsedValue = cell && JSON.parse(cell.value);
+          const updatedFileDetails = [...parsedValue];
+          for (const file of selected) {
+            const index = updatedFileDetails.findIndex(
+              (originalFile: Types.AttachmentApi) => {
+                return originalFile.name === file.name;
+              }
+            );
+            const fileId = updatedFileDetails[index].id;
+            if (index !== -1 && fileId) {
+              const response = await props.attachmentAction?.deleteAttachment(
+                fileId
+              );
+              if (response) {
+                updatedFileDetails.splice(index, 1);
+                handleChange({
+                  ...cell,
+                  value: !checkEmpty(updatedFileDetails)
+                    ? JSON.stringify(updatedFileDetails)
+                    : '',
+                  style: cell?.style,
+                  inputType: cell?.inputType,
+                });
+                setSelectedFiles((prevSelectedFiles) => [
+                  ...prevSelectedFiles.filter((f) => f.name !== file.name),
+                ]);
+              }
+            }
+          }
+        }
+      } catch (error) {
+        toast.error('Attachment operation failed');
+        console.error('Attachment failed:', error);
+      }
+    }
+  };
+
+  const handleClick = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    const selectedList = (e.target as HTMLElement).innerText;
+    if (selectedList) {
+      JSON.parse(cell?.value).map((file: Types.AttachmentApi) => {
+        if (file.name === selectedList) {
+          props.attachmentAction?.deleteAttachment(file.id);
+        }
+      });
+    }
+  };
+
   React.useEffect(() => {
     const root = rootRef.current;
     if (!hidden && root) {
       root.focus();
-      setSelectOption((prev) => !prev);
+
+      if (cell?.inputType?.type === 'file' && cell?.value) {
+        const parsedFiles: File[] = JSON.parse(cell.value).map(
+          (file: Types.AttachmentApi) => {
+            const blob = new Blob([]);
+            return new File([blob], file.name);
+          }
+        );
+        setSelectedFiles(parsedFiles);
+      } else {
+        setSelectedFiles([]);
+      }
+
+      if (cell?.inputType?.type === 'dropDown') {
+        setDropDownValue({ value: cell?.value, name: cell?.value });
+        setSelectOption((prev) => !prev);
+        const getAllOption = cell?.inputType?.options?.map((option) => ({
+          disable: option.disable,
+          label: <span style={{ color: option.color }}>{option.label}</span>,
+          value: option.value,
+        }));
+        setAllOption(getAllOption);
+      }
     }
   }, [rootRef, hidden, active]);
 
@@ -213,10 +266,6 @@ const ActiveCell: React.FC<Props> = (props) => {
       event.preventDefault();
       props.setContextMenu({
         open: props.contextOption?.open ?? false,
-        position: {
-          x: event.pageX - 450,
-          y: event.pageY - 260,
-        },
         options: props.contextOption?.options || [],
       });
     },
@@ -240,7 +289,7 @@ const ActiveCell: React.FC<Props> = (props) => {
           {...cell?.inputType?.inputProps}
           showOptions={{ open: true, toggle: selectOption }}
           selectedOption={dropDownValue}
-          optionsList={cell?.inputType?.options || []}
+          optionsList={allOption || []}
           height={26}
           showLabel={false}
           showBorder={false}
@@ -251,7 +300,7 @@ const ActiveCell: React.FC<Props> = (props) => {
               ...cell,
               value: value.value,
               style: cell?.style,
-              inputType: cell?.inputType ?? { type: 'text' },
+              inputType: cell?.inputType,
             });
           }}
         />
@@ -269,6 +318,7 @@ const ActiveCell: React.FC<Props> = (props) => {
           buttonVariant="tertiary"
           deleteButton={true}
           addAttachmentButton
+          isInfoIconRequired={false}
         />
       ) : mode === 'edit' && active ? (
         <DataEditor
@@ -279,9 +329,8 @@ const ActiveCell: React.FC<Props> = (props) => {
           exitEditMode={view}
         />
       ) : (
-        <input
-          type="text"
-          className="ff-spreadsheet-cell-input"
+        <textarea
+          className="ff-spreadsheet-cell-textarea"
           style={{ ...cell?.style }}
           value={cell?.value}
           disabled={false}

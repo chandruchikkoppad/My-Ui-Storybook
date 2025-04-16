@@ -24,7 +24,6 @@ import {
   cloneElement,
   ReactElement,
   isValidElement,
-  useState,
 } from 'react';
 
 const getColumnWidth = (
@@ -51,6 +50,7 @@ const SortableRow = ({
   isAccordionOpen,
   accordionContent,
   columnSticky,
+  isRowCheckBoxDisable,
 }: any) => {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({
@@ -105,7 +105,11 @@ const SortableRow = ({
                         onSelectClick(e, row);
                       }}
                       checked={row.checked}
-                      disabled={!!row.disabled}
+                      disabled={
+                        isRowCheckBoxDisable === undefined
+                          ? !!row.disabled
+                          : isRowCheckBoxDisable
+                      }
                     />
                   </span>
                 )}
@@ -172,11 +176,10 @@ const Table = ({
   getAccordionStatus = () => {},
   accordionContent,
   columnSticky = false,
-  onScrollEnd = () => {},
+  tableRef = null,
+  isRowCheckBoxDisable,
 }: TableProps) => {
   const observerRef = useRef<IntersectionObserver | null>(null);
-  const tableRef = useRef<HTMLTableSectionElement>(null);
-  const [isScrolledToEnd, setIsScrolledToEnd] = useState<boolean>(false);
 
   useEffect(() => {
     const scrollContainer = document.getElementById(
@@ -215,34 +218,6 @@ const Table = ({
       observerRef.current?.disconnect();
     };
   }, [data, loadMore]);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (!tableRef.current) return;
-
-      const { scrollTop, scrollHeight, clientHeight } = tableRef.current;
-
-      if (scrollTop + clientHeight >= scrollHeight - 5) {
-        if (!isScrolledToEnd) {
-          setIsScrolledToEnd(true);
-          onScrollEnd(true);
-        }
-      } else {
-        setIsScrolledToEnd(false);
-      }
-    };
-
-    const tableElement = tableRef.current;
-    if (tableElement) {
-      tableElement.addEventListener('scroll', handleScroll);
-    }
-
-    return () => {
-      if (tableElement) {
-        tableElement.removeEventListener('scroll', handleScroll);
-      }
-    };
-  }, [onScrollEnd, isScrolledToEnd]);
 
   const handleOnclick = (column: ColumnsProps, row: DataProps) => {
     let { onClick, accessor } = column;
@@ -399,6 +374,7 @@ const Table = ({
                           columnSticky={columnSticky}
                           isAccordionOpen={isOpen}
                           accordionContent={accordionContent}
+                          isRowCheckBoxDisable={isRowCheckBoxDisable}
                         />
                       )}
                     </>

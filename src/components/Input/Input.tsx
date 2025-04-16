@@ -1,4 +1,4 @@
-import { forwardRef, useState } from 'react';
+import { forwardRef, useState, useEffect } from 'react';
 import classNames from 'classnames';
 import './Input.scss';
 import { InputProps } from './types';
@@ -34,6 +34,10 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       onKeyUp,
       reserveHelperTextSpace = false,
       setUpdatedNumberValue = () => {},
+      displayErrorImmediately = true,
+      showSearchIcon= false,
+      searchIconProps,
+      handleSearchIconClick,
       ...props
     },
     ref
@@ -48,9 +52,17 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         : Infinity;
 
     const [internalValue, setInternalValue] = useState(value);
+    const [touched, setTouched] = useState(false);
+    const [isFocused, setIsFocused] = useState(false);
+
+    useEffect(() => {
+      if (value !== internalValue) {
+        setInternalValue(value);
+      }
+    }, [value]);
 
     const handleIncrementDecrement = (action: string) => {
-      const parsedValue = parseInt(value.toString(), 10) || 0;
+      const parsedValue = parseInt(internalValue.toString(), 10) || 0;
       let updatedValue = parsedValue;
 
       if (action === 'increment') {
@@ -60,6 +72,15 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       }
       setInternalValue(updatedValue);
       setUpdatedNumberValue(updatedValue);
+
+      if (onChange) {
+        const syntheticEvent = {
+          target: { value: updatedValue },
+          currentTarget: { value: updatedValue },
+        } as unknown as React.ChangeEvent<HTMLInputElement>;
+
+        onChange(syntheticEvent);
+      }
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -76,13 +97,9 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         const parsedValue = Number(newValue);
 
         if (!isNaN(parsedValue)) {
-          if (parsedValue >= numericMin && parsedValue <= numericMax) {
-            setInternalValue(parsedValue);
-            setUpdatedNumberValue(parsedValue);
-            onChange?.(e);
-          } else {
-            setInternalValue(internalValue); 
-          }
+          setInternalValue(parsedValue);
+          setUpdatedNumberValue(parsedValue);
+          onChange?.(e);
         }
       } else {
         setInternalValue(newValue);
@@ -90,7 +107,19 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       }
     };
 
+    const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+      setIsFocused(true);
+      if (!displayErrorImmediately) {
+        setTouched(false);
+      }
+      onFocus?.(e);
+    };
+
     const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+      setIsFocused(false);
+      if (!displayErrorImmediately) {
+        setTouched(true);
+      }
       if (type === 'number') {
         let parsedValue: any = Number(internalValue);
 
@@ -131,7 +160,8 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
               className={classNames(
                 `ff-input-label-container ff-input-label-container--${size}`,
                 {
-                  'ff-input-label-container--danger': !!error,
+                  'ff-input-label-container--danger':
+                    (displayErrorImmediately || touched) && !!error,
                 }
               )}
               htmlFor={name}
@@ -141,9 +171,11 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
                 className={classNames(
                   `ff-input-label ff-input-label--${variant}`,
                   {
-                    'ff-input-label--no-hover': !!value,
+                    'ff-input-label--no-hover': !!internalValue,
                     'ff-input-label--disabled': !!disabled,
-                    'ff-input-label--danger': !!error,
+                    'ff-input-label--danger':
+                      (displayErrorImmediately || touched) && !!error,
+                    'ff-input-label--focused': isFocused,
                   }
                 )}
               >
@@ -154,7 +186,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           <input
             ref={ref}
             name={name}
-            value={value}
+            value={internalValue || value}
             type={type}
             spellCheck={false}
             id={name}
@@ -162,19 +194,22 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
               `ff-input ff-input-${variant} default-input ff-input--${size}`,
               {
                 ['ff-input--transparentBackground']: !!transparentBackground,
-                'ff-input--no-hover': !!value,
+                'ff-input--no-hover': !!internalValue,
                 'ff-input--disabled': !!disabled,
-                'ff-input--danger': !!error,
+                'ff-input--danger':
+                  (displayErrorImmediately || touched) && !!error,
                 'ff-input--no-border': !!noBorder,
                 'ff-input--placeholder': !isLabelRequired,
                 'ff-input--number': isTypeNumber,
+                'ff-input--focused': isFocused,
+                'ff-input--isSearchIcon': showSearchIcon,
               },
               `${className}`
             )}
             placeholder={placeholder}
             disabled={disabled}
             onChange={handleChange}
-            onFocus={onFocus}
+            onFocus={handleFocus}
             onBlur={handleBlur}
             autoComplete={autoComplete}
             autoFocus={autoFocus}
@@ -196,16 +231,44 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
                 hoverEffect={false}
                 height={7}
                 width={12}
-                color="var(--text-area-default-color)"
+                color={
+                  value == maxValue
+                    ? 'var(--private-chip-bg-color)'
+                    : 'var(--text-area-default-color)'
+                }
                 onClick={() => handleIncrementDecrement('increment')}
               />
-
               <Icon
                 name="arrow_down"
                 height={7}
                 width={12}
-                color="var(--text-area-default-color)"
+                color={
+                  value == minValue
+                    ? 'var(--private-chip-bg-color)'
+                    : 'var(--text-area-default-color)'
+                }
                 onClick={() => handleIncrementDecrement('decrement')}
+              />
+            </div>
+          )}
+           {showSearchIcon && !(type === 'number') && (
+            <div
+              className={classNames('arrow-container', {
+                ['arrow-container-searchIcon']: showSearchIcon,
+              })}
+            >
+              <Icon
+                name={searchIconProps?.name || 'search'}
+                hoverEffect={false}
+                height={searchIconProps?.height || 14}
+                width={searchIconProps?.height || 14}
+                color="var(--text-area-default-color)"
+                onClick={(e) => {
+                  if (handleSearchIconClick) {
+                    handleSearchIconClick(e);
+                  }
+                }}
+                disabled={searchIconProps?.disabled}
               />
             </div>
           )}
@@ -213,21 +276,25 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             <span
               className={classNames('ff-input-message', {
                 'ff-input-message--space': !!reserveHelperTextSpace,
-                'ff-input-message--danger': !!error,
+                'ff-input-message--danger':
+                  (displayErrorImmediately || touched) && !!error,
               })}
             >
-              {helperText}
+              {(displayErrorImmediately || touched) && error ? helperText : ''}
             </span>
           )}
-          {!reserveHelperTextSpace && helperText && error && (
-            <span
-              className={classNames('ff-input-message', {
-                'ff-input-message--danger': !!error,
-              })}
-            >
-              {helperText}
-            </span>
-          )}
+          {!reserveHelperTextSpace &&
+            (displayErrorImmediately || touched) &&
+            helperText &&
+            error && (
+              <span
+                className={classNames('ff-input-message', {
+                  'ff-input-message--danger': !!error,
+                })}
+              >
+                {helperText}
+              </span>
+            )}
         </div>
       </fieldset>
     );

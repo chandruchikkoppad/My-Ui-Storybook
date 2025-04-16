@@ -16,6 +16,7 @@ export interface DropdownProps {
   onSelect?: () => void;
   labelAccessor?: string;
   valueAccessor?: string;
+  searchAccessor?: string;
   loadMoreOptions?: () => void;
   isAllSelected?: boolean;
   onToggleAllSelect?: (checkedState: boolean) => void;
@@ -23,4 +24,5 @@ export interface DropdownProps {
   maxDropdownHeight: number;
   variant?: string;
   handleIconClick?: () => void;
+  noResultsMessage?: string;
 }

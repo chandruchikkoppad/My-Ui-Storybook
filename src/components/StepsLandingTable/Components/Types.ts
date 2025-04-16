@@ -43,7 +43,7 @@ export interface SelectedItemProps {
    */
   [key: string]: string | number | boolean;
 }
-export interface PrePostTableProps {
+export interface StepInnerTableProp {
   /**
    * Data for table
    */
@@ -164,6 +164,9 @@ export interface PrePostTableProps {
 
   isStepGroupExpanded?: (stepId: string) => boolean;
 
+  stepPartialSelect?: Set<string>;
+
+  isViewPrivilegeMode?: boolean;
 
 }
 
@@ -177,6 +180,7 @@ export interface StepGroupAccordionsProp {
   handleClick?: (item: DataProps) => void;
   handleStepGroupExpand?: (item: DataProps) => void;
   isStepGroupExpanded?: (stepId: string) => boolean;
+  isViewPrivilegeMode?: boolean;
 }
 
 export interface TableMainRowProp {
@@ -197,6 +201,8 @@ export interface TableMainRowProp {
   handleStepGroupExpand?: (item: DataProps) => void;
   isStepGroupExpanded?: (stepId: string) => boolean;
   dataLength?: number
+  stepPartialSelect?: Set<string>;
+  isViewPrivilegeMode?: boolean;
 }
 
 export interface FormValues {

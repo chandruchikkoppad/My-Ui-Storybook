@@ -10,6 +10,7 @@
   box-sizing: border-box;
   margin-block: 4px;
   max-height: 160px;
+  cursor: pointer;
   .ff-multiselect-options-wrapper {
     max-height: 128px;
     overflow-y: auto;
@@ -74,4 +75,11 @@
     justify-content: center;
     align-items: center;
   }
+}
+.dropdown-option-container.focused {
+  background-color: var(--hover-color);
+}
+.dropdown-option-container.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }

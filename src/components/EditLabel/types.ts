@@ -16,22 +16,27 @@ export interface EditLabelProps {
   tooltip?: {
     tooltipTitle?: string;
     tooltipPlacement?:
-    | 'bottom'
-    | 'top'
-    | 'left'
-    | 'right'
-    | 'top-start'
-    | 'top-end'
-    | 'bottom-start'
-    | 'bottom-end';
+      | 'bottom'
+      | 'top'
+      | 'left'
+      | 'right'
+      | 'top-start'
+      | 'top-end'
+      | 'bottom-start'
+      | 'bottom-end';
   };
-  highlightText?: string
+  highlightText?: string;
   id?: string;
   isEditable?: boolean;
   setIsEditable?: (id: string | null) => void;
   cursor?: string;
   isOnBlurTrue?: boolean;
   handleOnChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleTriggerDoubleClick?: () => void;
+  truncatedTextCount?: number;
+  confirmIconTooltip?: string;
+  cancelIconTooltip?: string;
+  inlineValidationError?: boolean;
 }
 
 type OptionValue = any;

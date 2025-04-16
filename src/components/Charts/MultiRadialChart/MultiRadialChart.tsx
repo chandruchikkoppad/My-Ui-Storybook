@@ -26,6 +26,7 @@ const MultiRadialChart: React.FC<MultiRadialChartProps> = ({
   labelHeading,
   legendType = 'numberLegend',
   isLegendDetails = true,
+  isPillValueVisible = true,
   chartToLegendGap = '16px',
   legendGap = '8px',
   labelFontSize = 12,
@@ -147,7 +148,7 @@ const MultiRadialChart: React.FC<MultiRadialChartProps> = ({
                       color="var(--tooltip-text-color)"
                       style={capsuleStyle}
                     >
-                      {item.value}
+                      {isPillValueVisible&&item.value}
                     </Typography>
                   </span>
                   <Typography className="ff-legend-key">

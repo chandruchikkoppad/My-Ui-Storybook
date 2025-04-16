@@ -10,27 +10,39 @@ const MediaPreview: React.FC<MediaPreviewProps> = ({
   onDeleteClick,
   mediaType,
   fileId,
+  thumbnailMediaSrc,
+  isDelete = true,
+  onExpandClick,
+  onDownloadClick,
+  isMediaIcon = false,
+  iconName = 'video_preview',
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const handleExpand = () => setIsModalOpen(true);
+  const handleExpand = () => {
+    setIsModalOpen(true);
+    onExpandClick && onExpandClick(fileId);
+  };
   const handleClose = () => setIsModalOpen(false);
   const handleDownload = () => {
-    const downloadLink = document.createElement('a');
-    downloadLink.href = MediaSrc;
-    downloadLink.download = fileName || 'download';
-    downloadLink.click();
+    onDownloadClick && onDownloadClick(fileId);
   };
   return (
     <div>
-      <AttachMedia
-        mediaSrc={MediaSrc}
-        mediaType={mediaType}
-        onDownloadClick={handleDownload}
-        onDeleteClick={() => onDeleteClick(MediaSrc)}
-        onExpandClick={handleExpand}
-        fileName={fileName}
-        fileId={fileId}
-      />
+      {isMediaIcon ? (
+        <Icon name={iconName} hoverEffect onClick={handleExpand} />
+      ) : (
+        <AttachMedia
+          mediaSrc={MediaSrc}
+          mediaType={mediaType}
+          onDownloadClick={handleDownload}
+          onDeleteClick={() => onDeleteClick(MediaSrc)}
+          onExpandClick={handleExpand}
+          fileName={fileName}
+          fileId={fileId}
+          thumbnailMediaSrc={thumbnailMediaSrc}
+          isDelete={isDelete}
+        />
+      )}
 
       {isModalOpen && (
         <Modal
@@ -38,41 +50,32 @@ const MediaPreview: React.FC<MediaPreviewProps> = ({
           onClose={handleClose}
           isFooterDisplayed={false}
           isHeaderDisplayed={false}
-          customWidth="666px"
-          customHeight="366px"
+          customWidth="1130px"
+          customHeight="570px"
           zIndex={10000}
         >
-          <div className="ff-expand-icons">
-            <Icon
-              name="download_file_icon"
-              onClick={handleDownload}
-              color="var(--icons-default-color)"
-              hoverEffect
-            />
-            <Icon
-              name="close"
-              onClick={handleClose}
-              color="var(--icons-default-color)"
-              hoverEffect
-            />
-          </div>
+          <div className="media-wrapper">
+            <div className="ff-expand-icons">
+              <Icon
+                name="download_file_icon"
+                onClick={handleDownload}
+                color="var(--icons-default-color)"
+                className="header-icons"
+              />
+              <Icon
+                name="close"
+                onClick={handleClose}
+                color="var(--icons-default-color)"
+                className="header-icons"
+              />
+            </div>
 
-          {mediaType === 'image' ? (
-            <img
-              src={MediaSrc}
-              alt="fileName"
-              height={'366px'}
-              width={'666px'}
-            />
-          ) : (
-            <video
-              src={MediaSrc}
-              controls
-              height={'366px'}
-              width={'666px'}
-              controlsList="nodownload"
-            ></video>
-          )}
+            {mediaType === 'image' ? (
+              <img src={MediaSrc} alt="fileName" />
+            ) : (
+              <video src={MediaSrc} controls controlsList="nodownload"></video>
+            )}
+          </div>
         </Modal>
       )}
     </div>

@@ -19,6 +19,9 @@ const TableBody = ({
   rootNode,
   selectedNode,
   hideOnDisable,
+  scriptLengthTruncate,
+  addModuleInputWidth,
+  addModuleSelectWidth,
 }: TableBodyProps) => {
   // commenting this code to add editLabel component to rootnode when data is empty
   // if (checkEmpty(flattenedTreeData)) {
@@ -51,6 +54,9 @@ const TableBody = ({
               index={index}
               selectedNode={selectedNode}
               hideOnDisable={hideOnDisable}
+              scriptLengthTruncate={scriptLengthTruncate}
+              addModuleInputWidth= {addModuleInputWidth}
+              addModuleSelectWidth={addModuleSelectWidth}
             />
           ) : null
       )}

@@ -1,4 +1,9 @@
 export type TreeNodeProps = {
+  executionId?: string;
+  runId?: string;
+  clientId?: string;
+  status?: string;
+  resultPercentage?: Record<string, number>;
   createdBy?: string;
   modifiedBy?: string;
   createdByUname?: string;
@@ -13,6 +18,7 @@ export type TreeNodeProps = {
   projectId?: string;
   hierarchy: number;
   executionOrder?: number;
+  conditionCount?: number;
   subContainerCount?: number;
   resourceCount?: number;
   totalSubContainerCount?: number;
@@ -23,6 +29,7 @@ export type TreeNodeProps = {
   localDelete?: boolean;
   defaultEntity?: boolean;
   lastResource?: boolean;
+  lastChild?: boolean;
   platform?: string;
   parentId?: string;
   parentName?: string;
@@ -32,6 +39,7 @@ export type TreeNodeProps = {
   sourceId?: string;
   isNewNode?: boolean;
   entityType?: string;
+  lastDefaultEntity?: string;
   type?: string;
   label?: string;
   isShared?: boolean | string;
@@ -51,4 +59,10 @@ export type TreeNodeProps = {
   cascaded?: string;
   automationId?: string;
   manualId?: string;
+  unselectable?: boolean;
+  description?: string;
+  desc?: string;
+  expandedAll?: boolean;
+  hideResources?: boolean;
+  hidePreOrPost?: boolean;
 };

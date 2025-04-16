@@ -1,4 +1,4 @@
-import React, { forwardRef, useEffect, useState } from 'react';
+import React, { forwardRef, useRef } from 'react';
 
 import './Prompt.scss';
 import Icon from '../Icon';
@@ -24,29 +24,24 @@ const Prompt = forwardRef<HTMLInputElement, promptProp>(
     iconColor = 'var(--brand-color)',
     tooltipTitle = 'send',
     submitPrompt,
-    onChange,
+    onPromptChange,
     onBlur,
     onFocus,
   }) => {
-    const [promptValue, setPromptValue] = useState<string>(value);
+    const containerRef = useRef<HTMLDivElement | null>(null);
 
-    useKeyboardActions([
-      { key: 'Enter', action: () => handleKeyBoard('Enter') },
-    ]);
+    useKeyboardActions(
+      [{ key: 'Enter', action: () => handleKeyBoard('Enter') }],
+      containerRef
+    );
 
     const handleKeyBoard = (key: string) => {
       if (key === 'Enter') {
-        if (promptValue) {
-          submitPrompt?.(promptValue.trim());
+        if (value) {
+          submitPrompt?.(value.trim());
         }
       }
     };
-
-    useEffect(() => {
-      if (value !== promptValue) {
-        setPromptValue(value);
-      }
-    }, [value]);
 
     return (
       <div
@@ -61,6 +56,7 @@ const Prompt = forwardRef<HTMLInputElement, promptProp>(
             borderRadius,
           } as React.CSSProperties
         }
+        ref={containerRef}
       >
         <Tooltip placement="top" title={tooltipTitle}>
           <Icon
@@ -78,10 +74,10 @@ const Prompt = forwardRef<HTMLInputElement, promptProp>(
           type="text"
           placeholder={placeholder}
           autoFocus={autoFocus}
-          onChange={onChange}
+          onChange={onPromptChange}
           onFocus={onFocus}
           onBlur={onBlur}
-          value={promptValue}
+          value={value}
         />
       </div>
     );

@@ -82,6 +82,7 @@ const MultiSelect = ({
   onSelectButtonClick = () => {},
   labelAccessor = 'label',
   valueAccessor = 'value',
+  searchAccessor = valueAccessor,
   withSelectButton = variant === 'machines' ? true : false,
   loadMoreOptions = () => {},
   onEnter = () => {},
@@ -255,7 +256,7 @@ const MultiSelect = ({
     if (input.length > 2) {
       const matchedOption = allOptions.find(
         (option) =>
-          getLabel(option, valueAccessor)?.toLowerCase() === input.toLowerCase()
+          getLabel(option, searchAccessor)?.toLowerCase() === input.toLowerCase()
       );
       setDisplayIcon(!matchedOption);
     } else {
@@ -524,6 +525,7 @@ const MultiSelect = ({
                 withSelectButton={withSelectButton}
                 labelAccessor={labelAccessor}
                 valueAccessor={valueAccessor}
+                searchAccessor={searchAccessor}
                 loadMoreOptions={loadMoreOptions}
                 isAllSelected={isAllSelected}
                 onToggleAllSelect={onToggleAllSelect}

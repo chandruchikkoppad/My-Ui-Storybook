@@ -348,7 +348,7 @@ export default function reducer(
     }
 
     case Actions.FORMATE_PAINTER: {
-      if ( !state.editable) {
+      if (!state.editable) {
         return state;
       }
       const copiedStyle = applyFormatePainter(state.model.data, state.active);
@@ -545,11 +545,12 @@ export default function reducer(
         const commit: Types.StoreState['lastCommit'] = [];
         for (const point of selectedRange || []) {
           const currentCell = Matrix.get(point, state.model.data);
+          const updateWithStyle = { ...currentCell, value: cell?.value };
           commit.push({
-            prevCell: currentCell || null,
-            nextCell: cell || null,
+            prevCell: currentCell || EmptyCell,
+            nextCell: EmptyCell,
           });
-          newData = Matrix.set(point, cell, newData);
+          newData = Matrix.set(point, updateWithStyle, newData);
         }
 
         return {
@@ -610,7 +611,7 @@ export default function reducer(
 
         acc.data = Matrix.set(
           nextPoint,
-          { value: undefined, ...currentCell, ...cell },
+          { value: '', ...currentCell, ...cell },
           nextData
         );
         acc.commit = commit;

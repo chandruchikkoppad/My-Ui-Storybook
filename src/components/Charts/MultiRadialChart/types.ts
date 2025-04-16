@@ -16,6 +16,7 @@ export interface MultiRadialChartProps {
   barValues: BarValue[];
   legendType?: LegendType;
   isLegendDetails?: boolean;
+  isPillValueVisible?:boolean;
   labelFontSize?: number,
   subLabelFontSize?: number
   gapAngle?: number;

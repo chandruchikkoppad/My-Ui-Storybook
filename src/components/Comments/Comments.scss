@@ -11,7 +11,6 @@
   }
   .commentContainer {
     width: 100%;
-    max-width: fit-content;
     position: relative;
     &.no-border {
       border-left: none;
@@ -19,6 +18,15 @@
       height: 12vh;
     }
   }
+
+  .comment-reply-container {
+    position: relative;
+
+    .inputContainer {
+      max-width: 650px;
+    }
+  }
+
   .ff-editable-container {
     display: flex;
     flex-direction: column;
@@ -75,9 +83,8 @@
     }
   }
 
-  .first-comment {
+  .ff-first-comment {
     width: 100%;
-    min-height: 74px;
     border-radius: 8px;
     display: flex;
     flex-direction: column;
@@ -87,7 +94,12 @@
     .ff-comment-heading {
       padding: 8px;
     }
+
+    &.no-border {
+      border: none;
+    }
   }
+
   .input-wrapper {
     position: relative;
     display: flex;
@@ -96,9 +108,15 @@
 
   .inputContainer {
     display: flex;
+    max-width: 620px;
   }
 
-  .inputContainer__input {
+  .typography-text {
+    max-width: 610px;
+    overflow-wrap: anywhere;
+  }
+
+  .inputContainer_input {
     padding: 5px;
     border: 1px solid var(--ff-comment-border-color);
     border-radius: 4px;
@@ -196,6 +214,7 @@
   }
   .ff-message-name {
     @extend .fontSm;
+    fontweight: 600;
   }
   .ff-message-time {
     color: var(--ff-comment-text-color);

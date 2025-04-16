@@ -11,8 +11,8 @@ const StateDropdown = ({
   handleDropdownOptionsClick,
   disabled = false,
   isOnlyReviewer = false,
-  showBorder = true,
-  zIndex = 100,
+  showBorder = false,
+  zIndex = 200,
 }: StateDropdownProps) => {
   const currentState = value.toUpperCase();
 
@@ -36,7 +36,7 @@ const StateDropdown = ({
         { label: 'Review', value: 'Review' },
       ];
     }
-    if (isReviewer && !isApprovePage) {
+    if (isReviewer && !isApprovePage && currentState !== 'REVIEW') {
       return [
         {
           label: currentState === 'REJECTED' ? 'Rejected' : 'New',
@@ -93,6 +93,9 @@ const StateDropdown = ({
         disableInput={true}
         selectedOptionColor="var(--brand-color)"
         optionZIndex={zIndex}
+        background="var(--state-dropdown-bg-color)"
+        borderRadius="4px"
+        width="96px"
       />
     ) : (
       <Typography

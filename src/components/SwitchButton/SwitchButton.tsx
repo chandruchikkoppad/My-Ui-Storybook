@@ -12,7 +12,11 @@ const SwitchButton: React.FC<SwitchButtonProps> = ({
   return (
     <div className="ff-switch-container">
       {tabList.map((tab) => (
-        <Tooltip key={tab.name} title={tab.tooltip} zIndex={1000}>
+        <Tooltip
+          key={tab.name}
+          title={selected === tab.name ? null : tab.tooltip}
+          zIndex={1000}
+        >
           <div
             className={`ff-switch-button ${
               selected === tab.name ? 'active' : ''

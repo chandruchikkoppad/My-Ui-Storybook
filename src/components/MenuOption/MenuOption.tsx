@@ -14,6 +14,7 @@ import {
   MenuOptionProps,
   OptionClick,
 } from './types';
+
 const Option = ({ option, onClick }: OptionProps) => (
   <div
     className={classNames('ff-options', {
@@ -38,10 +39,12 @@ const Option = ({ option, onClick }: OptionProps) => (
     </Typography>
   </div>
 );
+
 const calculatePosition = (
   menuPosition: { top: any; left: any; height: any; width: any },
   dropdownPlacement: string | undefined,
-  optionCardHeight: number
+  optionCardHeight: number,
+  optionCardWidth?: number
 ) => {
   const { top, left, height, width } = menuPosition;
   const availableSpace = {
@@ -57,24 +60,37 @@ const calculatePosition = (
 
   switch (dropdownPlacement) {
     case 'top':
-      newTop = availableSpace.top > optionCardHeight + gap
-        ? top - optionCardHeight - gap
-        : top + height + gap;
+      newTop =
+        availableSpace.top > optionCardHeight + gap
+          ? top - optionCardHeight - gap
+          : top + height + gap;
       break;
     case 'down':
-      newTop = availableSpace.bottom > optionCardHeight + gap
-        ? top + height + gap
-        : top - optionCardHeight - gap;
+      newTop =
+        availableSpace.bottom > optionCardHeight + gap
+          ? top + height + gap
+          : top - optionCardHeight - gap;
       break;
     case 'left':
-      newLeft = availableSpace.left > width + gap
-        ? left - width - gap
-        : left + width + gap;
+      newLeft =
+        availableSpace.left > width + gap
+          ? left - width - gap
+          : left + width + gap;
       break;
     case 'right':
-      newLeft = availableSpace.right > width + gap
-        ? left + width + gap
-        : left - width - gap;
+      newLeft =
+        availableSpace.right > width + gap
+          ? left + width + gap
+          : left - width - gap;
+      break;
+    case 'bottomLeft':
+      newTop =
+        availableSpace.bottom > optionCardHeight + gap
+          ? top + height + gap
+          : top - optionCardHeight - gap;
+      if (optionCardWidth) {
+        newLeft = left - optionCardWidth + width;
+      }
       break;
     default:
       newTop = top;
@@ -103,16 +119,19 @@ const OptionCard = ({
   const currentTheme = themeContext?.currentTheme;
   const optionCardRef = useRef<HTMLDivElement>(null);
   const [optionCardHeight, setOptionCardHeight] = useState(0);
+  const [optionCardWidth, setOptionCardWidth] = useState(0);
   useClickOutside(menuRef, closeDropdown, [optionCardRef]);
   useEffect(() => {
     if (optionCardRef.current) {
       setOptionCardHeight(optionCardRef.current.offsetHeight);
+      setOptionCardWidth(optionCardRef.current.offsetWidth);
     }
   }, [options]);
   const style = calculatePosition(
     menuPosition,
     dropdownPlacement,
-    optionCardHeight
+    optionCardHeight,
+    optionCardWidth
   );
   return createPortal(
     <div
@@ -125,13 +144,22 @@ const OptionCard = ({
       style={{ ...style, zIndex, margin: isAddResourceButton ? '0px' : '4px' }}
       ref={optionCardRef}
     >
-      {options.map((opt) => (
-        !opt.hide && <Option key={opt.value} option={opt} onClick={onClick} />
-      ))}
+      {options.map(
+        (opt) =>
+          !opt.hide && (
+            <Tooltip
+              title={opt?.tooltipForOption ? opt?.tooltipForOption : opt?.label}
+              placement={opt?.tooltipPlacementForOption}
+            >
+              <Option key={opt.value} option={opt} onClick={onClick} />
+            </Tooltip>
+          )
+      )}
     </div>,
     document.body
   );
 };
+
 const MenuOption = ({
   labelName,
   iconName,
@@ -176,14 +204,51 @@ const MenuOption = ({
     };
   }, [isClicked, targetRef]);
 
+  const getScrollableParent = (
+    element: HTMLElement | null
+  ): HTMLElement | null => {
+    if (!element) return null;
+
+    let parent: HTMLElement | null = element.parentElement;
+
+    while (parent) {
+      const { overflowY, overflowX } = window.getComputedStyle(parent);
+
+      if (
+        (/(auto|scroll|overlay)/.test(overflowY) &&
+          parent.scrollHeight > parent.clientHeight) ||
+        (/(auto|scroll|overlay)/.test(overflowX) &&
+          parent.scrollWidth > parent.clientWidth)
+      ) {
+        return parent;
+      }
+
+      parent = parent.parentElement;
+    }
+
+    return document.documentElement;
+  };
+
   useEffect(() => {
+    if (!menuRef.current) return;
+    const scrollableParent = getScrollableParent(menuRef.current);
+
     const handleScroll = () => {
-      setIsClicked(false); // Close menu on scroll
+      setIsClicked(false);
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
+    // Attach scroll event to detected parent or window
+    scrollableParent?.addEventListener('scroll', handleScroll, {
+      passive: true,
+    });
+
+    if (scrollableParent !== document.documentElement) {
+      // Also attach to window if it's not the detected parent
+      window.addEventListener('scroll', handleScroll, { passive: true });
+    }
 
     return () => {
+      scrollableParent?.removeEventListener('scroll', handleScroll);
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);

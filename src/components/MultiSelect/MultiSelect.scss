@@ -208,8 +208,7 @@
     }
     &--disabled {
       opacity: 0.5;
-      pointer-events: none;
-
+      cursor: not-allowed;
       border: 1px solid var(--multi-select-border);
       .ff-multiselect .ff-multiselect__main .active-default-label {
         color: var(--multi-select-border);

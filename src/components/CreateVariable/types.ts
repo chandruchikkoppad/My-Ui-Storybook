@@ -16,7 +16,7 @@ export interface CreateVariableProps {
   /**
    * Value for the variable to be created
    */
-  value: string;
+  variableValue: string;
   /**
    * List for the variable types
    */
@@ -42,7 +42,7 @@ export interface CreateVariableProps {
   /**
    * onChange of value
    */
-  onValueChange: (value: string) => void;
+  onValueChange: (value: string, dropdownItem?: DynamicObj) => void;
   /**
    * Hide value
    */
@@ -64,4 +64,16 @@ export interface CreateVariableProps {
    * Disable the checkbox
    */
   disabled?: boolean;
+   /**
+   * Hide or show dropdown for hash values
+   */
+  isHash?: boolean;
+   /**
+   * Stores the files data
+   */
+  dataFiles?: DynamicObj[];
+  /**
+   * Show or hide password icon
+   */
+  showHidePasswordIcon?: boolean;
 }

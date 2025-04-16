@@ -19,7 +19,6 @@
     border-radius: 12px;
     @include mixins.center-content();
     background-color: var(--secondary-icon-color);
-
     .ff-icon-color {
       path {
         color: var(--primary-icon-color);
@@ -31,8 +30,9 @@
     color: var(--secondary-icon-color);
     @include mixins.center-content();
   }
+  background-color: var(--hover-color);
 
-  &:hover {
+  &:not(:disabled):hover {
     background-color: var(--secondary-icon-color);
 
     .icon-name {
@@ -55,6 +55,15 @@
       }
     }
   }
+  &:disabled {
+    background-color: var(--disable-icon-btn-bg-color);
+    .icon-name {
+      color: var(--primary-icon-color);
+    }
+  }
+  .icon-name {
+    color: var(--secondary-icon-color);
+  }
 }
 
 .ff-plus-no-icon {
@@ -69,4 +78,9 @@
   .icon-name {
     font-weight: normal;
   }
+}
+
+.ff-plus-disabled {
+  opacity: 0.2;
+  cursor: not-allowed;
 }

@@ -87,11 +87,9 @@
     .ff-tab-plus-icon {
       cursor: pointer;
       padding: 8px;
-
-      &:hover {
-        background-color: #71347b1a; //todo need to replace this color once it is available in the design system
-        border-radius: 4px;
-      }
     }
+  }
+  .ff-tab-content {
+    width: inherit;
   }
 }

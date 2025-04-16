@@ -7,13 +7,19 @@ type ExcelContextMenuProps = {
   contextMenu: ContextMenuState;
   position: { x: number; y: number };
   editable: boolean;
+  disableDeleteOption: boolean;
 };
 
 const ExcelContextMenu: React.FC<ExcelContextMenuProps> = ({
   contextMenu,
   position,
   editable,
+  disableDeleteOption,
 }) => {
+  const checkDelete = (label: string): boolean => {
+    return label.includes('Delete');
+  };
+
   return (
     editable && (
       <div
@@ -25,7 +31,10 @@ const ExcelContextMenu: React.FC<ExcelContextMenuProps> = ({
         style={{ left: position.x, top: position.y }}
       >
         {contextMenu.options.map((option) => {
-          if (!option.disable) {
+          if (
+            !option.disable &&
+            (!checkDelete(option.label) || !disableDeleteOption)
+          ) {
             return (
               <div
                 key={option.label}
@@ -40,7 +49,7 @@ const ExcelContextMenu: React.FC<ExcelContextMenuProps> = ({
                     height={16}
                     width={16}
                     color={
-                      option.label.includes('Delete')
+                      checkDelete(option.label)
                         ? 'var(--label-edit-error-text)'
                         : 'var(--brand-color)'
                     }

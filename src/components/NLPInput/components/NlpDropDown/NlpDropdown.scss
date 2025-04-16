@@ -51,7 +51,12 @@
       height: 32px;
       text-overflow: ellipsis;
       cursor: pointer;
-      &:hover {
+      &:hover,
+      &.ff-nlp-option--selected {
+        background-color: var(--nlp-hover-color);
+      }
+      &:focus {
+        outline: none;
         background-color: var(--nlp-hover-color);
       }
     }

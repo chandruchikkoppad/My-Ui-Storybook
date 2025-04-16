@@ -1,5 +1,4 @@
 import * as Point from './point';
-
 /** A two-dimensional array of given type T in rows and columns */
 export type Matrix<T> = Array<Array<T | undefined>>;
 
@@ -127,6 +126,33 @@ export function mutableSet<T>(
 //   return nextMatrix;
 // }
 
+const convertPxToPt = (px: string): number => {
+  const numericPx = parseFloat(px.replace('px', ''));
+  const pt = numericPx / 1.33;
+  return pt;
+};
+
+const EmptyCell = {
+  value: '',
+  inputType: { type: 'text' },
+  readOnly: false,
+  style: {
+    color: '#000000', // Needed hexacode for backend
+    backgroundColor: '#ffffff', // Needed hexacode for backend
+    borderColor: '#c9c9c9', // Needed hexacode for backend
+    textDecoration: 'normal',
+    borderRight: `1px solid var(--excel-header-border)`,
+    borderLeft: `1px solid var(--excel-header-border)`,
+    borderTop: `1px solid var(--excel-header-border)`,
+    borderBottom: `1px solid var(--excel-header-border)`,
+    fontSize: `${convertPxToPt('9')}`,
+    fontWeight: 'normal',
+    fontStyle: 'normal',
+    fontFamily: 'Poppins',
+    textAlign: 'left',
+  },
+};
+
 export function unset<T>(point: Point.Point, matrix: Matrix<T>): Matrix<T> {
   // Check if the point exists in the matrix
   if (!has(point, matrix)) {
@@ -142,7 +168,7 @@ export function unset<T>(point: Point.Point, matrix: Matrix<T>): Matrix<T> {
     // Create a shallow copy of the row
     const nextRow = [...currentRow];
     // Avoid deleting to preserve first row length
-    nextRow[point.column] = undefined;
+    nextRow[point.column] = EmptyCell as T | undefined;
 
     // Update the matrix with the modified row
     nextMatrix[point.row] = nextRow;

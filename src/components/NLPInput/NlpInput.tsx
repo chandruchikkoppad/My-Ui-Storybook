@@ -14,6 +14,7 @@ import './NLPInput.scss';
 import usePortalPosition from '../../hooks/usePortalPosition';
 import Typography from '../Typography';
 import ChipsAccordion from './components/ChipsFolder/ChipsAccordion';
+import { truncateText } from '../../utils/truncateText/truncateText';
 
 const nlpInputReducer = (
   state: SelectState,
@@ -111,6 +112,7 @@ const NlpInput = ({
   selectedChips,
   loadMoreOptions = () => {},
   isWebservice = true,
+  closeInputOnOutsideClick = () => {},
 }: SelectProps) => {
   const initialState: SelectState = {
     isInputFocused: false,
@@ -190,6 +192,7 @@ const NlpInput = ({
       handleSelectAction('SHOW_ERROR');
     } else {
       handleSelectAction('BLUR_INPUT');
+      closeInputOnOutsideClick?.();
     }
   };
 
@@ -265,11 +268,12 @@ const NlpInput = ({
             }}
             onFocus={() => handleSelectAction('FOCUS_INPUT')}
             onChange={onSelectInputChange}
-            value={value}
+            value={truncateText(value,70)}
             disabled={disabled}
             autoComplete="off"
             spellCheck="false"
             ref={InputRef}
+            autoFocus
           />
 
           <div className="ff-nlp-icon-container">

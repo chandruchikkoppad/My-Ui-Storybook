@@ -17,7 +17,6 @@ const Select: FC<SelectProps> = ({
   selectedOption = { label: '', value: '' },
   onChange = () => {},
   errorMsg = '',
-  error = false,
   className = '',
   optionZIndex = 1500,
   disabled = false,
@@ -39,8 +38,13 @@ const Select: FC<SelectProps> = ({
   modalJSXProps = <></>,
   recurrence = false,
   showArrowIcon = true,
+  showClearIcon = false,
+  handelClear = () => {},
   showOptions = { open: false, toggle: false },
   tooltip = false,
+  background = '',
+  borderRadius = '0px',
+  noResultsMessage,
 }) => {
   const selectWidth = typeof width === 'number' ? `${width}px` : width;
   const memoizedOptionsList = useMemo(() => optionsList, [optionsList]);
@@ -206,13 +210,18 @@ const Select: FC<SelectProps> = ({
     <div
       className={`ff-select-wrapper ${className}`}
       ref={selectWrapperRef}
-      style={{ height: `${height}px`, width: `${selectWidth}` }}
+      style={{
+        height: `${height}px`,
+        width: `${selectWidth}`,
+        background: `${background}`,
+        borderRadius: `${borderRadius}`,
+      }}
     >
       <div
         className={classNames('ff-select', {
           'ff-select__focus': showDropdownOptions,
           'ff-select__disabled': disabled,
-          'ff-select__error': !!errorMsg || error,
+          'ff-select__error': !!errorMsg,
           'ff-select__error__focused': !!errorMsg && showDropdownOptions,
           'ff-select__no_border': !showBorder,
         })}
@@ -261,7 +270,12 @@ const Select: FC<SelectProps> = ({
                 className="ff-select-arrows"
                 height={8}
                 width={12}
+                color={'var(--brand-color)'}
+                z-index={9999}
               />
+            )}
+            {showClearIcon && (
+              <Icon name="close" height={12} width={12} onClick={handelClear} />
             )}
           </div>
         )}
@@ -280,7 +294,7 @@ const Select: FC<SelectProps> = ({
           </Typography>
         )}
       </div>
-      {(errorMsg || error) && (
+      {errorMsg && (
         <Typography
           as="div"
           lineHeight="15px"
@@ -319,6 +333,8 @@ const Select: FC<SelectProps> = ({
                 recurrence={recurrence}
                 valueAccessor={valueAccessor}
                 showArrowIcon={showArrowIcon}
+                showClearIcon={showClearIcon}
+                noResultsMessage={noResultsMessage}
               />,
               document.body
             )}

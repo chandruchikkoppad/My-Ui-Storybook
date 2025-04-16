@@ -208,6 +208,7 @@ export interface FilePreviewProps {
   onUploadFile?: VoidFunction;
   isUploadIcon?: boolean;
   isRemoveDisabled?: boolean;
+  isError?:boolean;
 }
 
 export interface RadioFilePreviewProps {

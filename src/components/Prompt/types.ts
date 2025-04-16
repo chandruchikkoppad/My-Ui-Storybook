@@ -12,11 +12,11 @@ export interface promptProp {
   tooltipTitle?: string;
   value: string;
 
-  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onPromptChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 
   onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
 
   onFocus?: (event: React.FocusEvent<HTMLInputElement>) => void;
 
-  submitPrompt?:(query: string) => void;
+  submitPrompt?: (query: string) => void;
 }

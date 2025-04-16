@@ -8,7 +8,7 @@
   width: 100%;
 
   &--disabled {
-    border: 1px solid var(--input-default-border-color);
+    border: none;
     background: var(--input-disabled-background-color);
     border-radius: 4px;
     opacity: 0.5;
@@ -25,7 +25,8 @@
       outline: none;
       line-height: 18px;
       @extend .fontSm;
-      &--number {
+      &--number,
+      &--isSearchIcon {
         padding: 6px 24px 6px 8px;
       }
       &--medium {
@@ -33,7 +34,7 @@
       }
       &:disabled {
         cursor: not-allowed;
-        border: none;
+        border: 1px solid var(--input-default-border-color);
         background: transparent;
       }
       &::placeholder {
@@ -199,5 +200,9 @@ input[type='number']::-webkit-outer-spin-button {
   }
   &-label-error {
     top: 15px;
+  }
+  &-searchIcon {
+    top: 50%;
+    cursor: pointer;
   }
 }

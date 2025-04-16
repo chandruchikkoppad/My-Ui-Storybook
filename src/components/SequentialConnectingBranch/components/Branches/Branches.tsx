@@ -13,6 +13,8 @@ import { MachineType } from '../../../MachineInputField/types';
 import Tooltip from '../../../Tooltip';
 import DataSetTooltip from '../DatasetTooltip/DataSetTooltip';
 import { isEmptyObject } from '../../../../utils/isEmptyObject/isEmptyObject';
+import { useEnvironmentalVariableMaps } from '../../context/EnvironmentVariableMapsContext';
+
 
 const Branches = ({
   machineInstances,
@@ -36,7 +38,12 @@ const Branches = ({
   const lastMachineInstance = checkEmpty(
     machineInstances[machineColumnCount - 1]
   );
-
+  const environmentalMaps =useEnvironmentalVariableMaps ();
+  const {
+    testDataSetMap = {},
+    globalVariableMap = {},
+    projectVariableMap = {},
+  } = environmentalMaps || {};
   const showLEndArrow = () =>
     readOnly
       ? !lastMachineInstance && !checkEmpty(nextRowMachineInstance)
@@ -213,10 +220,12 @@ const Branches = ({
                     contentReverse={!evenRow}
                     modalId={`${machineInstanceId}-runCount-${runCount - 1}`}
                     onClick={() =>
-                      onUpdateAddBrowserInstance(
-                        `${machineInstanceId}-runCount-0`,
-                        machineInstance as ExecutionContext
-                      )
+                      runCount == 1 ||scriptType!=='Automation'
+                        ? onUpdateAddBrowserInstance(
+                            `${machineInstanceId}-runCount-0`,
+                            machineInstance as ExecutionContext
+                          )
+                        : null
                     }
                     trucatedLable={!['web & mobile'].includes(projectType)}
                     scriptType={scriptType}
@@ -258,9 +267,13 @@ const Branches = ({
                             <>
                               <DataSetTooltip
                                 datSetToolTip={{
-                                  peVariableSetName,
-                                  globalVariableSetName,
-                                  testDataSetName,
+                                  peVariableSetName:
+                                    projectVariableMap[peVariableSetId] || '',
+                                  globalVariableSetName:
+                                    globalVariableMap[globalVariableSetId] ||
+                                    '',
+                                  testDataSetName:
+                                    testDataSetMap[testDataSetId] || '',
                                 }}
                               />
                             </>
@@ -286,7 +299,7 @@ const Branches = ({
                           <Tooltip
                             placement="bottom"
                             title={
-                              runCount >= maxRunCount
+                              numberOfRuns >= maxRunCount
                                 ? `Maximum ${maxRunCount} runs are allowed.`
                                 : ''
                             }
@@ -294,7 +307,7 @@ const Branches = ({
                             <div
                               className="ff-environment-run-container"
                               onClick={
-                                runCount > maxRunCount
+                                numberOfRuns >= maxRunCount
                                   ? undefined
                                   : () => onAddRunBrowser(machineInstanceId)
                               }
@@ -305,14 +318,15 @@ const Branches = ({
                                 color="var(--ff-connecting-branch-color)"
                                 hoverEffect
                                 disabled={
-                                  runCount >= maxRunCount ? true : false
+                                  numberOfRuns >= maxRunCount ? true : false
                                 }
                               />
                               <Typography
                                 className="ff-connecting-run-text"
                                 color="var(--ff-connecting-branch-color)"
                                 style={{
-                                  opacity: runCount >= maxRunCount ? 0.5 : 1,
+                                  opacity:
+                                    numberOfRuns >= maxRunCount ? 0.5 : 1,
                                 }}
                               >
                                 Run

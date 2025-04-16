@@ -50,7 +50,6 @@ const defaultArgs = {
   overlay: false,
   isFooterRequired: true,
   footerContent: null,
-  backButtonIcon: <Icon name="error" height={16} width={16} />,
   onCloseIconClick: () => alert('Close icon clicked!'),
 };
 export const Default: Story = {
@@ -58,6 +57,7 @@ export const Default: Story = {
     ...defaultArgs,
     size: 'medium',
     showHeader: true,
+    isScrollBar: false,
   },
 };
 export const WithoutHeader: Story = {
@@ -116,6 +116,7 @@ export const WithCustomZIndex: Story = {
   args: {
     ...defaultArgs,
     zIndex: 1050,
+    _isExpanded: true,
   },
   parameters: {
     docs: { disable: true },
@@ -145,6 +146,7 @@ export const Controlled: Story = {
             size="x-large"
             overlay
             onCloseIconClick={() => setShowXLDrawer(false)}
+            isClickOutside
           >
             <span>Drawer Body XL</span>
             <Button
@@ -165,6 +167,10 @@ export const Controlled: Story = {
             size="large"
             overlay
             onCloseIconClick={() => setShowLargeDrawer(false)}
+            isBackButtonVisible
+            onBackButtonClick={() => {
+              setShowLargeDrawer(false);
+            }}
           >
             <span>Drawer Body Large</span>
             <Button

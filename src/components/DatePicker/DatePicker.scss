@@ -20,7 +20,7 @@
         padding-left: 2rem;
         height: 32px;
         border-radius: 5px;
-        border: 1px solid var(--border-color);
+        border: 1px solid var(--ff-select-border-color);
         @extend .fontXs;
         color: var(--status-skipped-text-color);
         line-height: 15px;
@@ -28,6 +28,10 @@
 
         &:focus {
           outline: none;
+        }
+
+        &:disabled{
+          cursor: no-drop;
         }
       }
 

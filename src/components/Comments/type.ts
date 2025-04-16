@@ -26,7 +26,11 @@ export type HandleEditComment = (
 
 // Handles deleting a comment
 export type HandleDeleteComment = (commentId: string) => void;
-export type HandleNodeFunction = (commentId: string, value: string) => void;
+export type HandleNodeFunction = (
+  commentId: string,
+  value: string,
+  mentionedUsersEmail: string[]
+) => void;
 export interface CommentsProps {
   commentsData: CommentType[];
   handleAddComment: any;
@@ -40,6 +44,12 @@ export interface CommentsProps {
     modifiedByUname: string;
   };
   isDisable?: boolean;
+  userDetails?: any;
+  createdByID?: string;
+  createdBy?: string;
+  rowBreakCharCount?: number;
+  isVewMode?: boolean;
+  showTextarea?: boolean;
 }
 
 export interface CommentProps {
@@ -50,4 +60,17 @@ export interface CommentProps {
   depth?: number;
   commentedData?: CommentType[];
   isDisable?: boolean;
+  userDetails?: any;
+  isEditDeleteActionAllowed?: boolean;
+  createdByID?: string;
+  rowBreakCharCount?: number;
+  isVewMode?: boolean;
+}
+
+export interface MentionUsers {
+  hasAtSymbol: boolean;
+  mentionPosition: { top: number; left: number };
+  usersObj: { id: string; name: string; emailId: string }[];
+  optionClicked: (_name: string, _emailId: string) => void;
+  charsAfterAt?: string;
 }

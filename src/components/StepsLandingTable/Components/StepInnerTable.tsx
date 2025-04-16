@@ -4,8 +4,6 @@ import {
   cloneElement,
   isValidElement,
   ReactElement,
-  useMemo,
-  type FC,
 } from 'react';
 import './StepInnerTable.scss';
 import { isFunction } from '../../../assets/utils/functionUtils';
@@ -13,191 +11,19 @@ import classNames from 'classnames';
 import {
   ColumnsProps,
   DataProps,
-  PrePostTableProps,
+  StepInnerTableProp,
   SelectedItemProps,
 } from './Types';
-import { prepareData } from '../../../utils/TableCell/TableCell';
-import Checkbox from '../../Checkbox';
-import Typography from '../../Typography';
-import Icon from '../../Icon';
 import { closestCorners, DndContext, DragEndEvent } from '@dnd-kit/core';
 import {
   SortableContext,
-  useSortable,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
-
-import StepGroupAccordions from './StepGroupAccordions';
-import { TableMainRowProp } from './Types';
 import { ffid } from '../../../utils/ffID/ffid';
 import { appendNewRow } from '../../../utils/AppendNewRow/AppendNewRow';
+import StepTableMainRow from './StepTableMainRow';
 
-const SortableRow: FC<TableMainRowProp> = ({
-  row,
-  columns,
-  tableBodyRowClass,
-  handleOnclick,
-  tableDataTextColor,
-  withCheckbox,
-  onSelectClick,
-  draggable,
-  indexNumber,
-  tableType = '',
-  viewModeId,
-  ViewComponent,
-  handleClick,
-  selectedRows,
-  handleStepGroupExpand,
-  isStepGroupExpanded,
-  dataLength,
-}) => {
-  const isDisabled = useMemo(
-    () => row?.isDisabled || (dataLength ?? 0) <= 1 || row.isSpecialNlp,
-    [row, dataLength]
-  );
-
-  const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({
-      id: row?._id || row?.stepId,
-      disabled: isDisabled,
-    });
-
-  const style = useMemo(
-    () => ({
-      transform: CSS.Transform.toString(transform),
-      transition,
-    }),
-    [transform, transition]
-  );
-  const key = row._id || row.stepId;
-
-  const getPadding = (index: number): string => {
-    if (index !== 0) {
-      return tableType === 'Steps' ? '4px 8px' : '7px 8px';
-    }
-    if (tableType === 'Steps') {
-      return draggable ? '4px 8px 4px 0px' : '4px 8px 4px 24px';
-    }
-    return '4px 8px 4px 24px';
-  };
-
-  const renderDragHandle = () => (
-    <div
-      className={isDisabled ? 'ff-table-drag' : 'ff-table-drag-icon'}
-      {...listeners}
-      {...attributes}
-    >
-      <span
-        style={{
-          opacity: isDisabled ? '0' : '',
-          cursor: isDisabled ? 'default' : 'grab',
-        }}
-      >
-        <Icon name="drag" />
-      </span>
-    </div>
-  );
-
-  const renderCheckbox = () => (
-    <span
-      className={
-        tableType && selectedRows[tableType]?.has(row.stepId)
-          ? ''
-          : 'ff-table-checkbox'
-      }
-    >
-      <Checkbox
-        onChange={(e) => onSelectClick(tableType, row, e.target.checked)}
-        checked={!!selectedRows[tableType]?.has(row.stepId)}
-      />
-    </span>
-  );
-
-  const renderGroupToggle = () => (
-    <div
-      className={`ff-accordion-arrow ${
-        isStepGroupExpanded?.(row?.stepId) ? 'expanded' : ''
-      }`}
-    >
-      <Icon
-        name="arrow_right"
-        className="steps-arrow-svg"
-        color={
-          isStepGroupExpanded?.(row?.stepId)
-            ? 'var(--brand-color)'
-            : 'var(--default-color)'
-        }
-        width={16}
-        height={16}
-        onClick={() => handleStepGroupExpand?.({ ...row, tableType })}
-      />
-    </div>
-  );
-  return (
-    <>
-      <tr
-        ref={setNodeRef}
-        style={style}
-        key={key}
-        className={classNames(tableBodyRowClass, {
-          'disabled-inner-row': isDisabled,
-        })}
-      >
-        {columns?.map((column: any, index: number) => {
-          return (
-            <>
-              <td
-                key={`${column.accessor}-${ffid()}`}
-                style={{
-                  padding: getPadding(index),
-                  maxWidth: column.width,
-                }}
-                onClick={() => handleOnclick(column, row, indexNumber)}
-              >
-                <Typography
-                  as="div"
-                  color={tableDataTextColor}
-                  className="ff-data-checkbox-container"
-                >
-                  {index === 0 && draggable && renderDragHandle()}
-                  {index === 0 && withCheckbox && renderCheckbox()}
-                  <div
-                    className="ff-margin-container"
-                    style={{
-                      marginLeft: index === 0 ? row.marginLeft : 0,
-                    }}
-                  >
-                    {prepareData(row, column, indexNumber, tableType)}
-
-                    {['Group', 'PRE', 'POST', 'Script'].includes(row.type) &&
-                      index === 0 &&
-                      renderGroupToggle()}
-                    {column.extraInfo?.({ row, indexNumber, tableType })}
-                  </div>
-                </Typography>
-              </td>
-            </>
-          );
-        })}
-      </tr>
-      {isStepGroupExpanded?.(row?.stepId) && (
-        <StepGroupAccordions
-          data={row.data}
-          columnCount={columns.length}
-          viewModeId={viewModeId}
-          ViewComponent={ViewComponent}
-          handleClick={handleClick}
-          tableType={tableType}
-          handleStepGroupExpand={handleStepGroupExpand}
-          isStepGroupExpanded={isStepGroupExpanded}
-        />
-      )}
-    </>
-  );
-};
-
-const PrePostTable = ({
+const StepInnerTable = ({
   data = [],
   columns = [],
   headerType,
@@ -226,7 +52,9 @@ const PrePostTable = ({
   selectedRows,
   handleStepGroupExpand,
   isStepGroupExpanded,
-}: PrePostTableProps) => {
+  stepPartialSelect,
+  isViewPrivilegeMode,
+}: StepInnerTableProp) => {
   const observerRef = useRef<IntersectionObserver | null>(null);
   useEffect(() => {
     const scrollContainer = document.getElementById(
@@ -363,7 +191,7 @@ const PrePostTable = ({
                   );
 
                   const renderSortableRow = () => (
-                    <SortableRow
+                    <StepTableMainRow
                       row={row}
                       indexNumber={index}
                       columns={columns}
@@ -381,6 +209,8 @@ const PrePostTable = ({
                       handleStepGroupExpand={handleStepGroupExpand}
                       isStepGroupExpanded={isStepGroupExpanded}
                       dataLength={data?.length}
+                      stepPartialSelect={stepPartialSelect}
+                      isViewPrivilegeMode={isViewPrivilegeMode}
                     />
                   );
 
@@ -406,4 +236,4 @@ const PrePostTable = ({
   );
 };
 
-export default PrePostTable;
+export default StepInnerTable;

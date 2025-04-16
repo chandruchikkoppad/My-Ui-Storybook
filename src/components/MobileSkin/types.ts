@@ -30,4 +30,8 @@ export interface MobileSkinProps {
    * takes the icons details like icon name , title, onClick event, height , width, etc but name is must
    */
   navbarIcons?: Array<iconDetails>;
+    /**
+   * Optional background color for the mobile container
+   */
+    background?: string;
 }

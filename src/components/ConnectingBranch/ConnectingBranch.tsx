@@ -14,6 +14,7 @@ import { checkEmpty } from '../../utils/checkEmpty/checkEmpty';
 
 const ConnectingBranch: React.FC<ConnectBranchProps> = ({
   data: machineData,
+  noOfScripts,
   getChildNodeComponent,
   getParentNodeComponent,
   getParentNodeComponentActionItems,
@@ -115,7 +116,7 @@ const ConnectingBranch: React.FC<ConnectBranchProps> = ({
               <div className="ff-script-count-container">
                 <div className="ff-script-count-box">
                   <Typography>
-                    {machineData?.machines?.totalNoScript}
+                    {noOfScripts}
                   </Typography>
                   <Typography>Scripts</Typography>
                 </div>

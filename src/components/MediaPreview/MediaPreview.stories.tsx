@@ -12,6 +12,12 @@ export default meta;
 
 type Story = StoryObj<typeof MediaPreview>;
 
+export const IconPreview: Story = {
+  args: {
+    iconName: 'execution',
+    isMediaIcon: true,
+  },
+};
 export const ImagePreview: Story = {
   args: {
     src: 'src/assets/image/Screenshot.png',

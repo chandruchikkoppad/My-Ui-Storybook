@@ -51,7 +51,7 @@ const Template: StoryFn<ConditionalDropdownProps> = (args) => {
           isOpen={openCreateVariable}
           onClose={() => setOpenCreateVariable(false)}
           variableName={variableName}
-          value={variableValue}
+          variableValue={variableValue}
           hideValue={hideValue}
           handleSubmit={() => {
             alert('Variable Created');

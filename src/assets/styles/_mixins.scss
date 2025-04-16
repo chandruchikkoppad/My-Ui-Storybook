@@ -45,3 +45,9 @@
   align-items: center;
   justify-content: end;
 }
+
+@mixin flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

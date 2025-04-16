@@ -13,6 +13,7 @@ import { ConditionalDropdownProps, dynamicObject } from './types';
 import './ConditionalDropdown.scss';
 import OptionsDropdown from './OptionsDropdown';
 import Tooltip from '../Tooltip';
+import Typography from '../Typography';
 
 const ConditionalDropdown = forwardRef<
   HTMLInputElement,
@@ -35,9 +36,11 @@ const ConditionalDropdown = forwardRef<
       helperText = '',
       error,
       autoComplete = 'off',
+      showHidePasswordIcon = true,
       required = false,
       formProps = {},
       onlyDropdown = false,
+      type,
       ...props
     },
     ref
@@ -130,14 +133,22 @@ const ConditionalDropdown = forwardRef<
       if (inputRef.current) {
         const { selectionStart, selectionEnd } = inputRef.current;
         const dollarSyntax = `{${
-          item.type === 'LOCAL'
+          item.parentVariableType === 'STEPGROUP'
+            ? 'SGV'
+            : item.type === 'LOCAL'
             ? 'LV'
             : item.type === 'GLOBAL'
             ? 'GV'
             : item.type === 'GROUP'
-            ? 'SG'
+            ? 'SGV'
+            : item?._id?.includes('PARAMETER')
+            ? 'SGP'
+            : item.type === '_startforloop'
+            ? 'FLV_for:'
+            : item.type === 'DATAPROVIDER'
+            ? 'DPV'
             : 'PEV'
-        }_${item.name}}`;
+        }${item?.type === '_startforloop' ? '' : '_'}${item.name}}`;
 
         let newValue;
         if ((isHash && value[0] === '#') || onlyDropdown) {
@@ -156,7 +167,7 @@ const ConditionalDropdown = forwardRef<
               value: newValue,
             },
           } as React.ChangeEvent<HTMLInputElement>;
-          onChange(event);
+          onChange(event, item);
         }
         inputRef.current.value = newValue;
         setHashInputValue?.(item);
@@ -232,6 +243,22 @@ const ConditionalDropdown = forwardRef<
         }
       }
     };
+    const [showPassword, setShowPassword] = useState(false);
+
+    const togglePasswordVisibility = () => {
+      setShowPassword((prev) => !prev);
+    };
+
+    const getInputType = (
+      type?: 'text' | 'password' | 'number' | 'email' | 'url' | 'time',
+      showPassword?: boolean
+    ) => {
+      if (type === 'password') {
+        return showPassword ? 'text' : 'password';
+      }
+      return type ?? 'text';
+    };
+
     return (
       <div className="ff-add-variable-container">
         <div className="ff-add-variable-input">
@@ -239,7 +266,7 @@ const ConditionalDropdown = forwardRef<
             {...props}
             name="add_variable"
             ref={inputRef}
-            type="text"
+            type={getInputType(type, showPassword)}
             value={value}
             onChange={onChange}
             variant="primary"
@@ -258,6 +285,19 @@ const ConditionalDropdown = forwardRef<
             required={required}
             {...formProps}
           />
+          {type === 'password' && showHidePasswordIcon && (
+            <Tooltip title={showPassword ? 'Hide' : 'Show'}>
+              <Typography as="span" className="ff-password-icon">
+                <Icon
+                  onClick={togglePasswordVisibility}
+                  name={showPassword ? 'view_icon' : 'hide_icon'}
+                  width={16}
+                  height={16}
+                  hoverEffect
+                />
+              </Typography>
+            </Tooltip>
+          )}
           {!checkEmpty(value) &&
             !isHash &&
             showCreateVariableIcon &&
@@ -288,6 +328,7 @@ const ConditionalDropdown = forwardRef<
             position="relative"
             width={dropdownWidth}
             filteredOptions={filteredOptions}
+            zIndex={2000}
             onSelectVariable={handleDropdownClick}
           />
         )}

@@ -8,7 +8,7 @@ export interface PopUpModalProps {
   modalMessage: string | React.ReactNode;
   secondaryMessage?: string | React.ReactNode;
   firstButtonLabel?: string;
-  secondButtonLabel: string;
+  secondButtonLabel?: string;
   buttonVariant: any;
   border: string;
   popupWidth?: string;

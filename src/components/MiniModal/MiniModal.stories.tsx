@@ -47,7 +47,7 @@ const BasicModalComponent = () => {
         onClick={() => openModal(1)}
         id="112233"
         ref={btnRef1}
-        label="122"
+        label="1"
         variant={currentModal === 1 ? 'primary' : 'secondary'}
       />
 
@@ -56,13 +56,11 @@ const BasicModalComponent = () => {
           anchorRef="112233"
           overlay={{
             isOverlay: true,
-            zIndexOverlay: 99,
+            zIndexOverlay: 199,
           }}
           modalProperties={{
             width: 300,
             height: 180,
-            left: 180,
-            top: 250,
           }}
           headerProps={
             <>
@@ -82,6 +80,7 @@ const BasicModalComponent = () => {
                 calendarWidth={240}
                 dateOnly
                 zIndex={100}
+                ref={datePickerRef}
               />
             </>
           }
@@ -275,7 +274,7 @@ export const CustomModalWithArrow = () => {
     <div className="ff-mini-modal-buttons-flex ff-mini-modal-gap-10">
       <Button
         onClick={() => openModal(1)}
-        label="12"
+        label="1"
         id="1a2b"
         variant={currentModal === 1 ? 'primary' : 'secondary'}
       />
@@ -287,8 +286,8 @@ export const CustomModalWithArrow = () => {
             isOverlay: true,
             zIndexOverlay: 99,
           }}
-          modalProperties={{ width: 300, height: 250, left: 180 }}
-          arrowProperties={{ left: 270, size: 6 }}
+          modalProperties={{ width: 300, height: 250}}
+          arrowProperties={{top: -10 }}
           arrowZIndex={1000}
           headerProps={
             <>
@@ -363,8 +362,6 @@ export const CustomModalWithArrow = () => {
           isPopOver={true}
           modalPosition="right"
           leftTopArrow={false}
-          extraRightSpace={{ middleLeftArrow: 4 }}
-          extraLeftSpace={{ rightAlignModal: 40 }}
         />
       )}
       <Button
@@ -445,9 +442,6 @@ export const CustomModalWithArrow = () => {
           modalPosition="top"
           isPopOver={true}
           leftTopArrow={true}
-          extraTopSpace={{ normalModal: 20 }}
-          extraRightSpace={{ middleLeftArrow: 30 }}
-          extraLeftSpace={{ rightAlignModal: 40 }}
         />
       )}
       <Button
@@ -493,9 +487,6 @@ export const CustomModalWithArrow = () => {
           modalPosition="left"
           isPopOver={true}
           leftTopArrow={true}
-          extraTopSpace={{ normalModal: 20 }}
-          extraRightSpace={{ middleLeftArrow: 30 }}
-          extraLeftSpace={{ rightAlignModal: 40 }}
         />
       )}
     </div>

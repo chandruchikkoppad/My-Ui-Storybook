@@ -16,6 +16,7 @@ const Icon = forwardRef<HTMLSpanElement, IconProps>(
       className = '',
       disabled = false,
       variant = 'light',
+      isSelected = false,
       x,
       y,
       chartIcon = false,
@@ -51,10 +52,15 @@ const Icon = forwardRef<HTMLSpanElement, IconProps>(
     const baseProps = {
       ref: iconRef,
       onClick: disabled ? () => {} : onClick,
-      style: { height: `${iconHeight}px`, width: `${iconWidth}px` },
+      style: {
+        height: `${iconHeight}px`,
+        width: `${iconWidth}px`,
+        cursor: disabled ? 'not-allowed' : 'pointer',
+      },
       className: classNames('ff-icon-container', {
         'ff-icon-click': hoverEffect,
         'ff-icon-disabled': disabled,
+        'ff-icon-selected': isSelected,
         'ff-icon-dark': variant === 'dark',
         'ff-icon-danger': variant === 'danger',
         [className]: !!className,

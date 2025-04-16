@@ -67,4 +67,5 @@ export interface TableProps {
      * Accordion collapse and expand Icon height
      */
     TableAccordionStateIconHeight:number,
+    highlightText?: string;
   }

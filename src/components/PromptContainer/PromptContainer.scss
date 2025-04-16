@@ -1,32 +1,72 @@
 @use '../../assets/styles/mixins';
 .ff-prompt-container-Block {
   position: relative;
-  padding-bottom: 32px;
-  background: transparent;
+  padding-bottom: 10px;
+  background-color: var(--ai-prompt-bg);
   width: 100%;
   border-radius: 8px;
   border: 1px solid var(--border-color);
+  transition: height 0.3s ease;
   cursor: pointer;
-  .ff--prompt-header {
-    @include mixins.end-content();
-
-    .ff-prompt-number-bg-color {
-      @include mixins.center-content();
-      width: 24px;
-      height: 24px;
-      background: var(--ff-prompt-number-bg-color);
-      color: var(--text-color);
-      border-radius: 0px 7px 0px 4px;
-    }
+  .ff-prompt-number-bg-color {
+    position: absolute;
+    top: -5px;
+    right: 8px;
+    height: 12px;
+    background: var(--tabs-border-color);
+    color: var(--text-color);
+    border-radius: 4px;
+    padding: 0 2px;
   }
 
   .ff-prompt-content {
-    padding: 0 32px 0 16px;
+    padding: 0 16px;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    position: relative;
+  }
+  .ff-prompt-content.expanded {
+    -webkit-line-clamp: unset;
+    line-clamp: unset;
+    max-height: none;
+  }
+  .read-more-btn {
+    border: none;
+    background-color: var(--ai-prompt-bg);
+    color: var(--brand-color);
+    cursor: pointer;
+    margin: 8px 16px 0 0;
+    text-decoration: underline;
+    offset: auto;
+    position: absolute;
+    bottom: 37px;
+    right: 0;
+    .read-more-btn-text {
+      display: flex;
+      padding: 0px 5px;
+    }
+  }
+  .read-less-btn {
+    display: inline;
+    white-space: nowrap;
+    background-color: transparent;
+    color: var(--brand-color);
+    cursor: pointer;
+    text-decoration: underline;
+    margin-left: 5px;
   }
 
+  &.expanded {
+    height: auto;
+  }
   .ff-prompt-icons {
     @include mixins.horizontal-space-between();
     @extend .ff-prompt-content;
+    justify-content: end;
     flex-wrap: wrap;
   }
   .ff-prompt-icons-leftside {
@@ -54,4 +94,13 @@
 .ff-prompt-container-Block.active .ff-prompt-icons-leftside,
 .ff-prompt-container-Block:hover .ff-prompt-icons-leftside {
   opacity: 1;
+}
+.ff-prompt-container-Block.active .read-more-btn,
+.ff-prompt-container-Block:hover .read-more-btn {
+  background-color: var(--hover-color);
+}
+.ff-prompt-container-Block.active .ff-prompt-number-bg-color,
+.ff-prompt-container-Block:hover .ff-prompt-number-bg-color {
+  border: 0.5px solid var(--ff-editor-line-bg);
+  background: var(--base-bg-color);
 }

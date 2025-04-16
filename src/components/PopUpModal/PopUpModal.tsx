@@ -72,12 +72,14 @@ const PopUpModal: FC<PopUpModalProps> = ({
               onClick={onClose}
               disabled={firstButtonDisabled}
             />
-            <Button
-              variant={buttonVariant || 'warning'}
-              label={secondButtonLabel}
-              onClick={onContinue}
-              disabled={secondButtonDisabled}
-            />
+            {secondButtonLabel && (
+              <Button
+                variant={buttonVariant || 'warning'}
+                label={secondButtonLabel}
+                onClick={onContinue}
+                disabled={secondButtonDisabled}
+              />
+            )}
           </div>
         </div>
       }

@@ -7,8 +7,10 @@ import Tooltip from '../Tooltip';
 import '../../../index.scss';
 import Typography from '../Typography';
 import { ColumnProps, TableProps } from './types';
+import HighlightText from '../HighlightText';
 
 const TableWithAccordion = ({
+  highlightText = '',
   tableMeta = [],
   tableData = [],
   accordionType = 'row',
@@ -45,7 +47,11 @@ const TableWithAccordion = ({
   const getAccordionTableContent = (dataArray: any) => {
     const accordionSubTable = dataArray.map((rowData: any, index: number) => {
       return (
-        <table key={`accordion-table-${index}`}  className="ff-accordion-table" cellSpacing={0}>
+        <table
+          key={`accordion-table-${index}`}
+          className="ff-accordion-table"
+          cellSpacing={0}
+        >
           <tbody className="ff-table-body">
             <tr className="ff-table-row" key={rowData.id || index}>
               {tableMeta.map((column, i) => {
@@ -97,7 +103,7 @@ const TableWithAccordion = ({
                 )}
               >
                 <div>
-                  <Typography fontWeight="medium" fontSize={12}>
+                  <Typography fontWeight="semi-bold" fontSize={12}>
                     {column.header}
                   </Typography>
                 </div>
@@ -109,6 +115,7 @@ const TableWithAccordion = ({
       {accordionType === 'row' &&
         tableData.map((row: any, rowIndex: number) => (
           <Accordion
+            highlightText={highlightText}
             key={`accordion-row-${rowIndex}`}
             headerTitle={row.title}
             color="var(--text-color)"
@@ -122,7 +129,10 @@ const TableWithAccordion = ({
         ))}
       {accordionType === 'column' &&
         tableData.map((row: any, index: number) => (
-          <div key={`column-accordion-${index}`} className="column-table-accordion">
+          <div
+            key={`column-accordion-${index}`}
+            className="column-table-accordion"
+          >
             <div className="ff-display-flex">
               <Tooltip title={row?.disableInfoMessage}>
                 <div
@@ -130,7 +140,12 @@ const TableWithAccordion = ({
                 >
                   <div className="header-title">
                     <span>
-                      <Typography fontWeight="regular">{row.title}</Typography>
+                      <Typography>
+                        <HighlightText
+                          text={row.title}
+                          highlight={highlightText}
+                        />
+                      </Typography>
                     </span>
                   </div>
 

@@ -19,7 +19,7 @@
   border-radius: 5px;
   padding: 4px 8px;
   opacity: 0;
-  z-index: 10000;
+  z-index: 9999999;
 
   &--visible {
     opacity: 1;

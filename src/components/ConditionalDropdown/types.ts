@@ -41,7 +41,7 @@ export interface ConditionalDropdownProps {
    * @param value
    * @returns
    */
-  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>, dropdownItem?: dynamicObject) => void;
   /**
    * Function to handle create variable icon click
    */
@@ -103,7 +103,7 @@ export interface ConditionalDropdownProps {
   /**
    * if on, suggestion popup will be displayed
    */
-  autoComplete?: 'on' | 'off';
+  autoComplete?: 'on' | 'off' | 'new-password';
   /**
    *  minimum and maximum values for the number type input field and their functions
    */
@@ -121,7 +121,10 @@ export interface ConditionalDropdownProps {
    * isLabelRequired for the input field without label,showing placeholder
    */
   isLabelRequired?: boolean;
-
+  /**
+   * showHidePasswordIcon to hide or show the view password icon in input field
+   */
+  showHidePasswordIcon?: boolean;
   /**
    * If true, dropdown opens when '#' is entered at the first position.
    */
@@ -165,4 +168,8 @@ export interface OptionsDropdownProps {
    * Dropdown postion used for dropdown placement
    */
   dropdownPosition?: dropdownPositionType;
+  /**
+   * zIndex for the dropdown options container
+   */
+  zIndex? : number;
 }

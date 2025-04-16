@@ -108,7 +108,7 @@ const EditTextField: FC<LabelEditTextFieldTypes> = ({
   useKeyboardActions([
     { key: 'Enter', action: () => handleKeyBoard('Enter') },
     { key: 'Escape', action: () => handleKeyBoard('Escape') },
-  ]);
+  ], containerRef);
 
   return (
     <div className="ff-label-edit-text-field" ref={containerRef}>

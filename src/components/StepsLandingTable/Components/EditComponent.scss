@@ -1,0 +1,36 @@
+.edit_depends_on_script {
+    border-radius: 8px;
+    margin: 8px;
+    border: 1px solid var(--ff-select-option-wrapper-box-shadow);
+
+    &__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-radius: 8px 8px 0 0;
+        background: var(--slider-table-color);
+        min-height: 34px;
+        padding: 0 8px;
+
+        &_text {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        &_buttons {
+            display: flex;
+            justify-content: end;
+            gap: 8px;
+        }
+    }
+
+    &__form {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+        padding: 14px 8px 8px 8px;
+
+
+    }
+}

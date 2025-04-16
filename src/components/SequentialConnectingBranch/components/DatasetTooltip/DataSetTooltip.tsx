@@ -11,9 +11,9 @@ const DataSetTooltip: FC<DataSetTooltipProps> = ({
   },
 }) => {
   const toolTipTitleValue = {
-    'Test Data Set': testDataSetName,
-    'Global Variable Set': globalVariableSetName,
     'Project Environment Set': peVariableSetName,
+    'Global Variable Set': globalVariableSetName,
+    'Test Data Set': testDataSetName,
   };
 
   return (

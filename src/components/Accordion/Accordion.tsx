@@ -6,11 +6,13 @@ import { AccordionProps } from './types';
 import Tooltip from '../Tooltip';
 import Typography from '../Typography';
 import classNames from 'classnames';
+import HighlightText from '../HighlightText';
 
 /**
  * Accordion UI component
  */
 const Accordion = ({
+  highlightText = '',
   headerTitle = '',
   color,
   minHeight = '32px', // Default min-height for accordion content
@@ -54,7 +56,8 @@ const Accordion = ({
             fontWeight="semi-bold"
             lineHeight="18px"
           >
-            {headerTitle}
+            {typeof headerTitle === "string"?
+            <HighlightText text={headerTitle} highlight={highlightText} /> : headerTitle }
           </Typography>
         </Tooltip>
 

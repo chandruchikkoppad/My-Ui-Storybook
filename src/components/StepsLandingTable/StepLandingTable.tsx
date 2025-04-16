@@ -1,228 +1,285 @@
-import { useEffect, useMemo, useState } from 'react';
+import {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useState,
+} from 'react';
 import classNames from 'classnames';
 import './StepLandingTable.scss';
-import Icon from '../Icon';
 import '../../../index.scss';
 import Typography from '../Typography';
 import { TableProps } from './types';
 import StepInnerTable from './Components';
-import Checkbox from '../Checkbox';
+import {
+  gettingBlockMap,
+  getUpdatedExpandedRows,
+  getUpdatedPartialSelect,
+  getUpdatedSelectedRows,
+  updateCheckboxStatus,
+} from './Components/handleStepCheckBox';
+import StepsTitle from './Components/StepsTitle';
 
-const StepLandingTable = ({
-  tableMeta = [],
-  tableData = [],
-  noDataContent,
-  height = '100%',
-  withFixedHeader = false,
-  headerType,
-  handleDragStart,
-  onDragEnd,
-  editMode,
-  editComponent,
-  NlpComponent,
-  AddNlp,
-  handleAccordion,
-  handleViewComponent,
-  onSelectClick,
-  loading = false,
-  isViewPrivilegeMode = false,
-}: TableProps) => {
-  const [ViewComponent, setViewComponent] = useState<any | null>(null);
-  const [viewModeId, setViewModeId] = useState<string | null>(null);
-
-  const [expandedRows, setExpandedRows] = useState<Record<string, boolean>>({});
-  useEffect(() => {
-    setExpandedRows((prev) => {
-      const newExpandedRows: Record<string, boolean> = {};
-
-      tableData.forEach((section) => {
-        newExpandedRows[section.title] =
-          section.title in prev
-            ? prev[section.title] ?? false
-            : section.title === 'Steps';
-      });
-
-      return newExpandedRows;
-    });
-  }, [tableData]);
-
-  const onAccordionClick = (title: string) => {
-    setExpandedRows((prev) => ({
-      ...prev,
-      [title]: !prev[title],
-    }));
-  };
-
-  const isExpanded = useMemo(
-    () => (title: string) => expandedRows[title] ?? false,
-    [expandedRows]
-  );
-
-  const toggleViewRow = (row: any) => {
-    setViewModeId((prev) => (prev === row?.stepId ? null : row?.stepId));
-  };
-
-  const handleClick = (item: any) => {
-    toggleViewRow(item);
-    const Component = handleViewComponent?.(item, toggleViewRow);
-    if (Component) {
-      setViewComponent(() => Component);
-    } else {
-      toggleViewRow(null);
-    }
-  };
-
-  const [selectedRows, setSelectedRows] = useState<{
-    [key: string]: Set<string>;
-  }>(
-    Object.fromEntries(tableData.map((section) => [section.title, new Set()]))
-  );
-
-  useEffect(() => {
-    const hasSelectedIds = (rows: { [key: string]: Set<string> }) => {
-      return Object.values(rows).some((set) => set.size > 0);
-    };
-    if (hasSelectedIds(selectedRows)) {
-      onSelectClick?.(selectedRows);
-    } else {
-      onSelectClick?.(null);
-    }
-  }, [selectedRows]);
-
-  const handleChildCheckbox = (
-    sectionTitle: string,
-    rowData: any,
-    checked: boolean
+const StepLandingTable = forwardRef<any, TableProps>(
+  (
+    {
+      tableMeta = [],
+      tableData = [],
+      noDataContent,
+      height = '100%',
+      withFixedHeader = false,
+      headerType,
+      handleDragStart,
+      onDragEnd,
+      editMode,
+      editComponent,
+      NlpComponent,
+      AddNlp,
+      handleAccordion,
+      handleViewComponent,
+      onSelectClick,
+      loading = false,
+      isViewPrivilegeMode = false,
+      defaultExpanded = 'Steps',
+    },
+    ref
   ) => {
-    setSelectedRows((prev) => {
-      const updatedSection = new Set(prev[sectionTitle]);
-      if (checked) {
-        updatedSection.add(rowData.stepId);
-      } else {
-        updatedSection.delete(rowData.stepId);
+    const [ViewComponent, setViewComponent] = useState<any | null>(null);
+    const [viewModeId, setViewModeId] = useState<string | null>(null);
+    const [expandedRows, setExpandedRows] = useState<Record<string, boolean>>(
+      {}
+    );
+
+    const onAccordionClick = (title: string) => {
+      const row = tableData.find((row) => row.title === title);
+      if (!row || !row.data || row.data.length === 0) {
+        return;
       }
-
-      return {
+      setExpandedRows((prev) => ({
         ...prev,
-        [sectionTitle]: updatedSection,
-      };
-    });
-  };
-
-  const handleMainCheckbox = (sectionTitle: string, checked: boolean) => {
-    const allRowIds = tableData
-      .find((section) => section.title === sectionTitle)
-      ?.data.map((row: any) => row.stepId);
-
-    if (allRowIds) {
-      setSelectedRows((prev) => ({
-        ...prev,
-        [sectionTitle]: checked ? new Set(allRowIds) : new Set(),
+        [title]: !prev[title],
       }));
-    }
-  };
+    };
 
-  const isAllSelected = (sectionTitle: string, totalRows: number): boolean => {
-    return totalRows > 0 && selectedRows[sectionTitle]?.size === totalRows;
-  };
-  const isPartialSelected = (
-    sectionTitle: string,
-    totalRows: number
-  ): boolean => {
-    const selectedCount = selectedRows[sectionTitle]?.size || 0;
-    return selectedCount > 0 && selectedCount < totalRows;
-  };
+    const isExpanded = useMemo(
+      () => (title: string) => expandedRows[title] ?? false,
+      [expandedRows]
+    );
 
-  const [expandStepGroup, setExpandStepGroup] = useState(
-    new Map<string, boolean>()
-  );
-  const isStepGroupExpanded = (stepId: string) => expandStepGroup.has(stepId);
-  const handleStepGroupExpand = (rowData: any) => {
-    if (!isStepGroupExpanded(rowData?.stepId)) {
-      handleAccordion?.(rowData);
-    }
-    if (!loading) {
-      setExpandStepGroup((prev) => {
-        const newMap = new Map(prev);
-        if (newMap.has(rowData?.stepId)) {
-          newMap.delete(rowData?.stepId);
-        } else {
-          newMap.set(rowData?.stepId, true);
-        }
-        return newMap;
-      });
-    }
-  };
+    const toggleViewRow = (row: any) => {
+      setViewModeId((prev) => (prev === row?.stepId ? null : row?.stepId));
+    };
 
-  // Check if a row is expanded
+    const handleClick = (item: any) => {
+      toggleViewRow(item);
+      const Component = handleViewComponent?.(item, toggleViewRow);
+      if (Component) {
+        setViewComponent(() => Component);
+      } else {
+        toggleViewRow(null);
+      }
+    };
 
-  const getAccordionTableContent = (rows: any) => {
-    if (rows.title === 'Steps') {
-      return (
-        <StepInnerTable
-          draggable={!isViewPrivilegeMode}
-          columns={tableMeta}
-          onDragEnd={onDragEnd}
-          data={rows.data}
-          headerType={headerType}
-          withCheckbox
-          editMode={editMode}
-          editComponent={editComponent}
-          noDataContent={noDataContent}
-          NlpComponent={NlpComponent}
-          AddNlp={AddNlp}
-          tableType={rows.title}
-          handleDragStart={() => {
-            expandStepGroup.clear();
-            handleDragStart?.();
-          }}
-          onSelect={handleChildCheckbox}
-          selectedRows={selectedRows}
-          viewModeId={viewModeId}
-          ViewComponent={ViewComponent}
-          handleClick={handleClick}
-          handleStepGroupExpand={handleStepGroupExpand}
-          isStepGroupExpanded={isStepGroupExpanded}
-        />
+    const [selectedRows, setSelectedRows] = useState<{
+      [key: string]: Set<string>;
+    }>(
+      Object.fromEntries(tableData.map((section) => [section.title, new Set()]))
+    );
+    const [stepPartialSelect, setStepPartialSelect] = useState<Set<string>>(
+      new Set()
+    );
+    useEffect(() => {
+      setExpandedRows((prev) =>
+        getUpdatedExpandedRows(tableData, prev, defaultExpanded)
       );
-    } else {
-      return (
-        <StepInnerTable
-          editMode={editMode}
-          withCheckbox
-          editComponent={editComponent}
-          columns={tableMeta}
-          data={rows.data}
-          headerType={headerType}
-          noDataContent={undefined}
-          tableType={rows.title}
-          onSelect={handleChildCheckbox}
-          selectedRows={selectedRows}
-          viewModeId={viewModeId}
-          ViewComponent={ViewComponent}
-          handleClick={handleClick}
-          handleStepGroupExpand={handleStepGroupExpand}
-          isStepGroupExpanded={isStepGroupExpanded}
-        />
+      let { updateSelectRow, updateStepPartialSelect } = gettingBlockMap(
+        tableData,
+        selectedRows,
+        stepPartialSelect
       );
-    }
-  };
-  return (
-    <div
-      className={classNames('ff-accordion-table-container-steps', {
-        'ff-accordion-fixed-header-table': withFixedHeader,
-      })}
-    >
-      <table
-        cellSpacing={0}
-        className={classNames('ff-accordion-table', {
-          'ff-accordion-fixed-header': withFixedHeader,
+      if (updateStepPartialSelect)
+        setStepPartialSelect(updateStepPartialSelect as Set<string>);
+      if (updateSelectRow) setSelectedRows(updateSelectRow);
+
+      setSelectedRows((pre: any) => getUpdatedSelectedRows(tableData, pre));
+      setStepPartialSelect((prevPartialSelect) =>
+        getUpdatedPartialSelect(tableData, prevPartialSelect)
+      );
+    }, [tableData]);
+
+    useEffect(() => {
+      const hasSelectedIds = (rows: { [key: string]: Set<string> }) => {
+        return Object.values(rows).some((set) => set.size > 0);
+      };
+      if (hasSelectedIds(selectedRows)) {
+        onSelectClick?.(selectedRows);
+      } else {
+        onSelectClick?.(null);
+      }
+    }, [selectedRows]);
+
+    const handleMainCheckbox = (sectionTitle: string, checked: boolean) => {
+      const allRowIds = tableData
+        .find((section) => section.title === sectionTitle)
+        ?.data.map((row: any) => row.stepId);
+      if (allRowIds) {
+        setSelectedRows((prev) => ({
+          ...prev,
+          [sectionTitle]: checked ? new Set(allRowIds) : new Set(),
+        }));
+        if (!checked) setStepPartialSelect(new Set());
+      }
+    };
+    const handleUpdateCheckboxState = (
+      tableData: any,
+      rowData: any,
+      isChecked: boolean,
+      sectionTitle?: string
+    ) => {
+      const { updateSelectRow, updateStepPartialSelect } = updateCheckboxStatus(
+        tableData,
+        rowData,
+        isChecked,
+        selectedRows,
+        stepPartialSelect,
+        sectionTitle
+      );
+      if (updateStepPartialSelect)
+        setStepPartialSelect(updateStepPartialSelect as Set<string>);
+      if (updateSelectRow) setSelectedRows(updateSelectRow);
+    };
+    const handleRowCheckbox = (
+      sectionTitle: string,
+      row: any,
+      isChecked: boolean
+    ) => {
+      handleUpdateCheckboxState(tableData, row, isChecked, sectionTitle);
+    };
+
+    const isAllSelected = (sectionTitle: string, totalRows: number): boolean =>
+      totalRows > 0 && selectedRows[sectionTitle]?.size === totalRows;
+
+    const isPartialSelected = (
+      sectionTitle: string,
+      totalRows: number
+    ): boolean => {
+      const selectedCount = selectedRows[sectionTitle]?.size || 0;
+      return selectedCount > 0 && selectedCount < totalRows;
+    };
+
+    const [expandStepGroup, setExpandStepGroup] = useState(
+      new Map<string, boolean>()
+    );
+    const isStepGroupExpanded = (stepId: string) => expandStepGroup.has(stepId);
+    const handleStepGroupExpand = (rowData: any) => {
+      if (!isStepGroupExpanded(rowData?.stepId)) {
+        let hasData = rowData?.stepResults || rowData?.data;
+        if (!hasData?.length) handleAccordion?.(rowData);
+      }
+      if (!loading) {
+        setExpandStepGroup((prev) => {
+          const newMap = new Map(prev);
+          if (newMap.has(rowData?.stepId)) {
+            newMap.delete(rowData?.stepId);
+          } else {
+            newMap.set(rowData?.stepId, true);
+          }
+          return newMap;
+        });
+      }
+    };
+
+    const getAccordionTableContent = (rows: any) => {
+      if (rows.title === 'Steps' && !isViewPrivilegeMode) {
+        return (
+          <StepInnerTable
+            draggable
+            columns={tableMeta}
+            onDragEnd={onDragEnd}
+            data={rows.data}
+            headerType={headerType}
+            withCheckbox
+            editMode={editMode}
+            editComponent={editComponent}
+            noDataContent={noDataContent}
+            NlpComponent={NlpComponent}
+            AddNlp={AddNlp}
+            tableType={rows.title}
+            handleDragStart={() => {
+              expandStepGroup.clear();
+              handleDragStart?.();
+            }}
+            onSelect={handleRowCheckbox}
+            selectedRows={selectedRows}
+            viewModeId={viewModeId}
+            ViewComponent={ViewComponent}
+            handleClick={handleClick}
+            handleStepGroupExpand={handleStepGroupExpand}
+            isStepGroupExpanded={isStepGroupExpanded}
+            stepPartialSelect={stepPartialSelect}
+            height={tableData.length === 1 ? height : ''}
+          />
+        );
+      } else {
+        return (
+          <StepInnerTable
+            editMode={editMode}
+            withCheckbox={!isViewPrivilegeMode}
+            editComponent={editComponent}
+            columns={tableMeta}
+            data={rows.data}
+            headerType={headerType}
+            noDataContent={undefined}
+            tableType={rows.title}
+            onSelect={handleRowCheckbox}
+            selectedRows={selectedRows}
+            viewModeId={viewModeId}
+            ViewComponent={ViewComponent}
+            handleClick={handleClick}
+            handleStepGroupExpand={handleStepGroupExpand}
+            isStepGroupExpanded={isStepGroupExpanded}
+            isViewPrivilegeMode={isViewPrivilegeMode}
+          />
+        );
+      }
+    };
+
+    useImperativeHandle(ref, () => ({
+      resetSelection: () => {
+        setSelectedRows(
+          Object.fromEntries(
+            tableData.map((section) => [section.title, new Set()])
+          )
+        );
+        setStepPartialSelect(new Set());
+      },
+      handleUpdateCheckbox: (rowData: any, updatedTableData: any) => {
+        const parentSpecialNlpId = rowData?.parentSpecialNlpId;
+        const conditionSearchKey = rowData?.conditionSearchKey;
+        if (parentSpecialNlpId || conditionSearchKey)
+          if (updatedTableData) {
+            handleUpdateCheckboxState(updatedTableData, rowData, false);
+          } else {
+            handleUpdateCheckboxState(tableData, rowData, false);
+          }
+      },
+    }));
+
+    return (
+      <div
+        className={classNames('ff-accordion-table-container-steps', {
+          'ff-accordion-fixed-header-table': withFixedHeader,
         })}
       >
-        <thead className="table-thead">
-          <tr className="ff-table-row">
-            {tableMeta.map((column, index) => {
-              return (
+        <table
+          cellSpacing={0}
+          className={classNames('ff-accordion-table', {
+            'ff-accordion-fixed-header': withFixedHeader,
+          })}
+        >
+          <thead className="table-thead">
+            <tr className="ff-table-row">
+              {tableMeta.map((column, index) => (
                 <th
                   key={`${column.header}-${index}`}
                   style={{ width: column?.width }}
@@ -240,69 +297,44 @@ const StepLandingTable = ({
                     {column.header}
                   </Typography>
                 </th>
-              );
-            })}
-          </tr>
-        </thead>
-      </table>
-      <div className="ff-accordion-table-body" style={{ height }}>
-        {tableData.map((row) => {
-          const { title, data, actionCell } = row;
-          const totalRows = data.length;
-          const expanded = isExpanded(title);
-          const selectedCount = selectedRows[title]?.size ?? 0;
-          const showActionCell =
-            selectedCount > 0 && totalRows > 0 && actionCell;
+              ))}
+            </tr>
+          </thead>
+        </table>
+        <div className="ff-accordion-table-body" style={{ height }}>
+          {tableData.map((row) => {
+            const { title, data, actionCell, metaData } = row;
+            const totalRows = data.length;
+            const expanded = isExpanded(title);
+            const selectedCount = selectedRows[title]?.size ?? 0;
+            const showActionCell =
+              selectedCount > 0 && totalRows > 0 && actionCell;
 
-          return (
-            <div className="column-table-accordion" key={title}>
-              <div className="ff-display-flex">
-                <div className="accordion-header">
-                  <div>
-                    <Checkbox
-                      onChange={(e) =>
-                        handleMainCheckbox(title, e.target.checked)
-                      }
-                      checked={isAllSelected(title, totalRows)}
-                      partial={isPartialSelected(title, totalRows)}
-                      disabled={totalRows === 0}
-                    />
-                  </div>
-                  <div className="header-title">
-                    <Typography
-                      as="div"
-                      fontWeight="semi-bold"
-                      color="var(--nlp-option-color)"
-                      cursor="default"
-                      lineHeight="18px"
-                    >
-                      {title}
-                    </Typography>
-                  </div>
-                  <div
-                    className={`accordion-arrow ${expanded ? 'expanded' : ''}`}
-                    onClick={() => onAccordionClick(title)}
-                  >
-                    <Icon
-                      name="arrow_right"
-                      color={
-                        expanded ? 'var(--brand-color)' : 'var(--default-color)'
-                      }
-                      width={16}
-                      height={16}
-                      className="steps-arrow-svg"
-                    />
-                  </div>
-                  {showActionCell && <div>{actionCell(row)}</div>}
-                </div>
+            return (
+              <div className="column-table-accordion" key={title}>
+                <StepsTitle
+                  isViewPrivilegeMode={isViewPrivilegeMode}
+                  onAccordionClick={onAccordionClick}
+                  showActionCell={showActionCell}
+                  handleMainCheckbox={handleMainCheckbox}
+                  isAllSelected={isAllSelected}
+                  isPartialSelected={isPartialSelected}
+                  title={title}
+                  totalRows={totalRows}
+                  expanded={expanded}
+                  metaData={metaData}
+                  actionCell={actionCell}
+                  row={row}
+                  tableMeta={tableMeta}
+                />
+                {expanded && getAccordionTableContent(row)}
               </div>
-              {expanded && getAccordionTableContent(row)}
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
-    </div>
-  );
-};
+    );
+  }
+);
 
 export default StepLandingTable;

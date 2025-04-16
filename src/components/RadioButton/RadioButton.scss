@@ -15,7 +15,7 @@
 .ff-radio-wrapper {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 0.25rem;
 
   .ff-radio {
     @extend .fontSm;
@@ -24,30 +24,38 @@
     display: flex;
     align-items: center;
     cursor: pointer;
+
     .ff-radio-input {
       display: none;
     }
+
     .ff-radio-custom {
-      box-sizing: content-box;
-      @include circle(14px, 1px solid var(--radio-button-border)); //todo
+      box-sizing: border-box;
+      @include circle(1rem, 0.0625rem solid var(--radio-button-border));
       position: relative;
-      margin-right: 8px;
+      margin-right: 0.5rem;
+      display: flex;
+      align-items: center;
+      transform: translateZ(0);
+      justify-content: center;
       @include transition(border-color, background-color);
 
-      &::before {
-        content: '';
-        @include circle(12px);
-        background: #fbfdff; //todo
+      &-fill {
         position: absolute;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
+        width: 0.75rem;
+        height: 0.75rem;
+        border-radius: 50%;
         @include transition(background-color);
+        will-change: transform;
+        backface-visibility: hidden;
       }
 
       &::after {
         content: '';
-        @include circle(16px, 4px solid #f7edff); //todo
+        @include circle(1.5rem, 0.25rem solid #f7edff);
         position: absolute;
         top: 50%;
         left: 50%;
@@ -58,32 +66,36 @@
     }
 
     &:hover .ff-radio-custom {
-      border: 1px solid var(--brand-color);
-      &::before {
+      border: 0.0625rem solid var(--brand-color);
+
+      &-fill {
         background-color: var(--drawer-footer-bg);
       }
+
       &::after {
         opacity: 1;
         @include transition(opacity);
       }
     }
+
     .ff-radio-input:checked + .ff-radio-custom {
       border-color: var(--brand-color);
 
-      &::before {
+      .ff-radio-custom-fill {
         background: var(--brand-color);
-        height: 12px;
-        width: 12px;
       }
     }
+
     .ff-radio-input:disabled + .ff-radio-custom {
-      border: 1px solid var(--radio-button-border);
-      &::before {
+      border: 0.0625rem solid var(--radio-button-border);
+      cursor:not-allowed;
+
+      .ff-radio-custom-fill {
         background: var(--drawer-footer-bg);
       }
 
       &::after {
-        border: 4px solid var(--radio-button-hover);
+        border: 0.25rem solid var(--radio-button-hover);
         opacity: 0;
         @include transition(opacity);
       }
@@ -92,12 +104,15 @@
     .ff-radio-input:checked:disabled + .ff-radio-custom {
       border-color: var(--brand-color);
       background-color: var(--drawer-footer-bg);
-      &::before {
+
+      .ff-radio-custom-fill {
         background: var(--brand-color);
       }
     }
+
     &--disabled {
       cursor: default;
+
       .ff-radio-custom {
         opacity: 0.5;
       }

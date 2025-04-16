@@ -7,9 +7,9 @@ function useEscapeKey(key: string) {
       }
     };
     useEffect(() => {
-      window.addEventListener('keydown', handleKeyDown);
+      document.addEventListener('keydown', handleKeyDown);
       return () => {
-        window.removeEventListener('keydown', handleKeyDown);
+        document.removeEventListener('keydown', handleKeyDown);
       };
     }, [key, callBack]);
   };

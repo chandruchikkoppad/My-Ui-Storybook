@@ -5,6 +5,8 @@ import Typography from '../Typography';
 
 const ProgressBar: React.FC<ProgressBarProps> = ({
   progressPercentage,
+  totalMemory,
+  usedMemory,
   color = 'var(--brand-color)',
   trackColor = '#f0f0f0',
   height = 10,
@@ -15,8 +17,43 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
   percentageFontSize = 10,
   percentageTextColor = 'var(--tooltip-text-color)',
 }) => {
+
+  const convertMemoryToMB = (memory: string): number => {
+    const trimmed = memory.trim().toLowerCase();
+    if (trimmed === '0') return 0;
+    const match = trimmed.match(/^(\d+(?:\.\d+)?)\s*(kb|mb|gb)$/);
+    if (!match || !match[1]) return 0;
+    const value = parseFloat(match[1]);
+    const unit = match[2];
+    if (unit === 'gb') {
+      return value * 1024;
+    } else if (unit === 'kb') {
+      return value / 1024;
+    } else { 
+      return value;
+    }
+  };
+
+  let computedProgress = 0;
+  let computedLabel = label;
+
+  if (totalMemory !== undefined && usedMemory !== undefined) {
+    const usedMB = convertMemoryToMB(usedMemory);
+    const totalMB = convertMemoryToMB(totalMemory);
+
+    if (totalMB > 0) {
+      computedProgress = (usedMB / totalMB) * 100;
+      computedLabel = label || usedMemory;
+    } else {
+      computedProgress = 0;
+      computedLabel = '0MB';
+    }
+  } else {
+    computedProgress = progressPercentage || 0;
+  }
+
   // Ensure progress is between 0 and 100
-  const validProgress = Math.max(0, Math.min(progressPercentage, 100));
+  const validProgress = Math.max(0, Math.min(computedProgress, 100));
 
   // Bar style for the filled part
   const barStyle = {
@@ -32,7 +69,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
   };
 
   return (
-    <div className={`ff-progress-bar-container ${label ? 'ff-has-label' : ''}`}>
+    <div className={`ff-progress-bar-container ${computedLabel ? 'ff-has-label' : ''}`}>
       <div className="ff-progress-bar-track" style={trackStyle}>
         <div className="ff-progress-bar" style={barStyle}>
           {showPercentage && (
@@ -40,18 +77,18 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
               className="ff-progress-bar-percentage"
               fontSize={percentageFontSize}
               color={percentageTextColor}
-            >{`${validProgress}%`}</Typography>
+            >{`${Math.round(validProgress)}%`}</Typography>
           )}
         </div>
       </div>
-      {label && (
+      {computedLabel && (
         <Typography
           as="div"
           className="ff-progress-bar-label"
           fontSize={labelFontSize}
           color={labelTextColor}
         >
-          {label}
+          {computedLabel}
         </Typography>
       )}
     </div>

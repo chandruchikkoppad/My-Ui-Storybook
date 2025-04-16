@@ -34,6 +34,8 @@ const Dropdown: FC<DropdownProps> = ({
   recurrence = false,
   modalJSXProps = <></>,
   showArrowIcon = true,
+  showClearIcon = false,
+  noResultsMessage,
 }) => {
   const themeContext = useContext(ThemeContext);
   const currentTheme = themeContext?.currentTheme;
@@ -66,7 +68,11 @@ const Dropdown: FC<DropdownProps> = ({
       return {
         left: positionX,
         top: positionY + heightFromTop - 10,
-        width: showIcon ? width + 70 : showArrowIcon ? width + 32 : width + 10,
+        width: showIcon
+          ? width + 70
+          : showArrowIcon || showClearIcon
+          ? width + 32
+          : width + 10,
         zIndex: optionZIndex,
         marginLeft: showIcon ? '-31px' : '-2px',
       };
@@ -143,6 +149,10 @@ const Dropdown: FC<DropdownProps> = ({
                   'ff-select-dropdown-option__selected':
                     getValue(option, valueAccessor) === selectedOption,
                 },
+                {
+                  'ff-select-dropdown-option__disabled':
+                    'disable' in option && option['disable'],
+                },
                 currentTheme
               )}
               key={index}
@@ -165,7 +175,7 @@ const Dropdown: FC<DropdownProps> = ({
             color="var(--ff-select-text-color)"
             className={classNames('ff-select-no-option', currentTheme)}
           >
-            No Results found
+            {noResultsMessage || 'No Result Found'}
           </Typography>
         )}
       </div>

@@ -37,6 +37,8 @@ interface MultiSelectProps {
 
   valueAccessor?: string;
 
+  searchAccessor?:string;
+
   onEnter?: (newOption: string) => void;
 
   loadMoreOptions?: () => void;

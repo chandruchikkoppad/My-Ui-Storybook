@@ -64,6 +64,11 @@ export interface EditorProps {
    * If passed true, it will show the variable dropdown
    */
   showVariableDropdown?: boolean;
+
+  /**
+   * Defaukt value for the editor
+   */
+  defaultValue?: string;
 }
 
 export interface dropdownPositionType {

@@ -48,11 +48,9 @@
 
   .ff-excel-header-column-hider {
     height: 32px;
-    width: 100%;
   }
 
   .ff-excel-header-row-hider {
-    bottom: 0px;
     width: 60px;
   }
 
@@ -187,10 +185,10 @@
   }
 
   .ff-spreadsheet-data-viewer,
-  .ff-spreadsheet-data-editor input {
-    padding: 4px;
+  .ff-spreadsheet-data-editor textarea {
     box-sizing: border-box;
     z-index: 5;
+    white-space: pre-wrap;
   }
 
   .ff-spreadsheet-data-viewer--dropdownType {
@@ -234,7 +232,7 @@
     outline: none;
   }
 
-  .ff-spreadsheet-cell-input {
+  .ff-spreadsheet-cell-textarea {
     text-underline-position: under;
     width: 100%;
     height: 100%;
@@ -243,10 +241,11 @@
     margin: 0;
     padding: 0;
     display: block;
-    border-left: none !important;
-    border-right: none !important;
-    border-top: none !important;
-    border-bottom: none !important;
+    white-space: pre-wrap !important;
+    resize: none;
+    overflow: scroll;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
   }
 
   .ff-spreadsheet-data-viewer--boolean {

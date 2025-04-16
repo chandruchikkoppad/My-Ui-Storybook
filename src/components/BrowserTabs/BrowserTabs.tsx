@@ -112,9 +112,9 @@ const BrowserTabs = ({
                             <Icon
                               name="close"
                               className="ff-close-icon"
-                              hoverEffect={false}
                               height={10}
                               width={10}
+                              hoverEffect={true}
                               onClick={(e) => {
                                 e.stopPropagation();
                                 if (onTabClose) {
@@ -149,9 +149,12 @@ const BrowserTabs = ({
         </div>
         <Tooltip title="Add">
           <div className="ff-tab-plus-icon" onClick={onTabAdd}>
-            <Icon name="add_file" color="#71347B" width={10} height={10} />
+            <Icon name="add_file" color='var(--secondary-icon-color)' width={10} height={10} hoverEffect={true} />
           </div>
         </Tooltip>
+      </div>
+      <div className={`ff-tab-content`}>
+        {tabsData.find((tab) => tab.id === activeTabId)?.component}
       </div>
     </div>
   );

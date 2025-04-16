@@ -1,0 +1,64 @@
+@use '../../assets/styles/mixins' as *;
+
+.overlay-loader {
+  .loader-container {
+    @include center-vertical;
+    gap: 50px;
+    justify-content: center;
+    flex-direction: column;
+    padding: 10px;
+    z-index: 99999;
+
+    .line_loader {
+      height: 2px;
+      width: 286px;
+      background-color: var(--line-loader-bg-color);
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.5);
+    }
+
+    .line_loader::before {
+      content: '';
+      position: absolute;
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(to right, transparent, var(--base-bg-color));
+      animation: loadingEffect 7s infinite linear;
+    }
+
+    @keyframes loadingEffect {
+      0% {
+        width: 0%;
+        left: 0%;
+      }
+      40% {
+        width: 100%;
+        left: 0%;
+      }
+      70% {
+        width: 200%;
+        left: 0%;
+        background-color: var(--line-loader-bg-color); /* Fully filled */
+      }
+      80% {
+        width: 0%;
+        left: 0%;
+        background-color: var(--line-loader-bg-color); /* Stay filled */
+      }
+      90% {
+        width: 0%;
+        left: 0%;
+      }
+      100% {
+        width: 0%;
+        left: 0%;
+        background-color: var(--line-loader-bg-color);
+      }
+    }
+  }
+
+  .loader-container.overlay {
+    background: var(--default-icon-color);
+  }
+}

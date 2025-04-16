@@ -50,11 +50,9 @@
     }
 
     &:disabled {
-      opacity: 0.5;
       cursor: not-allowed;
       &:hover {
         border-color: var(--default-icon-color);
-        color: inherit;
       }
     }
 

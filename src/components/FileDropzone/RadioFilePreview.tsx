@@ -15,6 +15,13 @@ const RadioFilePreview: React.FC<RadioFilePreviewProps> = ({
 }) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
+  const getFileExtension = () => {
+    if (!selectedFile) return '';
+    const lastDotIndex = selectedFile.lastIndexOf('.');
+    if (lastDotIndex === -1) return '';
+    return selectedFile.substring(lastDotIndex);
+  };
+
   const handleReplaceClick = () => {
     if (selectedRadioOption?.value === 'Test Data') {
       setShowDrawer?.(true);
@@ -33,7 +40,7 @@ const RadioFilePreview: React.FC<RadioFilePreviewProps> = ({
         if (setFileContent) {
           setFileContent(fileContent as string);
         }
-      }
+      };
       onFileReplaceClick?.(file);
     }
   };
@@ -76,11 +83,12 @@ const RadioFilePreview: React.FC<RadioFilePreviewProps> = ({
           />
         </Tooltip>
         <input
-        type="file"
-        ref={fileInputRef}
-        className='ff-input-ref'
-        onChange={handleFileChange}
-      />
+          type="file"
+          ref={fileInputRef}
+          className="ff-input-ref"
+          onChange={handleFileChange}
+          accept={getFileExtension()}
+        />
       </>
     </div>
   );

@@ -575,6 +575,15 @@ const clearCell = (cell: Types.CellBase | undefined) => {
   };
 };
 
+const nextLine = (cell: Types.CellBase | undefined) => {
+  if (!cell) return undefined;
+  return {
+    ...cell,
+    value: (cell.value || '') + '\n',
+    style: cell.style,
+  };
+};
+
 export function clear(state: Types.StoreState): Types.StoreState {
   if (!state.active) {
     return state;
@@ -629,13 +638,41 @@ export function clearEditMode(state: Types.StoreState): Types.StoreState {
     ...commit(changes),
   };
 }
+export function enterFunctionality(state: Types.StoreState): Types.StoreState {
+  if (!state.active) {
+    return state;
+  }
+  const selectedRange = state.selected.toRange(state.model.data);
+
+  const changes: Types.CommitChanges = [];
+  let newData = state.model.data;
+
+  for (const point of selectedRange || []) {
+    const cell = Matrix.get(point, state.model.data);
+
+    const nextLineCell = nextLine(cell);
+
+    changes.push({
+      prevCell: cell || null,
+      nextCell: nextLineCell || null,
+    });
+    newData = Matrix.set(point, nextLineCell, newData);
+  }
+
+  return {
+    ...state,
+    mode: 'edit',
+    model: new Model(createFormulaParser, newData),
+    ...commit(changes),
+  };
+}
 
 export function blur(state: Types.StoreState): Types.StoreState {
   return {
     ...state,
     active: null,
     copied: null,
-    formattedStyle:{ open: false, style: undefined },   
+    formattedStyle: { open: false, style: undefined },
     selected: new EmptySelection(),
   };
 }
@@ -683,9 +720,7 @@ export type KeyDownHandler = (
   event: React.KeyboardEvent
 ) => Types.StoreState | void;
 
-type KeyDownHandlers = {
-  [K in string]: KeyDownHandler | undefined;
-};
+type KeyDownHandlers = Record<string, KeyDownHandler | undefined>;
 
 const keyDownHandlers: KeyDownHandlers = {
   ArrowUp: go(-1, 0),
@@ -766,7 +801,11 @@ export function getKeyDownHandler(
   const { key } = event;
   let handlers;
   if (state.mode === 'edit') {
-    if (event.shiftKey) {
+    if (event.shiftKey && key === 'Enter') {
+      handlers = keyDownHandlers;
+    } else if (event.altKey && key === 'Enter') {
+      return enterFunctionality;
+    } else if (event.shiftKey) {
       handlers = editShiftKeyDownHandlers;
     } else {
       handlers = editKeyDownHandlers;

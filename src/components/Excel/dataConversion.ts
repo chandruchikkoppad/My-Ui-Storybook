@@ -40,9 +40,9 @@ const getTextAlignmentBack = (
 };
 
 const getFontFamily = (selectedFontType: string): string => {
-  const fontFamilyExists = fontFamilyList.some(
-    (element) => element.value === selectedFontType
-  );
+  const fontFamilyExists = fontFamilyList.some((element) => {
+    return element.label === selectedFontType;
+  });
 
   if (!fontFamilyExists) {
     return 'Poppins';

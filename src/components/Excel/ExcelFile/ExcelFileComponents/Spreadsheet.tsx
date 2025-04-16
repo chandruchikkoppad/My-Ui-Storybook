@@ -103,7 +103,7 @@ export type Props<CellType extends Types.CellBase> = {
   setContextMenu: React.Dispatch<React.SetStateAction<Types.ContextMenuState>>;
   /** Set your dynamic sheet Height*/
   sheetHeight: string;
-  toolbar?: 'show' | 'hide';
+  toolbar?: 'show' | 'disable' | 'hide';
   contextOption?: {
     open: boolean;
     options: {
@@ -117,14 +117,12 @@ export type Props<CellType extends Types.CellBase> = {
   columnContextEnable: boolean;
   rowContextEnable: boolean;
   attachmentAction?: {
-    addAttachment: (file: File) => Promise<{
-      responseCode: number;
-      responseObject: { name: string; id: string; modifiedOn: string }[];
-    }>;
-    viewAttachment: () => Promise<void>;
-    deleteAttachment: () => Promise<void>;
+    addAttachment: (file: File) => Promise<string>;
+    viewAttachment: (fileId: string) => Promise<string>;
+    deleteAttachment: (fileId: string) => Promise<string>;
   };
   workRef: React.MutableRefObject<HTMLDivElement | null>;
+  minimumColumnWidth: number;
 };
 
 /**
@@ -152,10 +150,25 @@ const Spreadsheet = <CellType extends Types.CellBase>(
     contextOption,
     attachmentAction,
     workRef,
+    minimumColumnWidth,
   } = props;
   type State = Types.StoreState<CellType>;
 
   const [sheetChange, setSheetChange] = React.useState(false);
+  const [maxWidth, setMaxWidth] = React.useState(0);
+  const [maxHeight, setMaxHeight] = React.useState(0);
+
+  const resizeObserver = new ResizeObserver((entries) => {
+    const entry = entries[0];
+    if (entry && rootRef.current) {
+      const target = entry.target as HTMLElement | null;
+      if (target) {
+        const { clientWidth, clientHeight } = target;
+        setMaxHeight(Math.min(rootRef.current.clientHeight, clientHeight));
+        setMaxWidth(Math.min(rootRef.current.clientWidth, clientWidth));
+      }
+    }
+  });
 
   const initialState = React.useMemo(() => {
     const createParser = (props.createFormulaParser ||
@@ -441,9 +454,19 @@ const Spreadsheet = <CellType extends Types.CellBase>(
     };
   }, [handleCut, handleCopy, handlePaste]);
 
+  const useTableRef = (ref: React.RefObject<HTMLTableElement>): void => {
+    const table = ref.current;
+    if (!table) return;
+    resizeObserver.observe(table);
+  };
+
   const tableNode = React.useMemo(
     () => (
-      <Table columns={size.columns}>
+      <Table
+        columns={size.columns}
+        hideColumnIndicators={false}
+        useTableRef={useTableRef}
+      >
         <HeaderRow>
           {<CornerIndicator />}
           {range(size.columns).map((columnNumber) =>
@@ -451,6 +474,7 @@ const Spreadsheet = <CellType extends Types.CellBase>(
               <ColumnIndicator
                 key={columnNumber}
                 column={columnNumber}
+                minimumColumnWidth={minimumColumnWidth}
                 setContextMenu={props.setContextMenu}
                 label={
                   columnNumber in columnLabels
@@ -466,6 +490,7 @@ const Spreadsheet = <CellType extends Types.CellBase>(
               <ColumnIndicator
                 key={columnNumber}
                 column={columnNumber}
+                minimumColumnWidth={minimumColumnWidth}
                 setContextMenu={props.setContextMenu}
                 deleteColumn={deleteColumn}
                 addColumnLeft={addColumnLeft}
@@ -545,14 +570,20 @@ const Spreadsheet = <CellType extends Types.CellBase>(
     () => (
       <div className="ff-excel-spreadsheet-container">
         <div
+          style={{ width: `${maxWidth}px` }}
           className={classNames('ff-excel-header-column-hider', {
-            'ff-excel-header-extend': toolbar === 'show',
+            'ff-excel-header-extend': ['show', 'disable'].includes(
+              toolbar || ''
+            ),
             'ff-excel-header-hider': toolbar === 'hide',
           })}
         />
         <div
-          className={classNames('ff-excel-header-row-hider', {
-            'ff-excel-header-extend': toolbar === 'show',
+          style={{ height: `${maxHeight}px` }}
+          className={classNames('ff-excel-header-column-hider', {
+            'ff-excel-header-extend': ['show', 'disable'].includes(
+              toolbar || ''
+            ),
             'ff-excel-header-hider': toolbar === 'hide',
           })}
         />

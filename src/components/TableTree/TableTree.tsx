@@ -1,10 +1,17 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 
 import './TableTree.scss';
 import type { TreeTableProps } from './types';
 import TableHead from './Components/TableHead';
 import TableBody from './Components/TableBody';
 import { TreeNodeProps } from '../../ComponentProps/TreeNodeProps';
+import { addLastChild } from './Utils/addLastChild';
 
 const TreeTable: React.FC<TreeTableProps> = ({
   treeData,
@@ -28,6 +35,10 @@ const TreeTable: React.FC<TreeTableProps> = ({
   selectedNode,
   tableHeaderBgColor = 'var(--border-color)',
   hideOnDisable = false,
+  freezeColumns,
+  scriptLengthTruncate = 25,
+  addModuleInputWidth = 150,
+  addModuleSelectWidth,
 }) => {
   const [expanding, setExpanding] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<'above' | 'below' | null>(null);
@@ -58,41 +69,39 @@ const TreeTable: React.FC<TreeTableProps> = ({
   const handleScroll = useCallback(() => {
     const container = containerRef.current;
     if (!loading && container) {
-      setTimeout(() => {
-        const currentScrollTop = container.scrollTop;
+      const currentScrollTop = container.scrollTop;
 
-        const previousTreeData = previousTreeDataRef.current;
+      const previousTreeData = previousTreeDataRef.current;
 
-        if (previousTreeData.length > 0 && isLoading === 'above') {
-          const allRows = Array.from(
-            container.querySelectorAll('.ff-table-tree-row')
-          );
-          let addedRowsCount = 0;
-          if (getContentLength) {
-            addedRowsCount = getContentLength;
-          } else {
-            for (let i = 0; i < treeData.length; i++) {
-              if (previousTreeData[0] === treeData[i]) break;
-              addedRowsCount++;
-            }
-          }
-
-          // Calculate the total height of the newly added rows
-          const totalAddedHeight = treeData
-            .slice(0, addedRowsCount - (currentScrollTop > 5 ? 0 : 1))
-            .reduce((heightSum: number, _: any, index: number) => {
-              const rowHeight =
-                allRows[index]?.getBoundingClientRect().height || 0;
-              return heightSum + rowHeight;
-            }, 0);
-
-          // Adjust scroll position when data is loaded above
-          if (isLoading === 'above') {
-            container.scrollTop = prevScrollTop + totalAddedHeight;
+      if (previousTreeData.length > 0 && isLoading === 'above') {
+        const allRows = Array.from(
+          container.querySelectorAll('.ff-table-tree-row')
+        );
+        let addedRowsCount = 0;
+        if (getContentLength) {
+          addedRowsCount = getContentLength;
+        } else {
+          for (let i = 0; i < treeData.length; i++) {
+            if (previousTreeData[0] === treeData[i]) break;
+            addedRowsCount++;
           }
         }
-        previousTreeDataRef.current = treeData;
-      }, 0);
+
+        // Calculate the total height of the newly added rows
+        const totalAddedHeight = treeData
+          .slice(0, addedRowsCount - (currentScrollTop > 5 ? 0 : 2))
+          .reduce((heightSum: number, _: any, index: number) => {
+            const rowHeight =
+              allRows[index]?.getBoundingClientRect().height || 0;
+            return heightSum + rowHeight;
+          }, 0);
+
+        // Adjust scroll position when data is loaded above
+        if (addedRowsCount) {
+          container.scrollTop = prevScrollTop + totalAddedHeight;
+        }
+      }
+      previousTreeDataRef.current = treeData;
     }
   }, [loading, isLoading, treeData]);
 
@@ -155,7 +164,7 @@ const TreeTable: React.FC<TreeTableProps> = ({
     };
   }, [treeData, loadMore, isLoading]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!loading && isLoading) {
       if (isLoading === 'above' && pagination) {
         handleScroll();
@@ -169,6 +178,7 @@ const TreeTable: React.FC<TreeTableProps> = ({
   useEffect(() => {
     if (!loading && expanding) {
       setExpanding(null);
+      previousTreeDataRef.current = treeData;
     }
   }, [loading]);
   const handleToggleExpand = useCallback(
@@ -195,6 +205,25 @@ const TreeTable: React.FC<TreeTableProps> = ({
     },
     [onClick, expanding]
   );
+  const DEFAULT_COLUMN_WIDTH = 400;
+
+  const calculateFrozenWidth = (
+    columnData: { width?: string }[],
+    freezeColumns: number
+  ) => {
+    return columnData
+      .slice(0, freezeColumns)
+      .reduce(
+        (acc, col) =>
+          acc + parseInt(col.width || `${DEFAULT_COLUMN_WIDTH}`, 10),
+        0
+      );
+  };
+
+  let frozenWidth;
+  if (freezeColumns) {
+    frozenWidth = calculateFrozenWidth(columnsData, freezeColumns);
+  }
 
   return (
     <div className="tree-table-wrap">
@@ -205,6 +234,7 @@ const TreeTable: React.FC<TreeTableProps> = ({
         style={
           {
             '--table-height': treeData.length ? height : 'auto',
+            '--frozen-column-width': freezeColumns ? `${frozenWidth}px` : '0px',
             border: tableBorder,
           } as React.CSSProperties
         }
@@ -221,7 +251,7 @@ const TreeTable: React.FC<TreeTableProps> = ({
           />
 
           <TableBody
-            flattenedTreeData={treeData}
+            flattenedTreeData={addLastChild(treeData)}
             rootNode={rootNode?.node}
             columnsData={columnsData}
             selected={selected}
@@ -236,6 +266,9 @@ const TreeTable: React.FC<TreeTableProps> = ({
             expanding={expanding}
             selectedNode={selectedNode}
             hideOnDisable={hideOnDisable}
+            scriptLengthTruncate={scriptLengthTruncate}
+            addModuleInputWidth= {addModuleInputWidth}
+            addModuleSelectWidth={addModuleSelectWidth}
           />
         </table>
       </div>

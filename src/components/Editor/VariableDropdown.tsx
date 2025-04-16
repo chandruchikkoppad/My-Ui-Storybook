@@ -17,8 +17,6 @@ const VariableDropdown: FC<VariableDropdownProps> = ({
   zIndex = 9999,
   truncateTextValue = 34,
 }): ReactNode => {
-  console.log('optionsList', optionsList);
-
   const VARIABLE_ICON_MAP: Record<string, string> = {
     LOCAL: 'local_variable_icon',
     GLOBAL: 'global_variable_icon',
@@ -34,6 +32,8 @@ const VariableDropdown: FC<VariableDropdownProps> = ({
     if (option.type === 'LOCAL' && option?.parentVariableType === 'STEPGROUP')
       return 'step_group_variable';
 
+    if (option.type === '_startforloop') return 'for_loop_variable';
+    if (option.type === 'DATAPROVIDER') return 'data_provider_variable';
     return VARIABLE_ICON_MAP[option.type || ''] || '';
   };
 

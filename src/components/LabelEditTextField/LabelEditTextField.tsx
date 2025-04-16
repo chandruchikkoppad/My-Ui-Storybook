@@ -9,6 +9,7 @@ import Input from '../Input/Input';
 import Select from '../Select/Select';
 import useEscapeKey from '../../hooks/keyboardevents/useEscKeyEvent.js';
 import { useKeyboardActions } from '../../utils/keyBoardActionUtil/UseKeyboardActions';
+import { WHITESPACE_REGEX } from '../../validations/regex';
 
 const getErrorMessage = (
   inputValue: string,
@@ -107,7 +108,6 @@ const LabelEditTextField: FC<LabelEditTextFieldTypes> = ({
     } else if (customErrorCondition) {
       errorMessage = customError ?? 'Invalid input.';
     }
-
     if (errorMessage) {
       setShowError(errorMessage);
     } else {
@@ -115,6 +115,7 @@ const LabelEditTextField: FC<LabelEditTextFieldTypes> = ({
       setShowError('');
       if (confirmAction) confirmAction(inputValue, dropdownValue);
     }
+    confirmIcon?.onClick?.();
   };
 
   const handleCancel = () => {
@@ -123,6 +124,7 @@ const LabelEditTextField: FC<LabelEditTextFieldTypes> = ({
     setIsEditing(false);
     setShowError('');
     setIsTextFieldModified(false);
+    cancelIcon?.onClick?.();
   };
 
   const handleTextFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -130,9 +132,13 @@ const LabelEditTextField: FC<LabelEditTextFieldTypes> = ({
     setInputValue(newValue);
     isDisabled(false);
     if (newValue.length === 0 || newValue.trim().length === 0) {
-      setShowError('Please type any text.');
+      setShowError('Input is required');
     } else if (newValue.length < 3) {
-      setShowError('Please enter at least 3 characters.');
+      setShowError('Input cannot be less than 3 characters');
+    } else if (newValue.length > 250) {
+      setShowError('Input cannot be more than 250 characters');
+    } else if (WHITESPACE_REGEX.test(newValue)) {
+      setShowError('Space is not allowed at starting and at the end');
     } else if (customErrorCondition) {
       setShowError(customError ?? 'Invalid input.');
     } else {
@@ -178,7 +184,7 @@ const LabelEditTextField: FC<LabelEditTextFieldTypes> = ({
     }
   }
 
-  useKeyboardActions([{ key: 'Enter', action: () => handleKeyBoard('Enter') }]);
+  useKeyboardActions([{ key: 'Enter', action: () => handleKeyBoard('Enter') }], containerRef);
 
   return (
     <div className="ff-label-edit-text-field" ref={containerRef}>

@@ -35,7 +35,9 @@ export const Default: Story = {
   render: (args) => {
     const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
-    const handleFilesChange = (files: File[]) => {
+    const handleFilesChange = (files: File[], selected?: File[]) => {
+      console.log(files);
+      console.log(selected);
       setSelectedFiles(files);
       args.onFilesChange(files);
     };
@@ -45,6 +47,7 @@ export const Default: Story = {
         {...args}
         selectedFiles={selectedFiles}
         onFilesChange={handleFilesChange}
+        selectedFileMessage='File is already selected'
       />
     );
   },

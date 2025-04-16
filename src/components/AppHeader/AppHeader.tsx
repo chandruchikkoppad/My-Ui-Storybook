@@ -1,4 +1,4 @@
-import { AppHeaderProps } from './types';
+import { appHeaderMenuItemProps, AppHeaderProps } from './types';
 import Icon from '../Icon';
 import './AppHeader.scss';
 import classNames from 'classnames';
@@ -7,7 +7,8 @@ import { checkEmpty } from '../../utils/checkEmpty/checkEmpty';
 import AllProjectsDropdown from '../AllProjectsDropdown';
 import MenuOption from '../MenuOption';
 import Tooltip from '../Tooltip';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { getStoreValue } from '../../utils/indexDBStore/indexDB';
 
 const AppHeader: React.FC<AppHeaderProps> = ({
   logoIconName = 'fireflink_icon',
@@ -17,7 +18,6 @@ const AppHeader: React.FC<AppHeaderProps> = ({
   rightContent,
   projectsList,
   appHeaderMenuItems,
-  appHeaderHiddenMenuItems,
   selectedMenu,
   selectedSubMenu,
   selectedQuickMenu,
@@ -33,36 +33,151 @@ const AppHeader: React.FC<AppHeaderProps> = ({
   const hiddenMenuRef = useRef<HTMLDivElement>(null);
   const hiddenQuickMenuRef = useRef<HTMLDivElement>(null);
   const [projectArrayList, setProjectArrayList] = useState(projectsList);
+  const [appHeaderHiddenMenuItems, setAppHeaderHiddenMenuItems] = useState<
+    { label: string; value: string | undefined }[]
+  >([]);
+  const projectDetails = getStoreValue('current-project') as { id: string };
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [selectedMenuItem, setSelectedMenuItem] =
+    useState<string>(selectedMenu);
   useEffect(() => {
     if (projectsList !== projectArrayList) {
       setProjectArrayList(projectsList);
     }
   }, [projectsList, projectArrayList]);
 
+  useEffect(() => {
+    if (selectedMenu !== selectedMenuItem) {
+      setSelectedMenuItem(selectedMenu);
+    }
+  }, [selectedMenu, selectedMenuItem]);
+
   const handleMenuClick = (menuItem: any) => {
-    if (!disabled) onMenuClick(menuItem);
+    if (!disabled) {
+      onMenuClick(menuItem);
+      calculateVisibleItems();
+    }
   };
 
   const handleSubMenuClick = (subMenuItem: any) => {
-    if (!disabled) onSubMenuClick(subMenuItem);
+    if (!disabled) {
+      onSubMenuClick(subMenuItem);
+
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+
+      timeoutRef.current = setTimeout(() => {
+        calculateVisibleItems();
+      }, 800);
+    }
   };
 
   const handleQuickMenuClick = (quickMenuItem: any) => {
-    if (!disabled) onQuickMenuClick(quickMenuItem);
+    if (!disabled) {
+      onQuickMenuClick(quickMenuItem);
+    }
   };
 
-  const handleProjectMenuClick = (quickMenuItem: any) => {
-    if (!disabled) onProjectMenuClick(quickMenuItem);
+  const handleProjectMenuClick = (projectItem: any) => {
+    if (!disabled) {
+      onProjectMenuClick(projectItem);
+      calculateVisibleItems();
+    }
   };
 
   const handleProjectDropdownLabelClick = () => {
-    if (!disabled) onProjectDropdownLabelClick();
+    if (!disabled) {
+      onProjectDropdownLabelClick();
+      calculateVisibleItems();
+    }
   };
 
   const handleMoreMenuOptionClick = (option: any) => {
-    if (!disabled) onMoreMenuOptionClick(option);
+    if (!disabled) {
+      onMoreMenuOptionClick(option, calculateVisibleItems);
+    }
   };
 
+  const menuContainerRef = useRef<HTMLDivElement>(null);
+  const menuItemsRef = useRef<(HTMLDivElement | null)[]>([]);
+  const subMenuItemsRef = useRef<(HTMLDivElement | null)[]>([]);
+  const quickMenuItemsRef = useRef<(HTMLDivElement | null)[]>([]);
+  const menuItemsWidthRef = useRef<{ [key: string]: number }>({});
+
+  const calculateVisibleItems = useCallback(() => {
+    if (projectDetails?.id === 'All Projects' || !menuContainerRef.current) {
+      setAppHeaderHiddenMenuItems([]);
+      return;
+    }
+
+    const containerWidth = 900;
+    let totalWidth = 0;
+    const visibleItems: appHeaderMenuItemProps[] = [];
+    const hiddenItems: appHeaderMenuItemProps[] = [];
+
+    const sortedMenuItems = [...appHeaderMenuItems];
+
+    sortedMenuItems.forEach((item, index) => {
+      const itemWidth =
+        menuItemsRef.current[index]?.offsetWidth ??
+        menuItemsWidthRef.current[item.label] ??
+        0;
+
+      if (itemWidth > 0) {
+        menuItemsWidthRef.current[item.label] = itemWidth;
+      }
+    });
+
+    const currentSelectedMenuItem = sortedMenuItems.find(
+      (item) => item.label === selectedMenuItem
+    );
+    const otherMenuItems = sortedMenuItems.filter(
+      (item) => item.label !== selectedMenuItem
+    );
+
+    if (currentSelectedMenuItem) {
+      visibleItems.push(currentSelectedMenuItem);
+      totalWidth +=
+        menuItemsWidthRef.current[currentSelectedMenuItem.label] ?? 0;
+    }
+
+    for (const item of otherMenuItems) {
+      const itemWidth = menuItemsWidthRef.current[item.label] ?? 0;
+
+      if (totalWidth + itemWidth > containerWidth) {
+        hiddenItems.push(item);
+      } else {
+        visibleItems.push(item);
+        totalWidth += itemWidth;
+      }
+    }
+    setAppHeaderHiddenMenuItems(
+      hiddenItems?.map((item) => ({
+        label: item.label,
+        value: item.path,
+        icon: item?.iconName,
+      }))
+    );
+  }, [
+    appHeaderMenuItems,
+    selectedMenuItem,
+    selectedMenu,
+    selectedSubMenu,
+    selectedQuickMenu,
+  ]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      calculateVisibleItems();
+    }, 800);
+
+    return () => clearTimeout(timer);
+  }, [projectDetails?.id, selectedMenuItem]);
+  const checkIsHavingEntityPendingCounts = (data: appHeaderMenuItemProps) => {
+    if (data.label === 'Approval Request' && data.entityPendingCounts) {
+      return Object.values(data.entityPendingCounts).some((count) => count > 0);
+    }
+    return false;
+  };
   return (
     <div
       className={classNames('ff-app-header-main', {
@@ -84,8 +199,11 @@ const AppHeader: React.FC<AppHeaderProps> = ({
             <div className="ff-app-header-left-content">{leftContent}</div>
           )}
         </div>
-        {!checkEmpty(appHeaderMenuItems) && (
-          <div className="ff-app-header-nav-bar" style={{ width: width }}>
+          <div
+            className="ff-app-header-nav-bar"
+            style={{ width: width }}
+            ref={menuContainerRef}
+          >
             {projectArrayList && !checkEmpty(projectArrayList) && (
               <div>
                 {
@@ -94,7 +212,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({
                     options={projectArrayList}
                     selectedOption={selectedProject}
                     onMenuClick={handleProjectDropdownLabelClick}
-                    selected={selectedMenu === 'All Projects'}
+                    selected={selectedMenuItem === 'All Projects'}
                     placeholder="Search Projects"
                     disabled={disabled}
                   />
@@ -102,18 +220,21 @@ const AppHeader: React.FC<AppHeaderProps> = ({
               </div>
             )}
             <div className="ff-app-header-nav-bar-items fontSm">
-              {appHeaderMenuItems.map((menuItem) => {
+              {appHeaderMenuItems?.map((menuItem, index) => {
                 return (
                   !appHeaderHiddenMenuItems?.find(
                     (menu) => menu.label === menuItem.label
                   ) &&
                   !menuItem.hide &&
-                  !(menuItem.access === 'No Access') &&
+                  menuItem.access !== 'No Access' &&
+                  (menuItem?.isReviewer !== false ||
+                    checkIsHavingEntityPendingCounts(menuItem)) &&
                   menuItem.label !== 'All Projects' && (
                     <div
+                      ref={(element) => (menuItemsRef.current[index] = element)}
                       className={classNames('ff-app-header-nav-bar-item', {
                         ['ff-app-header-nav-bar-item--selected']:
-                          menuItem.label === selectedMenu,
+                          menuItem.label === selectedMenuItem,
                         'ff-app-header-nav-bar-item--disabled': disabled,
                       })}
                       key={menuItem.label}
@@ -126,16 +247,20 @@ const AppHeader: React.FC<AppHeaderProps> = ({
                       >
                         {menuItem.label}
                       </Typography>
-                      {menuItem.label === selectedMenu &&
+                      {menuItem.label === selectedMenuItem &&
                         menuItem?.subMenuItems && (
                           <>
-                            {menuItem.subMenuItems.map((subMenuItem) => {
+                            {menuItem?.subMenuItems?.map((subMenuItem, index) => {
                               return (
                                 <>
                                   {!subMenuItem.hide && (
                                     <div
                                       key={subMenuItem.label}
                                       className="ff-app-header-submenu-container"
+                                      ref={(element) =>
+                                        (subMenuItemsRef.current[index] =
+                                          element)
+                                      }
                                     >
                                       <Typography
                                         as="div"
@@ -161,13 +286,17 @@ const AppHeader: React.FC<AppHeaderProps> = ({
                                 </>
                               );
                             })}
-                            {menuItem.subMenuItems.map((subMenuItem) => {
+                            {menuItem?.subMenuItems?.map((subMenuItem, index) => {
                               return (
                                 <>
                                   {!subMenuItem.hide && (
                                     <div
                                       key={subMenuItem.label}
                                       className="ff-app-header-submenu-container"
+                                      ref={(element) =>
+                                        (quickMenuItemsRef.current[index] =
+                                          element)
+                                      }
                                     >
                                       {subMenuItem.label === selectedSubMenu &&
                                         subMenuItem?.quickMenuItems &&
@@ -182,7 +311,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({
                                           const quickMenuHiddenItemsArray =
                                             subMenuItem.quickMenuItems.slice(8);
                                           const quickMenuHiddenItems =
-                                            quickMenuHiddenItemsArray.map(
+                                            quickMenuHiddenItemsArray?.map(
                                               (item) => ({
                                                 ...item,
                                                 value: item.path,
@@ -202,7 +331,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({
                                               <div>
                                                 <Icon name="vertical_separator" />
                                               </div>
-                                              {quickMenuItemsArray.map(
+                                              {quickMenuItemsArray?.map(
                                                 (quickMenuItem) => {
                                                   return (
                                                     <>
@@ -301,7 +430,6 @@ const AppHeader: React.FC<AppHeaderProps> = ({
                 </div>
               )}
           </div>
-        )}
         {rightContent && (
           <div className="ff-app-header-right-content">{rightContent}</div>
         )}

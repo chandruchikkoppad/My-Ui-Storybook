@@ -26,14 +26,16 @@ const defaultArgs = {
   placeholder: 'Enter your name',
   optionsList: optionsList,
   selectedOption: selectedOption,
-  isDisable:{confirm: false, cancel: false, textField: false }
+  isDisable: { confirm: false, cancel: false, textField: false },
+  handleTriggerDoubleClick: () => console.log('Double-click triggered!'),
 };
 
 export const Default: Story = {
   args: {
     ...defaultArgs,
-    value: 'abc',
+    value: 'abcqwertyuiop[asdfghjkl;zxcvbnm,qwertyuiosdfghjklsedrftgyhujik',
     isOnBlurTrue: false,
+    highlightText: 'abc',
   },
 };
 
@@ -71,6 +73,7 @@ export const withDropdown: Story = {
         onClick={() => {
           console.log('single click');
         }}
+        handleTriggerDoubleClick={() => console.log('Double-click triggered!')}
       />
     );
   },
@@ -125,7 +128,10 @@ export const SelectOneDisableOther: Story = {
             setIsEditable={setEditableId}
             highlightText="HELLO"
             handleOnChange={handleOnChange}
-            cursor='default'
+            cursor="default"
+            handleTriggerDoubleClick={() =>
+              console.log(`Double-clicked on${value.text}`)
+            }
           />
         ))}
       </div>

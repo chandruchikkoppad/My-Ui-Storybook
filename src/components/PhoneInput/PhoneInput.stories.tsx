@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { PhoneInputProps } from './types';
 import PhoneInputField from './PhoneInput';
-import { countryPatterns } from './util';
+import { isValidPhoneNumber } from 'react-phone-number-input';
 
 export default {
   title: 'Components/PhoneInputComponent',
@@ -28,23 +28,9 @@ const Template = ({
 
   const handlePhoneChange = (newPhone: string) => {
     setPhone(newPhone);
-    const isValidPhone = validatePhoneNumber(newPhone, country);
+    const isValidPhone = isValidPhoneNumber(newPhone);
     setValid(isValidPhone);
     onChange(newPhone);
-  };
-
-  // Generic validation function based on country
-  const validatePhoneNumber = (
-    phoneNumber: string,
-    countryCode: string
-  ): boolean => {
-    const pattern = countryPatterns[countryCode];
-
-    if (!pattern) {
-      console.error(`No pattern found for country: ${countryCode}`);
-      return false;
-    }
-    return pattern.test(phoneNumber);
   };
 
   return (

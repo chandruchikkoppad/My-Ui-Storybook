@@ -10,4 +10,5 @@ export interface MobileSkinProps {
   navBarIcons?: NavBarIcon[];
   mobileHeight?: number;
   mobileWidth?: number;
+  background?: string;
 }

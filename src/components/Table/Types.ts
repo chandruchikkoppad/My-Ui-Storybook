@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import React, { LegacyRef, ReactNode } from 'react';
 
 export interface ColumnsProps {
   /**
@@ -148,7 +148,17 @@ export interface TableProps {
    */
   editComponent?: ReactNode;
   columnSticky?: boolean;
-  onScrollEnd?: (_isScrollEnd: boolean) => void;
+  /**
+   * tableRef to get the scroll position & to pass control of table to parent component
+   */
+  tableRef?:
+    | LegacyRef<HTMLTableSectionElement>
+    | React.RefObject<HTMLTableSectionElement>
+    | null;
+  /**
+   * Explicitly handling the checkbox disability for the row.
+   */
+  isRowCheckBoxDisable?: boolean;
 }
 
 export interface FormValues {

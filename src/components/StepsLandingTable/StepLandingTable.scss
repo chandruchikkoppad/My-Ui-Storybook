@@ -4,9 +4,6 @@
   display: flex;
   flex-direction: column;
 
-  &::-webkit-scrollbar {
-    display: none;
-  }
 
   .ff-accordion-table {
     width: 100%;
@@ -49,37 +46,51 @@
     display: none;
   }
 
-  .ff-accordion-table-body {
-    scrollbar-width: none;
-  }
 
   .column-table-accordion {
     width: 100%;
 
-    .accordion-header {
+    .step-title-article {
       display: flex;
-      align-items: center;
-      padding: 4px 8px 4px 24px;
-      position: relative;
-      z-index: 99;
 
-      .accordion-arrow {
-        margin-left: 4px;
-        transition: transform 0.2s ease-in-out;
-        cursor: pointer;
+      &:hover {
+        background-color: var(--hover-color);
+      }
 
-        .steps-arrow-svg>svg:hover {
-          color: var(--text-color) !important;
-        }
+      .step-result {
+        padding: 6px 8px;
+        overflow: hidden;
 
-        img {
-          height: 30px;
-          width: 35px;
+        &-text {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
       }
 
-      .accordion-arrow.expanded {
-        transform: rotate(90deg);
+      .accordion-header {
+        display: flex;
+        align-items: center;
+        padding: 4px 8px 4px 24px;
+
+        .accordion-arrow {
+          margin-left: 4px;
+          transition: transform 0.2s ease-in-out;
+          cursor: pointer;
+
+          .steps-arrow-svg>svg:hover {
+            color: var(--text-color) !important;
+          }
+
+          img {
+            height: 30px;
+            width: 35px;
+          }
+        }
+
+        .accordion-arrow.expanded {
+          transform: rotate(90deg);
+        }
       }
     }
   }

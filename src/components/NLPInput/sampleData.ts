@@ -4,7 +4,7 @@ export const nlpList = [
     displayName: 'PostgreSQL : Update value *setValues* into *tableName* table',
     failMessage: 'randomNumber has failed',
     isNonPE: false,
-    platform: 'Web',
+    platform: 'Mobile (Android or iOS)',
     name: 'randomNumber',
     nlpName: 'randomNumber',
     videoSrc: '',
@@ -24,7 +24,7 @@ export const nlpList = [
   {
     desc: 'randomNumber',
     displayName: 'Wait for *element* until text contains *text*',
-    platform: 'android',
+    platform: 'Android',
 
     failMessage: 'randomNumber has failed',
     isNonPE: false,
@@ -45,7 +45,7 @@ export const nlpList = [
   },
   {
     desc: 'randomNumber',
-    platform: 'ios',
+    platform: 'iOS',
 
     displayName:
       'String : Verify if string *string1* is equal to string *string2*',
@@ -154,6 +154,27 @@ export const nlpList = [
     _class: 'com.tyss.optimize.data.models.db.model.ProgramElementNlp',
     _id: 'PE_NLPdbed27d0-b05a-4354-b9d3-c2f85307b4f2',
   },
+  {
+    nlpType: "PROGRAM_ELEMENTS",
+    platform: "None",
+    collectionName: "program_elements_nlps",
+    score: "0",
+    isNonPE: false,
+    modifiedOn: "07 Apr 2025 02:54 PM",
+    nlpName: "AddTwoNumbers",
+    packageName: "com.tyss.optimize.programelement.LIC4088PJT1162.default_package",
+    passMessage: "AddTwoNumbers has passed",
+    toolTip: "default_package : AddTwoNumbers",
+    programElementId: "PROGRAM_ELE_0000",
+    failMessage: "AddTwoNumbers has failed",
+    parentId: "PKJ1172",
+    unique: "optimize_dev2_LIC4088PE_NLP144ad258-f170-4095-aa25-6450cffe2ab8",
+    name: "AddTwoNumbers",
+    projectId: "PJT1162",
+    returnType: "java.lang.Integer",
+    desc: "AddTwoNumbers",
+    _id: "PE_NLP144ad258-f170-4095-aa25-6450cffe2ab8"
+  }
 ];
 export const filterSearchData = [
   { name: 'Navigate', isSelected: false },

@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Icon from '../Icon';
 import Typography from '../Typography';
 import { truncateText } from '../../utils/truncateText/truncateText';
@@ -26,11 +26,17 @@ const AllProjectsDropdown = ({
   const [showOptions, setShowOptions] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState(selectedOption);
   const optionsRef = useRef<HTMLDivElement>(null);
-  const [optionsList, setOptionSList] = useState<optionsType[]>(options);
+  const [optionsList, setOptionsList] = useState<optionsType[]>(options);
   const [closeTimeout, setCloseTimeout] = useState<number | null>(null);
-
+  useEffect(() => {
+    if (selectedOption) {
+      setSelectedOptions(selectedOption);
+    }
+  }, [selectedOption]);
   const closeOptions = () => {
     setShowOptions(false);
+    setSearchValue('');
+    setOptionsList(options);
   };
 
   const handleMouseEnter = () => {
@@ -59,7 +65,7 @@ const AllProjectsDropdown = ({
       closeOptions();
       onClick(option);
       setSearchValue('');
-      setOptionSList(options);
+      setOptionsList(options);
     }
   };
 
@@ -68,13 +74,16 @@ const AllProjectsDropdown = ({
     if (!disabled) {
       setSearchValue(query);
       if (!checkEmpty(query)) {
-        let filterData = options.filter((option) =>
-          option.label.toLowerCase().includes(query.toLowerCase())
-        );
-        setOptionSList(filterData);
+        const staticItem = options[0] ?? { label: '', value: '', iconName: '' };
+        const filterData = options
+          .slice(1)
+          .filter((option) =>
+            option.label.toLowerCase().includes(query.toLowerCase())
+          );
+        setOptionsList([staticItem, ...filterData]);
       } else {
         setSearchValue('');
-        setOptionSList(options);
+        setOptionsList(options);
       }
     }
   };
@@ -169,6 +178,10 @@ const AllProjectsDropdown = ({
                 )
             )}
           </div>
+          <div>
+            {optionsList.length ===1 && (
+              <div className="ff-no-data-found">-No Projects-</div>)}
+          </div>
           <div
             className={classNames(
               'option-card',
@@ -196,7 +209,15 @@ const AllProjectsDropdown = ({
                       lineHeight={'30px'}
                       className="ff-projects-label"
                     >
-                      {<Tooltip title={option.label}>{option.label}</Tooltip>}
+                      {
+                        <Tooltip
+                          title={option.label.length > 25 ? option.label : ''}
+                        >
+                          {option.label.length < 25
+                            ? option.label
+                            : truncateText(option.label, 25)}
+                        </Tooltip>
+                      }
                     </Typography>
                   </div>
                 )

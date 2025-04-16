@@ -43,6 +43,7 @@ export interface ConnectingNodeConfig {
 }
 export interface ConnectBranchProps {
   data: MachineData;
+  noOfScripts?:number;
   childNodeCurveHeight?: number;
   getParentNodeComponent: (nodeArgs: ConnectingNodeConfig) => ReactElement;
   getParentNodeComponentActionItems: (

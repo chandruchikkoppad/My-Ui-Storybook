@@ -5,13 +5,13 @@
   padding: 0 12px;
   width: fit-content;
   height: 30px;
-  color: var(--table-column-text-color);
+  color: var(--brand-color);
   border: 1px solid var(--ff-editor-line-bg);
   border-radius: 16px;
   cursor: pointer;
   @include mixins.center-content();
   .module-typography {
-    color: var(--table-column-text-color);
+    color: var(--brand-color);
   }
   &--active {
     border: 0.5px solid var(--brand-color);
@@ -24,7 +24,7 @@
   &:hover {
     background-color: var(--hover-color);
     .module-typography {
-      color: var(--table-column-text-color);
+      color: var(--brand-color);
     }
   }
 }
@@ -34,7 +34,7 @@
   &:hover {
     background-color: var(--ff-icon-hover-fill-color);
     .module-typography {
-      color: var(--table-column-text-color);
+      color: var(--brand-color);
     }
   }
   &--active {

@@ -1,3 +1,11 @@
 .ff-state-value {
-    text-transform: capitalize;
+  text-transform: capitalize;
+  background-color: var(--state-dropdown-bg-color);
+  color: var(--nlp-color);
+  border-radius: 4px;
+  height: 32px;
+  width: 96px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

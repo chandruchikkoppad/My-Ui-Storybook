@@ -56,11 +56,12 @@
       border: 1px solid var(--brand-color);
       &::after {
         content: '';
-        @include mixins.box(16px, 4px solid var(--checkbox-hover-color));
+        @include mixins.box(16px, 2px solid var(--checkbox-hover-box-shadow-color));
         border-radius: 4px;
         position: absolute;
         opacity: 1;
         z-index: -1;
+        box-sizing: content-box;
         @include mixins.transition(border-color, background-color);
       }
      

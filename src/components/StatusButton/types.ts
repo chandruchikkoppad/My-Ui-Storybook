@@ -5,6 +5,7 @@ export interface StatusButtonProps {
    * Status of the button
    */
   status:
+    | 'default'
     | 'passed'
     | 'failed'
     | 'running'

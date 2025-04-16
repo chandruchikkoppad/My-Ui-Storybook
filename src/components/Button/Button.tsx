@@ -61,6 +61,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
             }
             name={iconName}
             className="ff-button-icon"
+            disabled={disabled}
           />
         </div>
       );

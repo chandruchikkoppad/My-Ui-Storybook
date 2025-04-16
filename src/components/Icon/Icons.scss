@@ -13,9 +13,15 @@
   &.ff-icon-dark {
     background-color: var(--brand-color);
     border-radius: 4px;
+    &.ff-icon-selected {
+      background-color: var(--ff-icon-selected-color);
+      svg path {
+        fill: var(--brand-color);
+      }
+    }
     &.ff-icon-click {
       &:hover {
-        background-color: white;
+        background-color: var(--ff-icon-hover-color-dark-variant);
         svg path {
           fill: var(--brand-color);
         }

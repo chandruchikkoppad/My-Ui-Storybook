@@ -3,7 +3,7 @@ import PhoneInput from 'react-phone-input-2';
 import { PhoneInputProps } from './types';
 import Typography from '../Typography';
 import './phoneInput.scss';
-import { countryPatterns } from './util';
+import { isValidPhoneNumber } from 'react-phone-number-input';
 const PhoneInputField: React.FC<PhoneInputProps> = ({
   country,
   value: initialValue,
@@ -28,28 +28,15 @@ const PhoneInputField: React.FC<PhoneInputProps> = ({
       if (!formattedPhone.startsWith('+')) {
         formattedPhone = `+${formattedPhone}`;
       }
-
       setPhone(formattedPhone);
     }
   }, [initialValue]);
-
-  const validatePhoneNumber = (phoneNumber: string): boolean => {
-    const pattern = countryPatterns[country];
-    if (!pattern) {
-      return false;
-    }
-    let formattedPhone = phoneNumber;
-    if (!formattedPhone.startsWith('+')) {
-      formattedPhone = `+${formattedPhone}`;
-    }
-    return pattern.test(formattedPhone);
-  };
 
   const handlePhoneChange = (phone: string) => {
     const cleanedPhone = phone.replace(/[^0-9+]/g, '');
     setPhone(cleanedPhone);
     onChange(cleanedPhone);
-    const isPhoneValid = validatePhoneNumber(cleanedPhone);
+    const isPhoneValid = isValidPhoneNumber(cleanedPhone);
     setIsValid(isPhoneValid);
   };
 
@@ -61,7 +48,7 @@ const PhoneInputField: React.FC<PhoneInputProps> = ({
   const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
     setIsFocused(false);
     if (onBlur) onBlur(event);
-    const isPhoneValid = validatePhoneNumber(phone);
+    const isPhoneValid = isValidPhoneNumber(phone);
     setIsValid(isPhoneValid);
   };
 

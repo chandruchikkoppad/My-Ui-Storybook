@@ -94,6 +94,7 @@ export interface SelectProps {
   loadMoreOptions?: () => void;
 
   isWebservice?: boolean;
+  closeInputOnOutsideClick?: () => void;
 }
 
 export interface DrowdownPosition {
@@ -152,4 +153,6 @@ export interface NlpRenderOption {
   platform: string;
   disabled?: boolean;
   videoSrc?: string;
+  nlpName?: string;
+  name?: string;
 }

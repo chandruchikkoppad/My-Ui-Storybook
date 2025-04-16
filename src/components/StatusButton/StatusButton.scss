@@ -82,6 +82,12 @@
       var(--status-button-text-notExecuted)
     );
   }
+  &--default {
+    @include status-colors(
+      var(--status-button-bg-default),
+      var(--status-button-text-default)
+    );
+  }
 
   &:disabled {
     opacity: 50%;

@@ -41,7 +41,7 @@ const MachineInputField = ({
       id={modalId}
       style={{ width: width }}
       className={classNames('ff-machine-input-field-wrapper', className, {
-        'cursor-event-none': runCount > 1,
+        'cursor-event-none': runCount!==1 && scriptType=='Automation',
       })}
       onClick={() => {
         if (readOnly) return;

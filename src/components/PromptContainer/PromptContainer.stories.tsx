@@ -13,6 +13,11 @@ const meta: Meta<typeof PromptContainer> = {
   argTypes: {
     onIconClick: { action: 'iconClicked' },
     serialNumber: { control: 'number' },
+    disabled: {
+      control: 'boolean',
+      defaultValue: false,
+      description: 'Disable prompt actions and navigation',
+    },
   },
 };
 export default meta;
@@ -73,20 +78,31 @@ export const Controlled: Story = {
     return (
       <div>
         <PromptContainer
+          disabled={false}
           id={1}
           serialNumber={1}
           activeId={activeId}
           setActiveId={setActiveId}
-          onClick={handleContainerClick}
+          onContainerClick={handleContainerClick}
           onIconClick={handleIconClick}
           numberChildren={<Typography> 1/3 </Typography>}
           onNextClick={() => handleRightClick()}
           onPreviousClick={handleLeftClick}
         >
           <Typography>
-            This is the content of the first container. It can be dynamic, like
-            text, images, or other content.This is the content of the first
-            container. It can be dynamic, like text, images, or other content.
+            Generate a comprehensive set of test cases for Flipkart's e-commerce
+            platform, covering key functionalities such as user login, product
+            search, filtering, adding items to the cart, checkout, payment
+            processing, order tracking, and returns/refunds. Include both
+            positive and negative test scenarios, boundary value cases, and edge
+            cases. Ensure detailed steps, expected results, and test data where
+            applicable. Test different user roles, device compatibilities, and
+            browser environments. Consider security, performance, and usability
+            aspects while designing the test cases.and edge cases. Ensure
+            detailed steps, expected results, and test data where applicable.
+            Test different user roles, device compatibilities, and browser
+            environments. Consider security, performance, and usability aspects
+            while designing the test cases.
           </Typography>
         </PromptContainer>
       </div>

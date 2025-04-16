@@ -38,7 +38,7 @@ const meta: Meta<typeof MenuOption> = {
     dropdownPlacement: {
       control: {
         type: 'select',
-        options: ['top', 'down', 'left', 'right'],
+        options: ['top', 'down', 'left', 'right', 'bottomLeft'],
       },
       description: 'Placement of the dropdown menu relative to the button.',
       defaultValue: 'down',
@@ -81,7 +81,7 @@ export const ControlledMenuOption: Story = {
   render: (args) => {
     const moreRef = useRef<HTMLDivElement>(null);
     return (
-      <div ref={moreRef} style={{display:'flex', height:'100vh', alignItems:'center'}}>
+      <div ref={moreRef} style={{ display: 'flex', height: '100vh', alignItems: 'center' }}>
         <MenuOption
           {...args}
           options={options}
@@ -95,8 +95,7 @@ export const ControlledMenuOption: Story = {
   parameters: {
     docs: {
       description: {
-        story:
-          'A controlled `MenuOption` with customizable tooltip and dropdown placement.',
+        story: 'A controlled `MenuOption` with customizable tooltip and dropdown placement.',
       },
     },
   },
@@ -111,12 +110,7 @@ export const MenuOptionTop: Story = {
     const moreRef = useRef<HTMLDivElement>(null);
     return (
       <div ref={moreRef}>
-        <MenuOption
-          {...args}
-          options={options}
-          targetRef={moreRef}
-          onOptionClick={handleOptionClick}
-        />
+        <MenuOption {...args} options={options} targetRef={moreRef} onOptionClick={handleOptionClick} />
       </div>
     );
   },
@@ -137,12 +131,7 @@ export const MenuOptionBottom: Story = {
   render: (args) => {
     return (
       <div id="more">
-        <MenuOption
-          {...args}
-          options={options}
-          targetRef={'more'}
-          onOptionClick={handleOptionClick}
-        />
+        <MenuOption {...args} options={options} targetRef={'more'} onOptionClick={handleOptionClick} />
       </div>
     );
   },
@@ -164,12 +153,7 @@ export const MenuOptionLeft: Story = {
     const moreRef = useRef<HTMLDivElement>(null);
     return (
       <div ref={moreRef}>
-        <MenuOption
-          {...args}
-          options={options}
-          targetRef={moreRef}
-          onOptionClick={handleOptionClick}
-        />
+        <MenuOption {...args} options={options} targetRef={moreRef} onOptionClick={handleOptionClick} />
       </div>
     );
   },
@@ -191,12 +175,7 @@ export const MenuOptionRight: Story = {
     const moreRef = useRef<HTMLDivElement>(null);
     return (
       <div ref={moreRef}>
-        <MenuOption
-          {...args}
-          options={options}
-          targetRef={moreRef} // Properly pass ref to targetRef
-          onOptionClick={handleOptionClick}
-        />
+        <MenuOption {...args} options={options} targetRef={moreRef} onOptionClick={handleOptionClick} />
       </div>
     );
   },
@@ -204,6 +183,31 @@ export const MenuOptionRight: Story = {
     docs: {
       description: {
         story: 'Dropdown menu positioned to the right of the button.',
+      },
+    },
+  },
+};
+
+export const MenuOptionBottomLeft: Story = {
+  args: {
+    ...ControlledMenuOption.args,
+    dropdownPlacement: 'bottomLeft',
+  },
+  render: (args) => {
+    const containerRef = useRef<HTMLDivElement>(null);
+    return (
+      <div
+        ref={containerRef}
+       
+      >
+        <MenuOption {...args} options={options} targetRef={containerRef} onOptionClick={handleOptionClick} />
+      </div>
+    );
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Dropdown menu positioned at the bottom left of the viewport.',
       },
     },
   },

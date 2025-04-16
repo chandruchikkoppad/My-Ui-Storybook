@@ -1,7 +1,8 @@
-import { ReactNode, useContext, useRef, useState } from 'react';
+import { ReactNode, useContext, useEffect, useRef, useState } from 'react';
 import {
   NlpDropDownListProps,
   nlpDropdownDefaultCSSData,
+  OptionType,
 } from './NlpDropDownType';
 import useClickOutside from '../../../../hooks/useClickOutside';
 import { checkEmpty } from '../../../../utils/checkEmpty/checkEmpty';
@@ -12,19 +13,7 @@ import classNames from 'classnames';
 import Icon from '../../../Icon';
 import IconButton from '../../../IconButton';
 import { useIntersectionObserver } from '../../../../hooks/useIntersectionObserver';
-
-type OptionType = {
-  label?: ReactNode;
-  value?: string;
-  displayName?: string;
-  videoSrc?: string;
-  description?: string;
-  nlpType?: string;
-  path?: string;
-  platform?: string;
-  stepInputs?: { type?: string; name?: string }[];
-  returnType?: string;
-};
+import Tooltip from '../../../Tooltip';
 
 const NlpDropdown = ({
   onSelectBlur,
@@ -44,6 +33,7 @@ const NlpDropdown = ({
   const themeContext = useContext(ThemeContext);
   const currentTheme = themeContext?.currentTheme;
   const optionsWrapperRef = useRef<HTMLDivElement>(null);
+  const [focusedIndex, setFocusedIndex] = useState<number>(-1);
   useClickOutside(optionsWrapperRef, onSelectBlur, [inputRef, chipRef]);
 
   const { positionX, positionY, width, fromBottom } = dropdownPosition;
@@ -74,7 +64,8 @@ const NlpDropdown = ({
       zIndex: optionZIndex,
       left: positionX,
       width: width,
-      top: positionY - selectInputHeight - dropdownContainerHeight - margin,
+      top:
+        positionY - selectInputHeight - 92 - dropdownContainerHeight - margin,
     };
   };
 
@@ -101,24 +92,28 @@ const NlpDropdown = ({
     return { label, className };
   };
 
-  const getPlatformIcon = (platform: string): JSX.Element | string => {
-    if (platform === 'Web') {
-      return <Icon name="web_icon" height={10} width={10} />;
-    } else if (platform === 'android') {
-      return <Icon name="android_icon" height={10} width={10} />;
-    } else if (platform === 'ios') {
-      return (
-        <Icon
-          name="ios_icon"
-          height={10}
-          width={10}
-          color="var(--dotted-border-color)"
-        />
-      );
-    } else if (platform === 'Generic') {
-      return <Icon name="generic_nlp" height={10} width={10} />;
+  const getPlatformIcon = ({ platform, nlpType }: any): JSX.Element => {
+    if (nlpType === 'NLP') {
+      if (platform === 'Web') {
+        return <Icon name="web_icon" height={10} width={10} />;
+      } else if (platform === 'Android') {
+        return <Icon name="android_icon" height={10} width={10} />;
+      } else if (platform === 'iOS') {
+        return (
+          <Icon
+            name="ios_icon"
+            height={10}
+            width={10}
+            color="var(--dotted-border-color)"
+          />
+        );
+      } else if (platform === 'Generic') {
+        return <Icon name="generic_nlp" height={10} width={10} />;
+      } else {
+        return <Icon name="common_nlp" height={10} width={10} />;
+      }
     } else {
-      return <Icon name="common_nlp" height={10} width={10} />;
+      return <></>;
     }
   };
 
@@ -134,6 +129,50 @@ const NlpDropdown = ({
       }
     },
   });
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (!options.length) return;
+
+      switch (event.key) {
+        case 'ArrowDown':
+          event.preventDefault();
+          setFocusedIndex((prev) => (prev < options.length - 1 ? prev + 1 : 0));
+          break;
+
+        case 'ArrowUp':
+          event.preventDefault();
+          setFocusedIndex((prev) => (prev > 0 ? prev - 1 : options.length - 1));
+          break;
+
+        case 'Enter':
+          if (focusedIndex >= 0) {
+            if (options[focusedIndex]) {
+              onSelectOptionSelector(options[focusedIndex]);
+            }
+          }
+          break;
+
+        default:
+          break;
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [options, focusedIndex]);
+
+  const getDisplayName = (
+    item?: {
+      displayName?: ReactNode;
+      name?: ReactNode;
+      nlpName?: ReactNode;
+    } | null
+  ): ReactNode => {
+    return item?.displayName || item?.name || item?.nlpName || '---';
+  };
 
   return (
     <div className="ff-nlp-dropdown-wrapper">
@@ -159,29 +198,42 @@ const NlpDropdown = ({
                     }}
                     id={`ff-nlp-option-${index}`}
                   >
-                    <Typography
-                      as="div"
-                      lineHeight="30px"
-                      fontSize={12}
-                      className={classNames('ff-nlp-option', currentTheme)}
+                    <div
+                      onMouseEnter={() => setFocusedIndex(index)}
                       onClick={() => onSelectOptionSelector(option)}
+                      onKeyDown={(event) => {
+                        if (event.key === 'Enter') {
+                          onSelectOptionSelector(option);
+                        }
+                      }}
                     >
-                      <span>
-                        <Typography
-                          className={`nlp-categories ${
-                            getNLPType(option.nlpType).className
-                          }`}
-                          fontWeight="regular"
-                          fontSize={8}
-                          lineHeight="32px"
-                        >
-                          {getNLPType(option.nlpType).label}
-                        </Typography>
-                      </span>
+                      <Typography
+                        as="div"
+                        lineHeight="30px"
+                        fontSize={12}
+                        className={classNames('ff-nlp-option', currentTheme, {
+                          'ff-nlp-option--selected': focusedIndex === index,
+                        })}
+                      >
+                        <Tooltip title={option.platform}>
+                          <span>
+                            <Typography
+                              className={`nlp-categories ${
+                                getNLPType(option.nlpType).className
+                              }`}
+                              fontWeight="regular"
+                              fontSize={8}
+                              lineHeight="32px"
+                            >
+                              {getNLPType(option.nlpType).label}
+                            </Typography>
+                          </span>
+                        </Tooltip>
 
-                      <span>{getPlatformIcon(option.platform)}</span>
-                      {option?.displayName}
-                    </Typography>
+                        <span>{getPlatformIcon(option)}</span>
+                        {getDisplayName(option)}
+                      </Typography>
+                    </div>
                   </div>
                 ))}
 
@@ -211,7 +263,10 @@ const NlpDropdown = ({
                 <IconButton
                   iconName="plus_user_icon"
                   label="Web Service"
-                  onClick={webServiceClick}
+                  onClick={() => {
+                    onSelectBlur();
+                    webServiceClick();
+                  }}
                 />
               </div>
             </div>
@@ -254,7 +309,7 @@ const NlpDropdown = ({
                 fontWeight="regular"
                 fontSize={12}
               >
-                {nlpData?.displayName || '--'}
+                {getDisplayName(nlpData)}
               </Typography>
             </Typography>
 

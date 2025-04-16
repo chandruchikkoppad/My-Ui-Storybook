@@ -11,17 +11,14 @@ const MobileSkin: React.FC<MobileSkinProps> = ({
   mobileHeight = 448,
   mobileWidth = 220,
   UtilityBar,
+  background,
 }) => {
   const isPortrait = orientation === 'portrait';
   const containerHeight = isPortrait ? mobileHeight : mobileWidth;
   const containerWidth = isPortrait ? mobileWidth : mobileHeight;
 
   return (
-    <div
-      className={`ff-mobileskin-wrapper ${
-        isPortrait ? 'portrait' : 'landscape'
-      }`}
-    >
+    <div className={`ff-mobileskin-wrapper ${isPortrait ? 'portrait' : 'landscape'}`}>
       <div
         className="ff-mobileskin-container"
         style={{
@@ -34,6 +31,7 @@ const MobileSkin: React.FC<MobileSkinProps> = ({
           style={{
             width: containerWidth,
             height: containerHeight,
+            background: background ? background : 'transparent',
           }}
         >
           <div className="ff-mobile-image-container">

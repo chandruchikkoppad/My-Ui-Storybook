@@ -108,6 +108,24 @@ export const WithoutLabel: Story = {
   },
 };
 
+export const withSearchIcon: Story = {
+  args: {
+    ...defaultArgs,
+    label: 'Url',
+    variant: 'primary',
+    type: 'text',
+    placeholder: 'Enter url here',
+    showSearchIcon: true,
+    handleSearchIconClick: (e) => {
+      e.preventDefault();
+    },
+    searchIconProps: {
+      name: 'search',
+      disabled: false,
+    },
+  },
+};
+
 export const withNumber: Story = {
   render: () => {
     const [value, setValue] = useState<number>(0);
@@ -189,6 +207,49 @@ export const Controlled: Story = {
           required={true}
           error={error}
           helperText={helperText}
+        />
+      </>
+    );
+  },
+};
+
+  export const OnBlurErrorDisplay: Story = {
+  render: () => {
+    const [value, setValue] = useState('');
+    const [error, setError] = useState<boolean>(false);
+    const [helperText, setHelperText] = useState<string>('');
+
+    const onChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
+      const value = event.target.value;
+      if (value.length <= 0) {
+        setError(true);
+        setHelperText(`${event.target.name} is required`);
+      } else if (value.length >= 10) {
+        setError(true);
+        setHelperText(`Name should be within 10 characters`);
+      } else {
+        setError(false);
+        setHelperText('');
+      }
+      setValue(value);
+    };
+
+    return (
+      <>
+        <Input
+          {...defaultArgs}
+          type="text"
+          onChange={onChangeHandler}
+          disabled={false}
+          value={value}
+          name="Name"
+          label="Name"
+          placeholder="Enter name here"
+          variant="primary"
+          required={true}
+          error={error}
+          helperText={helperText}
+          displayErrorImmediately={false}
         />
       </>
     );

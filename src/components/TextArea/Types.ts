@@ -82,5 +82,9 @@ export interface TextareaProps {
    * for resizing purpose
    */
   resize?: boolean;
-  errorText?: string
+  errorText?: string;
+  /**
+   * To make text are read only state
+   */
+  readOnly?: boolean;
 }

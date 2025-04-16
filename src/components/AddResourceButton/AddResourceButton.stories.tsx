@@ -49,7 +49,7 @@ export const TwoArrowsButtons: Story = {
         ],
       },
       {
-        direction: 'right',
+        direction: 'down',
         menuOptions: [
           {
             label: 'Add Sub Module',

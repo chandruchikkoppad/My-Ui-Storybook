@@ -73,7 +73,7 @@ const Search = ({
       key: 'Escape',
       action: () => handleSearchData('Escape'),
     },
-  ]);
+  ], inputRef);
 
   const handleSearchClearAndClose = (label: string) => {
     console.log(isAISearchClicked);

@@ -18,6 +18,7 @@ const Typography: React.FC<TypographyProps> = ({
   style = {},
   cursor,
   onDoubleClick = () => {},
+
 }) => {
   const fontSizeValue =
     typeof fontSize === 'number' ? `${fontSize}px` : fontSize;
@@ -34,6 +35,7 @@ const Typography: React.FC<TypographyProps> = ({
         letterSpacing,
         cursor,
         ...style,
+        
       }}
       onClick={onClick}
       onDoubleClick={onDoubleClick}

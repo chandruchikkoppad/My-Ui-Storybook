@@ -19,7 +19,10 @@ const TableRow = React.memo(
     isExpanding,
     index,
     selectedNode,
-    hideOnDisable
+    hideOnDisable,
+    scriptLengthTruncate,
+    addModuleInputWidth,
+    addModuleSelectWidth,
   }: TableRowProps) => {
     const treeRowRef = useRef<HTMLTableRowElement | null>(null);
     return (
@@ -47,6 +50,9 @@ const TableRow = React.memo(
             handleEditFieldError={handleEditFieldError}
             isExpanding={isExpanding}
             hideOnDisable={hideOnDisable}
+            scriptLengthTruncate={scriptLengthTruncate}
+            addModuleInputWidth= {addModuleInputWidth}
+            addModuleSelectWidth={addModuleSelectWidth}
           />
         ))}
       </tr>

@@ -1,23 +1,3 @@
-interface ExcelFileProps {
-  /** The Excel data containing sheets and their content */
-  excelData: {
-    sheets: WorkSheet[];
-  };
-
-  /** Optional: Provide context menu options for actions like right-click */
-  contextOption?: {
-    name: string;
-    title: React.ReactNode;
-    action: () => void;
-  }[];
-
-  /** Controls whether the toolbar is shown, disabled, or hidden */
-  toolbar?: 'show' | 'disable' | 'hide';
-
-  /** Callback function to save the Excel data */
-  onSave?: (excelData?: any) => void;
-}
-
 interface WorkSheet {
   /** The name of the worksheet */
   sheetName: string;
@@ -45,7 +25,13 @@ interface WorkSheet {
 
 interface InputType {
   type: 'dropDown' | 'text' | 'file';
-  options?: { disable: boolean; label: string; name: string; value: string }[];
+  options?: {
+    disable: boolean;
+    label: string;
+    name: string;
+    value: string;
+    color: string;
+  }[];
   inputProps?: {};
 }
 
@@ -135,10 +121,6 @@ interface ColorContainer {
 
 interface ContextMenuState {
   open: boolean;
-  position: {
-    x: number;
-    y: number;
-  };
   options: optionsType[];
 }
 

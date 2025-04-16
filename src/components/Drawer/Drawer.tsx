@@ -3,14 +3,17 @@ import { DrawerProps } from './Types.js';
 import Button from '../Button/Button.js';
 import classNames from 'classnames';
 import './Drawer.scss';
-import { FC, useContext, useEffect, useState } from 'react';
+import { FC, useContext, useEffect, useRef, useState } from 'react';
 import Icon from '../Icon';
 import useEscapeKey from '../../hooks/keyboardevents/useEscKeyEvent.js';
 import { ThemeContext } from '../ThemeProvider/ThemeProvider.js';
+import Tooltip from '../Tooltip/Tooltip.js';
+import useClickOutside from '../../hooks/useClickOutside.js';
 const Drawer: FC<DrawerProps> = ({
   isOpen = true,
   children = 'Drawer content area',
   onClose = () => {},
+  onBackButtonClick = () => {},
   title = 'drawer',
   primaryButtonProps = {},
   secondaryButtonProps = {},
@@ -28,6 +31,7 @@ const Drawer: FC<DrawerProps> = ({
   isBackButtonVisible = false,
   _isCloseModalButtonVisible = true,
   showHeader = true,
+  isScrollBar = true,
   backButtonIcon,
   onCloseIconClick,
   customHeader,
@@ -40,7 +44,21 @@ const Drawer: FC<DrawerProps> = ({
   width,
   right = '9px',
   overflow,
+  isClickOutside,
 }: DrawerProps) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  useClickOutside(containerRef, () => {
+    const openDrawers = document.querySelectorAll('.ff-drawer');
+    const lastDrawer = openDrawers[openDrawers.length - 1] as HTMLElement;
+    if (
+      lastDrawer &&
+      lastDrawer.contains(containerRef.current) &&
+      isClickOutside
+    ) {
+      onClose();
+    }
+  });
+
   const [isExpanded, setIsExpanded] = useState(false);
   const [delayedOpen, setDelayedOpen] = useState(false);
   // useKeyboardActions([{ key: 'Escape', action: onClose }]);
@@ -100,6 +118,7 @@ const Drawer: FC<DrawerProps> = ({
         <div className={'ff-overlay'} style={{ zIndex: computedZIndex }} />
       )}
       <div
+        ref={containerRef}
         className={classNames('ff-drawer', `ff-drawer--${drawerSize}`, {
           'ff-drawer--open': delayedOpen,
         })}
@@ -135,16 +154,23 @@ const Drawer: FC<DrawerProps> = ({
                     </button>
                   )}
                   {_isExpanded && (
-                    <button
-                      className="ff-expand-collapse-button"
-                      onClick={toggleExpand}
+                    <Tooltip
+                      title={isExpanded ? 'Minimize' : 'Maximize'}
+                      placement="bottom"
                     >
-                      <Icon
-                        name={isExpanded ? 'minimize_script' : 'maximize_icon'}
-                        height={16}
-                        width={16}
-                      />
-                    </button>
+                      <button
+                        className="ff-expand-collapse-button"
+                        onClick={toggleExpand}
+                      >
+                        <Icon
+                          name={
+                            isExpanded ? 'minimize_script' : 'maximize_icon'
+                          }
+                          height={16}
+                          width={16}
+                        />
+                      </button>
+                    </Tooltip>
                   )}
                   {isBackButtonVisible &&
                     (backButtonIcon || (
@@ -153,7 +179,7 @@ const Drawer: FC<DrawerProps> = ({
                         height={16}
                         width={16}
                         hoverEffect
-                        onClick={onClose}
+                        onClick={onBackButtonClick}
                       />
                     ))}
                   {title && <div className="ff-drawer-title">{title}</div>}
@@ -175,10 +201,13 @@ const Drawer: FC<DrawerProps> = ({
           </div>
         )}
         <div
-          className={classNames('ff-drawer-body', {
+          className={classNames({
+            'ff-drawer-body-with-scroll': isScrollBar,
+            'ff-drawer-body': !isScrollBar,
             'no-footer': !isFooterRequired,
           })}
         >
+          {' '}
           {children}
         </div>
         {isFooterRequired && (

@@ -179,6 +179,7 @@ const data = [
     locatorsCount: 1,
     isRecorded: 'N',
     isShared: 'N',
+    unselectable: true,
   },
   {
     key: 'ELE29258de3-bc8f-4154-9bd9-6baab7c10395',
@@ -205,6 +206,8 @@ const data = [
     locatorsCount: 1,
     isRecorded: 'N',
     isShared: 'N',
+    unselectable: false,
+    machine: 're'
   },
   {
     key: 'ELE50d07e43-00d3-48cb-9c7a-272027e95b20',
@@ -231,6 +234,8 @@ const data = [
     locatorsCount: 1,
     isRecorded: 'N',
     isShared: 'N',
+    mdDisable: false,
+    machine: 're'
   },
   {
     key: 'ELE9dc8e896-0a75-4bb6-bb61-5c5b0c9bcb84',
@@ -282,6 +287,7 @@ const data = [
     expandable: true,
     expanded: true,
     platform: 'Web',
+    unselectable: true,
   },
   {
     key: 'ELE307e244a-c281-4361-aac7-b35b0cd67f50',

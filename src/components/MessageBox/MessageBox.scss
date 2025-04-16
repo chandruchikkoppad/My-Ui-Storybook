@@ -25,8 +25,9 @@
     left: calc(var(--triangle-position, -12px));
     transform: translateY(-50%);
     border-style: solid;
-    border-width: 8px 0 8px 10px;
+    border-width: 6px 0 6px 8px;
     border-color: transparent transparent transparent var(--prompt-bg-color);
+    filter: drop-shadow(2px 0px 0px var(--arrows-button-border-color));
     z-index: 999;
   }
 
@@ -38,8 +39,9 @@
     right: calc(var(--triangle-position, -12px));
     transform: translateY(-50%);
     border-style: solid;
-    border-width: 8px 10px 8px 0;
+    border-width: 6px 8px 6px 0;
     border-color: transparent var(--prompt-bg-color) transparent transparent;
+    filter: drop-shadow(-2px 0px 0px var(--arrows-button-border-color));
     z-index: 999;
   }
 

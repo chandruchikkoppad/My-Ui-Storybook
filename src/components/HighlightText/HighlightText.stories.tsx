@@ -19,4 +19,12 @@ export const Primary: Story = {
   },
 };
 
+export const ExactMatch: Story = {
+  args: {
+    text: 'Hello team do use Highlight component in Name column to highlight searched text',
+    highlight: 'hello',
+    onlyExactMatch: true,
+  },
+};
+
 export default meta;

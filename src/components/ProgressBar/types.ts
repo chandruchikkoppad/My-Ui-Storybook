@@ -1,5 +1,5 @@
 export interface ProgressBarProps {
-  progressPercentage: number; // The current progress value (0-100)
+  progressPercentage?: number; // The current progress value (0-100)
   color?: string; // Custom color of the progress bar
   trackColor?: string; // Custom color of the track (empty part)
   height?: number;
@@ -9,4 +9,8 @@ export interface ProgressBarProps {
   percentageTextColor?: string;
   labelFontSize?: number; // Font size of the label
   labelTextColor?: string;
+  // Used memory value as a string (e.g. "100mb")
+  usedMemory?: string;
+    // Total memory value as a string (e.g. "200mb", "1gb")
+    totalMemory?: string;
 }

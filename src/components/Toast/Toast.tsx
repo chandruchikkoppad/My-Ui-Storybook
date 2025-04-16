@@ -16,7 +16,7 @@ const Toaster: React.FC<ToasterProps> = ({
   toastMessage = 'Hello this is child element',
   displayDuration = 5000,
   confirmationText = 'Confirm',
-  zIndex = 99,
+  zIndex = 1300,
 }) => {
   const [isExiting, setIsExiting] = useState(false);
 

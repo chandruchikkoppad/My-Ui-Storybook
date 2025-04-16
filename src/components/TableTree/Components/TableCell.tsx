@@ -7,6 +7,8 @@ import { checkEmpty } from '../../../utils/checkEmpty/checkEmpty';
 import AddModule from '../../EditLabel';
 import Arrow from '../../../assets/icons/arrows_down_icon.svg?react';
 import Spinner from '../../../assets/icons/spinner.svg?react';
+import Tooltip from '../../Tooltip';
+import { formatCellData } from '../Utils/formatDataCell';
 
 const renderSpaces = (
   level: number,
@@ -17,8 +19,6 @@ const renderSpaces = (
   let siblingsArray = parentSiblings;
   let isLastNode = isLast;
   if (checkEmpty(parentSiblings)) {
-    isLastNode = false;
-
     if (!isNaN(level)) {
       siblingsArray = Array(level).fill(true);
     }
@@ -26,7 +26,7 @@ const renderSpaces = (
 
   return (
     <div className="tree-table-space-container">
-      {siblingsArray?.reverse()?.map((line, i) => (
+      {siblingsArray?.map((line, i) => (
         <span
           key={i}
           className={`tree-table-space-block tree-table-space-block-${i} ${
@@ -55,6 +55,9 @@ const TableCell = React.memo(
     isExpanding,
     columnTextColor,
     hideOnDisable,
+    scriptLengthTruncate,
+    addModuleInputWidth,
+    addModuleSelectWidth,
   }: TableCellProps) => {
     //Todo uncomment the following code when we are highlighting the tree table nodes on hover
     // useEffect(() => {
@@ -113,15 +116,15 @@ const TableCell = React.memo(
           renderSpaces(
             node.hierarchy,
             node.parentSiblings,
-            node.lastResource,
+            node.lastChild,
             node.container
           )}
         <div className="tree-title-container">
           {col.isTree && (
             <span
-              className={`tree-table-space-block tree-table-space-block-${
+              className={`tree-table-space-block  last-block last-block tree-table-space-block-${
                 node.hierarchy
-              } last-block  ${
+              } ${
                 node?.expanded ? 'tree-row-expanded' : 'tree-row-collapsed'
               } ${node.container && node.expandable ? '' : 'no-folder'}`}
             >
@@ -142,28 +145,60 @@ const TableCell = React.memo(
               <>
                 {col.isTree &&
                   select === 'checkbox' &&
-                  !(hideOnDisable && node.unselectable) && (
-                    <Checkbox
-                      checked={
-                        node.selectedStatus !== 'partially' &&
-                        (node.selectedStatus === 'completely' || false)
-                      }
-                      partial={node.selectedStatus === 'partially'}
-                      onChange={(e) => onCheckBoxChange(e, node)}
-                      disabled={node.unselectable}
-                      isDefaultHover={node.isDefaultHover}
-                    />
+                  !(hideOnDisable && (node.mdDisable ?? node.unselectable)) && (
+                    <span className="tree-table-td-content-select">
+                      {node.mdDisable !== undefined ? (
+                        <Tooltip
+                          title={
+                            node.mdDisable
+                              ? 'This script is already assigned to the current environment.'
+                              : !!node.machine
+                              ? 'This script is assigned to another environment. Selecting it will reassign it to the current environment.'
+                              : undefined
+                          }
+                        >
+                          <Checkbox
+                            checked={node.selectedStatus === 'completely'}
+                            partial={node.selectedStatus === 'partially'}
+                            onChange={(e) => onCheckBoxChange(e, node)}
+                            disabled={
+                              (node.mdDisable ?? node.unselectable) ||
+                              node.state === 'REVIEW' ||
+                              node?.isDisable === true
+                            }
+                            isDefaultHover={!node.mdDisable && !!node.machine}
+                          />
+                        </Tooltip>
+                      ) : (
+                        <Checkbox
+                          checked={node.selectedStatus === 'completely'}
+                          partial={node.selectedStatus === 'partially'}
+                          onChange={(e) => onCheckBoxChange(e, node)}
+                          disabled={
+                            (node.mdDisable ?? node.unselectable) ||
+                            node.state === 'REVIEW' ||
+                            node?.isDisable === true
+                          }
+                        />
+                      )}
+                    </span>
                   )}
                 {col.isTree &&
                   select === 'radio' &&
-                  !(hideOnDisable && node.unselectable) && (
-                    <RadioButton
-                      name={node.key}
-                      checked={selected.includes(node.key)}
-                      value={node.key}
-                      onChange={(e) => onCheckBoxChange(e, node)}
-                      disabled={node.unselectable}
-                    />
+                  !(hideOnDisable && (node.mdDisable ?? node.unselectable)) && (
+                    <span className="tree-table-td-content-select">
+                      <RadioButton
+                        name={node.key}
+                        checked={selected.includes(node.key)}
+                        value={node.key}
+                        onChange={(e) => onCheckBoxChange(e, node)}
+                        disabled={
+                          (node.mdDisable ?? node.unselectable) ||
+                          node.state === 'REVIEW' ||
+                          node?.isDisable === true
+                        }
+                      />
+                    </span>
                   )}
               </>
             )}
@@ -177,11 +212,14 @@ const TableCell = React.memo(
                 selectedOption={node.selectedOption}
                 withDropdown={node.type === 'inputWithDropdown'}
                 handleCustomError={handleEditFieldError}
-                inputFieldWidth={120}
+                inputFieldWidth={addModuleInputWidth}
+                selectFieldWidth={addModuleSelectWidth}
+                confirmIconTooltip={node.confirmIconTooltip}
+                cancelIconTooltip={node.cancelIconTooltip}
               />
             ) : (
               <span className="tree-table-td-content-text">
-                {prepareData(node, col)}
+                {formatCellData(prepareData(node, col), scriptLengthTruncate)}
               </span>
             )}
           </span>

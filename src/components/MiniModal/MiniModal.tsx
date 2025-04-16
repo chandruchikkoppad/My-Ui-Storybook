@@ -1,6 +1,17 @@
-import { useEffect, useRef, useState, useCallback, forwardRef } from 'react';
+import {
+  useRef,
+  useState,
+  useCallback,
+  forwardRef,
+  useLayoutEffect,
+} from 'react';
 import { createPortal } from 'react-dom';
-import { MiniEditModalProps, Rect, AvailableSpace } from './types.js';
+import {
+  MiniEditModalProps,
+  Rect,
+  AvailableSpace,
+  ModalPosition,
+} from './types.js';
 import Button from '../Button/Button.js';
 import useEscapeKey from '../../hooks/keyboardevents/useEscKeyEvent.js';
 import useClickOutside from '../../hooks/useClickOutside';
@@ -93,29 +104,37 @@ const MiniModal = forwardRef<HTMLDivElement, MiniEditModalProps>(
 
     if (!isWrapped && anchorRect) {
       const availableSpace = getAvailableSpace(anchorRect);
-      switch (modalPosition) {
-        case 'top':
-          if (availableSpace.spaceTop < (modalProperties?.height ?? 150)) {
-            modalPosition = 'bottom';
+      const modalHeight = modalProperties?.height ?? 150;
+      const modalWidth = modalProperties?.width ?? 480;
+
+      const positionFallbacks: Record<ModalPosition, ModalPosition[]> = {
+        top: ['bottom', 'left', 'right'],
+        left: ['right', 'top', 'bottom'],
+        right: ['left', 'top', 'bottom'],
+        bottom: ['top', 'left', 'right'],
+      };
+
+      const checkSpace = (direction: ModalPosition) => {
+        return (
+          availableSpace[
+            `space${
+              direction.charAt(0).toUpperCase() + direction.slice(1)
+            }` as keyof AvailableSpace
+          ] <
+          (direction === 'top' || direction === 'bottom'
+            ? modalHeight
+            : modalWidth)
+        );
+      };
+
+      if (checkSpace(modalPosition)) {
+        const fallbacks = positionFallbacks[modalPosition];
+        for (const fallback of fallbacks) {
+          if (!checkSpace(fallback)) {
+            modalPosition = fallback;
+            break;
           }
-          break;
-        case 'left':
-          if (availableSpace.spaceLeft < (modalProperties?.width ?? 480)) {
-            modalPosition = 'right';
-          }
-          break;
-        case 'right':
-          if (availableSpace.spaceRight < (modalProperties?.width ?? 480)) {
-            modalPosition = 'left';
-          }
-          break;
-        case 'bottom':
-          if (availableSpace.spaceBottom < (modalProperties?.height ?? 150)) {
-            modalPosition = 'top';
-          }
-          break;
-        default:
-          break;
+        }
       }
     }
 
@@ -235,24 +254,29 @@ const MiniModal = forwardRef<HTMLDivElement, MiniEditModalProps>(
         });
 
         setArrowOffset(arrowOffset);
+        setIsVisible(true);
         // Store arrow adjustment
       }
     }, [anchorElement]);
 
-    useEffect(() => {
-      const timeoutId = setTimeout(() => {
-        setIsVisible(true);
-        calculatePosition();
-      }, 100);
+    useLayoutEffect(() => {
+      if (!modalRef.current) return;
+      calculatePosition();
+      const observer = new ResizeObserver((entries) => {
+        if (entries.length) {
+          calculatePosition();
+        }
+      });
+      observer.observe(modalRef.current);
       window.addEventListener('resize', calculatePosition);
       window.addEventListener('scroll', calculatePosition);
 
       return () => {
         window.removeEventListener('resize', calculatePosition);
-        clearTimeout(timeoutId);
+        observer.disconnect();
         window.removeEventListener('scroll', calculatePosition);
       };
-    }, [calculatePosition]);
+    }, [calculatePosition, modalRef]);
 
     const {
       height: wrapperHeight = 35,

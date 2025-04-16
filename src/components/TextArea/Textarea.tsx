@@ -28,6 +28,7 @@ const Textarea = ({
   cols = 40,
   resize = false,
   errorText,
+  readOnly = false,
   ...props
 }: TextareaProps) => {
   const labelClasses = classNames(
@@ -154,6 +155,7 @@ const Textarea = ({
         required={required}
         rows={rows}
         cols={cols}
+        readOnly={readOnly}
         {...props}
       />
 
@@ -163,7 +165,7 @@ const Textarea = ({
         }
       >
         {errorMessage}
-        {capacity > 0 && (
+        {capacity > 0 && !readOnly && (
           <div className={'ff-textarea-character-count'}>
             <Typography fontSize={8}>{getCharacterCount(value)}/</Typography>
             <Typography fontSize={8}>{capacity}</Typography>

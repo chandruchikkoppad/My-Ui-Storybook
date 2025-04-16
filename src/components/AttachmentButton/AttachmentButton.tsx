@@ -15,8 +15,8 @@ const AttachmentButton: React.FC<AttachmentUploaderProps> = ({
   disabled = false,
   buttonDisplayType = 'attachment',
   iconName = 'plus_icon',
-  maxFileSizeMB = 5, // Default to 5 MB if not provided
-  maxFiles = 10, // Default to 10 files if not provided
+  maxFileSizeMB,
+  maxFiles,
   buttonLabel = 'Select Files',
   showSelectedFiles = true,
   buttonVariant = 'primary',
@@ -26,13 +26,16 @@ const AttachmentButton: React.FC<AttachmentUploaderProps> = ({
   isInfoIconRequired = true,
   onFileListClick,
   types = [],
+  attachmentInfoTooltip = '',
+  selectedFileMessage = 'This file is already selected',
+  required = false,
+  errorMessage,
 }) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [fileError, setFileError] = useState<string>('');
-  const maxFileSizeBytes = maxFileSizeMB * 1024 * 1024;
 
   const fileTypes: Record<string, string[]> = {
-    image: ['image/jpeg', 'image/png', 'image/gif'],
+    image: ['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml'],
     video: ['video/mp4', 'video/mpeg', 'video/quicktime'],
     audio: ['audio/mpeg', 'audio/wav', 'audio/ogg'],
     document: [
@@ -82,47 +85,70 @@ const AttachmentButton: React.FC<AttachmentUploaderProps> = ({
     setFileError('');
     if (fileInputRef.current?.files) {
       const files = Array.from(fileInputRef.current.files);
+      if (files.length > 5) {
+        setFileError('More than 5 files are not allowed.');
+        fileInputRef.current.value = '';
+        return;
+      }
       const newFiles = files.filter(
         (file) =>
           !selectedFiles.some((selectedFile) => selectedFile.name === file.name)
       );
+
       if (newFiles.length === 0) {
-        setFileError('This file is already selected.');
+        setFileError(selectedFileMessage);
         fileInputRef.current.value = '';
         return;
       }
-      if (selectedFiles.length + newFiles.length > maxFiles) {
+      if (
+        typeof maxFiles === 'number' &&
+        selectedFiles.length + newFiles.length > maxFiles
+      ) {
         setFileError(`You can only select up to ${maxFiles} files.`);
         fileInputRef.current.value = '';
         return;
       }
-      const oversizedFiles = newFiles.filter(
-        (file) => file.size > maxFileSizeBytes
-      );
-      if (oversizedFiles.length > 0) {
-        setFileError(`Each file must be less than ${maxFileSizeMB} MB.`);
-        fileInputRef.current.value = '';
-        return;
+      if (typeof maxFileSizeMB === 'number') {
+        const maxFileSizeBytes = maxFileSizeMB * 1024 * 1024;
+        const oversizedFiles = newFiles.filter(
+          (file) => file.size > maxFileSizeBytes
+        );
+        if (oversizedFiles.length > 0) {
+          setFileError(`Maximum file(s) size allowed: ${maxFileSizeMB} MB.`);
+          fileInputRef.current.value = '';
+          return;
+        }
       }
-      onFilesChange([...selectedFiles, ...newFiles]);
+
+      onFilesChange([...selectedFiles, ...newFiles], newFiles, 'ADD');
       fileInputRef.current.value = '';
     }
   };
 
   const handleDeleteFile = (index: number) => {
     const updatedFiles = [...selectedFiles];
-    updatedFiles.splice(index, 1);
-    onFilesChange(updatedFiles);
+    const deletedFile = updatedFiles.splice(index, 1);
+    onFilesChange(updatedFiles, deletedFile, 'DELETE');
   };
 
   return (
     <div>
       {isInfoIconRequired && (
         <div className="ff-label-icon">
-          <Typography fontWeight="semi-bold" lineHeight="18px">
+          <Typography
+            fontWeight="semi-bold"
+            lineHeight="18px"
+            as="span"
+            required={required}
+          >
             {label}
           </Typography>
-          <Tooltip title={getTooltipTitle()} placement="bottom-start">
+          <Tooltip
+            title={
+              attachmentInfoTooltip ? attachmentInfoTooltip : getTooltipTitle()
+            }
+            placement="bottom-start"
+          >
             <Icon name="info" hoverEffect />
           </Tooltip>
         </div>
@@ -151,6 +177,7 @@ const AttachmentButton: React.FC<AttachmentUploaderProps> = ({
         onChange={handleFileChange}
         multiple={multiple}
         accept={acceptTypes}
+        required={required}
       />
       {fileError && (
         <Toaster
@@ -180,19 +207,37 @@ const AttachmentButton: React.FC<AttachmentUploaderProps> = ({
                 />
               </Tooltip>
             )}
-            {index === selectedFiles.length - 1 &&
-              selectedFiles.length < maxFiles &&
-              addAttachmentButton && (
-                <Tooltip title="Add Attachment">
-                  <Icon
-                    name="add_file"
-                    hoverEffect={true}
-                    onClick={handleAttachmentClick}
-                  />
-                </Tooltip>
-              )}
+            {index === selectedFiles.length - 1 && addAttachmentButton && (
+              <Tooltip
+                title={`${
+                  typeof maxFiles === 'number' &&
+                  selectedFiles.length >= maxFiles
+                    ? `Maximum files can be uploaded: ${maxFiles}`
+                    : 'Add File'
+                }`}
+              >
+                <Icon
+                  name="add_file"
+                  hoverEffect={true}
+                  onClick={handleAttachmentClick}
+                  disabled={
+                    typeof maxFiles === 'number'
+                      ? !(selectedFiles.length < maxFiles)
+                      : false
+                  }
+                />
+              </Tooltip>
+            )}
           </div>
         ))}
+
+      {required && (
+        <Typography
+          children={errorMessage}
+          fontSize={10}
+          className="error-text"
+        />
+      )}
     </div>
   );
 };

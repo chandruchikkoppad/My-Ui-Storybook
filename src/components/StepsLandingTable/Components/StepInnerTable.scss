@@ -1,5 +1,4 @@
 .ff-fixed-header-steps-table {
-  overflow-y: auto;
   scrollbar-width: none;
 
 
@@ -15,7 +14,6 @@
     }
 
     .ff-steps-tbody {
-      overflow-y: auto;
 
       tr:hover,
       tr.hover {
@@ -92,6 +90,17 @@
           &.clickable-cell {
             cursor: pointer;
           }
+
+          .StepGroup-row {
+            &-container {
+              display: flex;
+              align-items: center;
+
+              &-space {
+                padding: 16px;
+              }
+            }
+          }
         }
 
         .step-detail-cell {
@@ -100,40 +109,6 @@
 
         .other-detail-cell {
           padding: 7px 8px;
-        }
-
-        .edit_depends_on_script {
-          border-radius: 8px;
-          margin: 8px;
-          border: 1px solid var(--ff-select-option-wrapper-box-shadow);
-
-          &__header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-radius: 8px 8px 0 0;
-            background: var(--slider-table-color);
-            min-height: 32px;
-            padding: 0 8px;
-
-            &__link {
-              border-bottom: 2px solid var(--nlp-color);
-              cursor: pointer;
-            }
-          }
-
-          &__form {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            padding: 8px;
-
-            &__button {
-              display: flex;
-              justify-content: end;
-              gap: 8px;
-            }
-          }
         }
       }
     }
@@ -166,4 +141,13 @@
   .ff-accordion-arrow.expanded {
     transform: rotate(90deg);
   }
+}
+
+.step-result-stats {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 2px;
+  margin-left: 4px;
+  white-space: nowrap;
 }

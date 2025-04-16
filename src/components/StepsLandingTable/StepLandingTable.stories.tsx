@@ -1,6 +1,6 @@
 import { StoryObj, Meta } from '@storybook/react';
 import StepLandingTable from './StepLandingTable';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import Typography from '../Typography';
 import EditComponent from './Components/EditComponent';
 import IconButton from '../IconButton';
@@ -11,10 +11,12 @@ import { nlpList } from '../NLPInput/sampleData';
 import { rearrangeDragItem } from '../../utils/swapArrayItem/dragAndDropUtils';
 import { AddNlpProp } from './types';
 import Tooltip from '../Tooltip';
-import { ffid } from '../../utils/ffID/ffid';
 import { addStepGroup } from '../../utils/AddStepGroup/AddStepGroup';
 import StepGroupDetailView from '../PrePostTable/components/StepGroupDetailView';
 import Drawer from '../Drawer';
+import { sampleData } from './constant.tsx';
+import StepResultStats from './Components/StepResultStats';
+import { ffid } from '../../utils/ffID/ffid.ts';
 
 const meta: Meta<typeof StepLandingTable> = {
   title: 'Components/StepLandingTable',
@@ -27,126 +29,13 @@ const meta: Meta<typeof StepLandingTable> = {
 
 type Story = StoryObj<typeof StepLandingTable>;
 
-// !back up for action cells
-const sampleData = [
-  {
-    title: 'Depends on Script',
-    data: [
-      {
-        stepId: ffid(),
-        name: 'Open Browser',
-        modifiedBy: 'Ram',
-        suiteName: 'test',
-        isDisabled: true,
-        marginLeft: 0,
-      },
-    ],
-  },
-  {
-    title: 'Pre conditions',
-    data: [
-      {
-        stepId: ffid(),
-        name: 'Open Browser',
-        modifiedBy: 'Ram',
-        suiteName: 'test',
-        isDisabled: true,
-        type: 'PRE',
-      },
-      {
-        stepId: ffid(),
-        name: 'Close Browser',
-        modifiedBy: 'Ram',
-        suiteName: 'test',
-      },
-    ],
-  },
-  {
-    title: 'Steps',
-    data: [
-      {
-        stepId: ffid(),
-        name: 'Open Browser hg uiyguyg iugiug uiggiug uighuyg busdyguygau guywge gwDGUIg iuhgaiudgh iuggiug uyguyg',
-        modifiedBy: 'Ram',
-        suiteName: 'suite1',
-        isSpecialNlp: true,
-        marginLeft: 0,
-      },
-      {
-        stepId: ffid(),
-        name: 'Start if',
-        modifiedBy: 'Laxman',
-        suiteName: 'suite 2',
-        specialNlp: true,
-        marginLeft: 0,
-      },
-      {
-        stepId: ffid(),
-        name: 'wait for a sec',
-        modifiedBy: 'Laxman',
-        suiteName: 'suite 2',
-        marginLeft: 8,
-      },
-      {
-        stepId: ffid(),
-        name: 'End if',
-        modifiedBy: 'Laxman',
-        suiteName: 'suite 2',
-        marginLeft: 0,
-      },
-      {
-        stepId: ffid(),
-        name: 'wait for Second',
-        modifiedBy: 'Laxman',
-        suiteName: 'suite 2',
-        marginLeft: 80,
-      },
-      {
-        stepId: ffid(),
-        name: 'Click on Element Lorem ipsum dolor sit amet, consectetur adipisicing elit. Neque corrupti exercitationem amet voluptatem ex nulla dolor vitae deleniti, ullam perferendis in esse tempore! Distinctio rem, vero ut eligendi voluptate a',
-        modifiedBy: 'Laxman',
-        suiteName: 'suite 2',
-        marginLeft: 0,
-      },
-    ],
-    actionCell: ({ row }: DynamicObj) => {
-      return (
-        <div>
-          <Icon name="edit" />
-        </div>
-      );
-    },
-  },
-  {
-    title: 'Post conditions',
-    data: [
-      {
-        stepId: ffid(),
-        name: 'close browser',
-        modifiedBy: 'Krishna',
-        suiteName: 'test 2',
-        type: 'POST',
-      },
-    ],
-  },
-];
-
 export const StepLandingTableAcc: Story = {
   render: () => {
     const [tableData, setTableData] = useState<any>(sampleData);
     const [editMode, setEditMode] = useState<any>('');
     const [AddNewNlp, setNewNlp] = useState<AddNlpProp>();
     const [isMaximize, setDoMaximize] = useState(true);
-
-    const handleViewComponent = (data: any, toggleViewRow: any) => {
-      if (data.stepId) {
-        return () => (
-          <StepGroupDetailView rowData={data} toggleViewRow={toggleViewRow} />
-        );
-      }
-      return null;
-    };
-    //Dummy data from api call
+    const childRef = useRef<any>(null);
     const newSteps: any = [
       {
         stepId: ffid(),
@@ -180,6 +69,14 @@ export const StepLandingTableAcc: Story = {
         ],
       },
     ];
+    const handleViewComponent = (data: any, toggleViewRow: any) => {
+      if (data.stepId) {
+        return () => (
+          <StepGroupDetailView rowData={data} toggleViewRow={toggleViewRow} />
+        );
+      }
+      return null;
+    };
 
     const handleAccordion = (row: any) => {
       const updatedData = addStepGroup(
@@ -213,12 +110,14 @@ export const StepLandingTableAcc: Story = {
                     <Typography
                       as="div"
                       color="var(--brand-color)"
+                      fontWeight={row?.isSpecialNlp ? 'bold' : 'regular'}
                       lineHeight="18px"
                       onClick={() => {
                         if (!row?.isDisabled) {
                           setNewNlp({});
                           setEditMode(row.stepId);
                         }
+                        childRef?.current?.handleCloneCheckbox(row);
                       }}
                       style={{ opacity: row?.isDisabled ? '0.5' : '' }}
                     >
@@ -231,9 +130,27 @@ export const StepLandingTableAcc: Story = {
           );
         },
         extraInfo: ({ row, indexNumber, tableType }: DynamicObj) => {
+          const handleDelete = (row: any) => {
+            const updatedData = tableData.map((item) => {
+              if (item.title === 'Steps') {
+                return {
+                  ...item,
+                  data: item.data.filter(
+                    (step: any) => step.stepId !== row?.stepId
+                  ),
+                };
+              }
+              return item;
+            });
+            setTableData(updatedData);
+            childRef?.current?.handleUpdateCheckbox(row);
+          };
           if (tableType === 'Steps') {
             return (
               <>
+                {row?.stepResultStats && (
+                  <StepResultStats metaData={row?.stepResultStats} />
+                )}
                 <div
                   className="icon-container"
                   style={{
@@ -268,6 +185,13 @@ export const StepLandingTableAcc: Story = {
                           nlpName: row?.name,
                         });
                       }}
+                    />
+                  )}
+                  {!row?.isDisabled && (
+                    <Icon
+                      name="delete"
+                      disabled={row?.isDisabled}
+                      onClick={() => handleDelete(row)}
                     />
                   )}
                 </div>
@@ -323,10 +247,16 @@ export const StepLandingTableAcc: Story = {
         oldIndex,
         newIndex
       );
+      //  updatedData[newIndex].conditionSearchKey,
+      //    updatedData[newIndex].conditionId;
       const updatedTableData = tableData.map((item) =>
         item.title === 'Steps' ? { ...item, data: updatedData } : item
       );
       setTableData(updatedTableData);
+      // childRef?.current?.handleUpdateCheckbox(
+      //   updatedData[newIndex],
+      //   updatedTableData
+      // );
     };
 
     const handleComponent = (action: string) => {
@@ -363,6 +293,16 @@ export const StepLandingTableAcc: Story = {
         }
       }
     };
+    const handleDelete = () => {
+      const updatedData = tableData.map((item) => {
+        if (item.title === 'Steps') {
+          return { ...item, data: [] };
+        }
+        return item;
+      });
+      childRef?.current?.resetSelection();
+      setTableData(updatedData);
+    };
 
     return (
       <>
@@ -389,6 +329,9 @@ export const StepLandingTableAcc: Story = {
                   setNewNlp({ action: 'addLast' });
                 }}
               />
+              <Tooltip title="delete">
+                <Icon name="delete" onClick={handleDelete} />
+              </Tooltip>
             </>
           }
         >
@@ -411,6 +354,8 @@ export const StepLandingTableAcc: Story = {
             handleViewComponent={handleViewComponent}
             height="500px"
             isViewPrivilegeMode={false}
+            defaultExpanded="Steps"
+            ref={childRef}
           />
         </Drawer>
       </>
