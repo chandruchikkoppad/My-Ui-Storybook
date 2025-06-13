@@ -12,25 +12,47 @@ import StepResultStats from './StepResultStats';
 import '../StepLandingTable.scss';
 
 const StepsTitle = ({
+  isHeaderRequired,
   isViewPrivilegeMode,
   onAccordionClick,
+  isBulkEnable,
   showActionCell,
   handleMainCheckbox,
   isAllSelected,
   isPartialSelected,
+  tableMeta = [],
   title,
   totalRows,
   expanded,
   actionCell,
   row,
   metaData,
-  tableMeta,
 }: any) => {
-  let columnWidths = tableMeta.map((column: any) => column.width);
+  const columnWidths = tableMeta?.map((col: any) => col.width);
+
+  const getWidth = (index: number) => {
+    const width = columnWidths[index] ?? 0;
+
+    switch (index) {
+      case 0:
+        return width + 110;
+      case 1:
+        return width + (width > 300 ? 60 : 70);
+      case 2:
+        return width + 20;
+      default:
+        return 0;
+    }
+  };
 
   return (
-    <article className="step-title-article">
-      <div style={{ width: columnWidths[0] + 140 }}>
+    <article
+      className="step-title-article"
+      style={{
+        ...(!isHeaderRequired && { backgroundColor: 'var(--hover-color)' }),
+      }}
+    >
+      <div style={{ width: `${getWidth(0)}px` }}>
         <div
           className="accordion-header"
           style={{
@@ -72,31 +94,31 @@ const StepsTitle = ({
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             {metaData && <StepResultStats metaData={metaData} />}
-            {showActionCell && <>{actionCell(row)}</>}
+            {showActionCell && !isBulkEnable && <>{actionCell(row)}</>}
           </div>
         </div>
       </div>
-      {metaData?.result && (
+      {metaData?.message && (
         <div
           className="step-result"
           style={{
-            width: columnWidths[1] + 70,
+            width: `${getWidth(1)}px`,
           }}
         >
-          <Tooltip title={metaData?.result} placement="bottom-start">
+          <Tooltip title={metaData?.message} placement="bottom-start">
             <Typography
               lineHeight="18px"
               as="div"
               className="step-result-text"
               color={getStatusColor(metaData?.status)}
             >
-              {metaData?.result}
+              {metaData?.message}
             </Typography>
           </Tooltip>
         </div>
       )}
       {metaData?.status && (
-        <div className="step-result" style={{ width: columnWidths[2] + 10 }}>
+        <div className="step-result" style={{ width: `${getWidth(2)}px` }}>
           <StatusButton
             label={getStatusLabel(metaData?.status)}
             status={getStatus(metaData?.status)}

@@ -26,11 +26,12 @@ const DraggableTableRow: FC<TableMainRow> = ({
   handleClick,
   handleStepGroupExpand,
   isStepGroupExpanded,
+  scriptType,
 }) => {
   const isDisabled = row?.isDisabled;
   const rowId = row?._id || row?.stepId;
-  const isDragDisabled =
-    isDisabled || dataLength <= 1 || row.cascaded === 'cascaded';
+  const isPrePostTable = scriptType ? row.cascaded === 'cascaded' : false;
+  const isDragDisabled = isDisabled || dataLength <= 1 || isPrePostTable;
   let serialNumber = (indexNumber + 1).toString();
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({
@@ -47,10 +48,6 @@ const DraggableTableRow: FC<TableMainRow> = ({
   );
 
   const expanded = isStepGroupExpanded?.(row.stepId);
-  const dragStyle = {
-    opacity: isDragDisabled ? '0' : '1',
-    cursor: isDragDisabled ? 'default' : 'grab',
-  };
 
   return (
     <>
@@ -95,9 +92,12 @@ const DraggableTableRow: FC<TableMainRow> = ({
                     {...listeners}
                     {...attributes}
                   >
-                    <span style={dragStyle}>
-                      <Icon name="drag" />
-                    </span>
+                    <Icon
+                      name="drag"
+                      className={
+                        isDragDisabled ? 'drag-icon-disabled' : 'drag-icon'
+                      }
+                    />
                   </div>
                 )}
                 {prepareData(row, column, indexNumber)}

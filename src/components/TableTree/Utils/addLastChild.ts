@@ -18,6 +18,10 @@ export const addLastChild = (treeData: TreeNodeProps[]): TreeNodeProps[] => {
     if (lastChildNode) {
       lastChildNode.lastChild = true;
     }
+    const prevLastChild = children.at(-2);
+    if (prevLastChild) {
+      prevLastChild.lastChild = false;
+    }
   });
 
   return updatedTreeData;

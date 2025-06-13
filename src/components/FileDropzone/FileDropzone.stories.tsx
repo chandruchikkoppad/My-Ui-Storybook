@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { StoryObj, Meta } from '@storybook/react';
 import FileDropzone from './FileDropzone';
 import Toaster from '../Toast';
@@ -9,6 +9,9 @@ import ConditionalDropdown from '../ConditionalDropdown/ConditionalDropdown';
 import './FileDropzone.scss';
 import { DynamicObj } from '../CreateVariable/types';
 import Button from '../Button';
+import Input from '../Input';
+import Typography from '../Typography';
+import FilePreview from './FilePreview';
 
 const meta: Meta<typeof FileDropzone> = {
   title: 'Components/FileDropzone',
@@ -109,6 +112,7 @@ export const WithRadioButton: Story = {
   render: () => {
     const [showToaster, setShowToaster] = useState<boolean>(false);
     const [showModal, setShowModal] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const [selectedRadioOption, setSelectedRadioOption] =
       useState<RadioOption>();
@@ -148,7 +152,7 @@ export const WithRadioButton: Story = {
       }
     };
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      const file = event.target.files?.[0];
+      const file = event?.target?.files?.[0];
       const readerFileData = new FileReader();
       if (file) {
         readerFileData.readAsText(file);
@@ -163,7 +167,11 @@ export const WithRadioButton: Story = {
     };
 
     const handleRemoveFile = () => {
+      if (fileInputRef?.current?.value) {
+        fileInputRef.current.value = '';
+      }
       setSelectedFile(null);
+      setSelectedRadioOption(undefined);
     };
 
     const showMaxFilesError = () => {
@@ -212,6 +220,7 @@ export const WithRadioButton: Story = {
     return (
       <>
         <FileDropzone
+          fileInputRef={fileInputRef}
           {...defaultArgs}
           accept={[
             'image/png',
@@ -279,6 +288,226 @@ export const WithRadioButton: Story = {
           </Drawer>
         )}
       </>
+    );
+  },
+};
+
+export const WithUploadOptions: Story = {
+  render: () => {
+    const [uploadMode, setUploadMode] = useState<'local' | 'url' | null>(null);
+    const [url, setUrl] = useState<string>('');
+
+    const handleLocalUploadClick = () => {
+      setUploadMode('local');
+    };
+
+    const handleUrlUploadClick = () => {
+      setUploadMode('url');
+    };
+
+    const handleUrlChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      setUrl(event.target.value);
+    };
+
+    return (
+      <div className="ff-upload-options-wrapper">
+        <div className="ff-upload-mode-buttons">
+          <button
+            className={`ff-custom-button ${
+              uploadMode === 'local' ? 'ff-custom-button--active' : ''
+            }`}
+            onClick={handleLocalUploadClick}
+          >
+            <Typography fontSize={13} fontWeight={'semi-bold'}>
+              Upload From Local
+            </Typography>
+          </button>
+          <button
+            className={`ff-custom-button ${
+              uploadMode === 'url' ? 'ff-custom-button--active' : ''
+            }`}
+            onClick={handleUrlUploadClick}
+          >
+            <Typography fontSize={13} fontWeight={'semi-bold'}>
+              Upload Via URL
+            </Typography>
+          </button>
+        </div>
+
+        {uploadMode === 'local' && (
+          <FileDropzone
+            {...defaultArgs}
+            accept={['.apk']}
+            validateMIMEType={false}
+          />
+        )}
+
+        {uploadMode === 'url' && (
+          <div className="ff-url-upload-wrapper">
+            <Input
+              id="app-url-input"
+              name="App Url"
+              label="App URL"
+              type="text"
+              value={url}
+              onChange={handleUrlChange}
+              variant="primary"
+              placeholder="Enter App URL"
+              className="ff-url-input"
+              required
+            />
+          </div>
+        )}
+      </div>
+    );
+  },
+};
+
+export const WithInstallOptions: Story = {
+  render: () => {
+    const [uploadMode, setUploadMode] = useState<'local' | 'url' | 'app'>(
+      'app'
+    ); // Default to 'app' to match the image
+    const [url, setUrl] = useState<string>('');
+    const [selectedAppId, setSelectedAppId] = useState<string | null>(null);
+
+    const uploadedApps = [
+      { id: '1', name: 'App One' },
+      { id: '2', name: 'App Two' },
+      { id: '3', name: 'App Three' },
+    ];
+
+    const handleLocalInstallClick = () => {
+      setUploadMode('local');
+      setSelectedAppId(null);
+    };
+
+    const handleUrlInstallClick = () => {
+      setUploadMode('url');
+      setSelectedAppId(null);
+    };
+
+    const handleAppUploadClick = () => {
+      setUploadMode('app');
+      setSelectedAppId(null);
+    };
+
+    const handleUrlChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      setUrl(event.target.value);
+    };
+
+    const handleAppClick = (appId: string) => {
+      setSelectedAppId(appId);
+      console.log(`Clicked on app with ID: ${appId}`);
+    };
+
+    return (
+      <div className="ff-upload-options-wrapper">
+        <div className="ff-upload-mode-buttons">
+          <button
+            className={`ff-custom-button ${
+              uploadMode === 'app' ? 'ff-custom-button--active' : ''
+            }`}
+            onClick={handleAppUploadClick}
+          >
+            <Typography fontSize={13} fontWeight={'semi-bold'}>
+              Uploaded Apps
+            </Typography>
+          </button>
+          <button
+            className={`ff-custom-button ${
+              uploadMode === 'local' ? 'ff-custom-button--active' : ''
+            }`}
+            onClick={handleLocalInstallClick}
+          >
+            <Typography fontSize={13} fontWeight={'semi-bold'}>
+              Install From Local
+            </Typography>
+          </button>
+          <button
+            className={`ff-custom-button ${
+              uploadMode === 'url' ? 'ff-custom-button--active' : ''
+            }`}
+            onClick={handleUrlInstallClick}
+          >
+            <Typography fontSize={13} fontWeight={'semi-bold'}>
+              Install Via URL
+            </Typography>
+          </button>
+        </div>
+
+        {uploadMode === 'app' && (
+          <div className="ff-uploaded-apps-wrapper">
+            <ul className="ff-uploaded-apps-list">
+              {uploadedApps.map((app) => (
+                <li
+                  key={app.id}
+                  className={`ff-uploaded-app-item ${
+                    selectedAppId === app.id
+                      ? 'ff-uploaded-app-item--selected'
+                      : ''
+                  }`}
+                  onClick={() => handleAppClick(app.id)}
+                >
+                  <Typography fontSize={14}>{app.name}</Typography>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {uploadMode === 'local' && (
+          <FileDropzone
+            {...defaultArgs}
+            accept={['.apk']}
+            validateMIMEType={false}
+          />
+        )}
+
+        {uploadMode === 'url' && (
+          <div className="ff-url-upload-wrapper">
+            <Input
+              id="app-url-input"
+              name="App Url"
+              label="App URL"
+              type="text"
+              value={url}
+              onChange={handleUrlChange}
+              variant="primary"
+              placeholder="Enter App URL"
+              className="ff-url-input"
+              required
+            />
+          </div>
+        )}
+      </div>
+    );
+  },
+};
+
+export const FilePreviewStory: Story = {
+  render: () => {
+    const defaultFile = new File(
+      ['Hello, this is the content of the file.'],
+      'example.txt',
+      {
+        type: 'text/plain',
+        lastModified: new Date().getTime(),
+      }
+    );
+    const [fileData, setFileData] = useState<File | null>(defaultFile);
+    return (
+      <div className="ff-file-details-wrapper">
+        <div className="ff-file-details">
+          <FilePreview
+            isRemoveDisabled
+            file={fileData as File}
+            onRemoveClick={() => setFileData(null)}
+            onReplaceClick={(file) => setFileData(file)}
+            isIndependentPreview={true}
+          />
+        </div>
+      </div>
     );
   },
 };

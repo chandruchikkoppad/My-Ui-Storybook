@@ -5,6 +5,9 @@ import Icon from '../../Icon';
 import { truncateText } from '../../../utils/truncateText/truncateText';
 import { convertToBytes } from '../../../utils/convertToBytes/convertToBytes';
 import { convertToGB } from '../../../utils/convertToGB/convertToGB';
+import { convertToKB } from '../../../utils/convertToKB/convertToKB';
+import { convertToTB } from '../../../utils/convertToTB/convertToTB';
+import { convertToMB } from '../../../utils/convertToMB/convertToMB';
 
 type BarChartProps = {
   data: {
@@ -41,6 +44,7 @@ type BarChartProps = {
   isOnclick?: boolean;
   isDashboardVersions?: boolean;
   type?: string;
+  isMemory?: boolean;
 };
 
 const BarChart: React.FC<BarChartProps> = ({
@@ -71,17 +75,58 @@ const BarChart: React.FC<BarChartProps> = ({
   isOnclick = false,
   isDashboardVersions,
   type = '',
+  isMemory,
 }) => {
   const tooltipRef = useRef<HTMLDivElement | null>(null);
   const [hoveredLegendIndex, setHoveredLegendIndex] = useState<number | null>(
     null
   );
 
+  const getHighestPriorityMemoryUnit = (
+    data: {
+      label: string;
+      value: string | number;
+      id?: string;
+      percent?: number;
+      versions?: string[];
+    }[]
+  ) => {
+    const priority = ['TB', 'GB', 'MB', 'KB'];
+
+    for (const unit of priority) {
+      const found = data.some(
+        (item) =>
+          typeof item.value === 'string' &&
+          item.value.toLowerCase().includes(unit.toLowerCase())
+      );
+      if (found) {
+        return unit;
+      }
+    }
+
+    return null;
+  };
+  const unit = getHighestPriorityMemoryUnit(data);
   const normalizedData = data.map((item) => {
     if (typeof item.value === 'string') {
       let normalizedValue = 0;
       if (type === 'memory') {
         normalizedValue = convertToGB(item.value);
+      } else if (isMemory) {
+        switch (unit) {
+          case 'TB':
+            normalizedValue = convertToTB(item.value);
+            break;
+          case 'GB':
+            normalizedValue = convertToGB(item.value);
+            break;
+          case 'MB':
+            normalizedValue = convertToMB(item.value);
+            break;
+          case 'KB':
+            normalizedValue = convertToKB(item.value);
+            break;
+        }
       } else {
         normalizedValue = parseFloat(item.value);
       }
@@ -371,7 +416,9 @@ const BarChart: React.FC<BarChartProps> = ({
                   onMouseEnter={() =>
                     handleMouseEnter(
                       item.label,
-                      type === 'memory' ? item.value : item.normalizedValue,
+                      type === 'memory' || isMemory
+                        ? item.value
+                        : item.normalizedValue,
                       item.id,
                       item.percent,
                       item.versions

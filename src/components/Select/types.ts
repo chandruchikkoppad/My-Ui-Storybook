@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode, RefObject } from 'react';
 export interface SelectProps {
   /*
    * Label for the select dropdown
@@ -176,6 +176,10 @@ export interface SelectProps {
    * No Result message
    */
   noResultsMessage?: string;
+  /**
+   * Ref for select option dropdown
+   */
+  dropDownRef?: RefObject<HTMLDivElement>;
 }
 export interface DropdownPosition {
   positionX: number;

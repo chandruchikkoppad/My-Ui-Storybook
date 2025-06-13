@@ -1,6 +1,11 @@
 @use '../../assets/styles/mixins' as *;
 
 .overlay-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 1000000;
+  display: grid;
+  place-items: center;
   .loader-container {
     @include center-vertical;
     gap: 50px;
@@ -57,8 +62,7 @@
       }
     }
   }
-
-  .loader-container.overlay {
-    background: var(--default-icon-color);
+  &.overlay {
+    background: var(--line-loader-background-overlay);
   }
 }

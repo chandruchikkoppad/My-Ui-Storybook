@@ -16,8 +16,8 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
   showPercentage = false,
   percentageFontSize = 10,
   percentageTextColor = 'var(--tooltip-text-color)',
+  progressBarWidth = '200px',
 }) => {
-
   const convertMemoryToMB = (memory: string): number => {
     const trimmed = memory.trim().toLowerCase();
     if (trimmed === '0') return 0;
@@ -29,7 +29,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
       return value * 1024;
     } else if (unit === 'kb') {
       return value / 1024;
-    } else { 
+    } else {
       return value;
     }
   };
@@ -51,7 +51,6 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
   } else {
     computedProgress = progressPercentage || 0;
   }
-
   // Ensure progress is between 0 and 100
   const validProgress = Math.max(0, Math.min(computedProgress, 100));
 
@@ -61,15 +60,23 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
     backgroundColor: color,
     height: `${height}px`,
   };
-
   // Track style for the empty part of the progress bar
   const trackStyle = {
     backgroundColor: trackColor,
     height: `${height}px`,
   };
 
+  const containerStyle: React.CSSProperties = {
+    width: progressBarWidth,
+  };
+
   return (
-    <div className={`ff-progress-bar-container ${computedLabel ? 'ff-has-label' : ''}`}>
+    <div
+      className={`ff-progress-bar-container ${
+        computedLabel ? 'ff-has-label' : ''
+      }`}
+      style={containerStyle}
+    >
       <div className="ff-progress-bar-track" style={trackStyle}>
         <div className="ff-progress-bar" style={barStyle}>
           {showPercentage && (
@@ -77,7 +84,9 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
               className="ff-progress-bar-percentage"
               fontSize={percentageFontSize}
               color={percentageTextColor}
-            >{`${Math.round(validProgress)}%`}</Typography>
+            >
+              {`${Math.round(validProgress)}%`}
+            </Typography>
           )}
         </div>
       </div>

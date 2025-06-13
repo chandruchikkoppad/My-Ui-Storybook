@@ -7,7 +7,10 @@ import Button from '../Button';
 import Typography from '../Typography';
 import Checkbox from '../Checkbox';
 import Tooltip from '../Tooltip';
-import { truncateText } from '../../utils/truncateText/truncateText';
+import {
+  isTextTruncated,
+  truncateText,
+} from '../../utils/truncateText/truncateText';
 import {
   getLabel,
   getValue,
@@ -15,6 +18,10 @@ import {
 import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
 import type { Option } from './MultiSelectTypes';
 import { useKeyboardActions } from '../../utils/keyBoardActionUtil/UseKeyboardActions';
+import {
+  ALPHA_NUM_EXTENDED_REGEX,
+  START_END_WHITESPACE_REGEX,
+} from '../../validations/regex';
 
 const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
   (
@@ -36,19 +43,45 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
       variant,
       handleIconClick,
       noResultsMessage,
+      maxSearchCharacterLength = 25,
     },
     ref
   ) => {
     const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
+    const [validationError, setValidationError] = useState<string | null>(null);
     const filteredOptions = options
       ? options.filter((option) =>
           getValue(option, searchAccessor)
             ?.toLowerCase()
-            .includes(searchedKeyword.toLowerCase())
+            .includes(searchedKeyword.trim().toLowerCase())
         )
       : [];
     const { verticalMargin, optionHeight, maxDropdownHeight } =
       dropdownDefaultCSSData;
+
+    useEffect(() => {
+      if (variant !== 'labels') return;
+      switch (true) {
+        case searchedKeyword.length < 3 && searchedKeyword.trim() !== '':
+          setValidationError('Minimum 3 characters required');
+          break;
+        case !!searchedKeyword &&
+          !START_END_WHITESPACE_REGEX.test(searchedKeyword):
+          setValidationError('Space is not allowed at starting and at the end');
+          break;
+        case !!searchedKeyword &&
+          !ALPHA_NUM_EXTENDED_REGEX.test(searchedKeyword):
+          setValidationError('Name should be alphanumeric');
+          break;
+        case searchedKeyword.length > maxSearchCharacterLength:
+          setValidationError(
+            `Maximum ${maxSearchCharacterLength} characters allowed`
+          );
+          break;
+        default:
+          setValidationError(null);
+      }
+    }, [searchedKeyword, variant, maxSearchCharacterLength]);
 
     const onSelectClick = (e: React.MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation();
@@ -57,7 +90,11 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
 
     const renderOption = (info: Option, labelAccessor: string) => {
       if (typeof info[labelAccessor] === 'string') {
-        return truncateText(getLabel(info, labelAccessor), 25);
+        return truncateText(
+          getLabel(info, labelAccessor),
+          dropdownPosition.width - 50,
+          'pixel'
+        );
       }
       return info[labelAccessor];
     };
@@ -170,14 +207,21 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
           }}
           id="ff-multiselect-options-wrapper"
         >
-          {filteredOptions.length === 0 ? (
+          {validationError ? (
+            <Typography as="p" className="validation-error">
+              {validationError}
+            </Typography>
+          ) : filteredOptions.length === 0 ? (
             variant === 'labels' && searchedKeyword.trim().length > 2 ? (
               <Typography
                 as="p"
                 className="no-options"
                 onClick={handleIconClick}
               >
-                {searchedKeyword} add label
+                {searchedKeyword}{' '}
+                <Typography as="span" color={'var(--brand-color)'}>
+                  add label
+                </Typography>
               </Typography>
             ) : (
               <Typography textAlign="center" as="p" className="no-options">
@@ -222,7 +266,11 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
                   <Tooltip
                     zIndex={zIndex + 1}
                     title={
-                      renderOption(info, labelAccessor).length > 25
+                      isTextTruncated(
+                        getLabel(info, labelAccessor),
+                        dropdownPosition.width - 50,
+                        'pixel'
+                      )
                         ? getLabel(info, labelAccessor)
                         : ''
                     }
@@ -235,7 +283,6 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
                   />
                 </div>
               ))}
-
               <div id="ff-multiselect-pagination"></div>
             </>
           )}

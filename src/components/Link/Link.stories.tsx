@@ -2,7 +2,7 @@ import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import Link from './Link';
 import { ChangeEvent, useState } from 'react';
-import { URL_REGEX } from '../../validations/regex';
+import { LINK_VALIDATION_REGEX } from '../../validations/regex';
 
 const meta: Meta<typeof Link> = {
   title: 'Components/Link',
@@ -73,7 +73,7 @@ export const WithoutLabel: Story = {
     const onChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
       const newValue = event.target.value;
       if(error || !newValue){
-        if (!URL_REGEX.test(newValue)) {
+        if (!LINK_VALIDATION_REGEX.test(newValue)) {
           setError(true);
           setHelperText('Enter a valid URL');
         }else{
@@ -88,7 +88,7 @@ export const WithoutLabel: Story = {
       if (!newValue) {
         setError(true);
         setHelperText('This field is required');
-      } else if (!URL_REGEX.test(newValue)) {
+      } else if (!LINK_VALIDATION_REGEX.test(newValue)) {
         setError(true);
         setHelperText('Enter a valid URL');
       } else {
@@ -128,7 +128,7 @@ export const Controlled: Story = {
     const onChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
       const newValue = event.target.value;
       if(error || !newValue){
-        if (!URL_REGEX.test(newValue)) {
+        if (!LINK_VALIDATION_REGEX.test(newValue)) {
           setError(true);
           setHelperText('Enter a valid URL');
         }else{
@@ -144,7 +144,7 @@ export const Controlled: Story = {
           if (!newValue) {
             setError(true);
             setHelperText('This field is required');
-          } else if (!URL_REGEX.test(newValue)) {
+          } else if (!LINK_VALIDATION_REGEX.test(newValue)) {
             setError(true);
             setHelperText('Enter a valid URL');
           } else {

@@ -5,6 +5,11 @@ export interface ToastProps {
   variant: Variant;
   toastTitle: string;
   toastMessage: string;
+  toastId?: number | string;
 }
 
-export type AcceptedType = string | (() => void) | Record<string, unknown> | unknown[];
+export type AcceptedType =
+  | string
+  | (() => void)
+  | Record<string, unknown>
+  | unknown[];

@@ -35,6 +35,7 @@ export interface TableCellProps {
   scriptLengthTruncate: number;
   addModuleInputWidth?: number;
   addModuleSelectWidth?: number;
+  disableEditLabelConfirmIcon?: boolean;
 }
 export type RootNode = {
   node: any;
@@ -54,6 +55,7 @@ export interface TableHeadProps {
   tableHeaderBgColor?: string;
   onCheckBoxChange: (e: any, node: string[] | any) => void;
   hideOnDisable?: boolean;
+  transparentHeader?: boolean;
 }
 
 export interface TableBodyProps {
@@ -75,6 +77,7 @@ export interface TableBodyProps {
   scriptLengthTruncate: number;
   addModuleInputWidth?: number;
   addModuleSelectWidth?: number;
+  disableEditLabelConfirmIcon?: boolean;
 }
 
 export interface TableRowProps {
@@ -95,6 +98,7 @@ export interface TableRowProps {
   scriptLengthTruncate: number;
   addModuleInputWidth?: number;
   addModuleSelectWidth?: number;
+  disableEditLabelConfirmIcon?: boolean;
 }
 
 export interface Column {
@@ -138,6 +142,9 @@ export interface TreeTableProps {
   scriptLengthTruncate?: number;
   addModuleInputWidth?: number;
   addModuleSelectWidth?: number;
+  onScroll?: () => void;
+  disableEditLabelConfirmIcon?: boolean;
+  transparentHeader?: boolean;
 }
 
 type OptionValue = any;

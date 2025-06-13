@@ -14,6 +14,7 @@ export interface PromptContainerProps {
   isEditAccess?: boolean;
   isViewAccess?: boolean;
   versionsLength?: number;
+  count?: number;
 }
 
 export type Action = {

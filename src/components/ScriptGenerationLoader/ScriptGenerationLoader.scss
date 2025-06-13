@@ -1,0 +1,147 @@
+@use '../../assets/styles/mixins' as *;
+.loader-container {
+  overflow: hidden;
+  position: relative;
+  @include flex-center;
+
+  .ff-gif-container {
+    @include flex-center;
+
+    .ff-typing-wrapper {
+      position: relative;
+      width: 105px;
+      height: 24px;
+
+      .ff-typing-text {
+        position: absolute;
+        top: 0;
+        left: 0;
+        overflow: hidden;
+        white-space: nowrap;
+        visibility: hidden;
+
+        &.t1 {
+          animation: show1 12s infinite;
+          color: var(--brand-color);
+        }
+
+        &.t2 {
+          animation: show2 12s infinite;
+          color: var(--ff-ai-toggle-bg-color);
+        }
+
+        &.t3 {
+          animation: show3 12s infinite;
+          color: var(--line-chart-data);
+        }
+      }
+
+      @keyframes show1 {
+        0% {
+          width: 0;
+          visibility: visible;
+        }
+        16.6% {
+          width: 100%;
+        }
+        25% {
+          width: 100%;
+          visibility: hidden;
+        }
+        100% {
+          width: 0;
+          visibility: hidden;
+        }
+      }
+
+      @keyframes show2 {
+        0%,
+        25% {
+          width: 0;
+          visibility: hidden;
+        }
+        33.3% {
+          width: 0;
+          visibility: visible;
+        }
+        41.6% {
+          width: 100%;
+        }
+        50% {
+          width: 100%;
+          visibility: hidden;
+        }
+        100% {
+          width: 0;
+          visibility: hidden;
+        }
+      }
+
+      @keyframes show3 {
+        0%,
+        50% {
+          width: 0;
+          visibility: hidden;
+        }
+        58.3% {
+          width: 0;
+          visibility: visible;
+        }
+        66.6% {
+          width: 100%;
+        }
+        75% {
+          width: 100%;
+          visibility: hidden;
+        }
+        100% {
+          width: 0;
+          visibility: hidden;
+        }
+      }
+    }
+  }
+  .ff-moving-sections-container {
+    position: absolute;
+    top: -50px;
+    @include center-vertical;
+    gap: 100px;
+    z-index: 0;
+    animation: moveLeftRight 2.5s infinite alternate ease-in-out;
+    transition: all 2.5s cubic-bezier(0.75, 0, 0.25, 1);
+    .ff-moving-sections {
+      clip-path: polygon(42.89% 9.75%, 94.92% 9.75%, 54.77% 74.98%, 0% 74.98%);
+      background-color: var(--brand-color);
+      height: 500px;
+      width: 400px;
+      opacity: 0.1;
+    }
+    .ff-moving-section1,
+    .ff-moving-section3 {
+      @extend .ff-moving-sections;
+      width: 500px;
+      animation: opacityFadeCenter 3.1s infinite alternate ease-in-out;
+    }
+    .ff-moving-section2 {
+      @extend .ff-moving-sections;
+    }
+  }
+  @keyframes opacityFadeCenter {
+    0%,
+    100% {
+      opacity: 0.01;
+    }
+    50% {
+      opacity: 0;
+    }
+  }
+
+  @keyframes moveLeftRight {
+    from {
+      left: calc(-200% - 250px);
+    }
+    to {
+      left: 45%;
+    }
+  }
+}

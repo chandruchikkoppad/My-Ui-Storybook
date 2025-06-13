@@ -23,6 +23,7 @@ export interface SearchProps {
   isAISearch?: boolean;
   isAISearchClicked?: boolean;
   handleActiveAiSearch?: () => void;
-  isClear?: boolean
+  isClear?: boolean;
   handleIsClear?: () => void;
+  style?: React.CSSProperties;
 }

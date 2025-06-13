@@ -1139,12 +1139,17 @@
 .required-asterisk {
   color: var(--input-error-text-color);
 }
-
-.ff-texteditor-label-asterisk-container{
-  @include mixins.center-vertical();
+.ff-textEditor-container {
+  display: flex;
+  flex-direction: column;
   gap: 2px;
-}
 
-.ff-textEditor-error-msg{
-  color: var(--input-error-text-color);
-}  
+  .ff-textEditor-label-asterisk-container {
+    @include mixins.center-vertical();
+    gap: 2px;
+  }
+
+  .ff-textEditor-error-msg {
+    color: var(--input-error-text-color);
+  }
+}

@@ -28,7 +28,9 @@ const Comments = ({
   createdByID,
   rowBreakCharCount = 83,
   isVewMode = false,
+  deleteEnable = true,
   showTextarea = false,
+  autoFocus = false,
 }: CommentsProps) => {
   const [input, setInput] = useState<string>('');
   const [commentData, setCommentsData] = useState<CommentType[]>([]);
@@ -346,7 +348,7 @@ const Comments = ({
               <textarea
                 className="inputContainer_input first_input"
                 rows={input.length < rowBreakCharCount ? 1 : 3}
-                autoFocus
+                autoFocus={autoFocus} 
                 value={input}
                 onChange={(e) => textAreaInputChange(e)}
                 placeholder="Add a comment"
@@ -397,6 +399,7 @@ const Comments = ({
             isEditDeleteActionAllowed={comment.createdBy === createdByID}
             createdByID={createdByID}
             isVewMode={isVewMode}
+             deleteEnable={deleteEnable}
           />
         ))}
     </div>

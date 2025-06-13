@@ -61,7 +61,14 @@ const VariableDropdown: FC<VariableDropdownProps> = ({
               key={option?.id}
             >
               <Typography as="span" fontSize={14}>
-                {truncateText(option?.name, truncateTextValue)}
+                {truncateText(
+                  option?.type === '_startforloop'
+                    ? `FLV_for:${option?.name}`
+                    : option?.type === 'DATAPROVIDER'
+                    ? option?.dpName + ':' + option?.varname
+                    : option?.name,
+                  truncateTextValue
+                )}
               </Typography>
               <Icon
                 name={getVariableIcon(option)}

@@ -17,12 +17,13 @@ const Template: StoryFn<typeof LineLoader> = (args) => <LineLoader {...args} />;
 export const Default = Template.bind({});
 Default.args = {};
 
-export const WithLogo = Template.bind({});
-WithLogo.args = {
+export const WithLogoOverlay = Template.bind({});
+WithLogoOverlay.args = {
   logo: () => <Icon height={100} width={100} name="fire_flink_loader_logo" />,
+  overlay: true,
 };
 
-export const WithOverlay = Template.bind({});
-WithOverlay.args = {
+export const WithoutLogoOverlay = Template.bind({});
+WithoutLogoOverlay.args = {
   overlay: true,
 };

@@ -26,9 +26,15 @@
 .ff-select-wrapper {
   min-height: 24px;
   min-width: 50px;
+  &.show-clear-icon {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+  }
 
   .ff-select {
     height: 100%;
+    width: 100%;
     border: 1px solid var(--ff-select-border-color);
     border-radius: 4px;
     display: flex;
@@ -109,6 +115,9 @@
       line-height: 18px;
       transition: 0.18s ease all;
       border-radius: 4px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
 
       &__icon {
         left: 24px;
@@ -154,6 +163,7 @@
 
     &__disabled {
       cursor: not-allowed;
+      opacity: 0.5;
 
       &:hover {
         @include select-state-style(var(--ff-select-border-color));

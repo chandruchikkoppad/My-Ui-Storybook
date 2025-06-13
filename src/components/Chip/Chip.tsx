@@ -9,7 +9,7 @@ const Chip = ({
   fullText = '',
   variant = 'primary',
   labelWidth = 36,
-  fullTextWidth = 86,
+  fullTextWidth = 800,
   onClick = () => {},
 }: ChipsProps) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -19,7 +19,7 @@ const Chip = ({
   const dynamicStyle = isHovered
     ? {
         maxWidth: `${fullTextWidth}px`,
-        transition: 'transform 0.3s ease-in-out,max-width 0.5s ease-in-out',
+        transition: 'transform 0.3s ease-in-out,max-width 1.5s ease-in-out',
         overflow: 'hidden',
       }
     : {

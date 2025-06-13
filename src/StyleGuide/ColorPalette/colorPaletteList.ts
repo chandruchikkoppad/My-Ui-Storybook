@@ -537,6 +537,26 @@ const ColorPalette: ColorPaletteType = [
     colorCode: '#191919',
     variable: '--line-loader-bg',
   },
+  {
+    name: 'ff-bg-pearl-gray-color',
+    colorCode: '#e0dfdf',
+    variable: '--ff-bg-pearl-gray-color',
+  },
+  {
+    name: 'ff-bg-lavender-light-color',
+    colorCode: '#fbddff',
+    variable: '--ff-bg-lavender-light-color',
+  },
+  {
+    name: 'line-loader-bg-overlay',
+    colorCode: '#14041c33',
+    variable: '--line-loader-background-overlay',
+  },
+  {
+    name: 'nlp-header-bg-color',
+    colorCode: '#F4EDF9',
+    variable: '--nlp-header-bg-color',
+  },
 ];
 
 export default ColorPalette;

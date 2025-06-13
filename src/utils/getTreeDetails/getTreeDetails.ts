@@ -25,7 +25,8 @@ export const getTreeDetails = (
     | 'hide'
     | 'clone'
     | 'delete'
-    | 'create',
+    | 'create'
+    | 'refresh',
   oldData: TreeNode[],
   newData: TreeNode[],
   sourceId?: string
@@ -47,13 +48,13 @@ export const getTreeDetails = (
     }
     return 0;
   };
-
+  const tempNewData = [...newData];
   switch (action) {
     case 'above':
-      treeDataList = [...newData, ...oldData].slice(0, 100);
+      treeDataList = [...tempNewData, ...oldData].slice(0, 100);
       break;
     case 'below':
-      treeDataList = [...oldData, ...newData].slice(-100);
+      treeDataList = [...oldData, ...tempNewData].slice(-100);
       break;
     case 'expand':
     case 'expandAll':
@@ -65,7 +66,17 @@ export const getTreeDetails = (
           "Both sourceId and index are required for 'expand' or 'collapse' actions."
         );
       }
-      treeDataList = [...oldData.slice(0, actionIndex), ...newData].slice(-40);
+      if (
+        actionIndex === 0 &&
+        !['above', 'below'].includes(action) &&
+        !checkEmpty(tempNewData) &&
+        tempNewData[0]
+      ) {
+        tempNewData[0] = { ...tempNewData[0], lastResource: true };
+      }
+      treeDataList = [...oldData.slice(0, actionIndex), ...tempNewData].slice(
+        -40
+      );
       break;
     case 'addAbove':
       const addAboveIndex = getIndex();
@@ -76,7 +87,7 @@ export const getTreeDetails = (
       }
       treeDataList = [
         ...oldData.slice(0, addAboveIndex),
-        ...newData,
+        ...tempNewData,
         ...oldData.slice(addAboveIndex),
       ];
       break;
@@ -89,7 +100,7 @@ export const getTreeDetails = (
       }
       treeDataList = [
         ...oldData.slice(0, addBelowIndex + 1),
-        ...newData,
+        ...tempNewData,
         ...oldData.slice(addBelowIndex + 1),
       ];
       break;
@@ -98,10 +109,11 @@ export const getTreeDetails = (
     case 'hide':
     case 'clone':
     case 'create':
+    case 'refresh':
     case 'delete':
-      if (!checkEmpty(newData)) {
-        root = newData[0];
-        treeDataList = newData.slice(1);
+      if (!checkEmpty(tempNewData)) {
+        root = tempNewData[0];
+        treeDataList = tempNewData.slice(1);
       } else {
         throw new Error('Tree data list is empty, cannot determine root.');
       }
@@ -110,7 +122,7 @@ export const getTreeDetails = (
       throw new Error(`Invalid action: ${action}`);
   }
 
-  if (checkEmpty(treeDataList) && action !== 'start') {
+  if (checkEmpty(treeDataList) && action !== 'start' && action !== 'delete') {
     throw new Error('Tree data list is empty.');
   }
 
@@ -128,4 +140,24 @@ export const getTreeDetails = (
     endId: lastNode?.key,
     root,
   };
+};
+
+// NOTE:: This function is used to update the state of the tree nodes based on the current node's state and searchKey.
+// from the search key will get all its parent, using this will be updating the container state.
+// It returns the updated treeDataList.
+export const updateTreeState = (
+  treeDataList: TreeNode[],
+  currentNode: TreeNode
+) => {
+  const containerIds = currentNode.searchKey?.split('/') || [];
+  if (checkEmpty(containerIds)) {
+    return treeDataList;
+  }
+  treeDataList.map((node) => {
+    if (containerIds.includes(node.key)) {
+      node.state = currentNode.state;
+    }
+    return node;
+  });
+  return treeDataList;
 };

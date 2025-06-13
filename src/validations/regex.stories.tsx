@@ -56,6 +56,7 @@ import {
   ELEMENTS_TRAILING_SPACE_REGEX,
   ELEMENTS_WHITE_SPACE_REGEX,
   PARAMETER_ALPHANUMERIC_REGEX,
+  ALPHANUMERIC_PARENTHESIS_REGEX,
   EMAIL_VALID_START,
   SCRIPT_REGEX,
   STRIP_NEW_LINES_REGEX,
@@ -71,6 +72,9 @@ import {
   START_END_WHITESPACE_REGEX,
   ALPHA_NUM_REGEX,
   EMAIL_VALIDATION_REGEX,
+  LINK_VALIDATION_REGEX,
+  ALPHA_NUM_EXTENDED_REGEX,
+  ALPHANUMERIC_WITH_DOT_REGEX,
 } from './regex';
 
 export default {
@@ -368,6 +372,11 @@ export const Playground = () => {
       description: `Parameter name should be alphanumeric.`,
     },
     {
+      name:'ALPHANUMERIC_PARENTHESIS_REGEX',
+      regex:ALPHANUMERIC_PARENTHESIS_REGEX,
+      description:`Parameter name should be alphanumeric`
+    },
+    {
       name: 'EMAIL_VALID_START,',
       regex: EMAIL_VALID_START,
       description: `Validates email format without special characters at the start.`,
@@ -442,6 +451,23 @@ export const Playground = () => {
       regex:  EMAIL_VALIDATION_REGEX,
       description: 'Email Validation.',
     },
+    {
+      name: 'LINK_VALIDATION_REGEX',
+      regex:  LINK_VALIDATION_REGEX,
+      description: 'Link Validation for all sorts of URLs (inclusive of optional params).',
+    },
+    {
+      name:'ALPHA_NUM_EXTENDED_REGEX',
+      regex: ALPHA_NUM_EXTENDED_REGEX,
+      description :'Alphanumeric Validation with special characters (- , _ , ) , ( ).',
+
+    },
+    {
+      name:'ALPHANUMERIC_WITH_DOT_REGEX',
+      regex: ALPHANUMERIC_WITH_DOT_REGEX,
+      description :'Alphanumeric string allowing only dot(.) as special character',
+
+    }
   ];
 
   const validateInput = () => {

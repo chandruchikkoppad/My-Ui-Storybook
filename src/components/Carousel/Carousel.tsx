@@ -1,79 +1,84 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './carousel.scss';
 import { CarouselProps } from './type';
 import Icon from '../Icon';
 import Typography from '../Typography';
 
-const Carousel: React.FC<CarouselProps> = ({
+interface ExtendedCarouselProps extends CarouselProps {
+  height?: number | string;
+}
+const Carousel: React.FC<ExtendedCarouselProps> = ({
   items,
-  slideName,
-  slideIconName,
-  currentScripts,
-  totalScripts,
   onCollapseClick,
-  collapseIconName,
-  timeText,
+  initialRunId,
+  height,
 }) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
+  if (!items || items.length === 0) return null;
 
+  const findInitialIndex = () => {
+    if (!initialRunId) return 0;
+    const idx = items.findIndex((item) => item.runId === initialRunId);
+    return idx >= 0 ? idx : 0;
+  };
+
+  const [currentIndex, setCurrentIndex] = useState(findInitialIndex());
   const hasMultipleItems = items.length > 1;
 
+  useEffect(() => {
+    setCurrentIndex(findInitialIndex());
+  }, [initialRunId, items]);
+
   const handlePrev = () => {
-    if (currentIndex > 0) {
-      setCurrentIndex((prev) => prev - 1);
-    }
+    if (currentIndex > 0) setCurrentIndex(currentIndex - 1);
+  };
+  const handleNext = () => {
+    if (currentIndex < items.length - 1) setCurrentIndex(currentIndex + 1);
   };
 
-  const handleNext = () => {
-    if (currentIndex < items.length - 1) {
-      setCurrentIndex((prev) => prev + 1);
-    }
-  };
+  const carouselStyle = {
+    '--ff-carousel-height': typeof height === 'number' ? `${height}px` : height,
+  } as React.CSSProperties;
+
+  const { scriptName, machineName, icon, currentScripts, totalScripts } =
+    items[currentIndex]!;
 
   return (
-    <div className="ff-carousel">
+    <div className="ff-carousel" style={carouselStyle}>
       <div className="ff-slide_header">
         <div className="ff-slide-name">
-          <Icon name={slideIconName} />
-          <Typography> {slideName} </Typography>{' '}
+          <Icon name={icon} />
+          <Typography>
+            {machineName}-{scriptName}
+          </Typography>
         </div>
-        {collapseIconName && (
-          <div className="ff-collapse_icon">
-            <Icon
-              name={collapseIconName}
-              onClick={onCollapseClick}
-              height={22}
-              width={22}
-            />
-          </div>
-        )}
+        <div className="ff-collapse_icon">
+          <Icon
+            name="collapse_icon"
+            onClick={onCollapseClick}
+            height={22}
+            width={22}
+          />
+        </div>
       </div>
 
       <div
         className="ff-carousel-track"
         style={{ transform: `translateX(-${currentIndex * 100}%)` }}
       >
-        {items.map((item, index) => (
-          <div key={index} className="ff-carousel-slide">
-            {item.type === 'image' ? (
-              <img src={item.src} alt={`Slide ${index}`} />
+        {items.map((item, idx) => (
+          <div key={idx} className="ff-carousel-slide">
+            {item.src.endsWith('.mp4') ? (
+              <video src={item.src} autoPlay muted loop controls />
             ) : (
-              <video src={item.src} autoPlay muted />
+              <img src={item.src} alt={item.alt || `Slide ${idx}`} />
             )}
           </div>
         ))}
       </div>
 
       <div className="ff-carousel-bottom-text">
-        <div className="ff-left-text">
-          <Icon className="ff-clock_icon" name="clock_new_icon" />
-          <Typography className="ff-time-text" >
-            {timeText}
-          </Typography>
-        </div>
-
-        <Typography className="ff-right-text" >
-          {' '}
+        <div className="ff-left-text" />
+        <Typography className="ff-right-text">
           {currentScripts}/{totalScripts}
         </Typography>
       </div>
@@ -84,19 +89,18 @@ const Carousel: React.FC<CarouselProps> = ({
             {currentIndex > 0 && (
               <Icon
                 className="ff-carousel-icons"
-                name={'left_new_icon'}
+                name="left_new_icon"
                 onClick={handlePrev}
                 height={64}
                 width={64}
               />
             )}
           </div>
-
           <div className="ff-right-control">
             {currentIndex < items.length - 1 && (
               <Icon
                 className="ff-carousel-icons"
-                name={'right_new-icon'}
+                name="right_new_icon"
                 onClick={handleNext}
                 height={64}
                 width={64}

@@ -2,7 +2,7 @@
 @use '../../assets/styles/fonts';
 @use '../../assets/styles/mixins' as *;
 
-.ff-tabs-container {
+.ff-tabs-slider-container {
   box-sizing: border-box;
 
   .ff-tab-row {
@@ -207,7 +207,7 @@
         margin: 0;
       }
     }
-    &.ff-tab-row--no-border{
+    &.ff-tab-row--no-border {
       border: none;
     }
   }

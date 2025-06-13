@@ -1,4 +1,8 @@
-@mixin folding-icon-styles($color: var(--base-bg-color), $zIndex: 999999, $opacity: 1) {
+@mixin folding-icon-styles(
+  $color: var(--base-bg-color),
+  $zIndex: 999999,
+  $opacity: 1
+) {
   color: $color !important;
   fill: $color !important;
   z-index: $zIndex !important;
@@ -16,7 +20,6 @@
   text-align: center !important;
 }
 
-
 .monaco-editor .margin-view-overlays {
   width: 100% !important;
 }
@@ -32,7 +35,7 @@
 
 /* Change the background of the active line number */
 .monaco-editor .margin .active-line-number {
-  background-color: var(--ff-line-number-bg)!important; 
+  background-color: var(--ff-line-number-bg) !important;
   color: var(--base-bg-color) !important;
 }
 
@@ -40,6 +43,7 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+  position: relative;
   .monaco-editor {
     border-radius: 6px;
     border-top: 1px solid var(--ff-editor-border-color);
@@ -51,12 +55,12 @@
   .monaco-editor .cldr.codicon.codicon-folding-expanded,
   .monaco-editor .cldr.codicon.codicon-folding-manual-collapsed,
   .monaco-editor .cldr.codicon.codicon-folding-manual-expanded {
-   @include folding-icon-styles()
+    @include folding-icon-styles();
   }
   .monaco-editor .cldr.codicon.codicon-folding-expanded {
-   @include folding-icon-styles()
+    @include folding-icon-styles();
   }
   .cldr.codicon.codicon-folding-manual-collapsed {
-    @include folding-icon-styles()
+    @include folding-icon-styles();
   }
 }

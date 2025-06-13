@@ -17,8 +17,8 @@ type Props = {
   setContextMenu: React.Dispatch<React.SetStateAction<ContextMenuState>>;
   attachmentAction?: {
     addAttachment: (file: File) => Promise<string>;
-    viewAttachment: (fileId: string) => Promise<string>;
     deleteAttachment: (fileId: string) => Promise<string>;
+    viewAttachment: (fileId: string, fileName: string) => Promise<void>;
   };
   contextOption?: {
     open: boolean;
@@ -179,8 +179,11 @@ const ActiveCell: React.FC<Props> = (props) => {
     const selectedList = (e.target as HTMLElement).innerText;
     if (selectedList) {
       JSON.parse(cell?.value).map((file: Types.AttachmentApi) => {
-        if (file.name === selectedList) {
-          props.attachmentAction?.deleteAttachment(file.id);
+        if (
+          file.name === selectedList &&
+          props.attachmentAction?.viewAttachment
+        ) {
+          props.attachmentAction?.viewAttachment(file.id, file.name);
         }
       });
     }
@@ -319,6 +322,7 @@ const ActiveCell: React.FC<Props> = (props) => {
           deleteButton={true}
           addAttachmentButton
           isInfoIconRequired={false}
+          truncateMaxLimit={dimensions.width - 60} // Adjusted According to Attachment Action Width
         />
       ) : mode === 'edit' && active ? (
         <DataEditor

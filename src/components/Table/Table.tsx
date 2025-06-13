@@ -51,6 +51,7 @@ const SortableRow = ({
   accordionContent,
   columnSticky,
   isRowCheckBoxDisable,
+  isRowDisabled = true,
 }: any) => {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({
@@ -70,7 +71,7 @@ const SortableRow = ({
         style={style}
         key={key}
         className={classNames(tableBodyRowClass, {
-          'disabled-row': row.disabled,
+          'disabled-row': row.disabled && isRowDisabled,
         })}
         id={key}
       >
@@ -122,10 +123,10 @@ const SortableRow = ({
                       {...listeners}
                       {...attributes}
                     >
-                      <Icon name="drag" />
+                      <Icon name="drag" className="ff-table-drag-icon-active" />
                     </span>
                     <Typography color="var(--brand-color)">
-                      {serialNumber}.
+                      {serialNumber && `${serialNumber}.`}
                     </Typography>
                   </>
                 )}
@@ -178,6 +179,8 @@ const Table = ({
   columnSticky = false,
   tableRef = null,
   isRowCheckBoxDisable,
+  isRowDisabled = true,
+  tableHeaderZindex = 99,
 }: TableProps) => {
   const observerRef = useRef<IntersectionObserver | null>(null);
 
@@ -277,12 +280,15 @@ const Table = ({
                 },
                 tableHeadClass
               )}
+              style={{
+                zIndex: tableHeaderZindex,
+              }}
             >
               <tr>
                 {columns.map((column, index) => (
                   <th
                     className={classNames(
-                      `${headerType && `${headerType}-bg`}`,
+                      `${headerType !== 'default' ? `${headerType}-bg` : ''}`,
                       `${headerTextColor && `${headerTextColor}-color`}`,
                       {
                         'sticky-column':
@@ -345,7 +351,7 @@ const Table = ({
                         <tr
                           key={row?._id || index}
                           className={classNames(tableBodyRowClass, 'edit-row', {
-                            'disabled-row': row.disabled,
+                            'disabled-row': row.disabled && isRowDisabled,
                           })}
                         >
                           <td
@@ -375,6 +381,7 @@ const Table = ({
                           isAccordionOpen={isOpen}
                           accordionContent={accordionContent}
                           isRowCheckBoxDisable={isRowCheckBoxDisable}
+                          isRowDisabled={isRowDisabled}
                         />
                       )}
                     </>

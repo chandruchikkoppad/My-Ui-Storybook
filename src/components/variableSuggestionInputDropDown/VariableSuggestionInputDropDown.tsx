@@ -26,6 +26,7 @@ const VariableSuggestionInputDropDown = forwardRef<
       variableList = [],
       placeholder = 'Enter text',
       onChange,
+      onPaste,
       onCreateVariableClick,
       handleClearInput,
       value = '',
@@ -46,6 +47,7 @@ const VariableSuggestionInputDropDown = forwardRef<
       symbol = '$',
       type = 'text',
       clearIcon = true,
+      inputTitle = '',
       ...props
     },
     ref
@@ -60,6 +62,25 @@ const VariableSuggestionInputDropDown = forwardRef<
     const [filteredOptions, setFilteredOptions] = useState<dynamicObject[]>([]);
 
     const inputRef = useRef<HTMLInputElement>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
+    const [dropdownWidthPx, setDropdownWidthPx] = useState<string>('auto');
+
+    useEffect(() => {
+      const inputContainer = containerRef.current?.querySelector(
+        '.ff-input-container'
+      );
+      if (!inputContainer) return;
+      const resizeObserver = new ResizeObserver((entries) => {
+        for (let entry of entries) {
+          const width = `${entry.contentRect.width}px`;
+          setDropdownWidthPx(width);
+        }
+      });
+      resizeObserver.observe(inputContainer);
+      return () => {
+        resizeObserver.disconnect();
+      };
+    }, []);
 
     useImperativeHandle(ref, () => inputRef.current as HTMLInputElement);
 
@@ -96,14 +117,16 @@ const VariableSuggestionInputDropDown = forwardRef<
       if (isOnlyHash) {
         setShowCreateVariableIcon(false);
       } else {
-        setShowCreateVariableIcon(
-          (value.includes('$') ||
-            value.includes('#') ||
-            isHashSelected ||
-            additionalText ||
-            (isDollarSelected && additionalText)) &&
-            !(isDollarSelected && !additionalText)
-        );
+        if (
+          isDollarSelected ||
+          isHashSelected ||
+          value.includes('$') ||
+          value.includes('#')
+        ) {
+          setShowCreateVariableIcon(false);
+        } else if (additionalText && !value.includes('$')) {
+          setShowCreateVariableIcon(true);
+        }
       }
     }, [value]);
     const updateCursorPosition = () => {
@@ -218,29 +241,34 @@ const VariableSuggestionInputDropDown = forwardRef<
     };
     return (
       <div className="ff-add-variable-container">
-        <div className="ff-add-variable-input">
-          <Input
-            {...props}
-            name="add_variable"
-            ref={inputRef}
-            type={type}
-            value={value}
-            onChange={onChange}
-            variant="primary"
-            label={label}
-            placeholder={placeholder}
-            onClick={handleClick}
-            onKeyUp={handleKeyUp}
-            onFocus={() => setIsFocused(true)}
-            onBlur={(e) => handleBlur(e)}
-            autoComplete={autoComplete}
-            helperText={helperText}
-            error={error}
-            required={required}
-            {...formProps}
-          />
+        <div className="ff-add-variable-input" ref={containerRef}>
+          <Tooltip title={inputTitle} style={{ width: '100%' }}>
+            <Input
+              {...props}
+              name="add_variable"
+              ref={inputRef}
+              type={type}
+              value={value}
+              onChange={onChange}
+              onPaste={() => {
+                setShowCreateVariableIcon(true);
+              }}
+              variant="primary"
+              label={label}
+              placeholder={placeholder}
+              onClick={handleClick}
+              onKeyUp={handleKeyUp}
+              onFocus={() => setIsFocused(true)}
+              onBlur={(e) => handleBlur(e)}
+              autoComplete={autoComplete}
+              helperText={helperText}
+              error={error}
+              required={required}
+              {...formProps}
+            />
+          </Tooltip>
           {!checkEmpty(value) && !isOnlyHash && (
-            <>
+            <div className="ff-variable-icon-container">
               {clearIcon && (
                 <Tooltip title="Cancel" style={{ zIndex: 99999 }}>
                   <Icon
@@ -263,7 +291,7 @@ const VariableSuggestionInputDropDown = forwardRef<
                   />
                 </Tooltip>
               )}
-            </>
+            </div>
           )}
         </div>
         {result?.showDropdown && isFocused && (
@@ -271,7 +299,7 @@ const VariableSuggestionInputDropDown = forwardRef<
             position="absolute"
             zIndex={zIndex}
             truncateTextValue={truncateTextValue}
-            width={dropdownWidth}
+            width={dropdownWidthPx}
             height={dropdownHeight}
             optionsList={variableList.filter((file) =>
               file.name.toLowerCase().includes(result?.searchString)
@@ -279,12 +307,12 @@ const VariableSuggestionInputDropDown = forwardRef<
             onSelectVariable={handleDropdownClick}
           />
         )}
-        {showDropdown && isHash && (
+        {showDropdown && isHash && isFocused && (
           <OptionsDropdown
             position="relative"
             zIndex={zIndex}
             truncateTextValue={truncateTextValue}
-            width={dropdownWidth}
+            width={dropdownWidthPx}
             filteredOptions={filteredOptions}
             onSelectVariable={handleDropdownClick}
           />

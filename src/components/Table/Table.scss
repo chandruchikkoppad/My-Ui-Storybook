@@ -11,6 +11,7 @@
     z-index: 999;
     background-color: var(--input-label-bg-color);
   }
+
   .ff-table-icon {
     position: absolute;
     top: 4px;
@@ -60,6 +61,15 @@
       .ff-table-drag,
       .ff-table-drag-icon {
         opacity: 1 !important;
+
+        &-active {
+          cursor: grab !important;
+
+          &:active {
+            cursor: grabbing !important;
+          }
+        }
+
       }
     }
 
@@ -96,7 +106,6 @@
 
         .ff-table-drag-icon {
           @extend .ff-table-drag;
-          cursor: grab;
         }
       }
 

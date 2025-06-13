@@ -1,7 +1,8 @@
-type MediaPreviewProps = {
+export type MediaPreviewProps = {
+  onModalClose?: () => void;
   MediaSrc: string;
   fileName?: string;
-  onDeleteClick: (src: string) => void;
+  onDeleteClick?: (src: string) => void;
   mediaType: string;
   fileId: string;
   thumbnailMediaSrc?: string;
@@ -9,5 +10,7 @@ type MediaPreviewProps = {
   onExpandClick?: (fileId?: string) => void;
   onDownloadClick?: (fileId?: string) => void;
   isMediaIcon?: boolean;
+  previewOnly?: boolean;
   iconName?: string;
+  isDisabled?: boolean;
 };

@@ -18,4 +18,5 @@ export interface PopUpModalProps {
   firstButtonDisabled?: boolean;
   secondButtonDisabled?: boolean;
   zIndex?: number;
+  iconSize?: number;
 }

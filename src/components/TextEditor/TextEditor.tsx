@@ -27,7 +27,7 @@ const TextEditor: FC<RichTextEditorProps> = ({
 }) => {
   const [editorState, setEditorState] = useState<any>(null);
   const [focusState, setFocusState] = useState<boolean>(false);
-  const [error,setError] = useState<boolean>(false);
+  const [error, setError] = useState<boolean>(false);
   const defaultToolBarOptions = [
     'inline',
     'blockType',
@@ -42,24 +42,41 @@ const TextEditor: FC<RichTextEditorProps> = ({
     'remove',
     'history',
   ];
-  useEffect(() => {
-    let editorState = null;
-    const convert = convertedContent ? JSON.parse(convertedContent) : {};
-    if (!checkEmpty(convertedContent)) {
-      if (convert) {
-        editorState = EditorState.createWithContent(
-          convertFromRaw(JSON.parse(convertedContent))
-        );
-      } else {
-        if (mode === 'view') {
-          const content = ContentState.createFromText('--');
-          editorState = EditorState.createWithContent(content);
-        } else {
-          editorState = EditorState.createEmpty();
-        }
+
+  const parseContent = (content: string | undefined) => {
+    if (!content) return null;
+    try {
+      const parsed = JSON.parse(content);
+      if (parsed && typeof parsed === 'object' && parsed.blocks) {
+        return parsed;
       }
+      return convertToRaw(ContentState.createFromText(content));
+    } catch (e) {
+      return convertToRaw(ContentState.createFromText(content));
     }
-    setEditorState(editorState);
+  };
+
+  useEffect(() => {
+    let newEditorState: EditorState;
+
+    try {
+      if (!checkEmpty(convertedContent)) {
+        const content = parseContent(convertedContent);
+        newEditorState = EditorState.createWithContent(convertFromRaw(content));
+      } else {
+        newEditorState =
+          mode === 'view'
+            ? EditorState.createWithContent(ContentState.createFromText('--'))
+            : EditorState.createEmpty();
+      }
+    } catch (e) {
+      console.error('Error creating editor state:', e);
+      newEditorState = EditorState.createWithContent(
+        ContentState.createFromText(convertedContent || 'Invalid content')
+      );
+    }
+
+    setEditorState(newEditorState);
   }, [convertedContent, mode]);
 
   useEffect(() => {
@@ -77,10 +94,8 @@ const TextEditor: FC<RichTextEditorProps> = ({
 
   const handleEditorChange = (state: any) => {
     setEditorState(state);
-    const currentContentAsRaw = convertToRaw(
-      state.getCurrentContent()
-    );
-   if(currentContentAsRaw?.blocks[0]?.text !== ""){
+    const currentContentAsRaw = convertToRaw(state.getCurrentContent());
+    if (currentContentAsRaw?.blocks[0]?.text !== '') {
       setError(false);
     }
   };
@@ -88,7 +103,7 @@ const TextEditor: FC<RichTextEditorProps> = ({
     const currentContentAsRaw = convertToRaw(editorState.getCurrentContent());
     setConvertedContent(JSON.stringify(currentContentAsRaw));
 
-    if (currentContentAsRaw?.blocks[0]?.text === "") {
+    if (currentContentAsRaw?.blocks[0]?.text === '') {
       setError(true);
     }
 
@@ -99,18 +114,14 @@ const TextEditor: FC<RichTextEditorProps> = ({
 
   const EditorComponent = DraftEditor as unknown as ComponentType<EditorProps>;
   return (
-    <div>
-    <div className='ff-texteditor-label-asterisk-container'>
-      {
-        required && 
-         <Typography className="required-asterisk">* </Typography>
-      }
-      {
-        label && 
-      <Typography lineHeight="10px" fontWeight="medium" fontSize="12px"> 
-        {label}
-      </Typography>      
-      }
+    <div className="ff-textEditor-container">
+      <div className="ff-textEditor-label-asterisk-container">
+        {required && <Typography className="required-asterisk">* </Typography>}
+        {label && (
+          <Typography lineHeight="10px" fontWeight="medium" fontSize="12px">
+            {label}
+          </Typography>
+        )}
       </div>
       <EditorComponent
         editorState={editorState}
@@ -160,12 +171,15 @@ const TextEditor: FC<RichTextEditorProps> = ({
           },
         }}
       />
-      {
-        required && error && 
-        <Typography fontSize={10} className={'ff-textEditor-error-msg'} as='span'>
+      {required && error && (
+        <Typography
+          fontSize={10}
+          className={'ff-textEditor-error-msg'}
+          as="span"
+        >
           {helperText}
-      </Typography>
-      }
+        </Typography>
+      )}
     </div>
   );
 };

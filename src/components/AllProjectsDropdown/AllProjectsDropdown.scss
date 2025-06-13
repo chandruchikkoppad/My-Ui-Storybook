@@ -135,6 +135,7 @@
         padding: 1px;
         margin-top: 1px;
         white-space: nowrap;
+        cursor: pointer;
 
         .ff-projects-icons {
           @include mixins.center-content();

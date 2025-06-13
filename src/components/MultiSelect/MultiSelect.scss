@@ -103,9 +103,11 @@
           display: flex;
           flex-wrap: wrap;
           align-items: center;
-          overflow-y: auto;
           max-height: 64px;
+          overflow-y: auto;
+          overflow-x: hidden;
           gap: 5px;
+
           @include ff-scroll-style;
 
           .ff-multiselect-chip {
@@ -123,12 +125,35 @@
                 padding-right: 3px;
               }
             }
+
             .ff-multiselect-chip-close-icon {
-              color: var(--brand-color);
-              cursor: pointer;
+              color: var(--brand-color); 
+              cursor:pointer;
               padding: 0px;
+              transition: all 0.3s ease;
+              height: 20px;
+              width:20px;
+              border-radius: 50%;
             }
+            
+            .ff-multiselect-chip-close-icon:hover {
+              height: 20px;
+              width:20px;
+              border-radius: 50%;
+              background-color: var(--brand-color);
+              color:var(--ff-white-color); 
+            }
+            
+            .ff-multiselect-chip-close-icon:hover circle {
+              color:var(--ff-white-color); 
+            }
+            
+            .ff-multiselect-chip-close-icon:hover path {
+              color:var(--ff-white-color); 
+            }
+            
           }
+
           .ff-multiselect-input-container {
             flex: 1;
             min-width: 20px;
@@ -209,6 +234,7 @@
     &--disabled {
       opacity: 0.5;
       cursor: not-allowed;
+      pointer-events: none;
       border: 1px solid var(--multi-select-border);
       .ff-multiselect .ff-multiselect__main .active-default-label {
         color: var(--multi-select-border);

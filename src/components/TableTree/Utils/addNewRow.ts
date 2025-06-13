@@ -1,4 +1,5 @@
 import { TreeNodeProps } from '../../../ComponentProps/TreeNodeProps';
+import { addLastChild } from './addLastChild';
 
 export const addNewRow = (
   treeData: TreeNodeProps[],
@@ -72,22 +73,27 @@ export const addNewRow = (
     cancelIconTooltip,
   };
 
+  let parentId
   switch (action) {
     case 'addAbove':
       updatedTreeData.splice(sourceIndex, 0, newNodeBase);
       break;
     case 'addBelow':
-      updatedTreeData.splice(sourceIndex + 1, 0, newNodeBase);
+      parentId = payloadSourceNode?.parentId;
+      updatedTreeData.splice(sourceIndex + 1, 0, {...newNodeBase, parentId});
       break;
     case 'addInside':
+      parentId = payloadSourceNode?.key;
+
       updatedTreeData.splice(sourceIndex + 1, 0, {
         ...newNodeBase,
-        hierarchy: sourceNode.hierarchy + 1,
+        hierarchy: newNodeBase.hierarchy + 1,
+        parentId,
       });
       break;
     default:
       break;
   }
 
-  return updatedTreeData;
+  return addLastChild(updatedTreeData);
 };

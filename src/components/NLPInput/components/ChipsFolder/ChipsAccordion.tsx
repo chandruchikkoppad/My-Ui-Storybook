@@ -76,7 +76,7 @@ const ChipsAccordion = forwardRef<HTMLDivElement, NlpChipsAccordionProps>(
             ))}
           </div>
         </div>
-        <div>
+        <div className="ff-arrow-icon-container">
           <div
             className={`ff-icon-wrapper ${isExpanded ? 'expanded' : ''}`}
             role="button"

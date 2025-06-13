@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
-import Toaster from '../Toast/Toast';
 import { Variant, ToastProps, AcceptedType } from './types';
+import Toaster from '../Toast/Toast';
 
 let openToast: (
   variant: Variant,
@@ -14,22 +14,29 @@ export const Toastify = () => {
     variant: 'info',
     toastTitle: '',
     toastMessage: '',
+    toastId: '',
   });
 
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
+  const showTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isManuallyClosed = useRef(false);
   openToast = (variant: Variant, arg1: AcceptedType, arg2?: AcceptedType) => {
-    // Clear the previous timeout if it exists
+    // Immediately reset manual close flag
+    isManuallyClosed.current = false;
+
+    // Clear existing timeouts
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
       timeoutRef.current = null;
     }
+    if (showTimeoutRef.current) {
+      clearTimeout(showTimeoutRef.current);
+      showTimeoutRef.current = null;
+    }
 
-    // Set the title and message based on the arguments
     let title = '';
     let message = '';
 
-    // Function to format message
     const formatMessage = (input: AcceptedType) => {
       if (input && typeof input === 'object') {
         return JSON.stringify(input, null, 2);
@@ -38,7 +45,6 @@ export const Toastify = () => {
       }
       return String(input);
     };
-
     // If arg2 exists, use it as the message
     if (arg2 !== undefined) {
       title = formatMessage(arg1);
@@ -51,20 +57,43 @@ export const Toastify = () => {
     const formattedTitle = title.charAt(0).toUpperCase() + title.slice(1);
 
     // Close the existing toast if open, and then immediately show the new one
+
     setToastProps((prev) => ({ ...prev, isOpen: false }));
 
-    setTimeout(() => {
+    // Delay showing the new toast, if not cancelled
+    showTimeoutRef.current = setTimeout(() => {
+      //  check AGAIN here
+      if (isManuallyClosed.current) return;
+
       setToastProps({
         isOpen: true,
         variant,
         toastTitle: formattedTitle,
         toastMessage: message,
       });
-    }, 10);
 
-    timeoutRef.current = setTimeout(() => {
-      setToastProps((prev) => ({ ...prev, isOpen: false }));
-    }, 3000);
+      timeoutRef.current = setTimeout(() => {
+        if (!isManuallyClosed.current) {
+          setToastProps((prev) => ({ ...prev, isOpen: false }));
+        }
+      }, 3000);
+    }, 10);
+  };
+
+  const handleCancelClick = () => {
+    //  Mark it as manually closed BEFORE clearing show timeout
+    isManuallyClosed.current = true;
+
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+    if (showTimeoutRef.current) {
+      clearTimeout(showTimeoutRef.current);
+      showTimeoutRef.current = null;
+    }
+
+    setToastProps((prev) => ({ ...prev, isOpen: false }));
   };
 
   return (
@@ -74,13 +103,13 @@ export const Toastify = () => {
       toastTitle={toastProps.toastTitle}
       toastMessage={toastProps.toastMessage}
       zIndex={1000000000}
+      onCancelClick={handleCancelClick}
     />
   );
 };
 
 export default Toastify;
 
-// Utility to trigger toast messages outside of the Toastify component
 export const toast = {
   success: (arg1: AcceptedType, arg2?: AcceptedType) =>
     openToast('success', arg1, arg2),

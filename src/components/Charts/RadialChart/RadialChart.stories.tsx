@@ -34,3 +34,19 @@ export const ChartWithStatus: Story = {
     fontSize: 8,
   },
 };
+
+export const ChartWithGap: Story = {
+  args: {
+    radius: 15,
+    lineWidth: 5,
+    statusValues: [
+      { status: 'Passed', value: 40 },
+      { status: 'Failed', value: 20 },
+      { status: 'Warning', value: 20 },
+      { status: 'Skipped', value: 20 },
+    ],
+    onClick: () => {},
+    fontSize: 8,
+    gap: 100,
+  },
+};

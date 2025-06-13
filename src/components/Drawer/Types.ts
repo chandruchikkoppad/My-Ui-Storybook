@@ -169,4 +169,5 @@ export interface DrawerProps {
    *To  Close the drawer when clicking outside of it.
    */
   isClickOutside?: boolean;
+  ignoreRefs?: Array<React.RefObject<HTMLElement>>;
 }

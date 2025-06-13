@@ -15,21 +15,27 @@ import {
   OptionClick,
 } from './types';
 
-const Option = ({ option, onClick }: OptionProps) => (
+const Option = ({ option, onClick, alignOption }: OptionProps) => (
   <div
     className={classNames('ff-options', {
       'ff-disable-option': option.disable,
+      'align-center': alignOption === 'center',
+      'align-right': alignOption === 'right',
+      'align-left': alignOption === 'left',
     })}
     onClick={() => !option.disable && onClick(option)}
   >
-    {option.icon && (
+    {typeof option.icon === 'string' ? (
       <Icon
         name={option.icon}
         color={option.iconColor}
         height={16}
         width={16}
       />
+    ) : (
+      (option.icon as React.ReactNode)
     )}
+
     <Typography
       as="label"
       lineHeight="18px"
@@ -114,6 +120,7 @@ const OptionCard = ({
   dropdownPlacement,
   variant,
   isAddResourceButton,
+  alignOption,
 }: OptionCardProps) => {
   const themeContext = useContext(ThemeContext);
   const currentTheme = themeContext?.currentTheme;
@@ -148,10 +155,15 @@ const OptionCard = ({
         (opt) =>
           !opt.hide && (
             <Tooltip
-              title={opt?.tooltipForOption ? opt?.tooltipForOption : opt?.label}
+              title={opt?.tooltipForOption ? opt?.tooltipForOption : ''}
               placement={opt?.tooltipPlacementForOption}
             >
-              <Option key={opt.value} option={opt} onClick={onClick} />
+              <Option
+                key={opt.value}
+                option={opt}
+                onClick={onClick}
+                alignOption={alignOption}
+              />
             </Tooltip>
           )
       )}
@@ -179,6 +191,8 @@ const MenuOption = ({
   treeRowRef,
   isAddResourceButton,
   disabled,
+  alignOption = 'left',
+  displayCard = true,
 }: MenuOptionProps) => {
   const [isClicked, setIsClicked] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -284,7 +298,7 @@ const MenuOption = ({
         <div className="ff-icon-label">
           <div
             className={classNames('ff-menuicon-container', {
-              'ff-menuicon-container-clicked': isClicked,
+              'ff-menuicon-container-clicked': isClicked && displayCard,
               dark: variant === 'dark',
               'ff-menuicon-container-add-resource': isAddResourceButton,
             })}
@@ -302,16 +316,18 @@ const MenuOption = ({
               name={iconName}
               disabled={disabled}
               color={
-                isClicked === (variant === 'dark')
-                  ? 'var(--menu-option-icon-clicked)'
-                  : 'var(--menu-option-icon-color)'
+                displayCard
+                  ? isClicked === (variant === 'dark')
+                    ? 'var(--menu-option-icon-clicked)'
+                    : 'var(--menu-option-icon-color)'
+                  : 'var(--menu-option-icon-clicked)'
               }
             />
           </div>
           {labelName && <Typography as="label">{labelName}</Typography>}
         </div>
       </Tooltip>
-      {isClicked && (
+      {isClicked && displayCard && (
         <OptionCard
           options={options}
           onClick={handleOptionClick}
@@ -322,6 +338,7 @@ const MenuOption = ({
           dropdownPlacement={dropdownPlacement}
           variant={optionCardVariant}
           isAddResourceButton={isAddResourceButton}
+          alignOption={alignOption}
         />
       )}
     </div>

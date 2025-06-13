@@ -10,9 +10,10 @@ const NoDataContent: React.FC<NoDataFoundProps> = ({
   iconHeight = 115,
   text,
   textFontSize = '24px',
+  textDirectionRow = false,
 }) => {
   return (
-    <div className="no_data_message">
+    <div className={`no_data_message ${textDirectionRow && 'flex-row'}`}>
       <Icon name={iconName} width={iconWidth} height={iconHeight} />
       <Typography fontSize={textFontSize} lineHeight="36px" fontWeight="bold">
         {text}

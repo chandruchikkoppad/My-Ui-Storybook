@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import classNames from 'classnames';
 import Icon from '../Icon';
@@ -9,6 +9,7 @@ import { checkEmpty } from '../../utils/checkEmpty/checkEmpty';
 
 const OverviewModal: React.FC<OverviewModalProps> = ({
   isOpen,
+  onClose,
   isMaximized,
   width = '800px',
   height = '432px',
@@ -24,10 +25,44 @@ const OverviewModal: React.FC<OverviewModalProps> = ({
   multiData = [],
   setSelectedVideo,
 }) => {
+  const [videos, setVideos] = useState(multiData);
+
+  useEffect(() => {
+    if (!checkEmpty(multiData)) {
+      setVideos(multiData);
+    }
+  }, [multiData]);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onClose?.();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleKeyDown);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
-  const isEmptyData = checkEmpty(multiData);
+  const isEmptyData = checkEmpty(videos);
+  const singleClass = videos.length === 1 ? ' image-grid--single' : '';
+
+  const handleVideoEnd = (index: number) => {
+    setVideos((prev) => {
+      const updated = prev.filter((_, i) => i !== index);
+      if (updated.length === 0) {
+        onClose?.();
+      }
+      return updated;
+    });
+  };
 
   const modalContent = (
     <div
@@ -72,22 +107,26 @@ const OverviewModal: React.FC<OverviewModalProps> = ({
           })}
         >
           {!isEmptyData ? (
-            <div className="image-grid">
-              {multiData.map((video, idx) => (
+            <div className={`image-grid${singleClass}`}>
+              {videos.map((video, idx) => (
                 <div className="ff-overview-modal-image-item" key={idx}>
-                  <video src={video.src} autoPlay muted playsInline>
+                  <video
+                    src={video.src}
+                    autoPlay
+                    muted
+                    playsInline
+                    preload="auto"
+                    controls={false}
+                    onEnded={() => handleVideoEnd(idx)}
+                    className="ff-overview-modal-video"
+                  >
                     Your browser does not support the video tag.
                   </video>
 
                   <div className="ff-overview-modal-image-name">
                     <Icon name={video.icon} />
-                    <Typography>{video.name}</Typography>
-                  </div>
-
-                  <div className="ff-overview-modal-image-time">
-                    <Icon name="clock_new" />
-                    <Typography color="var(--ff-chip-bg)">
-                      {video.time}
+                    <Typography>
+                      {video.machineName} - {video.scriptName}
                     </Typography>
                   </div>
 
@@ -98,8 +137,8 @@ const OverviewModal: React.FC<OverviewModalProps> = ({
                     name="maximize_new"
                     onClick={() => {
                       const clickedVideo = {
-                        ...video,
-                        clickedAt: Date.now(),
+                        currentVideoData: { ...video, clickedAt: Date.now() },
+                        allVideoData: videos,
                       };
                       setSelectedVideo?.(clickedVideo);
                     }}
@@ -109,7 +148,7 @@ const OverviewModal: React.FC<OverviewModalProps> = ({
                     color="var(--ff-chip-bg)"
                     className="ff-overview-modal-scripts"
                   >
-                    {video.scripts}
+                    {video.currentScripts}/{video.totalScripts}
                   </Typography>
                 </div>
               ))}

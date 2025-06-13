@@ -538,8 +538,13 @@ export function dragEndAutoFill(
     for (let col = startPoint.column; col <= endPoint.column; col++) {
       const currentCell = Matrix.get({ row, column: col }, updatedData);
 
-      if (!currentCell) continue;
-      if (currentCell.readOnly) continue;
+      if (
+        !currentCell ||
+        currentCell.readOnly ||
+        ['file', 'dropDown'].includes(currentCell?.inputType?.type || '')
+      ) {
+        continue;
+      }
 
       const updatedCell = {
         ...currentCell,
@@ -565,7 +570,7 @@ const canClearCell = (cell: Types.CellBase | undefined) =>
   cell && !cell.readOnly;
 
 const clearCell = (cell: Types.CellBase | undefined) => {
-  if (!canClearCell(cell)) {
+  if (!canClearCell(cell) || cell?.inputType?.type === 'file') {
     return cell;
   }
   return {
@@ -738,6 +743,8 @@ const editKeyDownHandlers: KeyDownHandlers = {
   Escape: view,
   Tab: keyDownHandlers.Tab,
   Enter: keyDownHandlers.ArrowDown,
+  Backspace: clearEditMode,
+  Delete: clear,
 };
 
 const editShiftKeyDownHandlers: KeyDownHandlers = {

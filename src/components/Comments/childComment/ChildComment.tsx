@@ -27,6 +27,7 @@ const ChildComment = ({
   createdByID,
   rowBreakCharCount = 83,
   isVewMode = false,
+  deleteEnable = true,
 }: CommentProps) => {
   const [input, setInput] = useState('');
   const [editMode, setEditMode] = useState(false);
@@ -430,7 +431,7 @@ const ChildComment = ({
                 {!isVewMode && (
                   <div className="ff-comment-action-item">
                     {depth < 2 && (
-                      <div className="action-icon" >
+                      <div className="action-icon">
                         <Tooltip title="Reply">
                           <Icon
                             name="comment_icon"
@@ -443,9 +444,7 @@ const ChildComment = ({
                     )}
 
                     {isEditDeleteActionAllowed && (
-                      <div
-                        className="action-icon"
-                      >
+                      <div className="action-icon">
                         <Tooltip title="Edit">
                           <Icon
                             name="edit"
@@ -457,7 +456,7 @@ const ChildComment = ({
                       </div>
                     )}
 
-                    {isEditDeleteActionAllowed && (
+                    {isEditDeleteActionAllowed && deleteEnable && (
                       <div
                         className="action-icon"
                         onClick={() => handleDeleteNode(comment.id as string)}
@@ -466,7 +465,11 @@ const ChildComment = ({
                           <Icon
                             name="delete"
                             color="var(--ff-delete-button-attachment)"
-                            disabled={editMode || showInput || isDisable}
+                            disabled={
+                              editMode ||
+                              showInput ||
+                              isDisable 
+                            }
                             hoverEffect
                           />
                         </Tooltip>

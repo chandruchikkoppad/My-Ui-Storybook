@@ -67,6 +67,7 @@ export const Controlled: Story = {
             customWidth="660px"
             customHeight="auto"
             border="1px solid var(--warning-modal-border-color)"
+            style={{ padding: '0px' }}
           />
         )}
       </>

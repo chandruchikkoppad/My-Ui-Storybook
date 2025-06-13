@@ -116,7 +116,7 @@ export const PillLegend: Story = {
     lineCap: 'round',
     legendType: 'pillLegend',
     isLegendDetails: true,
-    isPillValueVisible:false,
+    isPillValueVisible: false,
     labelFontSize: 12,
     subLabelFontSize: 8,
     chartToLegendGap: '16px',
@@ -133,25 +133,25 @@ export const ExecutionCompare: Story = {
             arcBackgroundColor: 'var(--ff-progress-bar-bg-color)',
             arcColor: 'var(--ff-card-skipped-status-bg-color)',
             barLabel: 'Skipped',
-            value: 0,
+            value: '0%',
           },
           {
             arcBackgroundColor: 'var(--ff-progress-bar-bg-color)',
             arcColor: 'var(--ff-card-warning-status-bg-color)',
             barLabel: 'Warning',
-            value: 0,
+            value: '0%',
           },
           {
             arcBackgroundColor: 'var(--ff-progress-bar-bg-color)',
             arcColor: 'var(--ff-card-failed-status-bg-color)',
             barLabel: 'Failed',
-            value: 0,
+            value: '33.33%',
           },
           {
             arcBackgroundColor: 'var(--ff-progress-bar-bg-color)',
             arcColor: 'var(--ff-card-passed-status-bg-color)',
             barLabel: 'Passed',
-            value: 0,
+            value: '66.66%',
           },
         ]}
         fontSize={12}
@@ -168,5 +168,39 @@ export const ExecutionCompare: Story = {
         capsuleStyle={{ padding: '10px' }}
       />
     );
+  },
+};
+
+export const Memory: Story = {
+  args: {
+    radius: 50,
+    lineWidth: 4,
+    labelHeading: 'Memory',
+    fontSize: 16,
+    barValues: [
+      {
+        value: "1TB",
+        arcColor: '#A83FC4',
+        arcBackgroundColor: '#F0F0F0',
+        barLabel: 'Available',
+      },
+      {
+        value: "20mb",
+        arcColor: '#10B981',
+        arcBackgroundColor: '#F0F0F0',
+        barLabel: 'Assigned',
+      },
+      {
+        value: "30GB",
+        arcColor: '#F59E0B',
+        arcBackgroundColor: '#F0F0F0',
+        barLabel: 'Used',
+      },
+    ],
+    lineCap: 'round',
+    legendType: 'numberLegend',
+    isLegendDetails: true,
+    chartToLegendGap: '16px',
+    legendGap: '15px',
   },
 };

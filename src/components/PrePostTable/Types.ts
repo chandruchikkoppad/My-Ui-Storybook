@@ -175,6 +175,8 @@ export interface PrePostTableProps {
   ) => (() => ReactElement) | null;
 
   handleAccordion?: (row: any) => void;
+
+  scriptType?: boolean;
 }
 
 export interface FormValues {
@@ -191,13 +193,13 @@ export interface TableMainRow {
   onSelectClick?: any
   draggable?: boolean | undefined;
   indexNumber?: number;
-  tableType?: string;
   viewModeId?: string | null
   ViewComponent?: React.FC | null
   handleClick?: (item: DataProps) => void;
   handleStepGroupExpand?: (item: DataProps) => void;
   isStepGroupExpanded?: (stepId: string) => boolean;
   dataLength?: number
+  scriptType?: boolean;
 }
 
 export interface PrePostStepAccordionsProps {
@@ -207,7 +209,6 @@ export interface PrePostStepAccordionsProps {
   viewModeId?: string | null
   ViewComponent?: React.FC | null
   handleClick?: (item: DataProps) => void;
-  tableType?: string;
   handleStepGroupExpand?: (item: DataProps) => void;
   isStepGroupExpanded?: (stepId: string) => boolean;
 }

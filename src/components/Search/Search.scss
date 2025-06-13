@@ -4,6 +4,7 @@
 .ff-gradient-border-container {
   position: relative;
   padding: 0.8px 1px 0.8px 1px;
+  overflow: hidden;
 
   &.ai-search-active {
     border-radius: 4.5px;
@@ -15,12 +16,12 @@
   }
 
   .ff-search-container {
-    background: var(--base-bg-color);
+    background: transparent;
     @include mixins.horizontal-space-between();
-
     .ff-search-input-block {
       @include mixins.center-vertical();
       transition: width 0.4s ease;
+      overflow: hidden;
     }
 
     .ff-search-icon {
@@ -87,6 +88,7 @@
       border: 1px solid var(--border-color);
       border-radius: 4px;
       background-color: var(--ff-search-filed-bg-color);
+      height: 24px;
 
       .ff-search-icon {
         &:hover {
@@ -123,7 +125,6 @@
       .ff-search-clear-button {
         display: grid;
         place-items: center;
-        cursor: pointer;
         width: 22px;
         padding-top: 1px;
 

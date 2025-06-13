@@ -25,4 +25,5 @@ export interface DropdownProps {
   variant?: string;
   handleIconClick?: () => void;
   noResultsMessage?: string;
+  maxSearchCharacterLength?: number;
 }

@@ -15,7 +15,8 @@ const Checkbox: React.FC<CheckboxProps> = ({
   partial = false,
   onChange,
   variant,
-  isDefaultHover = false, 
+  isDefaultHover = false,
+  labelFontSize = 12,
 }) => {
   const [checked, setChecked] = useState(initialChecked);
 
@@ -35,14 +36,14 @@ const Checkbox: React.FC<CheckboxProps> = ({
         disabled={disabled}
       />
       <span
-     
-     className={classNames('ff-checkbox-custom', {
-      'ff-checkbox-checked': checked,
-      'ff-storybook-checkbox--partial': partial && !checked,
-      [`ff-checkbox--${variant}`]: variant,
-      [`ff-checkbox-checked--${variant}`]: checked && variant,
-      'ff-checkbox-hover-shadow':isDefaultHover,
-    })}
+        className={classNames('ff-checkbox-custom', {
+          'ff-checkbox-checked': checked,
+          'ff-storybook-checkbox--partial': partial && !checked,
+          [`ff-checkbox--${variant}`]: variant,
+          [`ff-checkbox-checked--${variant}`]: checked && variant,
+          'ff-checkbox-hover-shadow': isDefaultHover,
+          'ff-checkbox-disabled': disabled,
+        })}
       >
         {checked && (
           <Icon
@@ -52,7 +53,9 @@ const Checkbox: React.FC<CheckboxProps> = ({
           />
         )}
       </span>
-      <Typography as="span">{label}</Typography>
+      <Typography as="span" fontSize={labelFontSize}>
+        {label}
+      </Typography>
     </label>
   );
 };

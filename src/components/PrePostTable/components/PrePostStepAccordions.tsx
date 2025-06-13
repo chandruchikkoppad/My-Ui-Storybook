@@ -7,7 +7,7 @@ import { PrePostStepAccordionsProps } from '../Types';
 
 const PrePostStepAccordions: FC<PrePostStepAccordionsProps> = ({
   data,
-  level = 3,
+  level = 0,
   columnCount = 1,
   viewModeId,
   ViewComponent,
@@ -15,7 +15,7 @@ const PrePostStepAccordions: FC<PrePostStepAccordionsProps> = ({
   handleStepGroupExpand,
   isStepGroupExpanded,
 }) => {
-  const marginLeft = `${8 * level}px`;
+  const marginLeft = level === 0 ? 18 + 8 : level + 8;
 
   const getPadding = useCallback(
     (type: string) => (['PRE', 'POST','Group'].includes(type) ? '6px 8px' : '7px 8px'),
@@ -32,7 +32,7 @@ const PrePostStepAccordions: FC<PrePostStepAccordionsProps> = ({
         return (
           <Fragment key={item.stepId}>
             {isInEditMode ? (
-              <tr className="pre-edit-row">
+              <tr className="pre-edit-row" id='getInFocus'>
                 <td colSpan={columnCount}>
                   <div style={{ marginLeft }}>{ViewComponent && <ViewComponent />}</div>
                 </td>
@@ -70,7 +70,7 @@ const PrePostStepAccordions: FC<PrePostStepAccordionsProps> = ({
             {isExpanded && (
               <PrePostStepAccordions
                 data={item.data}
-                level={level + 1}
+                level={marginLeft}
                 columnCount={columnCount}
                 viewModeId={viewModeId}
                 handleClick={handleClick}

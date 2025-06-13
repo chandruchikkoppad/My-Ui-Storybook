@@ -122,6 +122,7 @@ export const withSearchIcon: Story = {
     searchIconProps: {
       name: 'search',
       disabled: false,
+      toolTipTitle: 'Search'
     },
   },
 };

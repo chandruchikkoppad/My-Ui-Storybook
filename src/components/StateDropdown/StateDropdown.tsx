@@ -96,6 +96,7 @@ const StateDropdown = ({
         background="var(--state-dropdown-bg-color)"
         borderRadius="4px"
         width="96px"
+        height={20}
       />
     ) : (
       <Typography

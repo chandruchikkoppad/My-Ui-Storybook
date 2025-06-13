@@ -95,6 +95,7 @@ export interface SelectProps {
 
   isWebservice?: boolean;
   closeInputOnOutsideClick?: () => void;
+  tooltipText?: string;
 }
 
 export interface DrowdownPosition {

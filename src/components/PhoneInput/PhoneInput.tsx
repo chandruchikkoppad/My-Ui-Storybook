@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PhoneInput from 'react-phone-input-2';
-import { PhoneInputProps } from './types';
+import { CountryData, PhoneInputProps } from './types';
 import Typography from '../Typography';
 import './phoneInput.scss';
 import { isValidPhoneNumber } from 'react-phone-number-input';
@@ -17,11 +17,14 @@ const PhoneInputField: React.FC<PhoneInputProps> = ({
   enableAreaCodeStretch = false,
   disabled = false,
   isValid: initialIsValid = true,
+  isVerified = false,
+  isVerifyDisplay = false,
+  onVerifyClick = () => {},
 }) => {
   const [phone, setPhone] = useState<string>(initialValue);
   const [isFocused, setIsFocused] = useState(false);
   const [isValid, setIsValid] = useState(initialIsValid);
-
+  const [selectedCountry, setSelectedCountry] = useState(country);
   useEffect(() => {
     if (initialValue) {
       let formattedPhone = initialValue;
@@ -32,12 +35,25 @@ const PhoneInputField: React.FC<PhoneInputProps> = ({
     }
   }, [initialValue]);
 
-  const handlePhoneChange = (phone: string) => {
+  const handlePhoneChange = (phone: string, countryData: CountryData) => {
+    const newCountryCode = countryData?.countryCode?.toLowerCase();
     const cleanedPhone = phone.replace(/[^0-9+]/g, '');
-    setPhone(cleanedPhone);
-    onChange(cleanedPhone);
-    const isPhoneValid = isValidPhoneNumber(cleanedPhone);
-    setIsValid(isPhoneValid);
+    if (selectedCountry?.toLowerCase() !== newCountryCode) {
+      setPhone(countryData?.dialCode);
+      onChange(countryData?.dialCode);
+      setSelectedCountry(newCountryCode);
+      setIsValid(true);
+      return;
+    }
+    let formattedPhone = cleanedPhone;
+    if (!formattedPhone.startsWith('+')) {
+      formattedPhone = `+${formattedPhone}`;
+    }
+    setPhone(formattedPhone);
+    onChange(formattedPhone);
+    const isPhoneValid = isValidPhoneNumber(formattedPhone);
+    const isOnlyCountryCode = phone && phone.replace(/[^\d]/g, '').length <= 3;
+    setIsValid(isPhoneValid || isOnlyCountryCode);
   };
 
   const handleFocus = (event: React.FocusEvent<HTMLInputElement>) => {
@@ -48,10 +64,10 @@ const PhoneInputField: React.FC<PhoneInputProps> = ({
   const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
     setIsFocused(false);
     if (onBlur) onBlur(event);
+    const isOnlyCountryCode = phone && phone.replace(/[^\d]/g, '').length <= 3;
     const isPhoneValid = isValidPhoneNumber(phone);
-    setIsValid(isPhoneValid);
+    setIsValid(isPhoneValid || isOnlyCountryCode);
   };
-
   return (
     <div id={id}>
       <PhoneInput
@@ -84,6 +100,23 @@ const PhoneInputField: React.FC<PhoneInputProps> = ({
         <Typography color={'var(--error_light)'} className="error">
           Invalid phone number format
         </Typography>
+      )}
+      {isVerified ? (
+        <Typography color="var(--phone-number-verified-color)">
+          Verified
+        </Typography>
+      ) : (
+        isValidPhoneNumber(phone) &&
+        isVerifyDisplay &&
+        !isVerified && (
+          <Typography
+            color="var(--brand-color)"
+            className="cursor_pointer"
+            onClick={onVerifyClick}
+          >
+            Verify
+          </Typography>
+        )
       )}
     </div>
   );

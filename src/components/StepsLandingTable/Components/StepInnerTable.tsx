@@ -170,7 +170,11 @@ const StepInnerTable = ({
                   const isEditOrNew = isEdit || row.isNew;
 
                   const renderEditableRow = () => (
-                    <tr key={row.stepId || index} className="steps-edit-row">
+                    <tr
+                      key={row.stepId || index}
+                      className="steps-edit-row"
+                      id="getInFocus"
+                    >
                       {isEdit && isValidElement(editComponent) && (
                         <td colSpan={columns.length}>
                           {cloneElement(editComponent as ReactElement, {

@@ -64,11 +64,11 @@ export interface CreateVariableProps {
    * Disable the checkbox
    */
   disabled?: boolean;
-   /**
+  /**
    * Hide or show dropdown for hash values
    */
   isHash?: boolean;
-   /**
+  /**
    * Stores the files data
    */
   dataFiles?: DynamicObj[];
@@ -76,4 +76,8 @@ export interface CreateVariableProps {
    * Show or hide password icon
    */
   showHidePasswordIcon?: boolean;
+  /**
+   * Show placeholder text
+   */
+  placeholder?: string;
 }

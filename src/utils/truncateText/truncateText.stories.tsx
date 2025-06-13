@@ -8,28 +8,31 @@ export default {
 export const Default = () => {
   const testCases = [
     {
-      text: 'This is a placeholder text that might be too long',
-      maxLength: 25,
+      text: 'This is a placeholder text that might be long',
+      maxLength: 250,
       expected: 'This is a placeholder text...',
     },
-    { text: 'Short text', maxLength: 25, expected: 'Short text' },
-    { text: 'Another example', maxLength: 10, expected: 'Another ex...' },
-    { text: 'Testing with a long text', maxLength: 5, expected: 'Testi...' },
-    { text: '', maxLength: 10, expected: '' },
+    {
+      text: 'This is a placeholder text that might be lo',
+      maxLength: 250,
+      expected: 'Short text',
+    },
+    { text: 'Another example', maxLength: 100, expected: 'Another ex...' },
+    { text: 'Testing with a long text', maxLength: 50, expected: 'Testi...' },
+    { text: '', maxLength: 100, expected: '' },
     {
       text: 'Exactly twenty-five chars!',
-      maxLength: 25,
+      maxLength: 250,
       expected: 'Exactly twenty-five chars!',
-    }, 
+    },
   ];
 
   return (
     <div>
       {testCases.map((test, index) => (
         <div key={index}>
-          truncateText({JSON.stringify(test.text)}, {test.maxLength}) -
-          Expected: {test.expected}, Result:{' '}
-          {truncateText(test.text, test.maxLength)}
+          truncateText({test.maxLength}){/* Expected: {test.expected} */}
+          <div>{truncateText(test.text, test.maxLength)}</div>
         </div>
       ))}
     </div>

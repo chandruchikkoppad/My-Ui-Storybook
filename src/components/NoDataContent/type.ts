@@ -4,4 +4,5 @@ export interface NoDataFoundProps {
   iconHeight?: number;
   text?: string;
   textFontSize?: string;
+  textDirectionRow?: boolean;
 }

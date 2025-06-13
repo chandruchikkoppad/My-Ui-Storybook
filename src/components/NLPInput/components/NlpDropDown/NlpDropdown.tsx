@@ -109,6 +109,8 @@ const NlpDropdown = ({
         );
       } else if (platform === 'Generic') {
         return <Icon name="generic_nlp" height={10} width={10} />;
+      } else if (platform === 'Webservice') {
+        return <Icon name="web_service_icon" height={10} width={10} />;
       } else {
         return <Icon name="common_nlp" height={10} width={10} />;
       }
@@ -163,6 +165,14 @@ const NlpDropdown = ({
       document.removeEventListener('keydown', handleKeyDown);
     };
   }, [options, focusedIndex]);
+
+  useEffect(() => {
+    if (focusedIndex < 0) return;
+    const el = document.getElementById(`ff-nlp-option-${focusedIndex}`);
+    if (el) {
+      el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
+  }, [focusedIndex]);
 
   const getDisplayName = (
     item?: {
@@ -341,7 +351,7 @@ const NlpDropdown = ({
                     fontWeight="regular"
                     fontSize={12}
                   >
-                    {nlpData?.path ? nlpData?.path.slice(6) : '--'}
+                    {nlpData?.path ? nlpData?.path : '---'}
                   </Typography>
                 </Typography>
               </>

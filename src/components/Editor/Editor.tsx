@@ -32,6 +32,8 @@ const Editor = forwardRef<any, EditorProps>(
   ) => {
     const editorRef = useRef<Parameters<OnMount>[0] | null>(null);
     const decorationsRef = useRef<string[]>([]);
+    const varRef = useRef<number | null>(null);
+    const filterVarRef = useRef<string | null>(null);
     const [currentLine, setCurrentLine] = useState<number>(0);
     const [showDropdown, setShowDropdown] = useState<boolean>(false);
     const [dropdownPosition, setDropdownPosition] =
@@ -55,32 +57,29 @@ const Editor = forwardRef<any, EditorProps>(
 
         const currentLineContent = model.getLineContent(position.lineNumber);
         const columnIndex = position.column - 2;
-
-        if (currentLineContent[columnIndex] === '$') {
-          const match = currentLineContent.match(
-            /ff\.(GLOBAL|PROJECT_ENVIRONMENT)\.(get|set)\(\$/
-          );
-          if (isRequisiteType) {
-            editor.executeEdits('', [
-              {
-                range: new monaco.Range(
-                  position.lineNumber,
-                  position.column - 1,
-                  position.lineNumber,
-                  position.column
-                ),
-                text: '',
-              },
-            ]);
+        if (currentLineContent[varRef.current ?? columnIndex] === '$') {
+          if (varRef.current === null) {
+            varRef.current = columnIndex;
           }
-
-          if (match) {
-            const variableScope = match[1];
-            setFilteredVariableOptions(
-              variableOptionsList.filter((v) => v.type === variableScope)
-            );
+          filterVarRef.current = currentLineContent.slice(
+            varRef.current + 1,
+            columnIndex
+          );
+          const filteredVariable = variableOptionsList.filter((e) =>
+            e?.name.toLowerCase().includes(filterVarRef.current?.toLowerCase())
+          );
+          if (filteredVariable.length) {
+            setFilteredVariableOptions(filteredVariable);
           } else {
-            setFilteredVariableOptions(variableOptionsList);
+            setFilteredVariableOptions([]);
+            if (
+              varRef?.current !== columnIndex &&
+              currentLineContent[columnIndex] === ' '
+            ) {
+              varRef.current = null;
+              filterVarRef.current = null;
+              setShowDropdown(false);
+            }
           }
 
           const visiblePosition = editor.getScrolledVisiblePosition(position);
@@ -95,22 +94,27 @@ const Editor = forwardRef<any, EditorProps>(
           let dropdownTop = top;
           let dropdownLeft = left;
 
-          if (dropdownTop + dropdownHeight > editorHeight) {
-            dropdownTop -= dropdownHeight;
+          if (
+            dropdownTop + dropdownHeight >
+            editorHeight - dropdownHeight + 100
+          ) {
+            dropdownTop -= Math.floor(dropdownHeight / 2) + dropdownHeight + 25;
           } else {
-            dropdownTop += 20;
+            dropdownTop -= 5;
           }
 
           if (left > editorRect.width * 0.75) {
-            dropdownLeft -= 150;
-          } else if (left < editorRect.width * 0.25) {
-            dropdownLeft += 20;
+            dropdownLeft -= dropdownHeight;
+          } else if (left < editorRect.width * 0.5 + dropdownHeight) {
+            dropdownLeft = dropdownLeft + 35;
           }
 
           setDropdownPosition({ top: dropdownTop, left: dropdownLeft });
           setShowDropdown(true);
         } else {
           setShowDropdown(false);
+          varRef.current = null;
+          filterVarRef.current = null;
         }
       });
 
@@ -239,19 +243,22 @@ const Editor = forwardRef<any, EditorProps>(
         const editor = editorRef.current;
         const position = editor.getPosition();
         if (position) {
+          const val = `{${type}${type === 'FLV_for:' ? '' : '_'}${suggestion}}`;
+          const currentPostion = varRef?.current ?? 0;
           editor.executeEdits('', [
             {
               range: {
                 startLineNumber: position.lineNumber,
-                startColumn: position.column,
+                startColumn: currentPostion + 2,
                 endLineNumber: position.lineNumber,
-                endColumn: position.column,
+                endColumn: currentPostion + (position.column - currentPostion),
               },
-              text: `{${type}${
-                type === '_startforloop' ? '' : '_'
-              }${suggestion}}`,
+              text: val,
+              forceMoveMarkers: true,
             },
           ]);
+          filterVarRef.current = null;
+          varRef.current = null;
           setShowDropdown(false);
         }
       }
@@ -263,25 +270,33 @@ const Editor = forwardRef<any, EditorProps>(
         const position = editor.getPosition();
         if (position) {
           const textToInsert = `'${option.name}'`;
+          const currentPostion = varRef?.current ?? 0;
 
           editor.executeEdits('', [
             {
               range: {
                 startLineNumber: position.lineNumber,
-                startColumn: position.column,
+                startColumn: currentPostion + 1,
                 endLineNumber: position.lineNumber,
-                endColumn: position.column,
+                endColumn: currentPostion + (position.column - currentPostion),
               },
               text: textToInsert,
+              forceMoveMarkers: true,
             },
           ]);
+          filterVarRef.current = null;
+          varRef.current = null;
           setShowDropdown(false);
         }
       } else {
         // Existing flow for variable insertion
         handleSelectSuggestion(
-          option.parentVariableType === 'STEPGROUP' ? 'SGV' : option?.name,
-          option?.type === 'GLOBAL'
+          option?.type === 'DATAPROVIDER'
+            ? option?.dpName + ':' + option?.varname
+            : option?.name,
+          option.parentVariableType === 'STEPGROUP'
+            ? 'SGV'
+            : option?.type === 'GLOBAL'
             ? 'GV'
             : option?.type === 'LOCAL'
             ? 'LV'
@@ -400,7 +415,7 @@ const Editor = forwardRef<any, EditorProps>(
           <VariableDropdown
             position="absolute"
             width="300px"
-            height="300px"
+            height="210px"
             optionsList={filteredVariableOptions}
             onSelectVariable={handleSelectVariable}
             dropdownPosition={dropdownPosition}

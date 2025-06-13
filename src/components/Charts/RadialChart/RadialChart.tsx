@@ -102,6 +102,7 @@ const RadialChart: React.FC<RadialChartProps> = ({
   statusValues = [],
   onClick = () => {},
   fontSize = 6,
+  gap = 12,
 }) => {
   const { colorMapping, backgroundColorMapping } = useColorMappings();
   const total = statusValues.reduce((acc, status) => acc + status.value, 0);
@@ -110,7 +111,12 @@ const RadialChart: React.FC<RadialChartProps> = ({
   return (
     <div
       className="ff-radial-chart-container"
-      style={{ '--fontSize': `${fontSize}px` } as React.CSSProperties}
+      style={
+        {
+          '--fontSize': `${fontSize}px`,
+          gap: `${gap}px`,
+        } as React.CSSProperties
+      }
     >
       {statusValues.map((status) => {
         const normalizedStatus = status.status.toLowerCase();

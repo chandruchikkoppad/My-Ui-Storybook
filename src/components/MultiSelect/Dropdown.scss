@@ -83,3 +83,8 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+.validation-error {
+  color: var(--error);
+  font-size: 12px;
+  padding-left: 10px;
+}

@@ -9,7 +9,7 @@ import {
   EntireRowsSelection,
   EntireWorksheetSelection,
 } from './selection';
-import { EmptyCell, isActive } from './util';
+import { isPasteAllowed, EmptyCell, isActive } from './util';
 import * as Actions from './actions';
 import { Model, updateCellValue, createFormulaParser } from './engine';
 import {
@@ -544,13 +544,15 @@ export default function reducer(
             : state.model.data;
         const commit: Types.StoreState['lastCommit'] = [];
         for (const point of selectedRange || []) {
-          const currentCell = Matrix.get(point, state.model.data);
+          const currentCell = Matrix.get(point, state.model.data) || null;
           const updateWithStyle = { ...currentCell, value: cell?.value };
           commit.push({
             prevCell: currentCell || EmptyCell,
             nextCell: EmptyCell,
           });
-          newData = Matrix.set(point, updateWithStyle, newData);
+          if (isPasteAllowed(currentCell)) {
+            newData = Matrix.set(point, updateWithStyle, newData);
+          }
         }
 
         return {
@@ -609,12 +611,14 @@ export default function reducer(
           },
         ];
 
-        acc.data = Matrix.set(
-          nextPoint,
-          { value: '', ...currentCell, ...cell },
-          nextData
-        );
-        acc.commit = commit;
+        if (isPasteAllowed(currentCell)) {
+          acc.data = Matrix.set(
+            nextPoint,
+            { ...currentCell, value: cell?.value ?? '' },
+            nextData
+          );
+          acc.commit = commit;
+        }
       }
 
       return {

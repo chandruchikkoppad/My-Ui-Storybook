@@ -45,18 +45,18 @@ const Tabs = ({
                 className={classNames('ff-tab-label', {
                   'ff-tab-label--active': activeTabId === tab.id,
                 })}
-                />
-                {variant === 'default' && tab.count && (
-                  <span
-                    className={classNames('tab-count', {
-                      'tab-count--active': activeTabId === tab.id,
-                    })}
-                  >
-                    {tab.count}
-                  </span>
-                )}
-              </div>
-              <div
+              />
+              {variant === 'default' && tab.count !== undefined && (
+                <span
+                  className={classNames('tab-count', {
+                    'tab-count--active': activeTabId === tab.id,
+                  })}
+                >
+                  {tab.count}
+                </span>
+              )}
+            </div>
+            <div
               className={classNames('ff-tab-bar', {
                 'ff-tab-bar--active': activeTabId === tab.id,
               })}

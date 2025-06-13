@@ -1,0 +1,124 @@
+.ff-status-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  height: 40px;
+  padding: 11px 10px 11px 8px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+  border: 0.5px solid transparent;
+  background-color: transparent;
+
+  &__content {
+    display: flex;
+    align-items: center;
+  }
+
+  &__icon {
+    flex-shrink: 0;
+    padding: 0;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+
+    &--danger {
+      background-color: var(--ff-icon-hover-color-dark-variant);
+      color: var(--ff-delete-button-attachment);
+    }
+
+    &--success {
+      background-color: var(--status-button-text-warning);
+      color: var(--status-success-text-color);
+    }
+
+    &--default {
+      background-color: var(--ff-icon-hover-color-dark-variant);
+      color: var(--ff-avatar-background-color);
+    }
+  }
+
+  &__label {
+    white-space: nowrap;
+    padding-left: 8px;
+
+    &--danger,
+    &--success {
+      color: var(--text-color);
+    }
+
+    &--default {
+      color: var(--ff-avatar-background-color);
+    }
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &--default {
+    color: var(--ff-avatar-background-color);
+    background-color: transparent;
+
+    &-bg {
+      background-color: var(--success-button-bg);
+    }
+
+    &-border {
+      border-color: var(--ff-avatar-background-color);
+    }
+
+    &:hover {
+      background-color: var(--toast-close-icon-wrapper-bg);
+      border-color: var(--ff-avatar-background-color);
+    }
+  }
+
+  &--success {
+    color: var(--status-success-text-color);
+    background-color: transparent;
+
+    &-bg {
+      background-color: var(--success-button-bg);
+    }
+
+    &-border {
+      border-color: var(--status-success-text-color);
+    }
+
+    &:hover {
+      background-color: var(--toast-close-icon-wrapper-bg);
+      border-color: var(--status-success-text-color);
+    }
+  }
+
+  &--danger {
+    color: var(--ff-delete-button-attachment);
+    background-color: transparent;
+
+    &-bg {
+      background-color: var(--success-button-bg);
+    }
+
+    &-border {
+      border-color: var(--ff-delete-button-attachment);
+    }
+
+    &:hover {
+      background-color: var(--toast-close-icon-wrapper-bg);
+      border-color: var(--ff-delete-button-attachment);
+    }
+  }
+
+  &--hover-border {
+    border: 0.5px solid transparent;
+  }
+
+  &:hover {
+    &--hover-border {
+      border-color: transparent;
+    }
+  }
+}

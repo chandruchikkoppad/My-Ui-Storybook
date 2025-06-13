@@ -42,22 +42,27 @@ const Drawer: FC<DrawerProps> = ({
   top = '89px',
   height,
   width,
-  right = '9px',
+  right = '5px',
   overflow,
   isClickOutside,
+  ignoreRefs,
 }: DrawerProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  useClickOutside(containerRef, () => {
-    const openDrawers = document.querySelectorAll('.ff-drawer');
-    const lastDrawer = openDrawers[openDrawers.length - 1] as HTMLElement;
-    if (
-      lastDrawer &&
-      lastDrawer.contains(containerRef.current) &&
-      isClickOutside
-    ) {
-      onClose();
-    }
-  });
+  useClickOutside(
+    containerRef,
+    () => {
+      const openDrawers = document.querySelectorAll('.ff-drawer');
+      const lastDrawer = openDrawers[openDrawers.length - 1] as HTMLElement;
+      if (
+        lastDrawer &&
+        lastDrawer.contains(containerRef.current) &&
+        isClickOutside
+      ) {
+        onClose();
+      }
+    },
+    ignoreRefs
+  );
 
   const [isExpanded, setIsExpanded] = useState(false);
   const [delayedOpen, setDelayedOpen] = useState(false);
@@ -94,6 +99,21 @@ const Drawer: FC<DrawerProps> = ({
       setDelayedOpen(false);
     }
   }, [isOpen]);
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Enter' && isOpen && primaryButtonProps?.onClick) {
+        console.log('Enter key pressed — triggering primary button action');
+        primaryButtonProps.onClick();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, primaryButtonProps]);
+
   const drawerSize = isExpanded ? 'x-large' : size;
   const themeContext = useContext(ThemeContext);
   const currentTheme = themeContext?.currentTheme;
@@ -174,26 +194,29 @@ const Drawer: FC<DrawerProps> = ({
                   )}
                   {isBackButtonVisible &&
                     (backButtonIcon || (
-                      <Icon
-                        name="back_icon"
-                        height={16}
-                        width={16}
-                        hoverEffect
-                        onClick={onBackButtonClick}
-                      />
+                      <Tooltip title="Back">
+                        <Icon
+                          name="back_icon"
+                          height={16}
+                          width={16}
+                          hoverEffect
+                          onClick={onBackButtonClick}
+                        />
+                      </Tooltip>
                     ))}
                   {title && <div className="ff-drawer-title">{title}</div>}
                 </div>
                 {_isCloseModalButtonVisible && (
                   <div className="ff-close-icon">
-                    <Icon
-                      name="close"
-                      hoverEffect={true}
-                      onClick={onCloseIconClick || onClose}
-                      height={16}
-                      width={16}
-                      color="var(--tabs-label-active-color)"
-                    />
+                    <Tooltip title="Close">
+                      <Icon
+                        name="drawer_icon_close"
+                        onClick={onCloseIconClick || onClose}
+                        height={16}
+                        width={16}
+                        color="var(--tabs-label-active-color)"
+                      />
+                    </Tooltip>
                   </div>
                 )}
               </div>

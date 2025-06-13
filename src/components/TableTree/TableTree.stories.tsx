@@ -4,11 +4,12 @@ import Button from '../Button';
 import treeData from './data';
 import Icon from '../Icon/Icon';
 import './TableTreeStories.scss';
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode, useState, useRef } from 'react';
 import AddResourceButton from '../AddResourceButton/AddResourceButton';
 import { TreeNodeProps } from '../../ComponentProps/TreeNodeProps';
 import { handleTreeNodeSect } from '../../utils/handleTreeNodeSelect/handleTreeNodeSelect';
 import type { RootNode } from './types.ts';
+import { getTopVisibleNodeKey } from '../../Utils/getTopVisibleNodeKey/getTopVisibleNodeKey.ts';
 const meta: Meta<typeof TableTree> = {
   title: 'Components/Table tree',
   component: TableTree,
@@ -397,6 +398,37 @@ export const EmptyTree: Story = {
         }}
         rootNode={rootNode}
       />
+    );
+  },
+};
+export const GetTopNode: Story = {
+  render: () => {
+    const [selected, setSelected] = useState<string[]>([]);
+    const treeTableRef = useRef<HTMLDivElement>(null);
+
+    const handleGetTopVisible = () => {
+      const key = getTopVisibleNodeKey(treeTableRef.current!, treeData);
+      alert(`Top visible key: ${key}`);
+    };
+    return (
+      <>
+        <TableTree
+          ref={treeTableRef}
+          select="checkbox"
+          onChange={(e, node: TreeNodeProps) => {
+            setSelected([node.key]);
+          }}
+          selected={selected}
+          treeData={treeData}
+          columnsData={colData}
+          rootNode={rootNode}
+          height="400px"
+        />
+
+        <Button variant="secondary" onClick={handleGetTopVisible}>
+          Get Top Node Key
+        </Button>
+      </>
     );
   },
 };

@@ -1,4 +1,6 @@
 .media-wrapper {
+  display: flex;
+  justify-content: center;
   width: 100%;
   height: 100%;
 
@@ -6,11 +8,9 @@
     position: absolute;
     display: flex;
     width: 25%;
-    height: 30%;
-    left: 75%;
-    gap: 8px;
-    top: 0;
-    background: var(--media-preview-corner-gradient);
+    left: 94%;
+    gap: 4px;
+    top: 16px;
     z-index: 99;
 
     .header-icons {
@@ -20,8 +20,6 @@
       border-radius: 6px;
       cursor: pointer;
       position: relative;
-      left: 218px;
-      top: 16px;
     }
   }
   .ff-custom-overlay {
@@ -31,7 +29,11 @@
   img,
   video {
     border-radius: 8px;
-    width: 100%;
-    height: 100%;
+    width: auto;
+  }
+
+  .ff-video-preview {
+    height: 550px;
+    width: auto;
   }
 }

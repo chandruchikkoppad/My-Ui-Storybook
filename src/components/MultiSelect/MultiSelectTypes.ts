@@ -1,3 +1,4 @@
+import { RefObject } from 'react';
 type OptionValue = any;
 
 interface Option {
@@ -37,7 +38,7 @@ interface MultiSelectProps {
 
   valueAccessor?: string;
 
-  searchAccessor?:string;
+  searchAccessor?: string;
 
   onEnter?: (newOption: string) => void;
 
@@ -48,6 +49,11 @@ interface MultiSelectProps {
   onBlur?: () => void;
   /** default max height is 160px, give max dropdown height while using jsx or want to control how many max options you want to show  */
   maxDropdownHeight?: number;
+  /**
+   * Ref for select option dropdown
+   */
+  dropdownContainerRef?: RefObject<HTMLDivElement>;
+  noResultsMessage?: string;
 }
 
 export { Option, MultiSelectProps };

@@ -105,7 +105,7 @@ const Toaster: React.FC<ToasterProps> = ({
           </div>
 
           <div className="ff-close-icon-wrapper" onClick={handleClose}>
-            <Icon name="close" height={8} width={8} />
+            <Icon name="close" />
           </div>
         </div>
       </div>

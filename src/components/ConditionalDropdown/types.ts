@@ -141,6 +141,7 @@ export interface ConditionalDropdownProps {
   onlyDropdown?: boolean;
 
   formProps?: Record<string, any>;
+  readOnly?: boolean;
 }
 
 export interface OptionsDropdownProps {

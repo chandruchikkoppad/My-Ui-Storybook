@@ -4,6 +4,9 @@ export type TreeNodeProps = {
   clientId?: string;
   status?: string;
   resultPercentage?: Record<string, number>;
+  reRun?: boolean;
+  reRunFailed?: boolean;
+  results?: boolean;
   createdBy?: string;
   modifiedBy?: string;
   createdByUname?: string;

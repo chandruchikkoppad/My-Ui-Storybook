@@ -3,6 +3,7 @@ import * as Matrix from './matrix';
 import * as Point from './point';
 import { PointRange } from './point-range';
 import { Selection } from './selection';
+import { EXCEL_SPACING_REGEX } from '../../../../validations/regex';
 
 export { createEmpty as createEmptyMatrix } from './matrix';
 
@@ -92,6 +93,30 @@ export function getCellDimensions(
   );
 }
 
+/** Get the dimensions of customized cell at point from state */
+export function getScrollCellDimensions(
+  point: Point.Point,
+  rowDimensions: Types.StoreState['rowDimensions'] | undefined,
+  columnDimensions: Types.StoreState['columnDimensions'] | undefined
+): Types.Dimensions | undefined {
+  let cellRowDimensions = rowDimensions && rowDimensions[point.row];
+  let initialDimensions = rowDimensions && rowDimensions[0];
+
+  if (rowDimensions && initialDimensions) {
+    cellRowDimensions = { top: 4000, height: initialDimensions?.height }; //fixed height
+  }
+  const cellColumnDimensions =
+    columnDimensions && columnDimensions[point.column];
+
+  return (
+    cellRowDimensions &&
+    cellColumnDimensions && {
+      ...cellRowDimensions,
+      ...cellColumnDimensions,
+    }
+  );
+}
+
 /** Get the dimensions of a range of cells */
 export function getRangeDimensions(
   rowDimensions: Types.StoreState['rowDimensions'],
@@ -103,11 +128,19 @@ export function getRangeDimensions(
     rowDimensions,
     columnDimensions
   );
-  const endDimensions = getCellDimensions(
+  let endDimensions = getCellDimensions(
     range.end,
     rowDimensions,
     columnDimensions
   );
+  if (endDimensions === undefined) {
+    endDimensions = getScrollCellDimensions(
+      range.end,
+      rowDimensions,
+      columnDimensions
+    );
+  }
+
   return (
     startDimensions &&
     endDimensions && {
@@ -135,7 +168,17 @@ export function getSelectedDimensions(
 /** Get given data as CSV */
 export function getCSV(data: Matrix.Matrix<Types.CellBase>): string {
   const valueMatrix = Matrix.map((cell) => cell?.value || '', data);
-  return Matrix.join(valueMatrix);
+
+  return valueMatrix
+    .map((row) =>
+      row
+        .map((cell) => {
+          const str = String(cell).replace(/"/g, '""');
+          return EXCEL_SPACING_REGEX.test(str) ? `"${str}"` : str;
+        })
+        .join('\t')
+    )
+    .join('\n');
 }
 
 /**
@@ -293,3 +336,8 @@ export const fontFamilyList = [
 export const fontSizeList = [
   5, 6, 8, 9, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 32, 36, 40, 48, 56, 72,
 ];
+
+export const isPasteAllowed = (currentCell: Types.CellBase | null): boolean => {
+  const inputType = currentCell?.inputType?.type ?? 'text';
+  return !['dropDown', 'file'].includes(inputType) && !currentCell?.readOnly;
+};

@@ -1,3 +1,5 @@
+import { ReactNode } from 'react';
+
 export interface CheckboxProps {
   /**
    * Unique ID for the checkbox input
@@ -10,7 +12,7 @@ export interface CheckboxProps {
   /**
    * Optional side label
    */
-  label?: string;
+  label?: string | ReactNode;
   /**
    * Optional disable attribute
    */
@@ -31,8 +33,12 @@ export interface CheckboxProps {
    * For variant color
    */
   variant?: 'passed' | 'failed' | 'warning' | 'skipped' | 'flaky';
- /**
+  /**
    * For default hover
    */
-  isDefaultHover?:boolean;
+  isDefaultHover?: boolean;
+  /**
+   * For label font size
+   */
+  labelFontSize?: number;
 }

@@ -126,10 +126,9 @@ export function mutableSet<T>(
 //   return nextMatrix;
 // }
 
-const convertPxToPt = (px: string): number => {
-  const numericPx = parseFloat(px.replace('px', ''));
-  const pt = numericPx / 1.33;
-  return pt;
+export const convertPtToPx = (pt: number): string => {
+  const px = pt * 1.33;
+  return `${px}px`;
 };
 
 const EmptyCell = {
@@ -145,7 +144,7 @@ const EmptyCell = {
     borderLeft: `1px solid var(--excel-header-border)`,
     borderTop: `1px solid var(--excel-header-border)`,
     borderBottom: `1px solid var(--excel-header-border)`,
-    fontSize: `${convertPxToPt('9')}`,
+    fontSize: `${convertPtToPx(9)}`,
     fontWeight: 'normal',
     fontStyle: 'normal',
     fontFamily: 'Poppins',
@@ -348,13 +347,13 @@ export function pad<T>(matrix: Matrix<T>, size: Size): Matrix<T> {
     const padColumns = resultSize.columns - columns;
     padded = padded.map((row) => [
       ...row,
-      ...Array(padColumns).fill(undefined),
+      ...Array(padColumns).fill(EmptyCell as T),
     ]);
   }
 
   if (resultSize.rows > rows) {
     const padRows = resultSize.rows - rows;
-    const emptyRow = Array(resultSize.columns).fill(undefined);
+    const emptyRow = Array(resultSize.columns).fill(EmptyCell as T);
     padded = [...padded, ...Array(padRows).fill(emptyRow)];
   }
 

@@ -4,6 +4,7 @@ import './Input.scss';
 import { InputProps } from './types';
 import { checkEmpty } from '../../utils/checkEmpty/checkEmpty';
 import Icon from '../Icon';
+import Tooltip from '../Tooltip';
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
   (
@@ -35,9 +36,13 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       reserveHelperTextSpace = false,
       setUpdatedNumberValue = () => {},
       displayErrorImmediately = true,
-      showSearchIcon= false,
+      showSearchIcon = false,
       searchIconProps,
       handleSearchIconClick,
+      readOnly = false,
+      adjustToValidRange = true,
+      pattern,
+      background,
       ...props
     },
     ref
@@ -75,11 +80,20 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 
       if (onChange) {
         const syntheticEvent = {
-          target: { value: updatedValue },
-          currentTarget: { value: updatedValue },
+          target: { value: updatedValue.toString(), name },
+          currentTarget: { value: updatedValue.toString(), name },
         } as unknown as React.ChangeEvent<HTMLInputElement>;
 
         onChange(syntheticEvent);
+      }
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (type === 'number') {
+        const invalidKeys = ['e', 'E', '+', '-'];
+        if (invalidKeys.includes(e.key)) {
+          e.preventDefault();
+        }
       }
     };
 
@@ -120,9 +134,8 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       if (!displayErrorImmediately) {
         setTouched(true);
       }
-      if (type === 'number') {
+      if (type === 'number' && adjustToValidRange === true) {
         let parsedValue: any = Number(internalValue);
-
         if (internalValue === '' || internalValue === '-') {
           parsedValue = minValue;
         }
@@ -137,6 +150,11 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           );
           setInternalValue(correctedValue);
           setUpdatedNumberValue(correctedValue);
+          const syntheticEvent = {
+            target: { value: correctedValue.toString(), name },
+            currentTarget: { value: correctedValue.toString(), name },
+          } as unknown as React.ChangeEvent<HTMLInputElement>;
+          onChange?.(syntheticEvent);
         }
       }
 
@@ -184,6 +202,8 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             </label>
           )}
           <input
+            style={{ background: background || 'transparent' }}
+            readOnly={readOnly}
             ref={ref}
             name={name}
             value={internalValue || value}
@@ -217,13 +237,15 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             max={maxValue}
             onClick={onClick}
             onKeyUp={onKeyUp}
+            onKeyDown={handleKeyDown}
             {...props}
           />
           {type === 'number' && (
             <div
               className={classNames('arrow-container', {
                 ['arrow-container-label']: label,
-                ['arrow-container-label-error']: !!error,
+                ['arrow-container-label-error']: !!error && (label || required),
+                ['arrow-container-no-label-error']: !!error && !label,
               })}
             >
               <Icon
@@ -237,6 +259,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
                     : 'var(--text-area-default-color)'
                 }
                 onClick={() => handleIncrementDecrement('increment')}
+                disabled={disabled}
               />
               <Icon
                 name="arrow_down"
@@ -248,28 +271,31 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
                     : 'var(--text-area-default-color)'
                 }
                 onClick={() => handleIncrementDecrement('decrement')}
+                disabled={disabled}
               />
             </div>
           )}
-           {showSearchIcon && !(type === 'number') && (
+          {showSearchIcon && !(type === 'number') && (
             <div
               className={classNames('arrow-container', {
                 ['arrow-container-searchIcon']: showSearchIcon,
               })}
             >
-              <Icon
-                name={searchIconProps?.name || 'search'}
-                hoverEffect={false}
-                height={searchIconProps?.height || 14}
-                width={searchIconProps?.height || 14}
-                color="var(--text-area-default-color)"
-                onClick={(e) => {
-                  if (handleSearchIconClick) {
-                    handleSearchIconClick(e);
-                  }
-                }}
-                disabled={searchIconProps?.disabled}
-              />
+              <Tooltip title={searchIconProps?.toolTipTitle || 'search'}>
+                <Icon
+                  name={searchIconProps?.name || 'search'}
+                  hoverEffect={false}
+                  height={searchIconProps?.height || 14}
+                  width={searchIconProps?.height || 14}
+                  color="var(--text-area-default-color)"
+                  onClick={(e) => {
+                    if (handleSearchIconClick) {
+                      handleSearchIconClick(e);
+                    }
+                  }}
+                  disabled={searchIconProps?.disabled}
+                />
+              </Tooltip>
             </div>
           )}
           {reserveHelperTextSpace && (

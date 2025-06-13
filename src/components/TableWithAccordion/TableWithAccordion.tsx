@@ -134,9 +134,9 @@ const TableWithAccordion = ({
             className="column-table-accordion"
           >
             <div className="ff-display-flex">
-              <Tooltip title={row?.disableInfoMessage}>
+              <Tooltip title={row.disable? row?.disableInfoMessage :''} placement='bottom-start'>
                 <div
-                  className={`accordion-header ${row.disable && 'ff-disabled'}`}
+                  className={`accordion-header ${row.disable && 'accordion-header--disabled'}`}
                 >
                   <div className="header-title">
                     <span>

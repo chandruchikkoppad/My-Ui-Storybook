@@ -230,7 +230,6 @@ const DashboardDonutChart: React.FC<DashboardDonutChartProps> = ({
     });
   }, [nonZeroValues, total, gapAngle, MIN_ANGLE, versionErrorText]);
 
-
   const handleSegmentMouseEnter = (originalIndex: number) => {
     setHoveredItemIndex(originalIndex);
     setShowTooltip(true);
@@ -875,9 +874,7 @@ const DashboardDonutChart: React.FC<DashboardDonutChartProps> = ({
                     className="ff-legend-item"
                     key={item.originalIndex}
                     onMouseEnter={() => {
-                      if (toNumber(item.value) > 0) {
-                        setHoveredItemIndex(item.originalIndex);
-                      }
+                      setHoveredItemIndex(item.originalIndex);
                     }}
                     onMouseLeave={() => setHoveredItemIndex(null)}
                   >
@@ -902,10 +899,10 @@ const DashboardDonutChart: React.FC<DashboardDonutChartProps> = ({
                       {item.percentage
                         ? item.percentage
                         : typeof item.value === 'string'
-                        ? ((parseFloat(item.value) / total) * 100).toFixed(1)
+                        ? Math.round((parseFloat(item.value) / total) * 100)
                         : total === 0
                         ? 0
-                        : ((item.value / total) * 100).toFixed(1)}
+                        : Math.round((item.value / total) * 100)}
                     </td>
                     <td className="ff-legend-count">{item.value}</td>
                   </tr>
@@ -1053,13 +1050,15 @@ const DashboardDonutChart: React.FC<DashboardDonutChartProps> = ({
                       chartValues.find(
                         (item) => item.originalIndex === hoveredItemIndex
                       )
-                      ? `${(
-                          ((chartValues.find(
-                            (item) => item.originalIndex === hoveredItemIndex
-                          )?.value || 0) /
-                            total) *
-                          100
-                        ).toFixed(1)}%`
+                      ? total === 0
+                        ? '0%'
+                        : `${Math.round(
+                            ((chartValues.find(
+                              (item) => item.originalIndex === hoveredItemIndex
+                            )?.value || 0) /
+                              total) *
+                              100
+                          )}%`
                       : legendType === 'memoryLegend'
                       ? `${totalMemory}`
                       : isOnClick &&

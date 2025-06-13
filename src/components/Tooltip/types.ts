@@ -53,6 +53,11 @@ interface TooltipProps {
    */
   zIndex?: number | string;
   style?: React.CSSProperties;
+
+  /**
+   * For JSX elements
+   */
+  as?: React.ElementType;
 }
 
 export { TooltipContainerRef, TitleRef, IsTitleEmpty, Position, TooltipProps };

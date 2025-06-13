@@ -19,6 +19,8 @@ import {
   updateCheckboxStatus,
 } from './Components/handleStepCheckBox';
 import StepsTitle from './Components/StepsTitle';
+import { checkEmpty } from '../../utils/checkEmpty/checkEmpty';
+import { scrollToView } from '../../utils/ScrollToview/ScrollToView';
 
 const StepLandingTable = forwardRef<any, TableProps>(
   (
@@ -41,6 +43,7 @@ const StepLandingTable = forwardRef<any, TableProps>(
       loading = false,
       isViewPrivilegeMode = false,
       defaultExpanded = 'Steps',
+      isHeaderRequired = true,
     },
     ref
   ) => {
@@ -49,6 +52,10 @@ const StepLandingTable = forwardRef<any, TableProps>(
     const [expandedRows, setExpandedRows] = useState<Record<string, boolean>>(
       {}
     );
+    const [expandStepGroup, setExpandStepGroup] = useState(
+      new Map<string, boolean>()
+    );
+    const [isBulkEnable, setBulkEnable] = useState(false);
 
     const onAccordionClick = (title: string) => {
       const row = tableData.find((row) => row.title === title);
@@ -156,8 +163,18 @@ const StepLandingTable = forwardRef<any, TableProps>(
       handleUpdateCheckboxState(tableData, row, isChecked, sectionTitle);
     };
 
-    const isAllSelected = (sectionTitle: string, totalRows: number): boolean =>
-      totalRows > 0 && selectedRows[sectionTitle]?.size === totalRows;
+    const isAllSelected = (
+      sectionTitle: string,
+      totalRows: number
+    ): boolean => {
+      const isSelected =
+        totalRows > 0 && selectedRows[sectionTitle]?.size === totalRows;
+      if (sectionTitle.includes('Script')) {
+        setBulkEnable(isSelected);
+      }
+
+      return isSelected;
+    };
 
     const isPartialSelected = (
       sectionTitle: string,
@@ -167,14 +184,11 @@ const StepLandingTable = forwardRef<any, TableProps>(
       return selectedCount > 0 && selectedCount < totalRows;
     };
 
-    const [expandStepGroup, setExpandStepGroup] = useState(
-      new Map<string, boolean>()
-    );
     const isStepGroupExpanded = (stepId: string) => expandStepGroup.has(stepId);
     const handleStepGroupExpand = (rowData: any) => {
       if (!isStepGroupExpanded(rowData?.stepId)) {
-        let hasData = rowData?.stepResults || rowData?.data;
-        if (!hasData?.length) handleAccordion?.(rowData);
+        if (viewModeId) toggleViewRow(null);
+        handleAccordion?.(rowData);
       }
       if (!loading) {
         setExpandStepGroup((prev) => {
@@ -229,7 +243,7 @@ const StepLandingTable = forwardRef<any, TableProps>(
             columns={tableMeta}
             data={rows.data}
             headerType={headerType}
-            noDataContent={undefined}
+            noDataContent={noDataContent}
             tableType={rows.title}
             onSelect={handleRowCheckbox}
             selectedRows={selectedRows}
@@ -263,7 +277,25 @@ const StepLandingTable = forwardRef<any, TableProps>(
             handleUpdateCheckboxState(tableData, rowData, false);
           }
       },
+      deleteRow: (rowData: any) => {
+        setSelectedRows((prev) =>
+          Object.fromEntries(
+            Object.entries(prev)?.map(([key, ids]) => [
+              key,
+              new Set([...ids].filter((id) => id !== rowData?.stepId)),
+            ])
+          )
+        );
+      },
     }));
+
+    useEffect(() => {
+      scrollToView('getInFocus');
+      if (!checkEmpty(AddNlp)) {
+        setViewComponent(() => null);
+        setViewModeId(null);
+      }
+    }, [AddNlp]);
 
     return (
       <div
@@ -271,38 +303,43 @@ const StepLandingTable = forwardRef<any, TableProps>(
           'ff-accordion-fixed-header-table': withFixedHeader,
         })}
       >
-        <table
-          cellSpacing={0}
-          className={classNames('ff-accordion-table', {
-            'ff-accordion-fixed-header': withFixedHeader,
-          })}
-        >
-          <thead className="table-thead">
-            <tr className="ff-table-row">
-              {tableMeta.map((column, index) => (
-                <th
-                  key={`${column.header}-${index}`}
-                  style={{ width: column?.width }}
-                  className={classNames(
-                    'ff-table-header',
-                    headerType && `ff-accordion-table--${headerType}-bg`
-                  )}
-                >
-                  <Typography
-                    as="div"
-                    fontWeight="semi-bold"
-                    lineHeight="18px"
-                    color="var(--drawer-title-color)"
+        {isHeaderRequired && (
+          <table
+            cellSpacing={0}
+            className={classNames('ff-accordion-table', {
+              'ff-accordion-fixed-header': withFixedHeader,
+            })}
+          >
+            <thead className="table-thead">
+              <tr className="ff-table-row">
+                {tableMeta.map((column, index) => (
+                  <th
+                    key={`${column.header}-${index}`}
+                    style={{ width: column?.width }}
+                    className={classNames(
+                      'ff-table-header',
+                      headerType && `ff-accordion-table--${headerType}-bg`
+                    )}
                   >
-                    {column.header}
-                  </Typography>
-                </th>
-              ))}
-            </tr>
-          </thead>
-        </table>
-        <div className="ff-accordion-table-body" style={{ height }}>
-          {tableData.map((row) => {
+                    <Typography
+                      as="div"
+                      fontWeight="semi-bold"
+                      lineHeight="18px"
+                      color="var(--drawer-title-color)"
+                    >
+                      {column.header}
+                    </Typography>
+                  </th>
+                ))}
+              </tr>
+            </thead>
+          </table>
+        )}
+        <div
+          className="ff-accordion-table-body"
+          style={{ height: (tableData?.length === 1 && '100%') || height }}
+        >
+          {tableData?.map((row) => {
             const { title, data, actionCell, metaData } = row;
             const totalRows = data.length;
             const expanded = isExpanded(title);
@@ -326,6 +363,8 @@ const StepLandingTable = forwardRef<any, TableProps>(
                   actionCell={actionCell}
                   row={row}
                   tableMeta={tableMeta}
+                  isHeaderRequired={isHeaderRequired}
+                  isBulkEnable={isBulkEnable}
                 />
                 {expanded && getAccordionTableContent(row)}
               </div>

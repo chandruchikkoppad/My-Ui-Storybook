@@ -7,24 +7,54 @@ import { MobileSkinProps } from './MobileSkinInterface';
 const MobileSkin: React.FC<MobileSkinProps> = ({
   children,
   orientation = '',
-  navBarIcons,
+  navBarIcons = [],
   mobileHeight = 448,
   mobileWidth = 220,
   UtilityBar,
+  tooltip = {},
   background,
+  navBarPosition = 'bottom',
 }) => {
   const isPortrait = orientation === 'portrait';
   const containerHeight = isPortrait ? mobileHeight : mobileWidth;
   const containerWidth = isPortrait ? mobileWidth : mobileHeight;
+  const hasTopNav = UtilityBar && navBarPosition === 'top';
+  const hasBottomNav = UtilityBar && navBarPosition === 'bottom';
 
   return (
-    <div className={`ff-mobileskin-wrapper ${isPortrait ? 'portrait' : 'landscape'}`}>
+    <div
+      className={`ff-mobileskin-wrapper ${
+        isPortrait ? 'portrait' : 'landscape'
+      } ${hasTopNav && 'navbar-top'}`}
+    >
+      {hasTopNav && (
+        <div className="ff-nav-bar top-nav-bar">
+          {navBarIcons.map(
+            ({ title, name, className, ...iconProps }, index) => {
+              const tooltipTitle = tooltip?.[name] || '';
+              return (
+                <Tooltip
+                  key={tooltipTitle}
+                  title={tooltipTitle}
+                  placement="top"
+                >
+                  <div
+                    className={`ff-nav-bar-icon ${className || ''} ${
+                      index === navBarIcons.length - 1 ? 'last-icon' : ''
+                    } ${hasTopNav ? 'navbar-top' : ''}`}
+                  >
+                    <Icon name={name} {...iconProps} />
+                  </div>
+                </Tooltip>
+              );
+            }
+          )}
+        </div>
+      )}
+
       <div
         className="ff-mobileskin-container"
-        style={{
-          height: containerHeight + 16,
-          width: containerWidth + 16,
-        }}
+        style={{ height: containerHeight + 16, width: containerWidth + 16 }}
       >
         <div
           className="ff-mobile-container"
@@ -50,7 +80,7 @@ const MobileSkin: React.FC<MobileSkinProps> = ({
           </div>
         </div>
       </div>
-      {UtilityBar && (
+      {UtilityBar && hasBottomNav && (
         <div className="ff-nav-bar">
           {navBarIcons?.map((icon, index) => {
             const { title, ...iconProps } = icon;

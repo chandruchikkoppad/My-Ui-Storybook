@@ -118,11 +118,12 @@ export type Props<CellType extends Types.CellBase> = {
   rowContextEnable: boolean;
   attachmentAction?: {
     addAttachment: (file: File) => Promise<string>;
-    viewAttachment: (fileId: string) => Promise<string>;
     deleteAttachment: (fileId: string) => Promise<string>;
+    viewAttachment: (fileId: string, fileName: string) => Promise<void>;
   };
   workRef: React.MutableRefObject<HTMLDivElement | null>;
   minimumColumnWidth: number;
+  scroller: boolean;
 };
 
 /**
@@ -170,6 +171,7 @@ const Spreadsheet = <CellType extends Types.CellBase>(
     }
   });
 
+  const scrollOption = props.scroller;
   const initialState = React.useMemo(() => {
     const createParser = (props.createFormulaParser ||
       createFormulaParser) as Types.CreateFormulaParser;
@@ -187,6 +189,11 @@ const Spreadsheet = <CellType extends Types.CellBase>(
     initialState
   );
   const [state, dispatch] = reducerElements;
+  const [visibleRange, setVisibleRange] = React.useState({
+    start: 0,
+    end: 100,
+  });
+  const [scrollCount, setScrollCount] = React.useState(0);
 
   const size = React.useMemo(() => {
     return calculateSpreadsheetSize(state.model.data, rowLabels, columnLabels);
@@ -266,8 +273,18 @@ const Spreadsheet = <CellType extends Types.CellBase>(
   }, [state?.model?.evaluatedData, onEvaluatedDataChange]);
 
   React.useEffect(() => {
-    removeSelect();
-  }, [sheetChange]);
+    if (size.rows < 100) {
+      setVisibleRange({
+        start: 0,
+        end: size.rows,
+      });
+    } else {
+      setVisibleRange({
+        start: 0,
+        end: 100,
+      });
+    }
+  }, [sheetChange, size.rows]);
 
   const prevSelectedRef = React.useRef<Selection>(state.selected);
   React.useEffect(() => {
@@ -458,6 +475,68 @@ const Spreadsheet = <CellType extends Types.CellBase>(
     const table = ref.current;
     if (!table) return;
     resizeObserver.observe(table);
+  }
+
+  const removeSelection = () => {
+    if (!(state.selectedColumn !== null || state.selectedRow !== null)) {
+      removeSelect();
+    }
+  };
+
+  const handleScroll = (e: React.UIEvent<HTMLElement>) => {
+    const { scrollTop, scrollHeight, offsetHeight } = e.target as HTMLElement;
+    const rowHeight = 50;
+    const visibleRows = 100;
+    const totalScroll = Math.ceil((size.rows - visibleRows) / rowHeight);
+    const dynamicScroll = scrollHeight - offsetHeight;
+
+    if (size.rows < 100) {
+      setVisibleRange({
+        start: 0,
+        end: size.rows,
+      });
+      setScrollCount(0);
+      removeSelection();
+    } else if (scrollTop === 0 && scrollCount !== 0) {
+      setScrollCount((prev) => prev - 1);
+      setVisibleRange({
+        start: (scrollCount - 1) * rowHeight,
+        end: (scrollCount - 1) * rowHeight + visibleRows,
+      });
+      rootRef.current?.scrollTo({
+        top: 1300,
+        behavior: 'instant',
+      });
+      removeSelection();
+    } else if (
+      scrollTop > dynamicScroll - 30 &&
+      scrollCount < totalScroll - 1
+    ) {
+      setVisibleRange({
+        start: (scrollCount + 1) * rowHeight,
+        end: (scrollCount + 1) * rowHeight + visibleRows,
+      });
+      setScrollCount((prev) => prev + 1);
+      rootRef.current?.scrollTo({
+        top: 1300,
+        behavior: 'instant',
+      });
+      removeSelection();
+    } else if (scrollTop > dynamicScroll - 30 && scrollCount < totalScroll) {
+      setVisibleRange({
+        start: (scrollCount + 1) * rowHeight,
+        end: size.rows,
+      });
+      removeSelection();
+    }
+  };
+
+  const scrollerFunction = () => {
+    if (scrollOption) {
+      return range(visibleRange.end, visibleRange.start);
+    } else {
+      return range(size.rows);
+    }
   };
 
   const tableNode = React.useMemo(
@@ -500,7 +579,7 @@ const Spreadsheet = <CellType extends Types.CellBase>(
             )
           )}
         </HeaderRow>
-        {range(size.rows).map((rowNumber) => (
+        {scrollerFunction().map((rowNumber) => (
           <Row key={rowNumber} row={rowNumber}>
             {rowLabels ? (
               <RowIndicator
@@ -550,6 +629,8 @@ const Spreadsheet = <CellType extends Types.CellBase>(
       RowIndicator,
       Cell,
       DataViewer,
+      visibleRange.end,
+      visibleRange.start,
     ]
   );
 
@@ -614,6 +695,9 @@ const Spreadsheet = <CellType extends Types.CellBase>(
           onKeyDown={handleKeyDown}
           onClick={handleClick}
           onMouseMove={handleMouseMove}
+          onScroll={(e) => {
+            scrollOption && handleScroll(e);
+          }}
         >
           {tableNode}
           {activeCellNode}

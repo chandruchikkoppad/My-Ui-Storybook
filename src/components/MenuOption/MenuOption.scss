@@ -14,8 +14,8 @@
       cursor: pointer;
       &:hover {
         background-color: var(--hover-color);
-        .ff-menuicon-container-add-resource{
-        box-shadow: 0px 1px 4px 0px var(--ff-select-option-wrapper-box-shadow);
+        .ff-menuicon-container-add-resource {
+          box-shadow: 0px 1px 4px 0px var(--ff-select-option-wrapper-box-shadow);
         }
       }
       &.dark {
@@ -71,6 +71,21 @@
     }
     label {
       cursor: pointer;
+    }
+    &.no_icon {
+      justify-content: center;
+    }
+
+    &.align-left {
+      justify-content: flex-start;
+    }
+
+    &.align-center {
+      justify-content: center;
+    }
+
+    &.align-right {
+      justify-content: flex-end;
     }
   }
   &--primary {

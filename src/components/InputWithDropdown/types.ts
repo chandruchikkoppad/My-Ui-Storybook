@@ -118,4 +118,5 @@ export interface InputWithDropdownProps {
   dropdownPosition?: 'left' | 'right';
   leftDropDownPositionZindex?: number;
   rightDropDownPositionZindex?: number;
+  onKeyDown?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
 }

@@ -65,7 +65,7 @@ const useFileDropzone = (options: DropzoneOptions): DropzoneState => {
             code: 'file-invalid-type',
           });
         }
-      } else if (accept && !accept.includes(extensionWithPeriod) || isApiResponseError) {
+      } else if ((accept && !accept.includes(extensionWithPeriod)) || isApiResponseError) {
         errors.push({
           message: invalidFileMessage
             ? invalidFileMessage
@@ -186,14 +186,19 @@ const useFileDropzone = (options: DropzoneOptions): DropzoneState => {
       const accepted: File[] = [];
       const rejected: FileRejection[] = [];
 
-      droppedOrSelectedFiles.forEach((file) => {
+      for (const file of droppedOrSelectedFiles) {
+        if (maxFiles && files.accepted.length + accepted.length >= maxFiles) {
+          if (onMaxFilesError) onMaxFilesError();
+          break;
+        }
+
         const errors = validateFile(file);
         if (!checkEmpty(errors)) {
           rejected.push({ file, errors });
         } else {
           accepted.push(file);
         }
-      });
+      }
 
       setFiles((prevFiles) => ({
         accepted: [
@@ -230,7 +235,7 @@ const useFileDropzone = (options: DropzoneOptions): DropzoneState => {
 
       if (onDrop) onDrop(accepted, rejected, event);
     },
-    [maxFiles, validateFile, onMaxFilesError, onDrop]
+    [maxFiles, validateFile, onMaxFilesError, onDrop, files.accepted]
   );
 
   const handleDragOver = useCallback((event: React.DragEvent<HTMLElement>) => {
@@ -248,7 +253,7 @@ const useFileDropzone = (options: DropzoneOptions): DropzoneState => {
       onDragLeave: handleDragLeave,
       onDrop: handleDrop,
     }),
-    [handleDragOver, handleDragLeave, handleDrop, isDragActive]
+    [handleDragOver, handleDragLeave, handleDrop]
   );
 
   const getInputProps = useCallback(

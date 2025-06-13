@@ -7,6 +7,8 @@ $dark-theme: (
   click-able-text-color: #e8e0e9,
   custom-table-header-bg-color: #efe1f9,
   icons-default-color: #e8e0e9,
+  session-control-bg: #220535,
+  session-control-box-shadow: #00000026,
   border-color: #333234,
   disable-color: #71347b80,
   hover-color: #f7ebff,
@@ -26,6 +28,7 @@ $dark-theme: (
   add-icon-hover-color: #431b4a,
   arrow-button-bg-color: #ffffff,
   arrows-button-border-color: #ded1e5,
+  success-button-bg: #e6f7eb,
   overlay-bg: #12121299,
   chip-fill-color: #f9d5ff,
   chip-text-color: #1e161f,
@@ -90,6 +93,8 @@ $dark-theme: (
   ff-mini-modal-border: #ffffff,
   ff-mini-modal-box-shadow: #3713553d,
   ff-mini-modal-arrow-shadow: #00000040,
+  ff-bg-pearl-gray-color: #e0dfdf,
+  ff-bg-lavender-light-color: #fbddff,
 
   ff-error-light: #e42525,
   ff-chips-fill-color: #f9d5ff,
@@ -392,6 +397,15 @@ $dark-theme: (
   ai-prompt-input-bg-shadow: #71347b99,
   ai-prompt-input-border: #a98db5,
   selenium-icon-color: #2cb134,
+  line-loader-background-overlay: #14041c33,
+  ff-nlp-container-box-shadow: 0px 4px 10px 0px rgba(113, 52, 123, 0.2),
+  ff-upgrade-button-bg-color: #e16e04,
+  nlp-header-bg-color: #f4edf9,
+  ff-content-card-header-color: #333,
+  ff-content-card-body-color: #eee,
+  ff-content-card-shadow-color: rgba(0, 0, 0, 0.1),
+  editor-bg-color: #242425,
+  editor-border-color: #0c0213,
 );
 
 :root {

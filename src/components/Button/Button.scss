@@ -39,12 +39,11 @@
       padding: 0.6px;
 
       background: var(--primary-button-border);
-      mask:
-        linear-gradient(var(--primary-button-text-color) 0 0) content-box,
+      mask: linear-gradient(var(--primary-button-text-color) 0 0) content-box,
         linear-gradient(var(--primary-button-text-color) 0 0);
       mask-composite: exclude;
-      -webkit-mask:
-        linear-gradient(var(--primary-button-text-color) 0 0) content-box,
+      -webkit-mask: linear-gradient(var(--primary-button-text-color) 0 0)
+          content-box,
         linear-gradient(var(--primary-button-text-color) 0 0);
       -webkit-mask-composite: destination-out;
       z-index: -1;
@@ -99,6 +98,11 @@
   &--warning {
     background: var(--warning-button-color);
     border: var(--warning-button-border);
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: no-drop;
+    }
   }
 
   &--secondary {

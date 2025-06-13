@@ -74,7 +74,75 @@ export const BarChartDashboard: Story = {
     isOnclick: true,
   },
 };
+export const MemoryBarChartDashboard: Story = {
+  args: {
+    data: [
+      {
+        label: 'FireFox',
+        value: '2 gb',
+        percent: 50,
+      },
+      {
+        label: 'Edge',
+        value: '3 gb',
+        id: 'divya@gmail.com',
+        percent: 50,
+      },
+      {
+        label: 'Chrome',
+        value: '100 mb',
+        id: 'divya@gmail.com',
+        percent: 50,
+      },
+      {
+        label: 'Safari',
+        value: '200 mb',
+        id: '',
+        percent: 50,
+      },
+      {
+        label: 'IE',
+        value: '50mb',
+        id: 'divya@gmail.com',
+        percent: 50,
+      },
+      {
+        label: 'Opera',
+        value: '250mb',
+        id: 'divya@gmail.com',
+        percent: 50,
+      },
+    ],
 
+    barWidth: 20,
+    height: 250,
+    colors: [
+      ['#FFC300', '#FF5733'],
+      ['#01D34F', '#013E7C'],
+      ['#FFC107', '#E4AD09'],
+      ['#5FC2F5', '#3061C5'],
+      ['#00BBEF', '#0FA2CB'],
+      ['#9C0000', '#9C0000'],
+    ],
+    isTruncateText: true,
+    xAxisLabel: 'Status',
+    yAxisLabel: 'Count',
+    padding: 30,
+    barGap: 40,
+    barBorderRadius: 0,
+    legend: false,
+    showXAxisLabels: true,
+    legendPosition: 'top',
+    icons: [],
+    iconSize: 20,
+    onSelectedBar: (label) => {
+      console.log(label);
+    },
+    totalLabel: 'Total count',
+    isOnclick: true,
+    isMemory: true,
+  },
+};
 export const FailureAnalysis: Story = {
   render: () => {
     return (
@@ -310,10 +378,10 @@ export const BarChartDashboardVersions: Story = {
 export const BarChartWithMemoryData: Story = {
   args: {
     data: [
-      { label: 'App A', value: "50 mb"},
-      { label: 'App B', value: "300 mb" },
-      { label: 'App C', value: "230mb"},
-      { label: 'App D', value: "500mb" },
+      { label: 'App A', value: '50 mb' },
+      { label: 'App B', value: '300 mb' },
+      { label: 'App C', value: '230mb' },
+      { label: 'App D', value: '500mb' },
     ],
     barWidth: 20,
     height: 250,

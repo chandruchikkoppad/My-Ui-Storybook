@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Icon from '../Icon';
 import Typography from '../Typography';
-import { truncateText } from '../../utils/truncateText/truncateText';
+import { isTextTruncated, truncateText } from '../../utils/truncateText/truncateText';
 import './AllProjectsDropdown.scss';
 import classNames from 'classnames';
 import { AllProjectsDropdownProps, optionsType } from './types';
@@ -115,7 +115,7 @@ const AllProjectsDropdown = ({
           >
             {selectedOptions.label.length <= 12
               ? selectedOptions.label
-              : truncateText(selectedOptions?.label, 8)}
+              : truncateText(selectedOptions?.label, 12)}
           </Typography>
           <div className={classNames('label-icon')}>
             <Icon
@@ -172,15 +172,16 @@ const AllProjectsDropdown = ({
                       lineHeight={'30px'}
                       className="ff-projects-label"
                     >
-                      {<Tooltip title={option.label}>{option.label}</Tooltip>}
+                      {option.label}
                     </Typography>
                   </div>
                 )
             )}
           </div>
           <div>
-            {optionsList.length ===1 && (
-              <div className="ff-no-data-found">-No Projects-</div>)}
+            {optionsList.length === 1 && (
+              <div className="ff-no-data-found">-No Projects-</div>
+            )}
           </div>
           <div
             className={classNames(
@@ -211,11 +212,13 @@ const AllProjectsDropdown = ({
                     >
                       {
                         <Tooltip
-                          title={option.label.length > 25 ? option.label : ''}
+                          title={
+                            isTextTruncated(option.label, 165, 'pixel')
+                              ? option.label
+                              : ''
+                          }
                         >
-                          {option.label.length < 25
-                            ? option.label
-                            : truncateText(option.label, 25)}
+                          {truncateText(option.label, 165, 'pixel')}
                         </Tooltip>
                       }
                     </Typography>

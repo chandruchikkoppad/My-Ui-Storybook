@@ -19,6 +19,7 @@ const PromptContainer: React.FC<PromptContainerProps> = ({
   disabled,
   isEditAccess,
   versionsLength,
+  count,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showReadMore, setShowReadMore] = useState(false);
@@ -150,7 +151,7 @@ const PromptContainer: React.FC<PromptContainerProps> = ({
         </div>
         <div className="ff-prompt-icons-rightside">
           <Icon
-            disabled={disabled}
+            disabled={count === 1}
             className="ff-prompt-icons-style"
             name="arrow_left_accordian"
             color="var(--table-column-text-color)"
@@ -161,7 +162,7 @@ const PromptContainer: React.FC<PromptContainerProps> = ({
 
           {numberChildren}
           <Icon
-            disabled={disabled}
+            disabled={count === versionsLength}
             className="ff-prompt-icons-style"
             name="arrow_right_icon"
             color="var(--table-column-text-color)"

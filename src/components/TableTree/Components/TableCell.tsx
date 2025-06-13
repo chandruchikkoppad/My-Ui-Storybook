@@ -58,6 +58,7 @@ const TableCell = React.memo(
     scriptLengthTruncate,
     addModuleInputWidth,
     addModuleSelectWidth,
+    disableEditLabelConfirmIcon,
   }: TableCellProps) => {
     //Todo uncomment the following code when we are highlighting the tree table nodes on hover
     // useEffect(() => {
@@ -145,14 +146,12 @@ const TableCell = React.memo(
               <>
                 {col.isTree &&
                   select === 'checkbox' &&
-                  !(hideOnDisable && (node.mdDisable ?? node.unselectable)) && (
+                  !(hideOnDisable && node.unselectable) && (
                     <span className="tree-table-td-content-select">
-                      {node.mdDisable !== undefined ? (
+                      {node.selectedStatus === 'none' ? (
                         <Tooltip
                           title={
-                            node.mdDisable
-                              ? 'This script is already assigned to the current environment.'
-                              : !!node.machine
+                            !!node.machine
                               ? 'This script is assigned to another environment. Selecting it will reassign it to the current environment.'
                               : undefined
                           }
@@ -162,11 +161,13 @@ const TableCell = React.memo(
                             partial={node.selectedStatus === 'partially'}
                             onChange={(e) => onCheckBoxChange(e, node)}
                             disabled={
-                              (node.mdDisable ?? node.unselectable) ||
+                              node.unselectable ||
                               node.state === 'REVIEW' ||
                               node?.isDisable === true
                             }
-                            isDefaultHover={!node.mdDisable && !!node.machine}
+                            isDefaultHover={
+                              node.selectedStatus === 'none' && !!node.machine
+                            }
                           />
                         </Tooltip>
                       ) : (
@@ -175,7 +176,7 @@ const TableCell = React.memo(
                           partial={node.selectedStatus === 'partially'}
                           onChange={(e) => onCheckBoxChange(e, node)}
                           disabled={
-                            (node.mdDisable ?? node.unselectable) ||
+                            node.unselectable ||
                             node.state === 'REVIEW' ||
                             node?.isDisable === true
                           }
@@ -185,7 +186,7 @@ const TableCell = React.memo(
                   )}
                 {col.isTree &&
                   select === 'radio' &&
-                  !(hideOnDisable && (node.mdDisable ?? node.unselectable)) && (
+                  !(hideOnDisable && node.unselectable) && (
                     <span className="tree-table-td-content-select">
                       <RadioButton
                         name={node.key}
@@ -193,7 +194,7 @@ const TableCell = React.memo(
                         value={node.key}
                         onChange={(e) => onCheckBoxChange(e, node)}
                         disabled={
-                          (node.mdDisable ?? node.unselectable) ||
+                          node.unselectable ||
                           node.state === 'REVIEW' ||
                           node?.isDisable === true
                         }
@@ -216,6 +217,8 @@ const TableCell = React.memo(
                 selectFieldWidth={addModuleSelectWidth}
                 confirmIconTooltip={node.confirmIconTooltip}
                 cancelIconTooltip={node.cancelIconTooltip}
+                isOnBlurTrue={true}
+                isDisable={{ confirm: disableEditLabelConfirmIcon }}
               />
             ) : (
               <span className="tree-table-td-content-text">

@@ -29,7 +29,7 @@ const TabsWithSilder = ({
     }
   };
   return (
-    <div className={`ff-tabs-container`}>
+    <div className={`ff-tabs-slider-container`}>
       <div
         className={classNames(`ff-tab-row--${variant} ff-tab-row-section`, {
           'ff-tab-row--no-border': noBorder,

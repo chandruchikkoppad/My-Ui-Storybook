@@ -109,4 +109,21 @@ export interface InputProps {
    * Function to search url on icon click.
    */
   handleSearchIconClick?: (e: any) => void;
+  /**
+   * Allows the user to copy the content but not edit it
+   */
+  readOnly?: boolean;
+  onPaste?: (event: React.ClipboardEvent<HTMLInputElement>) => void;
+  /**
+   * Reset min and max value for the input field on blur
+   */
+  adjustToValidRange?: boolean;
+  /**
+   * pattern for input component
+   */
+  pattern?: string;
+  /**
+   * background for handle input component background
+   */
+  background?: string;
 }

@@ -15,7 +15,6 @@ import DataSetTooltip from '../DatasetTooltip/DataSetTooltip';
 import { isEmptyObject } from '../../../../utils/isEmptyObject/isEmptyObject';
 import { useEnvironmentalVariableMaps } from '../../context/EnvironmentVariableMapsContext';
 
-
 const Branches = ({
   machineInstances,
   rowIndex,
@@ -38,7 +37,7 @@ const Branches = ({
   const lastMachineInstance = checkEmpty(
     machineInstances[machineColumnCount - 1]
   );
-  const environmentalMaps =useEnvironmentalVariableMaps ();
+  const environmentalMaps = useEnvironmentalVariableMaps();
   const {
     testDataSetMap = {},
     globalVariableMap = {},
@@ -86,7 +85,7 @@ const Branches = ({
       executionEnv,
       browserName,
       browserVersion,
-      machineInfo: { osVersion, iconName },
+      machineInfo: { osVersion, iconName, osName, hostName },
       deviceInfo,
     } = machineInstance as ExecutionContext;
     const getEnvironment = (environment: string = '') => {
@@ -104,12 +103,18 @@ const Branches = ({
         type: getEnvironment(executionEnv),
       },
     ];
+    if (scriptType.toLowerCase() === 'manual') {
+      baseOptions.push({
+        label: hostName || '',
+        type: 'local',
+      });
+    }
 
     // Web-specific options
     const webOptions = [
       {
         label: osVersion,
-        type: iconName,
+        type: iconName || osName,
       },
       {
         label: browserVersion,
@@ -220,14 +225,13 @@ const Branches = ({
                     contentReverse={!evenRow}
                     modalId={`${machineInstanceId}-runCount-${runCount - 1}`}
                     onClick={() =>
-                      runCount == 1 ||scriptType!=='Automation'
+                      runCount == 1 || scriptType !== 'Automation'
                         ? onUpdateAddBrowserInstance(
                             `${machineInstanceId}-runCount-0`,
                             machineInstance as ExecutionContext
                           )
                         : null
                     }
-                    trucatedLable={!['web & mobile'].includes(projectType)}
                     scriptType={scriptType}
                     readOnly={readOnly}
                   />
@@ -338,15 +342,17 @@ const Branches = ({
                     </>
                   )}
                   {!readOnly && (
-                    <Icon
-                      name="delete"
-                      className="ff-connecting-delete-icon"
-                      onClick={() =>
-                        onDeleteBrowser(machineInstanceId, runCount)
-                      }
-                      color="var(--ff-connecting-branch-delete-color)"
-                      hoverEffect
-                    />
+                    <Tooltip title="Delete">
+                      <Icon
+                        name="delete"
+                        className="ff-connecting-delete-icon"
+                        onClick={() =>
+                          onDeleteBrowser(machineInstanceId, runCount)
+                        }
+                        color="var(--ff-connecting-branch-delete-color)"
+                        hoverEffect
+                      />
+                    </Tooltip>
                   )}
                 </div>
               </div>

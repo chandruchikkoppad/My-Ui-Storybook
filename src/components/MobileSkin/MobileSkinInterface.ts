@@ -6,9 +6,13 @@ interface NavBarIcon {
 export interface MobileSkinProps {
   children: React.ReactNode | string;
   orientation?: 'portrait' | 'landscape';
-  UtilityBar?: boolean;
   navBarIcons?: NavBarIcon[];
+  topNavBarIcons?: NavBarIcon[];
   mobileHeight?: number;
   mobileWidth?: number;
+  UtilityBar?: boolean;
   background?: string;
+  tooltip?: Record<string, string>;
+  navBarPosition?: 'top' | 'bottom';
+  tooltipFormatter?: ((title: string) => React.ReactNode) | undefined;
 }

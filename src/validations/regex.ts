@@ -172,6 +172,8 @@ const ELEMENTS_WHITE_SPACE_REGEX = /.*\S.*/;
 const PARAMETER_ALPHANUMERIC_REGEX =
   /^[-_A-Za-z0-9 ]*$|^[-_A-Za-z0-9 ][A-Za-z0-9 ]*[-_A-Za-z-_]$/;
 
+const ALPHANUMERIC_PARENTHESIS_REGEX = /^[-_A-Za-z0-9 ()]*$|^[-_A-Za-z0-9 ()][A-Za-z0-9 ()]*[-_A-Za-z-()]$/;
+
 const UPPERCASE_REGEX = /[A-Z]/;
 
 const LOWERCASE_REGEX = /[a-z]/;
@@ -252,6 +254,17 @@ const CHECK_AT_FOLLOWED_BY_WORD = /@(\S*)$/;
 const DETECT_WORD_START_WITH_AT = /(\@\w+)/;
 //To check email validations 
 const EMAIL_VALIDATION_REGEX = /^[a-zA-Z0-9](?!.*[._-]{2})[a-zA-Z0-9._-]*[a-zA-Z0-9]@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+//To Validate all sorts of URls for Link Component in ManualTestCase (inclusive of optional params)
+const LINK_VALIDATION_REGEX = /^(https?:\/\/)?((?!.*\.\.)[\da-z.-]+)\.([\da-z.-]+)(\/[\/\w\-.~:?#[\]@!$&'()*+,;=]*)*$/i;
+
+// Alphanumeric Validation with specific Order including special characters (- , _ , ( , ) )
+const ALPHA_NUM_EXTENDED_REGEX  = /^[a-zA-Z0-9 _\-()]+$/;
+
+// Alphanumeric string allowing only dot(.) as special character
+const ALPHANUMERIC_WITH_DOT_REGEX = /^[A-Za-z0-9.]+$/;
+
+// Alphanumeric string allowing only dot(.) as special character
+const EXCEL_SPACING_REGEX = /[\n\t"]/;
 
 export {
   DYNAMIC_VALUE__PLACEHOLDER_REGEX,
@@ -313,6 +326,7 @@ export {
   ELEMENTS_TRAILING_SPACE_REGEX,
   ELEMENTS_WHITE_SPACE_REGEX,
   PARAMETER_ALPHANUMERIC_REGEX,
+  ALPHANUMERIC_PARENTHESIS_REGEX,
   UPPERCASE_REGEX,
   LOWERCASE_REGEX,
   PASSWORD_NUMBER_REGEX,
@@ -339,5 +353,9 @@ export {
   DETECT_AT_CHAR_AT_START,
   CHECK_AT_FOLLOWED_BY_WORD,
   DETECT_WORD_START_WITH_AT,
-  EMAIL_VALIDATION_REGEX
+  EMAIL_VALIDATION_REGEX,
+  LINK_VALIDATION_REGEX,
+  ALPHA_NUM_EXTENDED_REGEX,
+  ALPHANUMERIC_WITH_DOT_REGEX,
+  EXCEL_SPACING_REGEX
 };

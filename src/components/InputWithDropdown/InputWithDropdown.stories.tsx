@@ -105,6 +105,11 @@ export const Controlled: Story = {
         selectedOption={selectedOption}
         onInputChangeHandler={onInputChangeHandler}
         onDropdownChangeHandler={onDropdownChangeHandler}
+        onKeyDown={(e) => {
+          if (['.', 'e', '+', '-'].includes(e.key)) {
+            e.preventDefault();
+          }
+        }}
       />
     );
   },

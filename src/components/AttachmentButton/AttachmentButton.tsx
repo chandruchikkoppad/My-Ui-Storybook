@@ -7,6 +7,7 @@ import Icon from '../Icon';
 import Tooltip from '../Tooltip';
 import { AttachmentUploaderProps } from './types';
 import './AttachmentButton.scss';
+import TruncatedTooltip from '../TruncatedTooltip';
 
 const AttachmentButton: React.FC<AttachmentUploaderProps> = ({
   label,
@@ -30,6 +31,7 @@ const AttachmentButton: React.FC<AttachmentUploaderProps> = ({
   selectedFileMessage = 'This file is already selected',
   required = false,
   errorMessage,
+  truncateMaxLimit = Infinity,
 }) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [fileError, setFileError] = useState<string>('');
@@ -86,7 +88,7 @@ const AttachmentButton: React.FC<AttachmentUploaderProps> = ({
     if (fileInputRef.current?.files) {
       const files = Array.from(fileInputRef.current.files);
       if (files.length > 5) {
-        setFileError('More than 5 files are not allowed.');
+        setFileError('Maximun file(s) can be uploaded: 5');
         fileInputRef.current.value = '';
         return;
       }
@@ -195,7 +197,9 @@ const AttachmentButton: React.FC<AttachmentUploaderProps> = ({
             className="ff-attachment-files"
             onClick={onFileListClick}
           >
-            <Typography color="var(--brand-color)">{file.name}</Typography>
+            <Typography color="var(--brand-color)">
+              <TruncatedTooltip title={file.name} width={truncateMaxLimit} />
+            </Typography>
             {deleteButton && (
               <Tooltip title="Delete">
                 <Icon

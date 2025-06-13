@@ -18,6 +18,7 @@ const Tooltip: React.FC<TooltipProps> = ({
   placement = 'bottom',
   disabled = false,
   style = {},
+  as: Element = 'div',
 }) => {
   const [isVisible, setIsVisible] = useState(false);
   const titleRef: TitleRef = useRef(null);
@@ -42,42 +43,58 @@ const Tooltip: React.FC<TooltipProps> = ({
   const styles: Position = {
     left: {
       top: posY - 1,
-      left: posX - titleWidth - 5,
+      left: Math.max(posX - titleWidth - 5, 5),
     },
     right: {
       top: posY - 1,
-      left: fromRight + 5,
+      left: Math.min(fromRight + 5, window.innerWidth - titleWidth - 15),
     },
     top: {
       top: posY - titleHeight - 5,
-      left: posX - titleWidth / 2 + width / 2,
+      left: Math.max(
+        Math.min(
+          posX - titleWidth / 2 + width / 2,
+          window.innerWidth - titleWidth - 5
+        ),
+        5
+      ),
     },
     bottom: {
       top: posY + childrenContainerHeight + 5,
-      left: posX - titleWidth / 2 + width / 2,
+      left: Math.max(
+        Math.min(
+          posX - titleWidth / 2 + width / 2,
+          window.innerWidth - titleWidth - 5
+        ),
+        5
+      ),
     },
     'top-start': {
       top: posY - titleHeight - 5,
-      left: posX,
+      left: Math.max(Math.min(posX, window.innerWidth - titleWidth - 15), 5),
     },
     'top-end': {
       top: posY - titleHeight - 5,
-      left: fromRight - titleWidth,
+      left: Math.max(
+        Math.min(fromRight - titleWidth, window.innerWidth - titleWidth - 5),
+        5
+      ),
     },
     'bottom-start': {
       top: posY + childrenContainerHeight + 5,
-      left: posX,
+      left: Math.max(Math.min(posX, window.innerWidth - titleWidth - 15), 5),
     },
     'bottom-end': {
       top: posY + childrenContainerHeight + 5,
-      left: fromRight - titleWidth,
+      left: Math.max(
+        Math.min(fromRight - titleWidth, window.innerWidth - titleWidth - 15),
+        5
+      ),
     },
   };
 
   const handleScroll = () => {
-    if (tooltipContainerRef.current) {
-      setIsVisible(false);
-    }
+    setIsVisible(false);
   };
 
   const handleClickAnywhere = () => {
@@ -153,7 +170,7 @@ const Tooltip: React.FC<TooltipProps> = ({
   }, [isVisible]);
 
   return (
-    <div
+    <Element
       ref={tooltipContainerRef}
       className={classNames('ff-tooltip-container', currentTheme)}
       onMouseEnter={() => setIsVisible(true)}
@@ -166,7 +183,7 @@ const Tooltip: React.FC<TooltipProps> = ({
         !disabled &&
         !isTitleEmpty(title) &&
         createPortal(
-          <div
+          <Element
             ref={titleRef}
             style={{ ...styles[finalPlacement] }}
             className={classNames('ff-tooltip', currentTheme, {
@@ -174,10 +191,10 @@ const Tooltip: React.FC<TooltipProps> = ({
             })}
           >
             {title}
-          </div>,
+          </Element>,
           document.body
         )}
-    </div>
+    </Element>
   );
 };
 

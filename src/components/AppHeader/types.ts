@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 import { optionsType } from '../AllProjectsDropdown/types';
 export interface AppHeaderProps {
+  scriptId?: string | undefined | null;
   width?: string;
   borderRadius?: string;
   logoIconName: string;
@@ -20,6 +21,8 @@ export interface AppHeaderProps {
   onProjectDropdownLabelClick?: () => void;
   onMoreMenuOptionClick?: (text: any, callback: () => void) => void;
   disabled?: boolean;
+  isClient?: boolean;
+  hideNavbar?: boolean;
 }
 export interface appHeaderMenuItemProps {
   iconName?: string;
@@ -52,9 +55,11 @@ export interface appHeaderQuickMenuItemProps {
 }
 export interface appHeaderHiddenMenuItemProps {
   label: string;
-  value: string | string[];
-  icon: string;
+  value?: string | string[];
+  icon?: string;
   disable?: boolean;
   disableText?: string;
   hide?: boolean;
+  path?:string;
+  iconName?: string;
 }

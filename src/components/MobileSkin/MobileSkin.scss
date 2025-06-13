@@ -4,9 +4,13 @@
 .ff-mobileskin-wrapper {
   @include center-content;
   flex-direction: column;
-  transition: gap 0.3s ease-in-out; 
+  transition: gap 0.3s ease-in-out;
   &.portrait {
     gap: 30px;
+
+    &.navbar-top {
+      margin-top: 18px;
+    }
   }
 
   &.landscape {
@@ -15,18 +19,14 @@
 
   .ff-mobileskin-container {
     @extend .ff-mobileskin-wrapper;
-    transition:
-      width 0.3s ease-in-out,
-      height 0.3s ease-in-out;
+    transition: width 0.3s ease-in-out, height 0.3s ease-in-out;
     .ff-mobile-container {
       @include center-content;
       border: 8px solid var(--text-color);
       border-radius: 30px;
       position: relative;
       overflow: hidden;
-      transition:
-        width 0.3s ease-in-out,
-        height 0.3s ease-in-out;
+      transition: width 0.3s ease-in-out, height 0.3s ease-in-out;
 
       &::-webkit-scrollbar {
         width: 0;
@@ -39,16 +39,13 @@
       .ff-mobile-image-container {
         @include center-content;
         overflow: hidden;
-        transition:
-          width 0.3s ease-in-out,
-          height 0.3s ease-in-out;
+        transition: width 0.3s ease-in-out, height 0.3s ease-in-out;
       }
     }
   }
 
   .ff-nav-bar {
     height: 32px;
-    padding: 8px;
     display: flex;
     justify-content: space-evenly;
     align-items: center;

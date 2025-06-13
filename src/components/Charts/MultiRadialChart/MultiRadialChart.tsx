@@ -48,9 +48,35 @@ const MultiRadialChart: React.FC<MultiRadialChartProps> = ({
 
   const [hoveredLegend, setHoveredLegend] = useState<string | null>(null);
 
+  const parseValueToMB = (value: string | number): number => {
+    if (typeof value === 'string') {
+      const match = value.trim().match(/^([\d.]+)\s*([a-zA-Z%]*)$/);
+      if (!match) return 0;
+      const numericValue = parseFloat(match[1] ?? '0');
+      const unit = match[2]?.toUpperCase() || '';
+
+      if (isNaN(numericValue)) return 0;
+
+      switch (unit) {
+        case 'TB':
+          return numericValue * 1024 * 1024;
+        case 'GB':
+          return numericValue * 1024;
+        case 'MB':
+          return numericValue;
+        case 'KB':
+          return numericValue / 1024;
+        default:
+          return numericValue;
+      }
+    } else {
+      return value;
+    }
+  };
+
   const normalizedBarValues = barValues.map((item) => {
     if (typeof item.value === 'string') {
-      const parsedValue = parseFloat(item.value);
+      const parsedValue = parseValueToMB(item.value);
       const normalizedValue = isNaN(parsedValue) ? 0 : parsedValue;
       return {
         ...item,
@@ -94,10 +120,17 @@ const MultiRadialChart: React.FC<MultiRadialChartProps> = ({
               <div
                 className="ff-legend-item"
                 key={index}
-                onMouseEnter={() =>
-                  setHoveredLegend(item.barLabel || item.label)
-                }
-                onMouseLeave={() => setHoveredLegend(null)}
+                onMouseEnter={(e) => {
+                  setHoveredLegend(item.barLabel || item.label);
+                  handleMouseEnter(
+                    e,
+                    `${item.barLabel || 'Data'}: ${item.value}`
+                  );
+                }}
+                onMouseLeave={() => {
+                  setHoveredLegend(null);
+                  handleMouseLeave?.();
+                }}
               >
                 <Typography
                   fontSize={20}
@@ -132,10 +165,17 @@ const MultiRadialChart: React.FC<MultiRadialChartProps> = ({
                 <div
                   className="ff-legend-item"
                   key={index}
-                  onMouseEnter={() =>
-                    setHoveredLegend(item.barLabel || item.label)
-                  }
-                  onMouseLeave={() => setHoveredLegend(null)}
+                  onMouseEnter={(e) => {
+                    setHoveredLegend(item.barLabel || item.label);
+                    handleMouseEnter(
+                      e,
+                      `${item.barLabel || 'Data'}: ${item.value}`
+                    );
+                  }}
+                  onMouseLeave={() => {
+                    setHoveredLegend(null);
+                    handleMouseLeave?.();
+                  }}
                 >
                   <span
                     className="ff-legend-capsule"
@@ -148,7 +188,7 @@ const MultiRadialChart: React.FC<MultiRadialChartProps> = ({
                       color="var(--tooltip-text-color)"
                       style={capsuleStyle}
                     >
-                      {isPillValueVisible&&item.value}
+                      {isPillValueVisible && item.value}
                     </Typography>
                   </span>
                   <Typography className="ff-legend-key">

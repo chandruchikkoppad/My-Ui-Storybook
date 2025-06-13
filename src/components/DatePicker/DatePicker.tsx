@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef, forwardRef } from 'react';
 import ReactDOM from 'react-dom';
 import { DayPicker } from 'react-day-picker';
-import { formatInTimeZone } from 'date-fns-tz';
+import { toZonedTime, format } from 'date-fns-tz';
 import TimePicker from './Timepicker';
 import Icon from '../Icon';
 import './DatePicker.scss';
@@ -64,6 +64,13 @@ const CustomDatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
 
     const mergedRef = useMergeRefs(pickerRef, ref);
 
+    const toTimeZoneDate = (date: Date): Date => {
+      const zoned = toZonedTime(date, timezone);
+      return new Date(zoned.getFullYear(), zoned.getMonth(), zoned.getDate());
+    };
+
+    const todayInTimeZone = toTimeZoneDate(new Date());
+
     useEffect(() => {
       selectedDateRef.current = selectedDate;
     }, [selectedDate]);
@@ -71,8 +78,8 @@ const CustomDatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
     useEffect(() => {
       if (value) {
         setTimeValue(formatTimeStr(value));
-        setSelectedDate(value);
       }
+      setSelectedDate(value);
     }, [value, isPickerOpen]);
 
     const formatTimeStr = (date: Date): string => {
@@ -433,7 +440,13 @@ const CustomDatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
             />
             <input
               type="text"
-              value={value ? formatInTimeZone(value, timezone, dateFormat) : ''}
+              value={
+                value
+                  ? format(value, dateFormat, {
+                      timeZone: timezone,
+                    })
+                  : ''
+              }
               readOnly
               placeholder={placeholder}
               className={
@@ -467,7 +480,11 @@ const CustomDatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
                   isFilterDatePicker ? 'ff-filter-time-input' : 'ff-time-input'
                 }
                 value={
-                  value ? formatInTimeZone(value, timezone, timeFormat) : ''
+                  value
+                    ? format(value, timeFormat, {
+                        timeZone: timezone,
+                      })
+                    : ''
                 }
                 disabled={disabled}
                 onClick={handleDateInputClick}
@@ -504,10 +521,14 @@ const CustomDatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
                   }}
                   onNextClick={handleNextClick}
                   onPrevClick={handlePrevClick}
+                  modifiers={{
+                    today: todayInTimeZone,
+                  }}
                   disableNavigation={view === 'months'}
                   disabled={[
                     {
                       before: new Date(minDate ? minDate : ''),
+
                       after: new Date(maxDate ? maxDate : ''),
                     },
                   ]}

@@ -55,7 +55,7 @@ export const Default: Story = {
                   wrapText: false,
                 },
               },
-              readOnly: false,
+              readOnly: true,
               inputType: {
                 type: 'text',
               },
@@ -83,7 +83,7 @@ export const Default: Story = {
                   wrapText: false,
                 },
               },
-              readOnly: false,
+              readOnly: true,
               inputType: {
                 type: 'text',
               },

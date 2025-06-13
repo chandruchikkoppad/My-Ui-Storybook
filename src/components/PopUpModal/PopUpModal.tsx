@@ -25,6 +25,7 @@ const PopUpModal: FC<PopUpModalProps> = ({
   firstButtonDisabled = false,
   secondButtonDisabled = false,
   zIndex = 1100,
+  iconSize = 94,
 }) => {
   return (
     <Modal
@@ -39,8 +40,8 @@ const PopUpModal: FC<PopUpModalProps> = ({
             <Icon
               name={iconName}
               className={'warning_modal_icon'}
-              width={94}
-              height={94}
+              width={iconSize}
+              height={iconSize}
             />
             <div className={'warning_modal_message'}>
               <Typography

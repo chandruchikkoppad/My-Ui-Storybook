@@ -1,0 +1,36 @@
+@use '../../assets/styles/colors';
+@use '../../assets/styles/fonts';
+
+.ff-content-card-container {
+  display: flex;
+  flex-direction: column;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0px 1px 3px var(--ff-content-card-shadow-color);
+
+  .ff-content-card-nav {
+    color: var(--ff-content-card-header-color);
+    padding: 0px 22px;
+    border-radius: 12px 12px 0 0;
+    background-color: var(--tabs-bg-color);
+    box-sizing: border-box;
+  }
+
+  .ff-content-card-body {
+    background-color: var(--base-bg-color);
+    padding: 10px;
+    border: 1px solid var(--ff-content-card-body-color);
+
+    .ff-content-card-row {
+      @extend .font-size-10;
+      display: flex;
+      gap: 4px;
+      padding: 8px 20px;
+      border-radius: 8px;
+
+      .ff-content-card-value {
+        word-break: break-word;
+      }
+    }
+  }
+}

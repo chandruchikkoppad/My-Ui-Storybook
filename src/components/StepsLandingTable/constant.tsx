@@ -3,7 +3,7 @@ import Icon from '../Icon';
 
 export const sampleData = [
   {
-    title: 'Depends on Script',
+    title: 'Depends on Scripts',
     data: [
       {
         stepId: ffid(),
@@ -16,7 +16,7 @@ export const sampleData = [
     ],
   },
   {
-    title: 'Pre conditions',
+    title: 'Pre Conditions',
     data: [
       {
         stepId: ffid(),
@@ -50,7 +50,7 @@ export const sampleData = [
       executionDuration: 30057,
       executionDurationInHourMinSecFormat: '00:00:30:57',
       cascaded: false,
-      result: 'Pre conditions are failed',
+      message: 'Pre conditions are failed',
       status: 'FAIL',
     },
   },
@@ -1049,7 +1049,7 @@ export const sampleData = [
       totalNonCascadedPostConditionWarning: 0,
       executionDuration: 80129,
       executionDurationInHourMinSecFormat: '00:01:20:129',
-      result: 'One or more steps are failed',
+      message: 'One or more steps are failed',
       status: 'FAIL',
     },
     actionCell: () => {
@@ -1063,7 +1063,7 @@ export const sampleData = [
     },
   },
   {
-    title: 'Post conditions',
+    title: 'Post Conditions',
     data: [
       {
         stepId: ffid(),

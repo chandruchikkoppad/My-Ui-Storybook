@@ -17,6 +17,7 @@ import Drawer from '../Drawer';
 import { sampleData } from './constant.tsx';
 import StepResultStats from './Components/StepResultStats';
 import { ffid } from '../../utils/ffID/ffid.ts';
+import MenuOption from '../MenuOption/MenuOption';
 
 const meta: Meta<typeof StepLandingTable> = {
   title: 'Components/StepLandingTable',
@@ -36,37 +37,131 @@ export const StepLandingTableAcc: Story = {
     const [AddNewNlp, setNewNlp] = useState<AddNlpProp>();
     const [isMaximize, setDoMaximize] = useState(true);
     const childRef = useRef<any>(null);
+    //Dummy api call
     const newSteps: any = [
       {
-        stepId: ffid(),
-        name: 'New Step 1',
-        modifiedBy: 'User',
-        suiteName: 'test suite',
-        type: 'PRE',
-        displayOrder: '1.1',
+        name: 'DesiredCapability create instance of DesiredCapabilities',
+        type: 'step',
+        nlpName: 'CreateCapabilitiesInstance',
+        executionOrder: 1,
+        nlpId: 'NLP1001',
+        passMessage: 'Instance of Desired Capabilities is created',
+        failMessage: 'Failed to create an instance of DesiredCapabilities',
+        stepReferenceInfo: {
+          stepNumber: 0,
+          name: 'Capability',
+          type: 'GLOBAL',
+          value: null,
+          returnValue: null,
+          masked: null,
+          referenceId: null,
+        },
         stepInputs: [
-          { name: 'ExpectedFilePath', value: 'Root/Login/Jira (1).csv' },
-          { name: 'ExpectedFilePath', value: 'ExpectedFilePath' },
           {
-            name: 'if CheckPoint Is Failed',
             value: 'MARK_THIS_STEP_AS_FAILED_AND_CONTINUE_STEP_GROUP_EXECUTION',
+            name: 'ifCheckPointIsFailed',
+            type: 'java.lang.String',
+            parameter: false,
           },
         ],
+        skip: false,
+        returnType: 'DesiredCapabilities',
+        status: 'PASS',
+        displayName: 'DesiredCapability create instance of DesiredCapabilities',
+        defaultDisplayName:
+          'DesiredCapability create instance of DesiredCapabilities',
+        stepId: 'STP100111111',
+        toolTip: 'Create instance of Desired Capabilities',
+        defaultToolTip: 'Create instance of Desired Capabilities',
+        hierarchy: 0,
+        mustExecute: false,
+        displayOrder: '1.1',
+        imported: false,
+        uniqueId:
+          'cc1ed1ab-9fd9-4c91-a739-4e09c77ee294-837f4b0c-27f1-40db-b618-b895293b1273',
+        isStepGroupStep: false,
+        isJDBCStep: false,
+        message: 'Instance of Desired Capabilities is created',
+        afterBreakStep: false,
+        afterContinueStep: false,
+        isDisabled: true,
       },
       {
+        name: 'DesiredCapability set browser name as browser',
+        type: 'PRE',
+        nlpName: 'SetBrowserName',
+        executionOrder: 2,
+        nlpId: 'NLP1002',
+        passMessage: 'Browser name is Desired Capability',
+        failMessage: 'Failed to set browser name as *browserName*',
+        stepReferenceInfo: {
+          stepNumber: 0,
+          name: 'BrowserCapability',
+          type: 'GLOBAL',
+          value: null,
+          returnValue: null,
+          masked: null,
+          referenceId: null,
+        },
+        skip: false,
+        returnType: 'DesiredCapabilities: desiredCapabilities',
+        status: 'PASS',
+        displayName: 'DesiredCapability set browser name as browser',
+        defaultDisplayName:
+          'DesiredCapability set browser name as *browserName*',
         stepId: ffid(),
-        name: 'New Step 2',
-        modifiedBy: 'User',
-        suiteName: 'test suite',
+        toolTip: 'Set browser name as browser in Desired Capability',
+        defaultToolTip:
+          'Set browser name as *browserName* in Desired Capability',
+        hierarchy: 0,
+        mustExecute: false,
         displayOrder: '1.2',
-        stepInputs: [
-          { name: 'ExpectedFilePath', value: 'Root/Login/Jira (1).csv' },
-          { name: 'ExpectedFilePath', value: 'ExpectedFilePath' },
-          {
-            name: 'if Failed',
-            value: 'MARK_THIS_STEP_AS_FAILED_AND_CONTINUE_STEP_GROUP_EXECUTION',
-          },
-        ],
+        imported: false,
+        uniqueId:
+          '7f8ceff8-5d42-40a7-97f4-c7f1d1453b04-62e23d91-1c1d-44cc-a534-2380d6b0fbc7',
+        isStepGroupStep: false,
+        isJDBCStep: false,
+        message: 'Browser name is set as chrome',
+        afterBreakStep: false,
+        afterContinueStep: false,
+        isDisabled: false,
+      },
+      {
+        name: 'Open browser window',
+        type: 'step',
+        nlpName: 'OpenBrowser',
+        executionOrder: 3,
+        nlpId: 'NLP1003',
+        passMessage: 'Browser window is opened',
+        failMessage: 'Failed to open browser window',
+        stepReferenceInfo: {
+          stepNumber: 0,
+          name: 'Capability2',
+          type: 'GLOBAL',
+          value: null,
+          returnValue: null,
+          masked: null,
+          referenceId: null,
+        },
+        skip: false,
+        returnType: 'WebDriver: driver',
+        status: 'PASS',
+        displayName: 'Open browser window',
+        defaultDisplayName: 'Open browser window',
+        stepId: 'STP1001333333',
+        toolTip: 'Browser window open',
+        defaultToolTip: 'Browser window open',
+        hierarchy: 0,
+        mustExecute: false,
+        displayOrder: '1.3',
+        imported: false,
+        uniqueId:
+          'e0ea4ef6-32fd-4809-9337-0acbb0b62f45-8afe10a7-eccd-4ed2-acba-4468d1fc78c9',
+        isStepGroupStep: false,
+        isJDBCStep: false,
+        message: 'Browser window is opened',
+        afterBreakStep: false,
+        afterContinueStep: false,
       },
     ];
     const handleViewComponent = (data: any, toggleViewRow: any) => {
@@ -87,6 +182,20 @@ export const StepLandingTableAcc: Story = {
       );
       setTableData(updatedData);
     };
+    const options = [
+      {
+        label: <Icon name="edit" />,
+        value: 'opt1',
+        icon: 'success',
+      },
+      { label: 'Option 2', value: 'opt2', icon: 'success' },
+      {
+        label: 'Delete',
+        value: 'deleteOpt',
+        icon: 'delete',
+        iconColor: 'var(--delete-text-color)',
+      },
+    ];
     const columnsData = [
       {
         header: 'Description',
@@ -117,7 +226,6 @@ export const StepLandingTableAcc: Story = {
                           setNewNlp({});
                           setEditMode(row.stepId);
                         }
-                        childRef?.current?.handleCloneCheckbox(row);
                       }}
                       style={{ opacity: row?.isDisabled ? '0.5' : '' }}
                     >
@@ -143,7 +251,6 @@ export const StepLandingTableAcc: Story = {
               return item;
             });
             setTableData(updatedData);
-            childRef?.current?.handleUpdateCheckbox(row);
           };
           if (tableType === 'Steps') {
             return (
@@ -194,6 +301,14 @@ export const StepLandingTableAcc: Story = {
                       onClick={() => handleDelete(row)}
                     />
                   )}
+                  <MenuOption
+                    iconName="more"
+                    tooltipTitle="More"
+                    key="more"
+                    tooltipPlacement="bottom"
+                    targetRef={row?.stepId}
+                    options={options}
+                  />
                 </div>
               </>
             );
@@ -203,12 +318,12 @@ export const StepLandingTableAcc: Story = {
 
       {
         header: 'Results',
-        accessor: 'suiteName',
+        accessor: 'message',
         width: isMaximize ? 300 : 400,
       },
       {
         header: 'Status',
-        accessor: 'suiteName',
+        accessor: 'status',
         width: isMaximize ? 100 : 150,
       },
     ];
@@ -247,16 +362,11 @@ export const StepLandingTableAcc: Story = {
         oldIndex,
         newIndex
       );
-      //  updatedData[newIndex].conditionSearchKey,
-      //    updatedData[newIndex].conditionId;
       const updatedTableData = tableData.map((item) =>
         item.title === 'Steps' ? { ...item, data: updatedData } : item
       );
+      childRef?.current?.deleteRow(updatedData[newIndex]);
       setTableData(updatedTableData);
-      // childRef?.current?.handleUpdateCheckbox(
-      //   updatedData[newIndex],
-      //   updatedTableData
-      // );
     };
 
     const handleComponent = (action: string) => {
@@ -303,7 +413,6 @@ export const StepLandingTableAcc: Story = {
       childRef?.current?.resetSelection();
       setTableData(updatedData);
     };
-
     return (
       <>
         <Drawer
@@ -352,9 +461,9 @@ export const StepLandingTableAcc: Story = {
             handleAccordion={handleAccordion}
             onSelectClick={onSelectClick}
             handleViewComponent={handleViewComponent}
-            height="500px"
+            height="440px"
             isViewPrivilegeMode={false}
-            defaultExpanded="Steps"
+            defaultExpanded="All"
             ref={childRef}
           />
         </Drawer>

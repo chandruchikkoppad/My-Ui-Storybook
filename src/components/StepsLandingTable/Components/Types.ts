@@ -181,11 +181,12 @@ export interface StepGroupAccordionsProp {
   handleStepGroupExpand?: (item: DataProps) => void;
   isStepGroupExpanded?: (stepId: string) => boolean;
   isViewPrivilegeMode?: boolean;
+  columns?: ColumnsProps[];
 }
 
 export interface TableMainRowProp {
   row: DataProps;
-  columns: DataProps;
+  columns:  ColumnsProps[];
   tableBodyRowClass?: string;
   handleOnclick?: any
   tableDataTextColor?: string;

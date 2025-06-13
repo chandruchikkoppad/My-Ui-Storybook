@@ -84,6 +84,23 @@ export const PortraitViewWithNavbar: Story = {
   },
 };
 
+export const PortraitViewWithTopNavbar: Story = {
+  args: {
+    ...defaultArgs,
+    orientation: 'portrait',
+    UtilityBar: true,
+    navBarIcons: navBarIcons,
+    navBarPosition: 'top',
+    tooltip: {
+      right_arrow_icon: 'Go Forward',
+      left_arrow_icon: 'Go Back',
+      refresh_icon: 'Reload Screen',
+      minimize_script: 'Capture Frame',
+      replace_icon: 'Rotate View',
+    },
+  },
+};
+
 export const LandscapeViewWithNavbar: Story = {
   args: {
     ...defaultArgs,
@@ -97,7 +114,7 @@ export const PortraitViewWithBackground: Story = {
   args: {
     ...defaultArgs,
     orientation: 'portrait',
-    background: "var(--tooltip-text-color)",
+    background: 'var(--tooltip-text-color)',
   },
 };
 export default meta;

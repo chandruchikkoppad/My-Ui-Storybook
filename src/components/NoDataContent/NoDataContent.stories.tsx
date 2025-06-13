@@ -27,3 +27,13 @@ Default.args = {
   text: 'No Results Found',
   textFontSize: '24px',
 };
+
+export const TextDirectionRow = Template.bind({});
+TextDirectionRow.args = {
+  iconName: 'no_license_found',
+  iconWidth: 120,
+  iconHeight: 115,
+  text: 'No Results Found',
+  textFontSize: '24px',
+  textDirectionRow: true,
+};

@@ -15,6 +15,7 @@ const AddContentButton: React.FC<AddContentButtonProps> = ({
   stepCount = 1,
   iconWidth = 120,
   iconHeight = 120,
+  addContentLabel="step",
 }) => {
   return (
     <div className={`add-content-button ${disableButton ? 'disabled' : ''}`}>
@@ -25,7 +26,7 @@ const AddContentButton: React.FC<AddContentButtonProps> = ({
       )}
       <div className="typography-label-button">
         <Typography fontSize="12px" fontWeight="regular" lineHeight="18px">
-          step {stepCount} :
+        {addContentLabel + stepCount} :
         </Typography>
         <Typography fontSize="12px" fontWeight="semi-bold" lineHeight="18px">
           Click

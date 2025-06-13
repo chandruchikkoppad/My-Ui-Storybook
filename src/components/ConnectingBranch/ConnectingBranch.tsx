@@ -9,7 +9,6 @@ import {
 import { ArcherContainer, ArcherElement } from 'react-archer';
 import MachineInstances from './BranchComponents/MachineInstances';
 import Typography from '../Typography';
-import { ffid } from '../../utils/ffID/ffid';
 import { checkEmpty } from '../../utils/checkEmpty/checkEmpty';
 
 const ConnectingBranch: React.FC<ConnectBranchProps> = ({
@@ -115,9 +114,7 @@ const ConnectingBranch: React.FC<ConnectBranchProps> = ({
             >
               <div className="ff-script-count-container">
                 <div className="ff-script-count-box">
-                  <Typography>
-                    {noOfScripts}
-                  </Typography>
+                  <Typography>{noOfScripts}</Typography>
                   <Typography>Scripts</Typography>
                 </div>
               </div>
@@ -136,7 +133,7 @@ const ConnectingBranch: React.FC<ConnectBranchProps> = ({
                 gap
               );
               return (
-                <React.Fragment key={ffid()}>
+                <React.Fragment>
                   <div
                     className="ff-selectedMachines"
                     style={{
@@ -153,7 +150,6 @@ const ConnectingBranch: React.FC<ConnectBranchProps> = ({
                       >
                         <ArcherElement
                           id={`parentnode${parentNodeIndex}`}
-                          key={ffid()}
                           relations={[
                             {
                               targetId: 'rootNode',

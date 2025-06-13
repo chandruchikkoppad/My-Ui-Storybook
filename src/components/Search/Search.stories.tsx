@@ -86,7 +86,6 @@ export const multipleComponents: Story = {
 
     const handleSearch = (value: string) => {
       setSearchValue(value);
-      window.alert(`searched value: ${value}`);
     };
 
     const handleClose = () => {
@@ -97,7 +96,7 @@ export const multipleComponents: Story = {
       return inputValue;
     };
     return (
-      <div style={{display: 'flex'}}>
+      <div style={{ display: 'flex' }}>
         <LabelEditTextField
           label="Add Module"
           text="Verify The Function Of Categories For"

@@ -74,33 +74,26 @@
           .ff-table-drag-icon {
             opacity: 0;
             transition: opacity 0.3s ease, transform 0.3s ease;
-            cursor: grab;
           }
 
           .ff-margin-container {
             display: flex;
             align-items: center;
           }
+
+          &-content {
+            display: flex;
+            align-items: center;
+          }
         }
 
         td {
-          position: relative;
           color: var(--table-column-text-color);
 
           &.clickable-cell {
             cursor: pointer;
           }
 
-          .StepGroup-row {
-            &-container {
-              display: flex;
-              align-items: center;
-
-              &-space {
-                padding: 16px;
-              }
-            }
-          }
         }
 
         .step-detail-cell {
@@ -150,4 +143,19 @@
   padding-top: 2px;
   margin-left: 4px;
   white-space: nowrap;
+  gap: 4px;  
+}
+
+.drag-icon {
+  cursor: grab !important;
+
+  &:active {
+    cursor: grabbing !important;
+  }
+
+  &-disabled {
+    cursor: default !important;
+    opacity: 0;
+    ;
+  }
 }

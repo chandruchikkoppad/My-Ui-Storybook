@@ -124,11 +124,12 @@ interface ExcelFileProps {
   rowContextEnable?: boolean;
 
   minimumColumnWidth?: number;
+  scroller?: boolean;
 
   attachmentAction?: {
     addAttachment: (file: File) => Promise<string>;
-    viewAttachment: (fileId: string) => Promise<string>;
     deleteAttachment: (fileId: string) => Promise<string>;
+    viewAttachment: (fileId: string, fileName: string) => Promise<void>;
   };
 
   disableDeleteOption?: boolean;
@@ -149,10 +150,11 @@ const ExcelFile: React.FC<ExcelFileProps> = ({
   onSaveInfoChange,
   attachmentAction = {
     addAttachment: () => Promise.resolve(''),
-    viewAttachment: () => Promise.resolve(''),
     deleteAttachment: () => Promise.resolve(''),
+    viewAttachment: () => Promise.resolve(),
   },
   onSaveDelay = 3000,
+  scroller = false,
   columnContextEnable = true,
   rowContextEnable = true,
   minimumColumnWidth = 100,
@@ -699,6 +701,7 @@ const ExcelFile: React.FC<ExcelFileProps> = ({
               minimumColumnWidth={minimumColumnWidth}
               onEvaluatedDataChange={onEvaluateChange}
               workRef={workRef}
+              scroller={scroller}
             />
           </div>
           {sheetBar === 'show' && (

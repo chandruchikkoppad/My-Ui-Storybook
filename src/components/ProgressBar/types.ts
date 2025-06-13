@@ -11,6 +11,7 @@ export interface ProgressBarProps {
   labelTextColor?: string;
   // Used memory value as a string (e.g. "100mb")
   usedMemory?: string;
-    // Total memory value as a string (e.g. "200mb", "1gb")
-    totalMemory?: string;
+  // Total memory value as a string (e.g. "200mb", "1gb")
+  totalMemory?: string;
+  progressBarWidth?: string | number;
 }

@@ -1,5 +1,3 @@
-import { ReactNode } from "react";
-
 export interface OverviewModalProps {
   isOpen: boolean;
   isMaximized: boolean;
@@ -16,21 +14,37 @@ export interface OverviewModalProps {
   overlay?: boolean;
   downloadHandler: () => void;
   zIndex?: number;
-  multiData?: {
-    name: ReactNode;
-    icon: string; 
-    src: string; 
-    alt: string;
-    time?: string;
-    scripts?: string;
-  }[];
-  setSelectedVideo?: (video: {
-    name: ReactNode;
+  multiData?: Array<{
+    machineName: string;
+    scriptName: string;
     icon: string;
     src: string;
     alt: string;
-    time?: string;
-    scripts?: string;
-    clickedAt: number;
+    runId: string;
+    currentScripts: number;
+    totalScripts: number;
+  }>;
+  setSelectedVideo?: (video: {
+    currentVideoData: {
+      machineName: string;
+      scriptName: string;
+      icon: string;
+      src: string;
+      alt: string;
+      runId: string;
+      currentScripts: number;
+      totalScripts: number;
+      clickedAt: number;
+    };
+    allVideoData: Array<{
+      machineName: string;
+      scriptName: string;
+      icon: string;
+      src: string;
+      alt: string;
+      runId: string;
+      currentScripts: number;
+      totalScripts: number;
+    }>;
   }) => void;
 }

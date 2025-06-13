@@ -7,6 +7,9 @@ import Typography from '../Typography';
 import Icon from '../Icon';
 import React from 'react';
 import CustomDatePicker from '../DatePicker/DatePicker';
+import Select from '../Select';
+import MultiSelect from '../MultiSelect/MultiSelect';
+import { Option } from '../Select/types';
 
 const meta: Meta<typeof MiniModal> = {
   title: 'Components/MiniModal',
@@ -18,7 +21,18 @@ const meta: Meta<typeof MiniModal> = {
 };
 
 type Story = StoryObj<typeof MiniModal>;
-
+const optionList = [
+  { label: 'Apple', value: 'apple' },
+  { label: 'Banana', value: 'banana' },
+  { label: 'Cherry', value: 'cherry' },
+  { label: 'Date', value: 'date' },
+  { label: 'Grape', value: 'grape' },
+  { label: 'Kiwi', value: 'kiwi' },
+  { label: 'Mango', value: 'mango' },
+  { label: 'Orange', value: 'orange' },
+  { label: 'Peach', value: 'peach' },
+  { label: 'Strawberry', value: 'strawberry' },
+]
 const useModal = () => {
   const [currentModal, setCurrentModal] = useState<number | null>(null);
   const openModal = (modalId: number) => {
@@ -79,7 +93,7 @@ const BasicModalComponent = () => {
                 onChange={setSelectDate}
                 calendarWidth={240}
                 dateOnly
-                zIndex={100}
+                zIndex={210}
                 ref={datePickerRef}
               />
             </>
@@ -810,4 +824,189 @@ export const NormalModalWithLoop = () => {
     </div>
   );
 };
+export const withIgnoreRef =()=>{
+  const btnRef1 = useRef<HTMLButtonElement>(null);
+  const btnRef2 = useRef<HTMLButtonElement>(null);
+  const btnRef3 = useRef<HTMLButtonElement>(null);
+  const datePickerRef = useRef<HTMLDivElement>(null);
+  const { currentModal, openModal, closeModal } = useModal();
+  const [selectedDate, setSelectDate] = useState<Date | undefined>();
+  const [selectedOption, setSelectedOption] = useState<Option>({ name: 'Apple', fruit: 'apple' },);
+  const [multiSelectedOptions, setMultiSelectedOptions] = useState<Option[]>([
+    { name: 'Apple', fruit: 'apple' },
+  ]);
+  const handleCancel = () => {
+    closeModal();
+  };
+  const handleChange = (option: Option) => {
+    setSelectedOption(option);
+  };
+  const handleMultiSelectChange = (option: Option[]) => {
+    setMultiSelectedOptions(option);
+  };
+  const selectDropDownRef = useRef<HTMLDivElement>(null);
+  const multiSelectDropDownRef = useRef<HTMLDivElement>(null);
+  return (
+    <div className="ff-mini-modal-buttons-flex ff-mini-modal-gap-10">
+      <Button
+        onClick={() => openModal(1)}
+        id="112233"
+        ref={btnRef1}
+        label="DatePicker"
+        variant={currentModal === 1 ? 'primary' : 'secondary'}
+      />
+      {currentModal === 1 && (
+        <MiniModal
+          anchorRef="112233"
+          overlay={{
+            isOverlay: true,
+            zIndexOverlay: 199,
+          }}
+          modalProperties={{
+            width: 300,
+            height: 180,
+          }}
+          headerProps={
+            <>
+              <Typography as="p">Modal 1</Typography>
+              <hr />
+            </>
+          }
+          childContent={
+            <>
+              <Typography as="p">
+                This is some asdsadasd sa dasdadad content inside the first
+                modal.
+              </Typography>
+              <CustomDatePicker
+                value={selectedDate}
+                onChange={setSelectDate}
+                calendarWidth={240}
+                dateOnly
+                zIndex={210}
+                ref={datePickerRef}
+              />
+            </>
+          }
+          cancelButtonProps={{
+            text: 'Cancel',
+            onClick: handleCancel,
+          }}
+          proceedButtonProps={{
+            text: 'Proceed',
+            onClick: () => {},
+          }}
+          isWrapped={false}
+          isPopOver={false}
+          isAnimated={true}
+          modalPosition="left"
+          ignoreRefs={[datePickerRef]}
+          outSideClick={() => {
+            console.log('outside');
+          }}
+        />
+      )}
+      <Button
+        onClick={() => openModal(2)}
+        ref={btnRef2}
+        label="Select"
+        variant={currentModal === 2 ? 'primary' : 'secondary'}
+      />
+      {currentModal === 2 && (
+        <MiniModal
+          anchorRef={btnRef2}
+          modalProperties={{ width: 300, height: 180 }}
+          headerProps={
+            <>
+              <Typography as="p">Modal 2</Typography>
+              <hr />
+            </>
+          }
+          childContent={
+            <>
+              <Typography as="p">
+                This is some content inside the second modal.
+              </Typography>
+              <Select
+                dropDownRef={selectDropDownRef}
+                onChange={handleChange}
+                optionsList={optionList}
+                label="select"
+                labelAccessor="label"
+                valueAccessor="value"
+                selectedOption={selectedOption}
+              ></Select>
+            </>
+          }
+          cancelButtonProps={{
+            text: 'Cancel',
+            onClick: handleCancel,
+          }}
+          proceedButtonProps={{
+            text: 'Proceed',
+            onClick: () => {},
+          }}
+          isWrapped={false}
+          isAnimated={false}
+          isPopOver={false}
+          modalPosition="top"
+          ignoreRefs={[selectDropDownRef]}
+          outSideClick={() => {
+            handleCancel()
+          }}
+        />
+      )}
+      <Button
+        onClick={() => openModal(3)}
+        ref={btnRef3}
+        label="MultiSelect"
+        variant={currentModal === 3 ? 'primary' : 'secondary'}
+      />
+      {currentModal === 3 && (
+        <MiniModal
+          anchorRef={btnRef3}
+          modalProperties={{ width: 300, height: 180 }}
+          headerProps={
+            <>
+              <Typography as="p">Modal 3</Typography>
+              <hr />
+            </>
+          }
+          childContent={
+            <>
+              <Typography as="p">
+                This is some content inside the second modal.
+              </Typography>
+              <MultiSelect
+                dropdownContainerRef={multiSelectDropDownRef}
+                onChange={handleMultiSelectChange}
+                options={optionList}
+                label="select"
+                labelAccessor="label"
+                valueAccessor="value"
+                selectedOptions={multiSelectedOptions}
+              ></MultiSelect>
+            </>
+          }
+          cancelButtonProps={{
+            text: 'Cancel',
+            onClick: handleCancel,
+          }}
+          proceedButtonProps={{
+            text: 'Proceed',
+            onClick: () => {},
+          }}
+          isWrapped={false}
+          isAnimated={false}
+          isPopOver={false}
+          modalPosition="top"
+          ignoreRefs={[multiSelectDropDownRef]}
+          outSideClick={() => {
+            handleCancel()
+          }}
+        />
+      )}
+      </div>
+      )
+}
 export default meta;

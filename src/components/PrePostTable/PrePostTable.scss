@@ -1,6 +1,5 @@
 .pre-fixed-header-table {
   overflow-y: auto;
-  scrollbar-width: none;
   overflow-x: hidden;
 
   .ff-table-pre-post {
@@ -78,7 +77,6 @@
           .ff-table-drag-icon {
             opacity: 0;
             transition: opacity 0.3s ease, transform 0.3s ease;
-            cursor: grab;
           }
         }
 
@@ -179,5 +177,19 @@
 
   .pre-accordion-arrow.expanded {
     transform: rotate(90deg);
+  }
+}
+
+.drag-icon {
+  cursor: grab !important;
+
+  &:active {
+    cursor: grabbing !important;
+  }
+
+  &-disabled {
+    cursor: default !important;
+    opacity: 0;
+    ;
   }
 }

@@ -25,6 +25,7 @@ const AddResourceButton = ({
   menuOptionZIndex = 1400,
   treeRowRef,
   onMenuOptionClick,
+  isFromTree = false,
 }: AddResourceButtonProps) => {
   const [isHovered, setIsHovered] = useState<boolean>(false);
   const [positionArrowContainer, setPositionArrowContainer] = useState<{
@@ -79,12 +80,14 @@ const AddResourceButton = ({
       .sort()
       .join('-');
     const arrowCountClass = validArrows.length === 2 ? 'ff-two-arrows' : '';
-  return `ff-${directions} ${arrowCountClass}`;
+    return `ff-${directions} ${arrowCountClass}`;
   };
 
   return (
     <div
-      className={`ff-add-button-container ${
+      className={`${
+        isFromTree ? 'ff-add-button-tree' : 'ff-add-button-container'
+      } ${
         isHovered && !activeArrow ? `ff-hovered-add-button--${variant}` : ''
       }`}
       id={id}
@@ -113,8 +116,8 @@ const AddResourceButton = ({
             onMouseEnter={handleHover}
             onMouseLeave={handleLeave}
             style={{
-              left: positionArrowContainer.left,
-              top: positionArrowContainer.top,
+              left: positionArrowContainer.left + (isFromTree ? 4 : 0),
+              top: positionArrowContainer.top + (isFromTree ? 2 : 0),
               zIndex: zIndex,
             }}
           >

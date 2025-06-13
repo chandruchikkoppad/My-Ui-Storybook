@@ -63,7 +63,7 @@ export interface ExecutionContext {
   clientId: string;
   numberOfRuns: number;
   runCount: number;
-  executionEnv?: 'Local'; // Change to specific enum if more environments exist
+  executionEnv?: 'Local' | string;
   browserName?: 'Local' | 'mac' | 'android' | 'Google Chrome';
   browserVersion: string;
   systemUrl: string;

@@ -10,7 +10,8 @@
     padding-left: 8px;
     height: 40px;
     pointer-events: initial;
-
+    position: relative;
+    min-height: 40px;
     &--disabled {
       pointer-events: none;
       opacity: 0.5;
@@ -24,7 +25,7 @@
         height: 24px;
       }
     }
-
+    .ff-app-header-nav-bar-skeleton,
     .ff-app-header-nav-bar {
       display: flex;
       align-items: center;
@@ -34,7 +35,16 @@
       border-radius: 20px;
       padding: 4px;
       padding-bottom: 16px;
-
+      height: 40px;
+    }
+    .ff-app-header-nav-bar-skeleton {
+      position: absolute;
+      top: 0;
+      left: 122px;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .ff-app-header-nav-bar {
       .ff-app-header-nav-bar-items {
         display: flex;
         align-items: center;
@@ -244,7 +254,6 @@
         }
       }
     }
-
     .ff-app-header-left-content,
     .ff-app-header-right-content {
       height: 24px;

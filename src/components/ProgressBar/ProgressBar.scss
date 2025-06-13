@@ -1,6 +1,4 @@
 .ff-progress-bar-container {
-  width: 100%;
-  min-width: 200px;
   display: flex;
   align-items: center;
   gap: 5px;
@@ -37,7 +35,7 @@
 }
 
 .ff-progress-bar-label {
-  max-width: 50px;
+  width: 82px;
   font-size: 14px;
   color: var(--ff-card-status-text-color);
   white-space: nowrap;

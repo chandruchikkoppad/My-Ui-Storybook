@@ -14,4 +14,5 @@ export interface BarChartProps {
   barGap: number;
   barRadius?: number;
   iconSize?: number;
+  isMemory?: boolean;
 }

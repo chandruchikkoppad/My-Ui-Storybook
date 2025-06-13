@@ -13,4 +13,5 @@ export interface IconProps {
   y?: string;
   chartIcon?: boolean;
   tabIndex?: number;
+  toolTipTitle?: string
 }

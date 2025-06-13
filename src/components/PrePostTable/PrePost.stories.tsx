@@ -167,7 +167,7 @@ export const DynamicTable: Story = {
     //Dummy data from api call
     const newSteps: any = [
       {
-        stepId: ffid(),
+        stepId: 'ffid()',
         name: 'New Step 1',
         modifiedBy: 'User',
         suiteName: 'test suite',
@@ -183,7 +183,7 @@ export const DynamicTable: Story = {
         ],
       },
       {
-        stepId: ffid(),
+        stepId: 'ffid()',
         name: 'New Step 2',
         modifiedBy: 'User',
         suiteName: 'test suite',
@@ -369,6 +369,7 @@ export const DynamicTable: Story = {
               handleNlpSelect={handleNlpSelect}
             />
           }
+          scriptType
         />
       </>
     );

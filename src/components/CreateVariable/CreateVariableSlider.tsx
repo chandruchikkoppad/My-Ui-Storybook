@@ -1,4 +1,11 @@
-import { ChangeEvent, useEffect, useState, type FC, type JSX } from 'react';
+import {
+  ChangeEvent,
+  useEffect,
+  useState,
+  type FC,
+  type JSX,
+  useMemo,
+} from 'react';
 import Drawer from '../Drawer';
 import { CreateVariableProps } from './types';
 import Input from '../Input';
@@ -12,9 +19,7 @@ import {
   ALPHANUMERIC_WITH_ROUND_BRACES_REGEX,
   START_END_WHITESPACE_REGEX,
 } from '../../validations/regex';
-import ConditionalDropdown from '../ConditionalDropdown';
-import Typography from '../Typography';
-import { checkEmpty } from '../../utils/checkEmpty/checkEmpty';
+import VariableSuggestionInputDropDown from '../variableSuggestionInputDropDown';
 
 const CreateVariableSlider: FC<CreateVariableProps> = ({
   isOpen,
@@ -31,27 +36,42 @@ const CreateVariableSlider: FC<CreateVariableProps> = ({
   handleSubmit,
   mode = 'create',
   disabled,
-  isHash = false,
-  showHidePasswordIcon = true,
   dataFiles = [],
 }): JSX.Element => {
   const [error, setError] = useState<boolean>(false);
   const [helperText, setHelperText] = useState<string>('');
+  const [hashInputValue, setHashInputValue] = useState<any>();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [initialValues, setInitialValues] = useState({
+    name: '',
+    value: '',
+  });
+  useEffect(() => {
+    if (isOpen && mode === 'edit') {
+      setInitialValues({
+        name: variableName,
+        value: variableValue,
+      });
+    }
+  }, []);
 
   const getVariableNameError = (value: string): string => {
-    let errorMessage = '';
     if (!value || value.length === 0) {
-      errorMessage = 'variableName is required';
-    } else if (!ALPHANUMERIC_WITH_ROUND_BRACES_REGEX.test(value)) {
-      errorMessage = 'Name should be alphanumeric';
-    } else if (value.length < 3) {
-      errorMessage = 'Name should contain at least 3 characters';
-    } else if (value.length > 25) {
-      errorMessage = 'Name can contain at most 25 characters';
-    } else if (!START_END_WHITESPACE_REGEX.test(value)) {
-      errorMessage = 'Space is not allowed at starting and at the end';
+      return 'Variable Name is required';
     }
-    return errorMessage;
+    if (value[0] === ' ' || value[value.length - 1] === ' ') {
+      return 'Space is not allowed at starting and at the end';
+    }
+    if (!ALPHANUMERIC_WITH_ROUND_BRACES_REGEX.test(value)) {
+      return 'Name should be alphanumeric';
+    }
+    if (value.length < 3) {
+      return 'Name should contain at least 3 characters';
+    }
+    if (value.length > 25) {
+      return 'Name can contain at most 25 characters';
+    }
+    return '';
   };
 
   const onBlurHandler = (event: ChangeEvent<HTMLInputElement>) => {
@@ -78,16 +98,34 @@ const CreateVariableSlider: FC<CreateVariableProps> = ({
     return isValid;
   }
 
+  const hasChanges = useMemo(() => {
+    if (mode !== 'edit') return true;
+
+    return (
+      variableName !== initialValues.name ||
+      variableValue !== initialValues.value
+    );
+  }, [mode, variableName, variableValue, initialValues]);
+
   const FooterContent: FC = (): JSX.Element => {
     return (
       <div className="ff-create-slider-footer">
         <Button onClick={onClose} label="Cancel" variant="tertiary" />
         <Button
           variant="primary"
-          label={mode === 'create' ? 'Create' : 'Edit'}
+          label={mode === 'create' ? 'Create' : 'Update'}
           type="submit"
-          onClick={handleSubmit}
-          disabled={!isVariableNameValid(variableName)}
+          onClick={() => {
+            if (!isSubmitting && isVariableNameValid(variableName)) {
+              setIsSubmitting(true);
+              handleSubmit();
+            }
+          }}
+          disabled={
+            !isVariableNameValid(variableName) ||
+            isSubmitting ||
+            (mode === 'edit' && !hasChanges)
+          }
         />
       </div>
     );
@@ -113,7 +151,10 @@ const CreateVariableSlider: FC<CreateVariableProps> = ({
             type="text"
             name="variableName"
             value={variableName || ''}
-            onChange={(event) => onNameChange(event.target.value)}
+            onChange={(event) => {
+              setIsSubmitting(false);
+              onNameChange(event.target.value);
+            }}
             error={error}
             helperText={helperText}
             onBlur={onBlurHandler}
@@ -122,34 +163,35 @@ const CreateVariableSlider: FC<CreateVariableProps> = ({
         <Select
           label="Variable Type"
           required
-          onChange={(option: any) => onVariableTypeChange(option)}
+          onChange={(option: any) => {
+            onVariableTypeChange(option);
+            setIsSubmitting(false);
+          }}
           selectedOption={selectedVariableType}
           optionsList={variableTypesList}
           optionZIndex={99999}
           valueAccessor="label"
+          disabled={mode === 'edit'}
         />
-        <ConditionalDropdown
+        <VariableSuggestionInputDropDown
           label="Variable Value"
-          type={hideValue ? 'password' : 'text'}
-          name="variableValue"
-          isHash={isHash}
-          showHidePasswordIcon={showHidePasswordIcon}
-          showAddVariableIcon={false}
+          placeholder="Enter Variable value or select path using #"
+          isHash
+          isOnlyHash
+          zIndex={99999}
+          truncateTextValue={34}
           dataFiles={dataFiles}
-          dropdownWidth="auto"
+          dropdownWidth="100%"
+          setHashInputValue={setHashInputValue}
+          hashInputValue={hashInputValue || {}}
+          value={variableValue || ''}
+          type={hideValue ? 'password' : 'text'}
           onChange={(event, item) => {
             const value = event.target.value;
             onValueChange(value, item);
           }}
-          value={variableValue || ''}
+          showAddVariableIcon={false}
         />
-        {checkEmpty(dataFiles) && variableValue.length >= 1 && (
-          <div className="ff-variable-option">
-            <Typography as="div" fontSize={14}>
-              No Option
-            </Typography>
-          </div>
-        )}
         <div className="ff-hide-value-content">
           <Checkbox
             onChange={(event) => onHideChange(event.target.checked)}

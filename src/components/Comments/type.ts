@@ -50,6 +50,8 @@ export interface CommentsProps {
   rowBreakCharCount?: number;
   isVewMode?: boolean;
   showTextarea?: boolean;
+  deleteEnable?: boolean;
+  autoFocus?: boolean;
 }
 
 export interface CommentProps {
@@ -65,6 +67,7 @@ export interface CommentProps {
   createdByID?: string;
   rowBreakCharCount?: number;
   isVewMode?: boolean;
+  deleteEnable?: boolean;
 }
 
 export interface MentionUsers {

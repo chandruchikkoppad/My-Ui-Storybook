@@ -83,7 +83,7 @@ export const SelectOneDisableOther: Story = {
   render: () => {
     const [values, setValues] = useState([
       { id: '1', text: 'hello World' },
-      { id: '2', text: 'check it' },
+      { id: '2', text: 'check out this is the larger list' },
       { id: '3', text: 'dont check' },
     ]);
     const [editableId, setEditableId] = useState<string | null>(null);

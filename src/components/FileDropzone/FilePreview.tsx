@@ -3,6 +3,7 @@ import Icon from '../Icon';
 import Tooltip from '../Tooltip';
 import { FilePreviewProps } from './types';
 import Typography from '../Typography';
+import { useRef } from 'react';
 
 const FilePreview: React.FC<FilePreviewProps> = ({
   file,
@@ -12,8 +13,24 @@ const FilePreview: React.FC<FilePreviewProps> = ({
   onUploadFile,
   isUploadIcon,
   isRemoveDisabled = false,
-  isError=false,
+  isError = false,
+  isIndependentPreview = false,
 }) => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleReplaceClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = event.target.files?.[0];
+    if (selectedFile) {
+      onReplaceClick(selectedFile);
+    }
+    event.target.value = '';
+  };
   return (
     <div key={file.name} className="ff-file-details__item">
       <div className="ff-file-info">
@@ -57,7 +74,13 @@ const FilePreview: React.FC<FilePreviewProps> = ({
               height={16}
               width={16}
               hoverEffect
-              onClick={() => onReplaceClick(file)}
+              onClick={() => {
+                if (isIndependentPreview) {
+                  handleReplaceClick();
+                } else {
+                  onReplaceClick(file);
+                }
+              }}
             />
           </Tooltip>
         </div>
@@ -90,6 +113,16 @@ const FilePreview: React.FC<FilePreviewProps> = ({
           </div>
         )}
       </div>
+      {isIndependentPreview && (
+        <input
+          type="file"
+          ref={fileInputRef}
+          className="ff-input-ref"
+          onChange={handleFileChange}
+          accept={file.type}
+          style={{ display: 'none' }}
+        />
+      )}
     </div>
   );
 };

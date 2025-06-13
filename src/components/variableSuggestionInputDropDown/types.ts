@@ -45,6 +45,7 @@ export interface VariableSuggestionInputDropDownProps {
     event: React.ChangeEvent<HTMLInputElement>,
     item?: dynamicObject
   ) => void;
+  onPaste?: (event: React.ClipboardEvent<HTMLInputElement>) => void;
   /**
    * Function to handle create variable icon click
    */
@@ -114,7 +115,7 @@ export interface VariableSuggestionInputDropDownProps {
   /**
    * if on, suggestion popup will be displayed
    */
-  autoComplete?: 'on' | 'off';
+  autoComplete?: 'on' | 'off' | 'new-password';
   /**
    *  minimum and maximum values for the number type input field and their functions
    */
@@ -159,7 +160,11 @@ export interface VariableSuggestionInputDropDownProps {
   getSelectedVariable?: (option: string) => void;
   symbol?: string;
 
-  clearIcon?:boolean
+  clearIcon?: boolean;
+  /**
+   * inputTitle for the field
+   */
+  inputTitle?: string;
 }
 
 export interface OptionsDropdownProps {

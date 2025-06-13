@@ -13,4 +13,13 @@ export interface PhoneInputProps {
   enableAreaCodeStretch?: boolean;
   defaultCountry?: string;
   disabled?: boolean;
+  isVerified?:boolean,
+  isVerifyDisplay?:boolean,
+  onVerifyClick?:() => void,
 }
+export type CountryData = {
+  name: string;
+  dialCode: string;
+  countryCode: string;
+  format?: string;
+};

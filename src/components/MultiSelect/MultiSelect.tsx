@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import classNames from 'classnames';
 import './MultiSelect.scss';
@@ -8,11 +8,19 @@ import { MultiSelectProps, Option } from './MultiSelectTypes';
 import Typography from '../Typography';
 import Tooltip from '../Tooltip';
 import { checkEmpty } from '../../utils/checkEmpty/checkEmpty';
-import { truncateText } from '../../utils/truncateText/truncateText';
+import {
+  isTextTruncated,
+  truncateText,
+} from '../../utils/truncateText/truncateText';
 import {
   getLabel,
   getValue,
 } from '../../utils/getSelectOptionValue/getSelectOptionValue';
+import { useMergeRefs } from '../../hooks/useMergeRefs';
+
+const MAX_SEARCH_CHARACTER_LENGTH = 25;
+const MAX_ALLOWED_PIXEL = 150;
+const FONT_SIZE = 6;
 
 const ChipElement = ({
   label,
@@ -34,21 +42,27 @@ const ChipElement = ({
           }`}
         >
           <Tooltip
-            style={{ display: 'flex' }}
+            style={{ display: 'flex', cursor: 'default' }}
             placement="bottom"
-            title={label?.length > 25 ? label : ''}
+            title={
+              isTextTruncated(label, MAX_ALLOWED_PIXEL, 'pixel') ? label : ''
+            }
             zIndex={zIndex + 1}
           >
             <Typography fontSize={10} lineHeight={'14px'} as="span">
-              {typeof label === 'string' ? truncateText(label, 25) : label}
+              {typeof label === 'string'
+                ? truncateText(label, MAX_ALLOWED_PIXEL, 'pixel')
+                : label}
             </Typography>
           </Tooltip>
         </span>
         {!disableChip && (
           <Icon
+            name="close_pill"
+            height={12}
+            width={12}
             className="ff-multiselect-chip-close-icon"
             onClick={onChipCloseClick}
-            name="close_pill"
           />
         )}
       </div>
@@ -86,9 +100,11 @@ const MultiSelect = ({
   withSelectButton = variant === 'machines' ? true : false,
   loadMoreOptions = () => {},
   onEnter = () => {},
-  maxVisibleChips = 2,
+  maxVisibleChips,
   onBlur = () => {},
   maxDropdownHeight = 160,
+  dropdownContainerRef,
+  noResultsMessage,
 }: MultiSelectProps) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [allOptions, setAllOptions] = useState(options);
@@ -97,8 +113,7 @@ const MultiSelect = ({
     useState<boolean>(false);
   const [inputError, setInputError] = useState<string>('');
   const [displayIcon, setDisplayIcon] = useState<boolean>(false);
-  const [displayCount, setDisplayCount] =
-    useState<boolean>(initialDisplayCount);
+  const [displayCount] = useState<boolean>(initialDisplayCount);
 
   const [dropdownPosition, setDropdownPosition] = useState<{
     top: number;
@@ -118,9 +133,36 @@ const MultiSelect = ({
   const dropdownWrapper = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLInputElement>(null);
   const selectWrapper = useRef<HTMLInputElement>(null);
+  const mergedRef = useMergeRefs(dropdownRef, dropdownContainerRef);
+  let isFieldSkipped = isSelectFocusedOnce && selectedOptions?.length === 0;
+  const visibleCharRef = useRef<number>(maxVisibleChips ?? 0);
+  useLayoutEffect(() => {
+    if (selectWrapper.current) {
+      const containerWidth =
+        selectWrapper.current.getBoundingClientRect().width;
 
-  let isFieldSkipped = isSelectFocusedOnce && selectedOptions.length === 0;
-  const hiddenCount = selectedOptions.length - maxVisibleChips;
+      if (!selectedOptions) return;
+      let totalWidthUsed = 0;
+      const visibleChar: Option[] | ((prevState: never[]) => never[]) = [];
+
+      selectedOptions?.forEach((option) => {
+        const label = option[labelAccessor];
+        const characterCount =
+          Math.min(
+            label?.length || 0,
+            Math.floor(MAX_ALLOWED_PIXEL / FONT_SIZE)
+          ) || 0;
+        const currentElementChipWidth = characterCount * FONT_SIZE + 25;
+        if (totalWidthUsed + currentElementChipWidth <= containerWidth - 60) {
+          visibleChar.push(option);
+          visibleCharRef.current = visibleChar?.length || 0;
+        }
+        totalWidthUsed += currentElementChipWidth;
+      });
+    }
+  }, [selectedOptions]);
+
+  const hiddenCount = selectedOptions?.length - visibleCharRef.current;
 
   const handleClick = () => {
     if (!isOpen) {
@@ -161,6 +203,7 @@ const MultiSelect = ({
       return;
     }
     onChange && onChange(tempCheckedOptions);
+    setSearchedKeyword('');
   };
 
   const handleChipCloseClick = (
@@ -188,7 +231,7 @@ const MultiSelect = ({
         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailPattern.test(searchedKeyword)) {
           setIsOpen(false);
-          setInputError('Please enter a valid email address.');
+          setInputError('Recipient Email is not valid.');
           return;
         }
       }
@@ -230,7 +273,48 @@ const MultiSelect = ({
       }
     }
   }, [selectWrapper.current]);
+  const getScrollableParent = (
+    element: HTMLElement | null
+  ): HTMLElement | null => {
+    if (!element) return null;
+    let parent: HTMLElement | null = element.parentElement;
+    while (parent) {
+      const { overflowY, overflowX } = window.getComputedStyle(parent);
+      if (
+        /(auto|scroll|overlay)/.test(overflowY) ||
+        (/(auto|scroll|overlay)/.test(overflowX) &&
+          parent.scrollWidth > parent.clientWidth)
+      ) {
+        return parent;
+      }
+      parent = parent.parentElement;
+    }
+    return document.documentElement;
+  };
 
+  useEffect(() => {
+    calculatePosition();
+  }, [searchedKeyword]);
+
+  useEffect(() => {
+    if (!selectWrapper.current) return;
+    const scrollableParent = getScrollableParent(selectWrapper.current);
+    // Attach scroll event to detected parent or window
+    scrollableParent?.addEventListener(
+      'scroll',
+      () => {
+        setIsOpen(false);
+      },
+      {
+        passive: true,
+      }
+    );
+    return () => {
+      scrollableParent?.removeEventListener('scroll', () => {
+        setIsOpen(false);
+      });
+    };
+  }, []);
   const calculatePosition = () => {
     if (dropdownWrapper.current && selectWrapper.current) {
       const rect = dropdownWrapper.current.getBoundingClientRect();
@@ -253,10 +337,11 @@ const MultiSelect = ({
     setSearchedKeyword(input);
 
     onSearch?.(input);
-    if (input.length > 2) {
+    if (input?.length > 2) {
       const matchedOption = allOptions.find(
         (option) =>
-          getLabel(option, searchAccessor)?.toLowerCase() === input.toLowerCase()
+          getLabel(option, searchAccessor)?.toLowerCase() ===
+          input.toLowerCase()
       );
       setDisplayIcon(!matchedOption);
     } else {
@@ -266,7 +351,6 @@ const MultiSelect = ({
 
   const handleHiddenChips = () => {
     setIsOpen(false);
-    setDisplayCount(false);
   };
 
   useEffect(() => {
@@ -381,7 +465,7 @@ const MultiSelect = ({
   }, []);
 
   const hideSearchField =
-    displayAllSelectedAsText && selectedOptions.length === allOptions.length;
+    displayAllSelectedAsText && selectedOptions?.length === allOptions?.length;
   return (
     <div className={`ff-multiselect-container-with-icon ${className}`}>
       <div
@@ -411,7 +495,8 @@ const MultiSelect = ({
             <div className="ff-multiselect-chip-container">
               {!withSelectButton &&
                 (displayAllSelectedAsText &&
-                selectedOptions.length === allOptions.length &&
+                selectedOptions?.length === allOptions?.length &&
+                !checkEmpty(allOptions) &&
                 labelAccessor !== 'name' ? (
                   <ChipElement
                     zIndex={zIndex}
@@ -422,17 +507,19 @@ const MultiSelect = ({
                   />
                 ) : displayCount ? (
                   <>
-                    {selectedOptions.slice(0, maxVisibleChips).map((option) => (
-                      <ChipElement
-                        zIndex={zIndex}
-                        key={getLabel(option, labelAccessor)}
-                        label={getLabel(option, labelAccessor) || ''}
-                        onChipCloseClick={(e) =>
-                          handleChipCloseClick(option, e)
-                        }
-                        disableChip={option?.isDisabled || false}
-                      />
-                    ))}
+                    {selectedOptions
+                      .slice(0, visibleCharRef.current)
+                      .map((option) => (
+                        <ChipElement
+                          zIndex={zIndex}
+                          key={getLabel(option, labelAccessor)}
+                          label={getLabel(option, labelAccessor) || ''}
+                          onChipCloseClick={(e) =>
+                            handleChipCloseClick(option, e)
+                          }
+                          disableChip={option?.isDisabled || false}
+                        />
+                      ))}
                   </>
                 ) : (
                   selectedOptions.map((option) => (
@@ -459,7 +546,7 @@ const MultiSelect = ({
                     className="ff-select-input"
                     style={{
                       display:
-                        isOpen || (selectedOptions.length && !withSelectButton)
+                        isOpen || (selectedOptions?.length && !withSelectButton)
                           ? 'inherit'
                           : 'none',
                     }}
@@ -515,7 +602,7 @@ const MultiSelect = ({
           {isOpen &&
             createPortal(
               <Dropdown
-                ref={dropdownRef}
+                ref={mergedRef}
                 searchedKeyword={searchedKeyword}
                 checkedOptions={selectedOptions}
                 handleOptionChange={handleOptionChange}
@@ -533,6 +620,8 @@ const MultiSelect = ({
                 maxDropdownHeight={maxDropdownHeight}
                 variant={variant}
                 handleIconClick={handleIconClick}
+                noResultsMessage={noResultsMessage}
+                maxSearchCharacterLength={MAX_SEARCH_CHARACTER_LENGTH}
               />,
               document.body
             )}
@@ -545,6 +634,9 @@ const MultiSelect = ({
             name={'label_plus'}
             onClick={handleIconClick}
             className="ff-label-plus-icon"
+            disabled={
+              MAX_SEARCH_CHARACTER_LENGTH <= (searchedKeyword?.length || 0)
+            }
           />
         </Tooltip>
       )}

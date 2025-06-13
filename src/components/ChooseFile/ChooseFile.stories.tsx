@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import ChooseFile from './ChooseFile';
 import Drawer from '../Drawer/Drawer';
 import FileDropzone from '../FileDropzone/FileDropzone';
@@ -35,8 +35,69 @@ export const ChooseFileDisplay: Story = {
     const [testDataSelectedFile, setTestDataSelectedFile] = useState<
       DynamicObj | File | null
     >(null);
+    const [testDataSelectedFileName, setTestDataSelectedFileName] =
+      useState<string>('');
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const [acceptedFiles, setAcceptedFiles] = useState([]);
+    const [rejectedFiles, setRejectedFiles] = useState([]);
 
     const testData = [
+      {
+        _id: '1',
+        name: 'File1.txt',
+        actualPath: '/documents/File1.txt',
+        searchKey: 'file1',
+        parentId: 'root',
+      },
+      {
+        _id: '2',
+        name: 'File2.doc',
+        actualPath: '/documents/File2.doc',
+        searchKey: 'file2',
+        parentId: 'root',
+      },
+      {
+        _id: '3',
+        name: 'Image1.png',
+        actualPath: '/images/Image1.png',
+        searchKey: 'image1',
+        parentId: 'folder1',
+      },
+      {
+        _id: '4',
+        name: 'Presentation.ppt',
+        actualPath: '/presentations/Presentation.ppt',
+        searchKey: 'presentation',
+        parentId: 'folder2',
+      },
+      {
+        _id: '1',
+        name: 'File1.txt',
+        actualPath: '/documents/File1.txt',
+        searchKey: 'file1',
+        parentId: 'root',
+      },
+      {
+        _id: '2',
+        name: 'File2.doc',
+        actualPath: '/documents/File2.doc',
+        searchKey: 'file2',
+        parentId: 'root',
+      },
+      {
+        _id: '3',
+        name: 'Image1.png',
+        actualPath: '/images/Image1.png',
+        searchKey: 'image1',
+        parentId: 'folder1',
+      },
+      {
+        _id: '4',
+        name: 'Presentation.ppt',
+        actualPath: '/presentations/Presentation.ppt',
+        searchKey: 'presentation',
+        parentId: 'folder2',
+      },
       {
         _id: '1',
         name: 'File1.txt',
@@ -82,7 +143,6 @@ export const ChooseFileDisplay: Story = {
       setSelectedFile(file || null);
     };
 
-    const handleRemoveFile = () => setSelectedFile(null);
 
     const handleSaveButton = () => {
       setSelectedFile(testDataSelectedFile);
@@ -92,11 +152,26 @@ export const ChooseFileDisplay: Story = {
     const handleCloseIcon = () => {
       setSelectedFile(null);
       setIsOpen(false);
+
     };
 
     const handleSaveChooseFile = () => {
       setIsOpen(false);
-      
+    };
+    const handleRemoveFile = () => {
+      if (fileInputRef?.current?.value) {
+        fileInputRef.current.value = '';
+      }
+      setSelectedFile(null);
+      setSelectedRadioOption(undefined);
+    };
+
+    const getAcceptedFiles = (files) => {
+      setAcceptedFiles(files);
+    };
+
+    const getRejectedFiles = (files) => {
+      setRejectedFiles(files);
     };
 
     const renderFooterButtons = (onSave: () => void, onCancel: () => void) => (
@@ -144,6 +219,7 @@ export const ChooseFileDisplay: Story = {
           size="medium"
         >
           <FileDropzone
+            fileInputRef={fileInputRef}
             {...defaultArgs}
             accept={[
               'image/png',
@@ -161,6 +237,8 @@ export const ChooseFileDisplay: Story = {
             handleFileChange={handleFileChange}
             handleRemoveFile={handleRemoveFile}
             setShowDrawer={setShowModal}
+            getAcceptedFiles={getAcceptedFiles}
+            getRejectedFiles={getRejectedFiles}
           />
           {selectedRadioOption?.value === 'Test Data' && (
             <Drawer
@@ -177,6 +255,8 @@ export const ChooseFileDisplay: Story = {
                 dataFiles={testData}
                 dropdownWidth="auto"
                 setHashInputValue={setTestDataSelectedFile}
+                value={testDataSelectedFileName}
+                onChange={(e) => setTestDataSelectedFileName(e.target.value)}
               />
               {renderFooterButtons(handleSaveButton, () => setShowModal(false))}
             </Drawer>

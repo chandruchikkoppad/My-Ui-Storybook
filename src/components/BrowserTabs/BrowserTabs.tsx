@@ -18,6 +18,7 @@ const BrowserTabs = ({
 }: BrowserTabsProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [tabWidth, setTabWidth] = useState<number>();
+  const [failedIcons, setFailedIcons] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     const updateTabWidth = () => {
@@ -34,6 +35,10 @@ const BrowserTabs = ({
 
     return () => window.removeEventListener('resize', updateTabWidth);
   }, [tabsData.length, maxTabWidth]);
+
+  const handleIconError = (tabId: string) => {
+    setFailedIcons(prev => ({ ...prev, [tabId]: true }));
+  };
 
   return (
     <div className="ff-browser-tabs-container" ref={containerRef}>
@@ -72,20 +77,19 @@ const BrowserTabs = ({
                         tabWidth >= 20 &&
                         (!isActive || tabWidth >= 80) && (
                           <>
-                            {tab.tabIconSrc ? (
+                            {tab.tabIconSrc && !failedIcons[tab.id] ? (
                               <img
                                 src={tab.tabIconSrc}
                                 alt={tab.label}
                                 className="ff-tab-icon"
+                                onError={() => handleIconError(tab.id)}
                               />
                             ) : (
-                              tab.tabIcon && (
-                                <Icon
-                                  name={tab.tabIcon}
-                                  hoverEffect={false}
-                                  color="inherit"
-                                />
-                              )
+                              <Icon
+                                name={tab.tabIcon ||"web_icon"}
+                                hoverEffect={false}
+                                color="inherit"
+                              />
                             )}
                           </>
                         )}

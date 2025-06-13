@@ -77,7 +77,53 @@ export const NameAccessor: Story = {
     );
   },
 };
-
+export const ScrollMultiSelect: Story = {
+  render: () => {
+    const [options, setOptions] = useState<Option[]>([]);
+    const [selectedOptions, setSelectedOptions] = useState<Option[]>([]);
+    const onChange = (options: Option[]) => {
+      setSelectedOptions(options);
+    };
+    useEffect(() => {
+      setOptions([
+        { label: 'Apple', value: 'apple' },
+        { label: 'Banana', value: 'banana' },
+        { label: 'Cherry', value: 'cherry' },
+        { label: 'Date', value: 'date' },
+        { label: 'Grape', value: 'grape' },
+        { label: 'Kiwi', value: 'kiwi' },
+        { label: 'Mango', value: 'mango' },
+        { label: 'Orange', value: 'orange' },
+        { label: 'Peach', value: 'peach' },
+        { label: 'Strawberry', value: 'strawberry' },
+        { label: 'Apple', value: 'apple' },
+        { label: 'Banana', value: 'banana' },
+        { label: 'Cherry', value: 'cherry' },
+        { label: 'Date', value: 'date' },
+        { label: 'Grape', value: 'grape' },
+        { label: 'Kiwi', value: 'kiwi' },
+        { label: 'Mango', value: 'mango' },
+        { label: 'Orange', value: 'orange' },
+        { label: 'Peach', value: 'peach' },
+        { label: 'Strawberry', value: 'strawberry' },
+      ]);
+    }, []);
+    return (
+      <div style={{ height: '300px', overflow: 'scroll' }}>
+        <div style={{ height: '500px', marginTop: '400px' }}>
+          <MultiSelect
+            maxDropdownHeight={224} //7 options
+            displayCount={false}
+            label={'Fruits'}
+            options={options}
+            selectedOptions={selectedOptions}
+            onChange={onChange}
+          />
+        </div>
+      </div>
+    );
+  },
+};
 export const EmailGroup: Story = {
   render: () => {
     const [options, setOptions] = useState([
@@ -121,6 +167,7 @@ export const EmailGroup: Story = {
         labelAccessor="label"
         valueAccessor="value"
         onEnter={onEnter}
+        noResultsMessage="email not found"
       />
     );
   },
@@ -184,13 +231,13 @@ export const ControlledWithSelectAll: Story = {
           label={'Fruits'}
           required
           options={options}
-          displayCount = {false}
+          displayCount={false}
           selectedOptions={selectedOptions}
           onChange={onChange}
           isAllSelected={isAllSelected}
           onToggleAllSelect={onToggleAllSelect}
           isAllSelect={true}
-          displayAllSelectedAsText ={true}
+          displayAllSelectedAsText={true}
         />
       </div>
     );

@@ -31,7 +31,7 @@ const getBlockMap = (tableData: any) => {
         const endNlpName = getEndNlpName(row);
         const steps = getStepData;
 
-        if (row?.conditionId !== undefined && row?.conditionSearchKey !== undefined) {
+        if (row?.conditionId !== undefined && row?.conditionSearchKey !== undefined && !row.specialNlpId) {
             const conditionKey =
                 row.conditionId === row.conditionSearchKey
                     ? row.conditionId
@@ -72,7 +72,7 @@ const getBlockMap = (tableData: any) => {
             blockMap.get(key) || { start: null, end: null, childIds: [], allIds: [] };
 
         // If this is a starting special NLP step, determine its matching end and children.
-        if (step.isSpecialNlp && step.name?.startsWith('Start')) {
+        if (step?.isSpecialNlp && step.name?.startsWith('Start')) {
             blockEntry.start = step;
             const correspondingEndRow = getEndNlpRowData(step);
             if (correspondingEndRow) {
@@ -136,8 +136,8 @@ export const updateCheckboxStatus = (
 
         // Updates the child selection for a given row.
         const updateChild = (row: any): void => {
-            if (row.isSpecialNlp) {
-                const key = row.specialNlpId || row.conditionSearchKey;
+            if (row?.isSpecialNlp) {
+                const key = row?.specialNlpId || row?.conditionSearchKey;
                 const blockEntry = key && blockMap.get(key);
                 if (blockEntry && Array.isArray(blockEntry.allIds)) {
                     blockEntry.allIds.forEach((id: any) => {
@@ -146,7 +146,7 @@ export const updateCheckboxStatus = (
                     });
                 }
             } else {
-                isChecked ? updatedSelectSet.add(row.stepId) : updatedSelectSet.delete(row.stepId);
+                isChecked ? updatedSelectSet.add(row?.stepId) : updatedSelectSet.delete(row?.stepId);
             }
         };
 
@@ -155,39 +155,37 @@ export const updateCheckboxStatus = (
             let visited = true
             const recursiveUpdate = (parentData: any): void => {
                 const childIds: string[] = parentData?.childIds;
+                // For ElseIf or Else conditions, trigger a recursive update if needed.
+                if (isElseIfConditions(parentData?.start)) {
+                    if (isChecked) updateIfCondition(currentRow);
+                }
                 if (childIds?.length === 0) return;
                 const allChildrenChecked = childIds.every((id) => updatedSelectSet.has(id));
                 const someChildrenChecked = childIds.some((id) => updatedSelectSet.has(id));
                 if (allChildrenChecked) {
-                    updatedSelectSet.add(parentData.start.stepId);
-                    updatedSelectSet.add(parentData.end.stepId);
+                    updatedSelectSet.add(parentData.start?.stepId);
+                    updatedSelectSet.add(parentData.end?.stepId);
                 } else {
-                    updatedSelectSet.delete(parentData.start.stepId);
-                    updatedSelectSet.delete(parentData.end.stepId);
+                    updatedSelectSet.delete(parentData.start?.stepId);
+                    updatedSelectSet.delete(parentData.end?.stepId);
                 }
 
                 if (someChildrenChecked && !allChildrenChecked) {
-                    updateStepPartialSelect.add(parentData.start.stepId);
-                    updateStepPartialSelect.add(parentData.end.stepId);
+                    updateStepPartialSelect.add(parentData.start?.stepId);
+                    updateStepPartialSelect.add(parentData.end?.stepId);
                 } else {
-                    updateStepPartialSelect.delete(parentData.start.stepId);
-                    updateStepPartialSelect.delete(parentData.end.stepId);
-                }
-
-                // For ElseIf or Else conditions, trigger a recursive update if needed.
-                if (isElseIfConditions(parentData?.start)) {
-                    if (isChecked) updateIfCondition(currentRow);
+                    updateStepPartialSelect.delete(parentData.start?.stepId);
+                    updateStepPartialSelect.delete(parentData.end?.stepId);
                 }
 
                 // Recurse upward if there is a parent reference.
                 if (parentData?.start?.parentSpecialNlpId) {
                     const grandParent = blockMap.get(parentData.start.parentSpecialNlpId);
                     if (grandParent) recursiveUpdate(grandParent);
-                    return;
                 }
 
                 if (parentData?.start?.conditionSearchKey) {
-                    const parentKey = getParentConditionKey(parentData.start.conditionSearchKey);
+                    const parentKey = getParentConditionKey(parentData?.start?.conditionSearchKey);
                     let conditionSearchKey = parentData?.start?.conditionSearchKey;
                     let conditionId = parentData?.start?.conditionId;
                     if (conditionSearchKey === conditionId && visited) {
@@ -205,7 +203,7 @@ export const updateCheckboxStatus = (
             };
             //isParent if isChild
             if (
-                updateParentData?.conditionSearchKey === updateParentData?.conditionId && !updateParentData.parentSpecialNlpId && updateParentData.specialNlpId
+                updateParentData?.conditionSearchKey === updateParentData?.conditionId && !updateParentData?.parentSpecialNlpId && updateParentData?.specialNlpId
             ) {
                 const parentData = blockMap.get(updateParentData?.conditionSearchKey);
                 if (parentData) {
@@ -213,7 +211,7 @@ export const updateCheckboxStatus = (
                 }
                 return;
             }
-            if (!updateParentData?.conditionSearchKey && !updateParentData?.conditionId && updateParentData?.specialNlpId && !updateParentData.parentSpecialNlpId) {
+            if (!updateParentData?.conditionSearchKey && !updateParentData?.conditionId && updateParentData?.specialNlpId && !updateParentData?.parentSpecialNlpId) {
                 return;
             }
             if (
@@ -223,16 +221,15 @@ export const updateCheckboxStatus = (
                 if (parentData) {
                     recursiveUpdate(parentData);
                 }
-                return;
             }
-            if (updateParentData.parentSpecialNlpId) {
+            if (updateParentData?.parentSpecialNlpId) {
                 const parentData = blockMap.get(updateParentData?.parentSpecialNlpId);
                 if (parentData) {
                     recursiveUpdate(parentData);
                 }
             }
             if (updateParentData?.conditionSearchKey) {
-                const searchKey = (row.isSpecialNlp && !isElseIfConditions(updateParentData))
+                const searchKey = (row?.isSpecialNlp && !isElseIfConditions(updateParentData) && !row?.specialNlpId)
                     ? getParentConditionKey(updateParentData.conditionSearchKey)
                     : updateParentData.conditionSearchKey;
                 visited = true;
@@ -270,24 +267,37 @@ export function getUpdatedPartialSelect(tableData: any, prevPartialSelect: any) 
     return new Set([...prevPartialSelect].filter((id) => allCurrentIds.has(id)));
 }
 
-export function getUpdatedExpandedRows(tableData: any, prevExpandedRows: any, defaultExpanded: string) {
-    const needToExpand: Record<string, string> = {
+export function getUpdatedExpandedRows(
+    tableData: any[],
+    prevExpandedRows: Record<string, boolean>,
+    defaultExpanded: string
+): Record<string, boolean> {
+    const sectionTitlesToExpand: Record<string, string> = {
         Steps: 'Steps',
-        Depends: 'Depends on Script',
-        PRE: "Pre conditions",
-        POST: "Post conditions"
+        Depends: 'Depends on Scripts',
+        PRE: 'Pre Conditions',
+        POST: 'Post Conditions',
     };
+
     const newExpandedRows: Record<string, boolean> = {};
-    tableData.forEach((section: any) => {
-        newExpandedRows[section.title] =
-            section.title in prevExpandedRows
-                ? prevExpandedRows[section.title] ?? false
-                : section.title === needToExpand[defaultExpanded];
+
+    tableData.forEach((section) => {
+        const title = section.title;
+
+        const wasPreviouslyExpanded = title in prevExpandedRows;
+        const shouldExpandByDefault =
+            defaultExpanded === 'All'
+                ? Object.values(sectionTitlesToExpand).includes(title)
+                : title === sectionTitlesToExpand[defaultExpanded];
+
+        newExpandedRows[title] = wasPreviouslyExpanded
+            ? prevExpandedRows[title] ?? false
+            : shouldExpandByDefault;
     });
+
     return newExpandedRows;
 }
 
-//?
 export const gettingBlockMap = (tableData: any, selectedRows: any,
     stepPartialSelect: any): any => {
     let dynamicUpdate = getBlockMap(tableData);

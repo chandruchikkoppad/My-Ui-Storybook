@@ -103,5 +103,7 @@ export interface TableProps {
 
   isViewPrivilegeMode?: boolean;
 
-  defaultExpanded?: 'Steps' | 'POST' | 'PRE' | 'Depends';
+  defaultExpanded?: 'Steps' | 'POST' | 'PRE' | 'Depends' | 'All';
+
+  isHeaderRequired?: boolean;
 }

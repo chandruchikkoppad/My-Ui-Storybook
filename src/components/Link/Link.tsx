@@ -116,15 +116,20 @@ const Link = forwardRef<HTMLInputElement, LinkProps>(
             onKeyUp={onKeyUp}
             {...props}
           />
-
           <div className="input-link-icon">
-            <Tooltip title="Click here to navigate">
-              <Icon
-                name="link"
-                disabled={error || !isValueFilled || disableLinkIcon}
-                onClick={error ? () => {} : handleClickLink}
-              />
-            </Tooltip>
+            {disableLinkIcon || error || !isValueFilled ? (
+              <Icon name="link" disabled />
+            ) : (
+              <Tooltip title="Click here to navigate">
+                <span>
+                  <Icon
+                    name="link"
+                    disabled={false}
+                    onClick={handleClickLink}
+                  />
+                </span>
+              </Tooltip>
+            )}
           </div>
         </div>
         {helperText && error && (

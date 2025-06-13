@@ -2,7 +2,7 @@
 
 .ff-icon-radial-chart-container {
   position: relative;
-  cursor: pointer; 
+  cursor: pointer;
   svg {
     .ff-radial-chart-icon-padding {
       padding: 0px;
@@ -20,11 +20,13 @@
   }
 
   .ff-icon-radial-chart-tooltip {
-    position: fixed;
+    position: absolute;
     padding: 5px;
     border-radius: 4px;
     pointer-events: none;
     background-color: var(--tooltip-bg-color);
     color: var(--tooltip-text-color);
+    z-index: 100;
+    min-width: max-content;
   }
 }

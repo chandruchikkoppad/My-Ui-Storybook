@@ -3,7 +3,10 @@ import Typography from '../Typography';
 import Icon from '../Icon';
 import { MachineInputFieldProps, MachineType } from './types';
 import classNames from 'classnames';
-import { truncateText } from '../../utils/truncateText/truncateText';
+import {
+  isTextTruncated,
+  truncateText,
+} from '../../utils/truncateText/truncateText';
 import Tooltip from '../Tooltip';
 
 const MachineInputField = ({
@@ -14,15 +17,14 @@ const MachineInputField = ({
   contentReverse = false,
   onClick = () => {},
   modalId = '',
-  trucatedLable,
   scriptType = '',
   readOnly = false,
 }: MachineInputFieldProps) => {
   const getIcon: Record<MachineType['type'], string> = {
     local: 'local',
     browserstack: 'browserstack_icon',
-    sauceLabs: 'sause_lab',
-    lambdaTest: 'lambda_icon',
+    saucelabs: 'sause_lab',
+    lambdatest: 'lambda_icon',
     mac: 'mac_icon',
     mac_icon: 'mac_icon',
     android: 'android_icon',
@@ -34,6 +36,10 @@ const MachineInputField = ({
     safari: 'safari_icon',
     opera: 'opera',
     windows: 'windows',
+    edge: 'edge',
+    firefox: 'fire_fox',
+    chrome: 'chrome_icon',
+    explorer: 'internet_explorer',
   };
   const isManualScript = scriptType.toLowerCase() === 'manual';
   return (
@@ -41,7 +47,7 @@ const MachineInputField = ({
       id={modalId}
       style={{ width: width }}
       className={classNames('ff-machine-input-field-wrapper', className, {
-        'cursor-event-none': runCount!==1 && scriptType=='Automation',
+        'cursor-event-none': runCount !== 1 && scriptType == 'Automation',
       })}
       onClick={() => {
         if (readOnly) return;
@@ -83,7 +89,7 @@ const MachineInputField = ({
                 })}
                 color="var(--ff-machine-input-field-text-color)"
               >
-                {trucatedLable ? truncateText(label, 15) : label}
+                {isTextTruncated(label, 15) ? truncateText(label, 15) : label}
               </Typography>
             </Tooltip>
           </div>

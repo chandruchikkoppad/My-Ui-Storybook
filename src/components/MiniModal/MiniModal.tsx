@@ -4,6 +4,7 @@ import {
   useCallback,
   forwardRef,
   useLayoutEffect,
+  useEffect,
 } from 'react';
 import { createPortal } from 'react-dom';
 import {
@@ -290,6 +291,25 @@ const MiniModal = forwardRef<HTMLDivElement, MiniEditModalProps>(
     if (isWrapped && isPopOver) {
       return null;
     }
+    const wrapperDiv = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+      const isValidAnchorRef =
+        anchorRef &&
+        typeof anchorRef !== 'string' &&
+        'current' in anchorRef &&
+        anchorRef.current;
+
+      if (overlay && wrapperDiv.current && isValidAnchorRef) {
+        const clone = anchorRef.current.cloneNode(true);
+        wrapperDiv.current.innerHTML = '';
+        wrapperDiv.current.appendChild(clone);
+      }
+
+      return () => {
+        wrapperDiv.current?.replaceChildren();
+      };
+    }, [anchorRef, overlay]);
 
     return createPortal(
       <>
@@ -346,6 +366,7 @@ const MiniModal = forwardRef<HTMLDivElement, MiniEditModalProps>(
           {isWrapped && (
             <div
               className={'wrapped-div'}
+              ref={wrapperDiv}
               style={{
                 left: `${calculatedAnchorRefLeft}px`,
                 width: `${wrapperWidth + increasedIconSize / 1.2}px`,
@@ -356,6 +377,9 @@ const MiniModal = forwardRef<HTMLDivElement, MiniEditModalProps>(
                 boxShadow:
                   wrapperBoxShadow ??
                   `0px -3px 4px 0px var(--ff-mini-modal-box-shadow)`,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
               }}
             ></div>
           )}

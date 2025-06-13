@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   IconRadialChartProps,
   ArcParams,
@@ -84,6 +84,7 @@ const IconRadialChart: React.FC<IconRadialChartProps> = ({
 }) => {
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
   const [showTooltip, setShowTooltip] = useState<boolean>(false);
+  const containerRef = useRef<HTMLDivElement>(null);
   let currentAngle = -Math.PI / 2;
   const svgSize = 2 * (radius + lineWidth);
   const { backgroundArcPath, foregroundArcPath } = calculateArcPaths(
@@ -100,10 +101,13 @@ const IconRadialChart: React.FC<IconRadialChartProps> = ({
     setShowTooltip(false);
   };
   const handleMouseMove = (event: React.MouseEvent) => {
-    setTooltipPosition({
-      x: event.clientX + 10,
-      y: event.clientY + 10,
-    });
+    if (containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      setTooltipPosition({
+        x: event.clientX - rect.left,
+        y: event.clientY - rect.top,
+      });
+    }
   };
 
   const renderTooltip = () => {
@@ -111,8 +115,9 @@ const IconRadialChart: React.FC<IconRadialChartProps> = ({
       <div
         className="ff-icon-radial-chart-tooltip"
         style={{
-          left: tooltipPosition.x,
-          top: tooltipPosition.y,
+          position: 'absolute',
+          left: `${tooltipPosition.x + 15}px`,
+          top: `${tooltipPosition.y - 5}px`,
         }}
       >
         <Typography>{`${label} : `}</Typography>
@@ -123,6 +128,7 @@ const IconRadialChart: React.FC<IconRadialChartProps> = ({
 
   return (
     <div
+      ref={containerRef}
       className="ff-icon-radial-chart-container"
       style={{ '--fontSize': `${fontSize}px` } as React.CSSProperties}
       onClick={onSelect}

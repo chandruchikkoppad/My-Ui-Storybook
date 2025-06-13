@@ -45,6 +45,7 @@ const Select: FC<SelectProps> = ({
   background = '',
   borderRadius = '0px',
   noResultsMessage,
+  dropDownRef,
 }) => {
   const selectWidth = typeof width === 'number' ? `${width}px` : width;
   const memoizedOptionsList = useMemo(() => optionsList, [optionsList]);
@@ -139,13 +140,16 @@ const Select: FC<SelectProps> = ({
       fromBottom: 0,
       width: 0,
     });
-    setSearchedOption({
-      searchedText: getValue(selectedOption, valueAccessor) || '',
-      searchedIcon: selectedOption.iconName || '',
-    });
     setSelectOptionList(optionsList);
-    setCustomRecurrence(false);
-    onBlur();
+    if (inputRef?.current === document.activeElement) {
+      inputRef?.current?.blur();
+      setSearchedOption({
+        searchedText: getValue(selectedOption, valueAccessor) || '',
+        searchedIcon: selectedOption.iconName || '',
+      });
+      setCustomRecurrence(false);
+      onBlur();
+    }
   };
 
   const onSelectOptionSelector = (option: Option): void => {
@@ -166,23 +170,39 @@ const Select: FC<SelectProps> = ({
 
   const handleResizeOrScroll = () => onSelectUpdatePosition();
 
+  const getScrollParent = (element: HTMLElement | null): HTMLElement | null => {
+    if (!element) return null;
+
+    let parent = element.parentElement;
+    while (parent) {
+      const overflowY = window.getComputedStyle(parent).overflowY;
+      if (overflowY === 'auto' || overflowY === 'scroll') {
+        return parent;
+      }
+      parent = parent.parentElement;
+    }
+    return document.body;
+  };
+
   const hideShowScrollbar = () => {
     if (disabled) return;
     if (showDropdownOptions && optionsRequired) {
       onSelectToggleScroll(!showDropdownOptions);
     }
     onSelectUpdatePosition();
+    const scrollableParent = getScrollParent(inputRef.current);
 
     window.addEventListener('resize', handleResizeOrScroll);
-    window.addEventListener('scroll', handleResizeOrScroll);
+    scrollableParent?.addEventListener('scroll', onSelectBlur);
   };
 
   useEffect(() => {
     hideShowScrollbar();
+    const scrollableParent = getScrollParent(inputRef.current);
     return () => {
       onSelectToggleScroll(true);
       window.removeEventListener('resize', handleResizeOrScroll);
-      window.removeEventListener('scroll', handleResizeOrScroll);
+      scrollableParent?.removeEventListener('scroll', onSelectBlur);
     };
   }, [showDropdownOptions]);
 
@@ -208,7 +228,9 @@ const Select: FC<SelectProps> = ({
 
   return (
     <div
-      className={`ff-select-wrapper ${className}`}
+      className={`ff-select-wrapper ${className} ${
+        showClearIcon ? 'show-clear-icon' : ''
+      }`}
       ref={selectWrapperRef}
       style={{
         height: `${height}px`,
@@ -274,9 +296,6 @@ const Select: FC<SelectProps> = ({
                 z-index={9999}
               />
             )}
-            {showClearIcon && (
-              <Icon name="close" height={12} width={12} onClick={handelClear} />
-            )}
           </div>
         )}
         {showLabel && (
@@ -287,8 +306,9 @@ const Select: FC<SelectProps> = ({
               'ff-select-labels__active': searchedText,
             })}
             fontSize={searchedText || showDropdownOptions ? 10 : 12}
-            lineHeight={searchedText || showDropdownOptions ? '10px' : '12px'}
+            lineHeight={searchedText || (showDropdownOptions && '12px')}
             required={required}
+            style={{ maxWidth: `calc(${selectWidth} - 40px)` }}
           >
             {label}
           </Typography>
@@ -335,10 +355,22 @@ const Select: FC<SelectProps> = ({
                 showArrowIcon={showArrowIcon}
                 showClearIcon={showClearIcon}
                 noResultsMessage={noResultsMessage}
+                ref={dropDownRef}
               />,
               document.body
             )}
         </div>
+      )}
+      {showClearIcon && (
+        <Tooltip title="Cancel" style={{ zIndex: 99999 }}>
+          <Icon
+            name="close"
+            height={16}
+            width={16}
+            onClick={handelClear}
+            hoverEffect
+          />
+        </Tooltip>
       )}
     </div>
   );

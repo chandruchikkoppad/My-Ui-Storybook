@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode, Ref } from 'react';
 
 export interface ModalProps {
   isOpen: boolean;
@@ -40,4 +40,6 @@ export interface ModalProps {
   boxShadow?: string;
   border?: string;
   background?: string;
+  ref?: Ref<HTMLDivElement>;
+  style?: React.CSSProperties;
 }

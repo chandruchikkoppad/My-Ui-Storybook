@@ -39,12 +39,8 @@
   .ff-accordion-table-body {
     flex-grow: 1;
     overflow-y: auto;
-    overflow: scroll;
   }
 
-  .ff-accordion-table-body::-webkit-scrollbar {
-    display: none;
-  }
 
 
   .column-table-accordion {
@@ -58,7 +54,7 @@
       }
 
       .step-result {
-        padding: 6px 8px;
+        padding: 4px 8px;
         overflow: hidden;
 
         &-text {
@@ -72,6 +68,10 @@
         display: flex;
         align-items: center;
         padding: 4px 8px 4px 24px;
+
+        .header-title {
+          margin-left: 2px;
+        }
 
         .accordion-arrow {
           margin-left: 4px;

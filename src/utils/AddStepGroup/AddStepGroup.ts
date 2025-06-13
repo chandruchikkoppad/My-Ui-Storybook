@@ -1,8 +1,13 @@
+import { ffid } from "../ffID/ffid";
+
 export const addPrePostStepGroup = (
     steps: any[],
     stepId: string,
-    newSteps: any[]
+    newStep: any[]
 ): any[] => {
+    //!Note : This function is used to override the stepId because in some step Groups we are using the same stepId for multiple steps. So we need to override the stepId for the new steps.
+    let newSteps = newStep?.map((step) => ({ ...step, stepId: ffid() }))
+
     return steps.map((step) => {
         if (step.stepId === stepId) {
             if (["Group", "PRE", "POST", 'Script'].includes(step.type)) {

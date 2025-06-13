@@ -189,7 +189,7 @@ const DonutChart: React.FC<DonutChartProps> = ({
                     resultStats?.find(
                       (statusValue) =>
                         statusValue?.status?.toLowerCase() === hoveredStatus
-                    )?.count
+                    )?.count ?? 0
                   } ${legendDetailsType}`
                 : `${totalCount} ${legendDetailsType}`}
             </text>

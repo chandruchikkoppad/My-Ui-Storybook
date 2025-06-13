@@ -26,4 +26,5 @@ export interface AttachmentUploaderProps {
   required?: boolean;
   errorMessage?: string;
   onBlur?: (event?: React.FocusEvent<HTMLInputElement>) => void;
+  truncateMaxLimit?: number;
 }

@@ -24,6 +24,8 @@ import {
 } from 'react';
 import DraggableTableRow from './components/DraggableTableRow';
 import { appendNewRow } from '../../utils/AppendNewRow/AppendNewRow';
+import { scrollToView } from '../../utils/ScrollToview/ScrollToView';
+import { checkEmpty } from '../../utils/checkEmpty/checkEmpty';
 
 const PrePostTable = ({
   data = [],
@@ -54,6 +56,7 @@ const PrePostTable = ({
   handleViewComponent,
   handleAccordion,
   loading,
+  scriptType = false,
 }: PrePostTableProps) => {
   const observerRef = useRef<IntersectionObserver | null>(null);
   const [ViewComponent, setViewComponent] = useState<any | null>(null);
@@ -77,6 +80,7 @@ const PrePostTable = ({
   const isStepGroupExpanded = (stepId: string) => expandStepGroup.has(stepId);
   const handleStepGroupExpand = (rowData: any) => {
     if (!isStepGroupExpanded(rowData?.stepId)) {
+      if (viewModeId) toggleViewRow(null);
       handleAccordion?.(rowData);
     }
     if (!loading) {
@@ -159,6 +163,9 @@ const PrePostTable = ({
     if (oldIndex === -1 || newIndex === -1) return;
     if (onDragEnd) onDragEnd(oldIndex, newIndex);
   };
+  useEffect(() => {
+    scrollToView('getInFocus');
+  }, [AddNlp, viewModeId]);
   return (
     <DndContext
       collisionDetection={closestCorners}
@@ -174,7 +181,7 @@ const PrePostTable = ({
         strategy={verticalListSortingStrategy}
       >
         <div
-          style={{ height: height, position: 'relative' }}
+          style={{ height: height }}
           id="ff-table-scroll-container"
           className={classNames(className, {
             'pre-fixed-header-table': withFixedHeader,
@@ -238,7 +245,11 @@ const PrePostTable = ({
                   const isEditOrNew = isEdit || row.isNew;
 
                   const renderEditableRow = () => (
-                    <tr key={row.stepId || index} className="pre-edit-row">
+                    <tr
+                      key={row.stepId || index}
+                      id="getInFocus"
+                      className="pre-edit-row"
+                    >
                       {isEdit && isValidElement(editComponent) && (
                         <td colSpan={columns.length}>
                           {cloneElement(editComponent as ReactElement, {
@@ -275,6 +286,7 @@ const PrePostTable = ({
                       handleClick={handleClick}
                       handleStepGroupExpand={handleStepGroupExpand}
                       isStepGroupExpanded={isStepGroupExpanded}
+                      scriptType={scriptType}
                     />
                   );
 
@@ -287,7 +299,7 @@ const PrePostTable = ({
               <tr id="ff-table-last-node" />
             </tbody>
           </table>
-          {data?.length <= 0 && (
+          {checkEmpty(data) && checkEmpty(AddNlp) && (
             <div
               className="ff-no-data-content"
               style={{ height: `calc(${height} - 50px)` }}

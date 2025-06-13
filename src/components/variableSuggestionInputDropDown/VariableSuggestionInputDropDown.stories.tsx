@@ -64,7 +64,7 @@ const Template: StoryFn<VariableSuggestionInputDropDownProps> = (args) => {
           isOpen={openCreateVariable}
           onClose={() => setOpenCreateVariable(false)}
           variableName={variableName}
-          value={variableValue}
+          variableValue={variableValue}
           hideValue={hideValue}
           handleSubmit={() => {
             alert('Variable Created');
@@ -251,7 +251,7 @@ export const DropdownOnHashAndDollar: Story = {
           placeholder="Select Path Using # or variable using $"
           isHash
           zIndex={9999}
-          truncateTextValue={34}
+          truncateTextValue={54}
           dataFiles={testData}
           dropdownWidth="100%"
           setHashInputValue={setHashInputValue}

@@ -1,27 +1,51 @@
-import React from "react";
-import Carousel from "./carousel";
-import type { ComponentProps } from "react";
+import type { Meta, StoryObj } from '@storybook/react';
+import Carousel from './Carousel';
 
-export default {
-  title: "Components/Carousel",
+const meta: Meta<typeof Carousel> = {
+  title: 'Components/Carousel',
   component: Carousel,
+  tags: ['autodocs'],
 };
 
-const Template = (args: ComponentProps<typeof Carousel>) => <Carousel {...args} />;
+export default meta;
+type Story = StoryObj<typeof Carousel>;
 
-export const Default = Template.bind({});
-Default.args = {
-  items: [
-    { type: "image", src: "https://picsum.photos/id/1011/800/450" },
-    { type: "video", src: "https://www.w3schools.com/html/mov_bbb.mp4" },
-    { type: "image", src: "https://picsum.photos/id/1015/800/450" },
-    { type: "video", src: "https://www.w3schools.com/html/movie.mp4" },
-  ],
-  slideIconName: "chrome_icon",
-  slideName: "Machine Name - Result 1 - Script Name",
-  collapseIconName:"collapse_icon",
-  onCollapseClick: () => alert('Collapse clicked!'), 
-  timeText:"5 min 30 sec",
-  currentScripts: 4, 
-  totalScripts: 50,  
+export const Default: Story = {
+  args: {
+    items: [
+      {
+        src: 'https://picsum.photos/id/1011/800/450',
+        alt: 'Mountain',
+        icon: 'windows',
+        currentScripts: 4,
+        totalScripts: 50,
+        extraField: 'you can add anything here without TS error',
+        runId: '1',
+        machineName: 'Machine Name',
+        scriptName: 'Script Name',
+      },
+      {
+        src: 'https://www.w3schools.com/html/mov_bbb.mp4',
+        icon: 'linux',
+        currentScripts: 4,
+        totalScripts: 50,
+        runId: '2',
+        machineName: 'Machine Name',
+        scriptName: 'Script Name',
+      },
+      {
+        src: 'https://picsum.photos/id/1015/800/450',
+        alt: 'Forest',
+        icon: 'windows',
+        currentScripts: 4,
+        totalScripts: 50,
+        runId: '3',
+        machineName: 'Machine Name',
+        scriptName: 'Script Name',
+      },
+    ],
+    initialRunId: '2',
+    onCollapseClick: () => alert('Collapse clicked!'),
+    height: '450px',
+  },
 };

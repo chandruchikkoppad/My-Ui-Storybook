@@ -37,6 +37,8 @@ export interface EditLabelProps {
   confirmIconTooltip?: string;
   cancelIconTooltip?: string;
   inlineValidationError?: boolean;
+  onChangeValidationError?: boolean;
+  truncatedType?: 'count' | 'pixel';
 }
 
 type OptionValue = any;

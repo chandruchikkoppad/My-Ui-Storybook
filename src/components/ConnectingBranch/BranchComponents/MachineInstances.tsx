@@ -1,4 +1,3 @@
-import { ffid } from '../../../utils/ffID/ffid';
 import Typography from '../../Typography';
 import {
   indexType,
@@ -45,7 +44,7 @@ const MachineInstances: React.FC<MachineInstancesProps> = ({
           (childNodeData: MachineData, childNodeIndex: indexType) => {
             const isFirstLine = childNodeIndex === 0;
             return (
-              <div className="ff-machine-instance-row" key={ffid()}>
+              <div className="ff-machine-instance-row">
                 <div
                   className={`ff-selectedMachines-connecting-line ${
                     !isFirstLine ? 'ff-second-line' : ''
@@ -76,8 +75,7 @@ const MachineInstances: React.FC<MachineInstancesProps> = ({
                     ) => (
                       <div
                         key={
-                          runLevelExecutionDataSet?.runLevelExecutionDataSetId +
-                          ffid()
+                          runLevelExecutionDataSet?.runLevelExecutionDataSetId
                         }
                         className="ff-run-level-execution-dataset"
                         ref={
@@ -88,7 +86,6 @@ const MachineInstances: React.FC<MachineInstancesProps> = ({
                       >
                         <div
                           className="ff-execution-item"
-                          key={ffid()}
                           ref={(element) =>
                             (itemRefs.current[runLevelExecutionDataSetIndex] =
                               element)

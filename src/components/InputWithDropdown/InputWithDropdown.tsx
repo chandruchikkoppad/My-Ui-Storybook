@@ -20,22 +20,27 @@ const InputWithDropdown = forwardRef<HTMLInputElement, InputWithDropdownProps>(
       optionsList,
       selectedOption = { label: '', value: '' },
       autoComplete = 'off',
-      onDropdownChangeHandler = () => { },
+      onDropdownChangeHandler = () => {},
       onInputChangeHandler,
       onInputBlurHandler,
       onClick,
       onKeyUp,
+      onKeyDown = () => {},
       onFocus,
       optionsRequired = true,
       dropdownPosition = 'right',
       type = 'text',
       leftDropDownPositionZindex,
-      rightDropDownPositionZindex
+      rightDropDownPositionZindex,
     },
     ref
   ) => {
     const isValueFilled = !checkEmpty(value) || dropdownPosition === 'left';
-
+    const handleWheel = (e: React.WheelEvent<HTMLInputElement>) => {
+      if (type === 'number') {
+        e.currentTarget.blur();
+      }
+    };
     return (
       <div
         className={classNames('ff-input-with-dropdown-container', {
@@ -100,6 +105,8 @@ const InputWithDropdown = forwardRef<HTMLInputElement, InputWithDropdownProps>(
               disabled={disabled}
               onClick={onClick}
               onKeyUp={onKeyUp}
+              onKeyDown={onKeyDown}
+              onWheel={handleWheel}
               onFocus={onFocus}
               className={classNames('ff-floating-input', {
                 'ff-floating-input--filled': isValueFilled,
@@ -115,8 +122,7 @@ const InputWithDropdown = forwardRef<HTMLInputElement, InputWithDropdownProps>(
               selectedOption={selectedOption}
               showLabel={false}
               showBorder={false}
-              optionZIndex={rightDropDownPositionZindex
-              }
+              optionZIndex={rightDropDownPositionZindex}
               onChange={onDropdownChangeHandler}
               disabled={disabled || !optionsRequired}
               optionsRequired={optionsRequired}

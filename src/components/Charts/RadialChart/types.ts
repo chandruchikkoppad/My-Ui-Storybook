@@ -1,5 +1,13 @@
 export type Status = {
-  status: 'Passed' | 'Failed' | 'Warning' | 'Skipped' | 'passed' | 'failed' | 'warning' | 'skipped';
+  status:
+    | 'Passed'
+    | 'Failed'
+    | 'Warning'
+    | 'Skipped'
+    | 'passed'
+    | 'failed'
+    | 'warning'
+    | 'skipped';
   value: number;
 };
 //main component type
@@ -9,6 +17,7 @@ export interface RadialChartProps {
   statusValues: Status[];
   onClick?: (status: Status) => void;
   fontSize: number;
+  gap?: number;
 }
 
 //type for the calculateArc function

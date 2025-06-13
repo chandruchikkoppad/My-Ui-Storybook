@@ -22,7 +22,7 @@ export interface OptionType extends OptionClick {
    * @type {string}
    * @optional
    */
-  icon?: string;
+  icon?: string | ReactNode;
 
   iconColor?: string;
 
@@ -117,6 +117,7 @@ interface OptionCardProps {
    */
   variant?: 'primary' | 'default';
   isAddResourceButton?: boolean;
+  alignOption: 'left' | 'right' | 'center';
 }
 
 interface MenuOptionProps {
@@ -235,6 +236,11 @@ interface MenuOptionProps {
    * @optional
    */
   disabled?: boolean;
+
+  /** position of the Menuoption*/
+  alignOption?: 'left' | 'right' | 'center';
+
+  displayCard?: boolean;
 }
 
 interface OptionProps {
@@ -252,6 +258,7 @@ interface OptionProps {
    * @required
    */
   onClick: (option: OptionClick) => void;
+  alignOption: 'left' | 'right' | 'center';
 }
 
 export { OptionProps, MenuOptionProps, OptionCardProps, OptionClick };

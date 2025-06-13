@@ -142,11 +142,7 @@ export const convertStyleToBackend = (
     color: frontendStyle.color?.replace('#', '') || '000000',
     backgroundColor:
       frontendStyle.backgroundColor?.replace('#', '') || 'FFFFFF',
-    borderColor:
-      frontendStyle.borderTop &&
-      frontendStyle.borderTop.toString().includes('solid')
-        ? 'F2F2F2'
-        : '000000',
+    borderColor: 'F2F2F2',
     border: {
       top: getBorderStyle(
         frontendStyle.borderTop ? frontendStyle.borderTop.toString() : undefined

@@ -1,4 +1,8 @@
-import { appHeaderMenuItemProps, AppHeaderProps } from './types';
+import {
+  appHeaderHiddenMenuItemProps,
+  appHeaderMenuItemProps,
+  AppHeaderProps,
+} from './types';
 import Icon from '../Icon';
 import './AppHeader.scss';
 import classNames from 'classnames';
@@ -29,14 +33,23 @@ const AppHeader: React.FC<AppHeaderProps> = ({
   onProjectDropdownLabelClick = () => {},
   onMoreMenuOptionClick = () => {},
   disabled = false,
+  isClient = false,
+  hideNavbar = false,
+  scriptId,
 }) => {
   const hiddenMenuRef = useRef<HTMLDivElement>(null);
   const hiddenQuickMenuRef = useRef<HTMLDivElement>(null);
   const [projectArrayList, setProjectArrayList] = useState(projectsList);
+  const [quickMenuItems, setQuickMenuItems] = useState<
+    appHeaderHiddenMenuItemProps[]
+  >([]);
   const [appHeaderHiddenMenuItems, setAppHeaderHiddenMenuItems] = useState<
     { label: string; value: string | undefined }[]
   >([]);
   const projectDetails = getStoreValue('current-project') as { id: string };
+  const privilegeData = getStoreValue('privilege') as {
+    headers: appHeaderMenuItemProps[];
+  };
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [selectedMenuItem, setSelectedMenuItem] =
     useState<string>(selectedMenu);
@@ -78,6 +91,12 @@ const AppHeader: React.FC<AppHeaderProps> = ({
   };
 
   const handleProjectMenuClick = (projectItem: any) => {
+    if (
+      projectItem?.value === projectDetails?.id &&
+      projectItem?.value !== 'All Projects'
+    ) {
+      return;
+    }
     if (!disabled) {
       onProjectMenuClick(projectItem);
       calculateVisibleItems();
@@ -104,12 +123,15 @@ const AppHeader: React.FC<AppHeaderProps> = ({
   const menuItemsWidthRef = useRef<{ [key: string]: number }>({});
 
   const calculateVisibleItems = useCallback(() => {
-    if (projectDetails?.id === 'All Projects' || !menuContainerRef.current) {
+    if (
+      (!isClient && projectDetails?.id === 'All Projects') ||
+      !menuContainerRef.current
+    ) {
       setAppHeaderHiddenMenuItems([]);
       return;
     }
 
-    const containerWidth = 900;
+    const containerWidth = isClient ? 700 : 950;
     let totalWidth = 0;
     const visibleItems: appHeaderMenuItemProps[] = [];
     const hiddenItems: appHeaderMenuItemProps[] = [];
@@ -171,19 +193,56 @@ const AppHeader: React.FC<AppHeaderProps> = ({
     }, 800);
 
     return () => clearTimeout(timer);
-  }, [projectDetails?.id, selectedMenuItem]);
+  }, [projectDetails?.id, selectedMenuItem, scriptId, quickMenuItems]);
   const checkIsHavingEntityPendingCounts = (data: appHeaderMenuItemProps) => {
     if (data.label === 'Approval Request' && data.entityPendingCounts) {
       return Object.values(data.entityPendingCounts).some((count) => count > 0);
     }
     return false;
   };
+  useEffect(() => {
+    if (privilegeData?.headers && selectedMenu && selectedSubMenu) {
+      const quickMenuItemsData = getQuickMenuItems(
+        privilegeData?.headers,
+        selectedMenu,
+        selectedSubMenu
+      );
+      if (
+        JSON.stringify(quickMenuItemsData) !== JSON.stringify(quickMenuItems)
+      ) {
+        setQuickMenuItems(quickMenuItemsData || []);
+      }
+    }
+  }, [privilegeData?.headers]);
+  const getQuickMenuItems = (
+    dataArray: appHeaderMenuItemProps[],
+    menuLabel: string,
+    subMenuLabel: string
+  ) => {
+    const mainItem = dataArray.find(
+      (item: { label: string }) => item.label === menuLabel
+    );
+    if (!mainItem) {
+      return [];
+    }
+
+    const subItem = mainItem?.subMenuItems?.find(
+      (sub: { label: string }) => sub.label === subMenuLabel
+    );
+    if (!subItem) {
+      return [];
+    }
+    if (subItem.quickMenuItems) {
+      return subItem?.quickMenuItems?.filter(
+        (quickItem: { hide?: boolean }) => !quickItem?.hide
+      );
+    } else {
+      return [];
+    }
+  };
+
   return (
-    <div
-      className={classNames('ff-app-header-main', {
-        'ff-app-header-disabled': disabled,
-      })}
-    >
+    <div className={classNames('ff-app-header-main')}>
       <div
         className="ff-app-header"
         style={{
@@ -199,237 +258,248 @@ const AppHeader: React.FC<AppHeaderProps> = ({
             <div className="ff-app-header-left-content">{leftContent}</div>
           )}
         </div>
-          <div
-            className="ff-app-header-nav-bar"
-            style={{ width: width }}
-            ref={menuContainerRef}
-          >
-            {projectArrayList && !checkEmpty(projectArrayList) && (
-              <div>
-                {
-                  <AllProjectsDropdown
-                    onClick={handleProjectMenuClick}
-                    options={projectArrayList}
-                    selectedOption={selectedProject}
-                    onMenuClick={handleProjectDropdownLabelClick}
-                    selected={selectedMenuItem === 'All Projects'}
-                    placeholder="Search Projects"
-                    disabled={disabled}
-                  />
-                }
+        <div
+          className="ff-app-header-nav-bar"
+          style={{
+            width: width,
+            visibility:
+              (checkEmpty(appHeaderMenuItems) &&
+                projectDetails?.id === 'All Projects') ||
+              hideNavbar
+                ? 'hidden'
+                : 'visible',
+            position: 'relative',
+            zIndex: 1,
+          }}
+          ref={menuContainerRef}
+        >
+          {projectArrayList && !checkEmpty(projectArrayList) && (
+            <div>
+              {
+                <AllProjectsDropdown
+                  onClick={handleProjectMenuClick}
+                  options={projectArrayList}
+                  selectedOption={selectedProject}
+                  onMenuClick={handleProjectDropdownLabelClick}
+                  selected={selectedMenuItem === 'All Projects'}
+                  placeholder="Search Projects"
+                  disabled={disabled}
+                />
+              }
+            </div>
+          )}
+          <div className="ff-app-header-nav-bar-items fontSm">
+            {appHeaderMenuItems?.map((menuItem, index) => {
+              return (
+                !appHeaderHiddenMenuItems?.find(
+                  (menu) => menu.label === menuItem.label
+                ) &&
+                !menuItem.hide &&
+                menuItem.access !== 'No Access' &&
+                (menuItem?.isReviewer !== false ||
+                  checkIsHavingEntityPendingCounts(menuItem)) &&
+                menuItem.label !== 'All Projects' && (
+                  <div
+                    ref={(element) => (menuItemsRef.current[index] = element)}
+                    className={classNames('ff-app-header-nav-bar-item', {
+                      ['ff-app-header-nav-bar-item--selected']:
+                        menuItem.label === selectedMenuItem,
+                      'ff-app-header-nav-bar-item--disabled':
+                        disabled && menuItem.label !== selectedMenuItem,
+                    })}
+                    key={menuItem.label}
+                  >
+                    <Typography
+                      as="div"
+                      className="ff-app-header-nav-bar-item-label"
+                      lineHeight="18px"
+                      onClick={() => handleMenuClick(menuItem)}
+                    >
+                      {menuItem.label}
+                    </Typography>
+                    {menuItem.label === selectedMenuItem &&
+                      menuItem?.subMenuItems && (
+                        <>
+                          {menuItem?.subMenuItems?.map((subMenuItem, index) => {
+                            return (
+                              <>
+                                {!subMenuItem.hide && (
+                                  <div
+                                    key={subMenuItem.label}
+                                    className="ff-app-header-submenu-container"
+                                    ref={(element) =>
+                                      (subMenuItemsRef.current[index] = element)
+                                    }
+                                  >
+                                    <Typography
+                                      as="div"
+                                      className={classNames(
+                                        'ff-app-header-nav-bar-submenu-item',
+                                        {
+                                          ['ff-app-header-nav-bar-submenu-item--selected']:
+                                            subMenuItem.label ===
+                                            selectedSubMenu,
+                                          'ff-app-header-nav-bar-submenu-item--disabled':
+                                            disabled,
+                                        }
+                                      )}
+                                      lineHeight="18px"
+                                      onClick={() =>
+                                        handleSubMenuClick(subMenuItem)
+                                      }
+                                    >
+                                      {subMenuItem.label}
+                                    </Typography>
+                                  </div>
+                                )}
+                              </>
+                            );
+                          })}
+                          {menuItem?.subMenuItems?.map((subMenuItem, index) => {
+                            return (
+                              <>
+                                {!subMenuItem.hide && (
+                                  <div
+                                    key={subMenuItem.label}
+                                    className="ff-app-header-submenu-container"
+                                    ref={(element) =>
+                                      (quickMenuItemsRef.current[index] =
+                                        element)
+                                    }
+                                  >
+                                    {subMenuItem.label === selectedSubMenu &&
+                                      subMenuItem?.quickMenuItems &&
+                                      subMenuItem?.quickMenuItems.length > 0 &&
+                                      (() => {
+                                        const quickMenuItemsArray =
+                                          quickMenuItems.slice(
+                                            0,
+                                            scriptId ? 10 : 8
+                                          );
+                                        const quickMenuHiddenItemsArray =
+                                          quickMenuItems.slice(
+                                            scriptId ? 10 : 8
+                                          );
+                                        const quickMenuHiddenItems =
+                                          quickMenuHiddenItemsArray?.map(
+                                            (item) => ({
+                                              ...item,
+                                              value: item.path,
+                                              icon: item.iconName,
+                                            })
+                                          );
+                                        return (
+                                          <div
+                                            className={classNames(
+                                              'ff-app-header-quickmenu-container',
+                                              subMenuItem.quickMenuItems?.length
+                                                ? 'visible'
+                                                : ''
+                                            )}
+                                          >
+                                            <div>
+                                              <Icon name="vertical_separator" />
+                                            </div>
+                                            {quickMenuItemsArray?.map(
+                                              (quickMenuItem) => {
+                                                return (
+                                                  <>
+                                                    {!quickMenuItem.hide && (
+                                                      <div
+                                                        key={
+                                                          quickMenuItem.iconName
+                                                        }
+                                                        onClick={() =>
+                                                          handleQuickMenuClick(
+                                                            quickMenuItem
+                                                          )
+                                                        }
+                                                        className={classNames(
+                                                          'ff-app-header-nav-bar-quickmenu-item',
+                                                          {
+                                                            ['ff-app-header-nav-bar-quickmenu-item--selected']:
+                                                              quickMenuItem.path ===
+                                                              selectedQuickMenu,
+                                                          }
+                                                        )}
+                                                      >
+                                                        <Tooltip
+                                                          title={
+                                                            quickMenuItem?.label
+                                                          }
+                                                        >
+                                                          <Icon
+                                                            name={
+                                                              quickMenuItem?.iconName ??
+                                                              ''
+                                                            }
+                                                            height={16}
+                                                            width={16}
+                                                            hoverEffect={true}
+                                                          />
+                                                        </Tooltip>
+                                                      </div>
+                                                    )}
+                                                  </>
+                                                );
+                                              }
+                                            )}
+                                            {quickMenuHiddenItemsArray &&
+                                              !checkEmpty(
+                                                quickMenuHiddenItemsArray
+                                              ) && (
+                                                <div ref={hiddenQuickMenuRef}>
+                                                  <MenuOption
+                                                    iconName="more"
+                                                    options={
+                                                      quickMenuHiddenItems
+                                                    }
+                                                    onOptionClick={
+                                                      onQuickMenuClick
+                                                    }
+                                                    dropdownPlacement="down"
+                                                    zIndex={1001}
+                                                    tooltipTitle="More"
+                                                    variant="light"
+                                                    targetRef={
+                                                      hiddenQuickMenuRef
+                                                    }
+                                                  />
+                                                </div>
+                                              )}
+                                          </div>
+                                        );
+                                      })()}
+                                  </div>
+                                )}
+                              </>
+                            );
+                          })}
+                        </>
+                      )}
+                  </div>
+                )
+              );
+            })}
+          </div>
+          {appHeaderHiddenMenuItems &&
+            !checkEmpty(appHeaderHiddenMenuItems) && (
+              <div className="more-menu" ref={hiddenMenuRef}>
+                <MenuOption
+                  iconName="more"
+                  options={appHeaderHiddenMenuItems}
+                  onOptionClick={handleMoreMenuOptionClick}
+                  variant="dark"
+                  dropdownPlacement="down"
+                  zIndex={1001}
+                  tooltipTitle="More"
+                  optionCardVariant="default"
+                  targetRef={hiddenMenuRef}
+                  disabled={disabled}
+                />
               </div>
             )}
-            <div className="ff-app-header-nav-bar-items fontSm">
-              {appHeaderMenuItems?.map((menuItem, index) => {
-                return (
-                  !appHeaderHiddenMenuItems?.find(
-                    (menu) => menu.label === menuItem.label
-                  ) &&
-                  !menuItem.hide &&
-                  menuItem.access !== 'No Access' &&
-                  (menuItem?.isReviewer !== false ||
-                    checkIsHavingEntityPendingCounts(menuItem)) &&
-                  menuItem.label !== 'All Projects' && (
-                    <div
-                      ref={(element) => (menuItemsRef.current[index] = element)}
-                      className={classNames('ff-app-header-nav-bar-item', {
-                        ['ff-app-header-nav-bar-item--selected']:
-                          menuItem.label === selectedMenuItem,
-                        'ff-app-header-nav-bar-item--disabled': disabled,
-                      })}
-                      key={menuItem.label}
-                    >
-                      <Typography
-                        as="div"
-                        className="ff-app-header-nav-bar-item-label"
-                        lineHeight="18px"
-                        onClick={() => handleMenuClick(menuItem)}
-                      >
-                        {menuItem.label}
-                      </Typography>
-                      {menuItem.label === selectedMenuItem &&
-                        menuItem?.subMenuItems && (
-                          <>
-                            {menuItem?.subMenuItems?.map((subMenuItem, index) => {
-                              return (
-                                <>
-                                  {!subMenuItem.hide && (
-                                    <div
-                                      key={subMenuItem.label}
-                                      className="ff-app-header-submenu-container"
-                                      ref={(element) =>
-                                        (subMenuItemsRef.current[index] =
-                                          element)
-                                      }
-                                    >
-                                      <Typography
-                                        as="div"
-                                        className={classNames(
-                                          'ff-app-header-nav-bar-submenu-item',
-                                          {
-                                            ['ff-app-header-nav-bar-submenu-item--selected']:
-                                              subMenuItem.label ===
-                                              selectedSubMenu,
-                                            'ff-app-header-nav-bar-submenu-item--disabled':
-                                              disabled,
-                                          }
-                                        )}
-                                        lineHeight="18px"
-                                        onClick={() =>
-                                          handleSubMenuClick(subMenuItem)
-                                        }
-                                      >
-                                        {subMenuItem.label}
-                                      </Typography>
-                                    </div>
-                                  )}
-                                </>
-                              );
-                            })}
-                            {menuItem?.subMenuItems?.map((subMenuItem, index) => {
-                              return (
-                                <>
-                                  {!subMenuItem.hide && (
-                                    <div
-                                      key={subMenuItem.label}
-                                      className="ff-app-header-submenu-container"
-                                      ref={(element) =>
-                                        (quickMenuItemsRef.current[index] =
-                                          element)
-                                      }
-                                    >
-                                      {subMenuItem.label === selectedSubMenu &&
-                                        subMenuItem?.quickMenuItems &&
-                                        subMenuItem?.quickMenuItems.length >
-                                          0 &&
-                                        (() => {
-                                          const quickMenuItemsArray =
-                                            subMenuItem.quickMenuItems.slice(
-                                              0,
-                                              8
-                                            );
-                                          const quickMenuHiddenItemsArray =
-                                            subMenuItem.quickMenuItems.slice(8);
-                                          const quickMenuHiddenItems =
-                                            quickMenuHiddenItemsArray?.map(
-                                              (item) => ({
-                                                ...item,
-                                                value: item.path,
-                                                icon: item.iconName,
-                                              })
-                                            );
-                                          return (
-                                            <div
-                                              className={classNames(
-                                                'ff-app-header-quickmenu-container',
-                                                subMenuItem.quickMenuItems
-                                                  ?.length
-                                                  ? 'visible'
-                                                  : ''
-                                              )}
-                                            >
-                                              <div>
-                                                <Icon name="vertical_separator" />
-                                              </div>
-                                              {quickMenuItemsArray?.map(
-                                                (quickMenuItem) => {
-                                                  return (
-                                                    <>
-                                                      {!quickMenuItem.hide && (
-                                                        <div
-                                                          key={
-                                                            quickMenuItem.iconName
-                                                          }
-                                                          onClick={() =>
-                                                            handleQuickMenuClick(
-                                                              quickMenuItem
-                                                            )
-                                                          }
-                                                          className={classNames(
-                                                            'ff-app-header-nav-bar-quickmenu-item',
-                                                            {
-                                                              ['ff-app-header-nav-bar-quickmenu-item--selected']:
-                                                                quickMenuItem.path ===
-                                                                selectedQuickMenu,
-                                                            }
-                                                          )}
-                                                        >
-                                                          <Tooltip
-                                                            title={
-                                                              quickMenuItem?.label
-                                                            }
-                                                          >
-                                                            <Icon
-                                                              name={
-                                                                quickMenuItem.iconName
-                                                              }
-                                                              height={16}
-                                                              width={16}
-                                                              hoverEffect={true}
-                                                            />
-                                                          </Tooltip>
-                                                        </div>
-                                                      )}
-                                                    </>
-                                                  );
-                                                }
-                                              )}
-                                              {quickMenuHiddenItemsArray &&
-                                                !checkEmpty(
-                                                  quickMenuHiddenItemsArray
-                                                ) && (
-                                                  <div ref={hiddenQuickMenuRef}>
-                                                    <MenuOption
-                                                      iconName="more"
-                                                      options={
-                                                        quickMenuHiddenItems
-                                                      }
-                                                      onOptionClick={
-                                                        onQuickMenuClick
-                                                      }
-                                                      dropdownPlacement="down"
-                                                      zIndex={1001}
-                                                      tooltipTitle="More"
-                                                      variant="light"
-                                                      targetRef={
-                                                        hiddenQuickMenuRef
-                                                      }
-                                                    />
-                                                  </div>
-                                                )}
-                                            </div>
-                                          );
-                                        })()}
-                                    </div>
-                                  )}
-                                </>
-                              );
-                            })}
-                          </>
-                        )}
-                    </div>
-                  )
-                );
-              })}
-            </div>
-            {appHeaderHiddenMenuItems &&
-              !checkEmpty(appHeaderHiddenMenuItems) && (
-                <div className="more-menu" ref={hiddenMenuRef}>
-                  <MenuOption
-                    iconName="more"
-                    options={appHeaderHiddenMenuItems}
-                    onOptionClick={handleMoreMenuOptionClick}
-                    variant="dark"
-                    dropdownPlacement="down"
-                    zIndex={1001}
-                    tooltipTitle="More"
-                    optionCardVariant="default"
-                    targetRef={hiddenMenuRef}
-                    disabled={disabled}
-                  />
-                </div>
-              )}
-          </div>
+        </div>
         {rightContent && (
           <div className="ff-app-header-right-content">{rightContent}</div>
         )}

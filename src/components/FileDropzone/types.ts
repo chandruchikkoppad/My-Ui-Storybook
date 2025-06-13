@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode, RefObject } from 'react';
 import { DynamicObj } from '../CreateVariable/types';
 export interface RadioOption {
   label: string;
@@ -134,6 +134,11 @@ export interface FileDropzoneProps {
 
   isUploadIcon?: boolean;
   onUploadFile?: () => void;
+
+  /**
+   *  Its fileInputRef using inside fileDropZone.
+   **/
+  fileInputRef?: RefObject<HTMLInputElement>;
 }
 export interface FileState {
   accepted: File[];
@@ -208,7 +213,8 @@ export interface FilePreviewProps {
   onUploadFile?: VoidFunction;
   isUploadIcon?: boolean;
   isRemoveDisabled?: boolean;
-  isError?:boolean;
+  isError?: boolean;
+  isIndependentPreview?: boolean;
 }
 
 export interface RadioFilePreviewProps {

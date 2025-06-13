@@ -41,6 +41,9 @@ const ConditionalDropdown = forwardRef<
       formProps = {},
       onlyDropdown = false,
       type,
+      onFocus,
+      onBlur,
+      readOnly = false,
       ...props
     },
     ref
@@ -78,7 +81,7 @@ const ConditionalDropdown = forwardRef<
           file.name.toLowerCase().includes(searchQuery)
         );
         setFilteredOptions(filtered);
-        setShowDropdown(filtered.length > 0);
+        setShowDropdown(true);
       }
     }, [value]);
     useEffect(() => {
@@ -148,7 +151,11 @@ const ConditionalDropdown = forwardRef<
             : item.type === 'DATAPROVIDER'
             ? 'DPV'
             : 'PEV'
-        }${item?.type === '_startforloop' ? '' : '_'}${item.name}}`;
+        }${item?.type === '_startforloop' ? '' : '_'}${
+          item?.type === 'DATAPROVIDER'
+            ? item?.dpName + ':' + item?.varname
+            : item.name
+        }}`;
 
         let newValue;
         if ((isHash && value[0] === '#') || onlyDropdown) {
@@ -263,6 +270,7 @@ const ConditionalDropdown = forwardRef<
       <div className="ff-add-variable-container">
         <div className="ff-add-variable-input">
           <Input
+            readOnly={readOnly}
             {...props}
             name="add_variable"
             ref={inputRef}
@@ -274,10 +282,15 @@ const ConditionalDropdown = forwardRef<
             placeholder={placeholder}
             onClick={handleClick}
             onKeyUp={handleKeyUp}
-            onFocus={() => setIsFocused(true)}
+            onFocus={(e) => {
+              setTimeout(() => {
+                setIsFocused(true);
+                onFocus?.(e);
+              }, 500);
+            }}
             onBlur={(e) => {
               handleBlur(e);
-              props.onBlur?.(e);
+              onBlur?.(e);
             }}
             autoComplete={autoComplete}
             helperText={helperText}

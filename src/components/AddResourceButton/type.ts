@@ -49,6 +49,7 @@ export interface AddResourceButtonProps {
     label: string | ReactNode;
     value: any;
   }) => void;
+  isFromTree?: boolean;
 }
 
 /**

@@ -8,14 +8,36 @@
   .ff-add-variable-input {
     width: 100%;
     display: flex;
-    flex-direction: row;
-    align-items: center;
+    align-items: flex-start;
     gap: 8px;
+
+    .ff-variable-icon-container {
+      display: flex;
+      padding: 4px;
+    }
   }
 }
 
-.ff-variable-dropdown {
+.ff-variable-dropdown-container {
   scrollbar-width: none;
   padding: 4px;
   width: auto;
+  background-color: var(--variable-dropdown-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 3px;
+  position: absolute;
+  overflow: hidden;
+  overflow-y: auto;
+  top: 34px;
+  max-height: 150px;
+  .ff-variable-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    cursor: pointer;
+    &:hover {
+      background-color: var(--hover-color);
+    }
+  }
 }

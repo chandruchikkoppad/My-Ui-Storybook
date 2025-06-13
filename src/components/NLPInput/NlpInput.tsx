@@ -14,7 +14,6 @@ import './NLPInput.scss';
 import usePortalPosition from '../../hooks/usePortalPosition';
 import Typography from '../Typography';
 import ChipsAccordion from './components/ChipsFolder/ChipsAccordion';
-import { truncateText } from '../../utils/truncateText/truncateText';
 
 const nlpInputReducer = (
   state: SelectState,
@@ -113,6 +112,7 @@ const NlpInput = ({
   loadMoreOptions = () => {},
   isWebservice = true,
   closeInputOnOutsideClick = () => {},
+  tooltipText = 'Help',
 }: SelectProps) => {
   const initialState: SelectState = {
     isInputFocused: false,
@@ -132,6 +132,7 @@ const NlpInput = ({
   );
 
   const [inputVal, setInputVal] = useState<NlpRenderOption>(selectedOption);
+  const helpIconClicked = useRef(false);
 
   useEffect(() => {
     const updatedDisplayName =
@@ -184,15 +185,18 @@ const NlpInput = ({
     if (disabled) return;
     onChange(e);
   };
-
   const onSelectBlur = () => {
     if (disabled) return;
+    if (helpIconClicked.current) {
+      helpIconClicked.current = false;
+      return;
+    }
 
     if (errorMsg) {
       handleSelectAction('SHOW_ERROR');
     } else {
       handleSelectAction('BLUR_INPUT');
-      closeInputOnOutsideClick?.();
+      closeInputOnOutsideClick();
     }
   };
 
@@ -268,7 +272,7 @@ const NlpInput = ({
             }}
             onFocus={() => handleSelectAction('FOCUS_INPUT')}
             onChange={onSelectInputChange}
-            value={truncateText(value,70)}
+            value={value}
             disabled={disabled}
             autoComplete="off"
             spellCheck="false"
@@ -311,7 +315,11 @@ const NlpInput = ({
             </div>
           )}
 
-          <div className="help-icon-container">
+          <div
+            className="help-icon-container"
+            onMouseDown={() => (helpIconClicked.current = true)}
+            style={{ zIndex: optionZIndex }}
+          >
             <Icon
               name={rightIcon || ''}
               height={16}
@@ -324,7 +332,7 @@ const NlpInput = ({
               color={rightIconColor}
             />
             <Typography className="help-icon-label" fontSize={10}>
-              Help
+              {tooltipText}
             </Typography>
           </div>
           <fieldset

@@ -83,7 +83,10 @@ const PieChart: React.FC<PieChartProps> = ({
   chartBorder = false,
 }) => {
   const [tooltip, setTooltip] = useState<Tooltip | null>(null);
-  const [tooltipPosition, setTooltipPosition] = useState<{ x: number; y: number }>({
+  const [tooltipPosition, setTooltipPosition] = useState<{
+    x: number;
+    y: number;
+  }>({
     x: 0,
     y: 0,
   });
@@ -137,9 +140,8 @@ const PieChart: React.FC<PieChartProps> = ({
     index: number,
     isLegend: boolean = false
   ) => {
-    if (isLegend) {
-      setHoveredIndex(index);
-    } else {
+    setHoveredIndex(index);
+    if (!isLegend) {
       setTooltip({ label: item.label, value: item.value, color });
     }
   };
@@ -186,9 +188,7 @@ const PieChart: React.FC<PieChartProps> = ({
   ));
 
   if (total === 0) {
-    const fullCirclePath = `M ${radius} 0 A ${radius} ${radius} 0 1 1 ${
-      -radius
-    } 0 A ${radius} ${radius} 0 1 1 ${radius} 0 Z`;
+    const fullCirclePath = `M ${radius} 0 A ${radius} ${radius} 0 1 1 ${-radius} 0 A ${radius} ${radius} 0 1 1 ${radius} 0 Z`;
     return (
       <div className="ff-pie-chart-container" onMouseMove={handleMouseMove}>
         <div
@@ -281,13 +281,19 @@ const PieChart: React.FC<PieChartProps> = ({
                         fill={color}
                         stroke="white"
                         strokeWidth={0.5}
-                        onMouseEnter={() => handleMouseEnter(item, color, index)}
+                        onMouseEnter={() =>
+                          handleMouseEnter(item, color, index)
+                        }
                         onMouseLeave={handleMouseLeave}
                         style={getSegmentStyle(index)}
                       />
                       <text
-                        x={(radius / 2) * Math.cos((currentAngle + endAngle) / 2)}
-                        y={(radius / 2) * Math.sin((currentAngle + endAngle) / 2)}
+                        x={
+                          (radius / 2) * Math.cos((currentAngle + endAngle) / 2)
+                        }
+                        y={
+                          (radius / 2) * Math.sin((currentAngle + endAngle) / 2)
+                        }
                         fill="white"
                         textAnchor="middle"
                         dominantBaseline="central"

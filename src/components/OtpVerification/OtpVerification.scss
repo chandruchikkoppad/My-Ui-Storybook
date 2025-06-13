@@ -1,0 +1,86 @@
+.ff-otp-popup {
+  width: 312px;
+  height: 202.5px;
+  border-radius: 8px;
+  padding: 1rem;
+  text-align: center;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  .ff-otp-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    width: 100%;
+
+
+    .ff-close-icon {
+      position: absolute;
+      right: 5px;
+      top: -2px;
+      cursor: pointer;
+      font-size: 2.5rem;
+      color: var(--icons-default-color);
+    }
+  }
+
+  .ff-otp-boxes {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin: 1rem;
+
+    .ff-otp-input {
+      width: 40px;
+      height: 47px;
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--text-color);
+      text-align: center;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      background: transparent;
+      outline: none;
+      transition: border 0.3s ease;
+    }
+
+    .ff-otp-input.active {
+      border: 2px solid var(--tooltip-bg-color);
+    }
+
+    .ff-otp-input.filled {
+      background-color: var(--input-filled-bg);
+    }
+  }
+
+  .ff-submit-btn {
+    background: var(--primary-button-color);
+    color: var(--primary-button-text-color);
+    padding: 0.4rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    margin-top: 1rem;
+  }
+
+  .ff-resend {
+    color: var(--click-able-text-color);
+    font-size: 0.85rem;
+    background-color:var(--ff-background-color);
+    cursor: pointer;
+    margin-top: 0.9rem;
+  }
+
+  .ff-resend.disabled {
+    color: var(--click-able-text-color);
+    cursor: not-allowed;
+  }
+
+  .ff-submit-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}

@@ -8,8 +8,12 @@ import type { EditLabelProps, Option } from './types';
 import Tooltip from '../Tooltip';
 import Toaster from '../Toast';
 import HighlightText from '../HighlightText';
-import { truncateText } from '../../utils/truncateText/truncateText';
+import {
+  isTextTruncated,
+  truncateText,
+} from '../../utils/truncateText/truncateText';
 import Typography from '../Typography';
+import useClickOutside from '../../hooks/useClickOutside';
 
 const EditLabel = ({
   id = '',
@@ -36,9 +40,11 @@ const EditLabel = ({
   handleOnChange,
   handleTriggerDoubleClick,
   truncatedTextCount = 25,
+  truncatedType = 'count',
   confirmIconTooltip = 'Create',
   cancelIconTooltip = 'Cancel',
   inlineValidationError = false,
+  onChangeValidationError = false,
 }: EditLabelProps) => {
   const [isEditing, setIsEditing] = useState(!value);
   const [text, setText] = useState(value ?? '');
@@ -52,7 +58,8 @@ const EditLabel = ({
   const cancelRef = useRef<HTMLDivElement | null>(null);
   const confirmRef = useRef<HTMLDivElement | null>(null);
   const isThrowingError = showError && isEditing ? true : false;
-
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
   const isValueFilled = !checkEmpty(text);
 
   const handleTextFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -62,7 +69,7 @@ const EditLabel = ({
     if (typeof handleOnChange === 'function') {
       handleOnChange(e);
     }
-    if (inlineValidationError && isThrowingError) {
+    if ((inlineValidationError && onChangeValidationError) || isThrowingError) {
       const errorMessage = handleCustomError ? handleCustomError(newValue) : '';
       if (errorMessage) {
         setShowError(errorMessage);
@@ -74,6 +81,7 @@ const EditLabel = ({
 
   const onDropdownChangeHandler = (option: Option) => {
     setCurrentSelectedOption(option);
+    inputRef.current?.focus();
   };
 
   const handleDoubleClick = () => {
@@ -138,6 +146,17 @@ const EditLabel = ({
     setIsEditable && setIsEditable(null);
   };
 
+  const handleOutsideClick = () => {
+    if (!isEditing || !containerRef.current) return;
+    handleCancel();
+  };
+
+  useClickOutside(containerRef, handleOutsideClick, [
+    confirmRef,
+    cancelRef,
+    dropdownRef,
+  ]);
+
   const handleCancel = () => {
     if (isDisable.cancel) return;
     if (required && !value) {
@@ -166,6 +185,49 @@ const EditLabel = ({
   const handleToastToggle = (key: keyof typeof toasts) => {
     setToasts((prev) => ({ ...prev, [key]: !prev[key] }));
   };
+
+  const getTooltipTitle = () => {
+    if (tooltip?.tooltipTitle) {
+      return tooltip.tooltipTitle;
+    } else if (isTextTruncated(text, truncatedTextCount, truncatedType)) {
+      return text;
+    } else {
+      return '';
+    }
+  };
+
+  const getScrollableParent = (
+    element: HTMLElement | null
+  ): HTMLElement | Window => {
+    if (!element) return window;
+    let parent: HTMLElement | null = element.parentElement;
+    while (parent) {
+      const overflowY = window.getComputedStyle(parent).overflowY;
+      if (overflowY === 'auto' || overflowY === 'scroll') {
+        return parent;
+      }
+      parent = parent.parentElement;
+    }
+    return window;
+  };
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    const scrollableParent = getScrollableParent(containerRef.current);
+
+    const handleScroll = () => {
+      handleCancel();
+    };
+
+    scrollableParent.addEventListener('scroll', handleScroll, {
+      passive: true,
+    });
+
+    return () => {
+      scrollableParent.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
   useEffect(() => {
     if (value) {
@@ -223,6 +285,8 @@ const EditLabel = ({
                 </span>
               </label>
               <input
+                ref={inputRef}
+                id="add-module-input"
                 name="add-module-input"
                 type="text"
                 className={classNames('ff-add-module-input', {
@@ -240,6 +304,7 @@ const EditLabel = ({
             </div>
             {withDropdown && (
               <Select
+                dropDownRef={dropdownRef}
                 optionsList={optionsList}
                 selectedOption={currentSelectedOption}
                 showLabel={false}
@@ -294,7 +359,7 @@ const EditLabel = ({
         </div>
       ) : (
         <Tooltip
-          title={tooltip?.tooltipTitle ?? ''}
+          title={getTooltipTitle()}
           placement={tooltip?.tooltipPlacement ?? 'bottom'}
         >
           <span
@@ -305,11 +370,15 @@ const EditLabel = ({
             onClick={handleClick}
           >
             {checkEmpty(highlightText) ? (
-              truncateText(text, truncatedTextCount)
+              truncateText(text, truncatedTextCount, truncatedType)
             ) : (
               <HighlightText
-                text={truncateText(text, truncatedTextCount)}
-                highlight={truncateText(highlightText, truncatedTextCount)}
+                text={truncateText(text, truncatedTextCount, truncatedType)}
+                highlight={truncateText(
+                  highlightText,
+                  truncatedTextCount,
+                  truncatedType
+                )}
               />
             )}
           </span>
@@ -323,10 +392,11 @@ const EditLabel = ({
       {!inlineValidationError && (
         <Toaster
           isOpen={toasts.error}
-          variant="danger"
-          toastTitle="Error!"
+          variant="info"
+          toastTitle="Info!"
           toastMessage={showError}
           onCancelClick={() => handleToastToggle('error')}
+          zIndex={2000000}
         />
       )}
     </div>

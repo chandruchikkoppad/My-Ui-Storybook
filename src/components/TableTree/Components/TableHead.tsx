@@ -12,6 +12,7 @@ const TableHead = React.memo(
     selectedNode,
     tableHeaderBgColor,
     hideOnDisable,
+    transparentHeader,
   }: TableHeadProps) => {
     // const hasDefaultValues = useMemo(
     //   () => columnsData.some(({ defaultValue }) => !!defaultValue),
@@ -31,7 +32,12 @@ const TableHead = React.memo(
             <th
               className="ff-table-tree-th"
               key={name}
-              style={{ width: width, backgroundColor: tableHeaderBgColor }}
+              style={{
+                width: width,
+                backgroundColor: transparentHeader
+                  ? 'transparent'
+                  : tableHeaderBgColor,
+              }}
             >
               {name}
             </th>
@@ -40,7 +46,9 @@ const TableHead = React.memo(
         {rootNode && (
           <tr
             className={`ff-table-tree-row show ${
-              selectedNode && selectedNode === rootNode?.node?.key ? 'hover' : ''
+              selectedNode && selectedNode === rootNode?.node?.key
+                ? 'hover'
+                : ''
             }`}
             ref={rootNodeRowRef}
           >
@@ -48,27 +56,31 @@ const TableHead = React.memo(
               <td className="ff-table-tree-td" key={index}>
                 {/* {defaultValue && ( */}
                 <span className="tree-table-default-content">
-                  {index === 0 && rootNode.select === 'checkbox' && !(hideOnDisable && rootNode.node.isDisabled) && (
-                    <Checkbox
-                      checked={
-                        rootNode?.node?.selectedStatus !== 'partially' &&
-                        (rootNode?.node?.selectedStatus === 'completely' ||
-                          false)
-                      }
-                      partial={rootNode.node.selectedStatus === 'partially'}
-                      onChange={(e) => onCheckBoxChange(e, rootNode.node)}
-                      disabled={rootNode.node.isDisabled}
-                    />
-                  )}
-                  {index === 0 && rootNode.select === 'radio' && !(hideOnDisable && rootNode.node.isDisabled) && (
-                    <RadioButton
-                      name={rootNode.node.key}
-                      checked={selected.includes(rootNode.node.key)}
-                      value={rootNode.node.key}
-                      onChange={(e) => onCheckBoxChange(e, rootNode.node)}
-                      disabled={rootNode.node.isDisabled}
-                    />
-                  )}
+                  {index === 0 &&
+                    rootNode.select === 'checkbox' &&
+                    !(hideOnDisable && rootNode.node.isDisabled) && (
+                      <Checkbox
+                        checked={
+                          rootNode?.node?.selectedStatus !== 'partially' &&
+                          (rootNode?.node?.selectedStatus === 'completely' ||
+                            false)
+                        }
+                        partial={rootNode.node.selectedStatus === 'partially'}
+                        onChange={(e) => onCheckBoxChange(e, rootNode.node)}
+                        disabled={rootNode.node.isDisabled}
+                      />
+                    )}
+                  {index === 0 &&
+                    rootNode.select === 'radio' &&
+                    !(hideOnDisable && rootNode.node.isDisabled) && (
+                      <RadioButton
+                        name={rootNode.node.key}
+                        checked={selected.includes(rootNode.node.key)}
+                        value={rootNode.node.key}
+                        onChange={(e) => onCheckBoxChange(e, rootNode.node)}
+                        disabled={rootNode.node.isDisabled}
+                      />
+                    )}
                   <span className="tree-table-td-content-text">
                     <span>{rootNode.node[col.accessor]}</span>
                     {rootNode.cell && index === 0 && (

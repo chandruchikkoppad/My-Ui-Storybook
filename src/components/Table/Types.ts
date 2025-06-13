@@ -159,6 +159,15 @@ export interface TableProps {
    * Explicitly handling the checkbox disability for the row.
    */
   isRowCheckBoxDisable?: boolean;
+  /**
+   * Explicitly handling the disability for the row.
+   */
+  isRowDisabled?: boolean;
+
+  /**
+   * z-index for the table header
+   */
+  tableHeaderZindex?: number;
 }
 
 export interface FormValues {

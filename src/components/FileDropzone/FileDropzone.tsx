@@ -3,7 +3,7 @@ import { FileDropzoneProps } from './types';
 import './FileDropzone.scss';
 import Icon from '../Icon';
 import { checkEmpty } from '../../utils/checkEmpty/checkEmpty';
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo } from 'react';
 import Dropzone from './Dropzone';
 import FilePreview from './FilePreview';
 import classNames from 'classnames';
@@ -43,8 +43,8 @@ const FileDropzone: React.FC<FileDropzoneProps> = ({
   fileContent = '',
   isUploadIcon = false,
   onUploadFile,
+  fileInputRef,
 }) => {
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const {
     getRootProps,
     getInputProps,
@@ -67,6 +67,9 @@ const FileDropzone: React.FC<FileDropzoneProps> = ({
 
     // onDrop: (accepted, rejected, event) => {}, //onDrop function to handle dropped or selected files explicitly.
   });
+  useEffect(() => {
+    selectedFile ? acceptedFiles : (acceptedFiles.length = 0);
+  }, [selectedFile]);
 
   getAcceptedFiles(acceptedFiles);
   getRejectedFiles(rejectedFiles);
@@ -94,7 +97,7 @@ const FileDropzone: React.FC<FileDropzoneProps> = ({
   );
 
   useEffect(() => {
-    if (selectedRadioOption?.value === 'Local File' && fileInputRef.current) {
+    if (selectedRadioOption?.value === 'Local File' && fileInputRef?.current) {
       fileInputRef.current.click();
     }
   }, [selectedRadioOption]);

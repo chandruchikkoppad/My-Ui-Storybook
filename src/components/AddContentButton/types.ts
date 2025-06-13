@@ -4,7 +4,8 @@ export interface AddContentButtonProps {
   buttonLabel: string;
   buttonText: string;
   disableButton?: boolean;
-  stepCount: string | number;
+  stepCount?: string | number;
   iconWidth?: number;
   iconHeight?: number;
+  addContentLabel?:string;
 }

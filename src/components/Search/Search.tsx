@@ -19,7 +19,7 @@ const Search = ({
   onClose,
   onExpand,
   showClose = true,
-  helperText = 'Minimum 3 characters is required',
+  helperText = 'Minimum 3 characters required',
   showToaster = true,
   minLength = 3,
   isAISearch = false,
@@ -27,6 +27,7 @@ const Search = ({
   handleActiveAiSearch,
   isClear = false,
   handleIsClear,
+  style = {},
 }: SearchProps) => {
   const [searchValue, setSearchValue] = useState<string>(value);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -54,30 +55,31 @@ const Search = ({
   }, [value, isAISearchClicked]);
 
   const handleSearchData = (key: string) => {
-    if (key === 'Enter' && !checkEmpty(searchValue)) {
+    if (key === 'Enter') {
       if (searchValue.trim().length < minLength && showToaster) {
         toast.info(helperText);
-      } else {
+      } else if (!checkEmpty(searchValue.trim())) {
         onSearch(searchValue.trim());
       }
     } else if (key === 'Escape') {
       handleSearchClearAndClose('Close');
     }
   };
-  useKeyboardActions([
-    {
-      key: 'Enter',
-      action: () => handleSearchData('Enter'),
-    },
-    {
-      key: 'Escape',
-      action: () => handleSearchData('Escape'),
-    },
-  ], inputRef);
+  useKeyboardActions(
+    [
+      {
+        key: 'Enter',
+        action: () => handleSearchData('Enter'),
+      },
+      {
+        key: 'Escape',
+        action: () => handleSearchData('Escape'),
+      },
+    ],
+    inputRef
+  );
 
   const handleSearchClearAndClose = (label: string) => {
-    console.log(isAISearchClicked);
-
     setSearchValue('');
     if (label === 'Clear' && isClear) {
       if (isAISearchClicked) {
@@ -94,10 +96,9 @@ const Search = ({
       inputRef.current.focus();
     }
   };
-
   const handleIconClick = () => {
-    if (!disabled) {
-      onExpand?.(!isExpand);
+    if (!disabled && !isExpand) {
+      onExpand?.(true);
     }
   };
   const handleChange = (data: string) => {
@@ -118,6 +119,7 @@ const Search = ({
       })}
     >
       <div
+        style={style}
         className={classNames('ff-search-container', {
           expanded: isExpand,
           disabled: disabled,
@@ -135,6 +137,7 @@ const Search = ({
               name="search"
               height={isExpand ? 14 : 16}
               width={isExpand ? 14 : 16}
+              disabled={disabled}
             />
           </Tooltip>
         </div>
@@ -156,7 +159,13 @@ const Search = ({
               expanded: isExpand,
             })}
             name="input"
-            style={{ width: isExpand ? `${width}px` : '0px' }}
+            style={{
+              width: isExpand
+                ? width <= 135
+                  ? `${width - 8}px`
+                  : `${width}px`
+                : '0px',
+            }}
             placeholder={placeholder}
             type="text"
             value={searchValue}
@@ -178,6 +187,7 @@ const Search = ({
                 showClose: !showClose,
               })}
               onClick={() => handleSearchClearAndClose('Clear')}
+              style={searchValue ? { cursor: 'pointer' } : {}}
             >
               {searchValue !== '' && (
                 <Typography
@@ -194,8 +204,6 @@ const Search = ({
                 })}
               >
                 <Icon
-                  height={6}
-                  width={6}
                   name="close"
                   hoverEffect={true}
                   onClick={() => {

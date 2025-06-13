@@ -52,7 +52,7 @@ const Textarea = ({
     'ff-textarea-container--float': Boolean(value),
   });
 
-  const isError = (error && required) || !value;
+  const isError = error || !value;
   const errorMessage = isError ? (
     <span className="ff-textarea-error-text">
       <Typography fontSize={10}>{errorText}</Typography>

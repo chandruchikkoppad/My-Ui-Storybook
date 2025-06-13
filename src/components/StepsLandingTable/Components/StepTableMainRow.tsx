@@ -49,7 +49,7 @@ const StepTableMainRow: FC<TableMainRowProp> = ({
     }),
     [transform, transition]
   );
-  const key = row._id || row.stepId;
+  const key = row?._id || row?.stepId;
 
   const getPadding = (index: number): string => {
     if (isViewPrivilegeMode) {
@@ -76,14 +76,10 @@ const StepTableMainRow: FC<TableMainRowProp> = ({
       {...listeners}
       {...attributes}
     >
-      <span
-        style={{
-          opacity: isDisabled ? '0' : '',
-          cursor: isDisabled ? 'default' : 'grab',
-        }}
-      >
-        <Icon name="drag" />
-      </span>
+      <Icon
+        name="drag"
+        className={isDisabled ? 'drag-icon-disabled' : 'drag-icon'}
+      />
     </div>
   );
 
@@ -136,6 +132,7 @@ const StepTableMainRow: FC<TableMainRowProp> = ({
         className={classNames(tableBodyRowClass, {
           'disabled-inner-row': isDisabled,
         })}
+        id={key}
       >
         {columns?.map((column: any, index: number) => {
           return (
@@ -186,6 +183,7 @@ const StepTableMainRow: FC<TableMainRowProp> = ({
           isStepGroupExpanded={isStepGroupExpanded}
           level={row?.marginLeft}
           isViewPrivilegeMode={isViewPrivilegeMode}
+          columns={columns}
         />
       )}
     </>

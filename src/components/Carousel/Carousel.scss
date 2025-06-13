@@ -2,7 +2,7 @@
   position: relative;
   overflow: hidden;
   width: 800px;
-  height: 450px;
+  height: var(--ff-carousel-height, 450px);
   margin: auto;
 }
 
@@ -21,13 +21,17 @@
   justify-content: center;
 }
 
-.ff-carousel-slide img,
-.ff-carousel-slide video {
+.ff-carousel-slide img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
+.ff-carousel-slide video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
 
 .ff-carousel-controls {
   display: flex;
@@ -65,19 +69,17 @@
   background-color: var(--base-bg-color);
   padding: 6px 12px;
   color: var(--dotted-border-color);
-  border-radius: 8px;
   font-size: 14px;
-  z-index: 15;
+  border-radius: 30px;
   max-width: 400px;
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
   display: flex;
-  align-items: center; 
-  gap: 6px; 
-  border-radius: 30px;
+  align-items: center;
+  gap: 6px;
+  z-index: 15;
 }
-
 
 .ff-collapse_icon {
   position: absolute;
@@ -98,24 +100,27 @@
 
 .ff-left-text,
 .ff-right-text {
-  max-width: 130px; 
+  max-width: 130px;
   display: flex;
   align-items: center;
-  color: var(--primary-icon-color);
   font-size: 14px;
-  background: var(--dotted-border-color);
   padding: 6px 10px;
   border-radius: 30px;
   margin: 10px;
+  color: var(--primary-icon-color);
 }
 
+.ff-left-text {
+  background: transparent;
+}
+
+.ff-right-text {
+  background: var(--dotted-border-color);
+}
 
 .ff-time-text {
   font-size: 14px;
   display: flex;
-  align-items: baseline; 
+  align-items: baseline;
   flex-wrap: wrap;
 }
-
-
-

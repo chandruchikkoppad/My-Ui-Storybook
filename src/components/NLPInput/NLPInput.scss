@@ -105,7 +105,7 @@
       @extend .fontSm;
       @include absolute-position(6px, auto, auto, auto);
       width: 482px;
-      height: 32px;
+      height: 30px;
       padding: 0 28px 0 8px;
       border-radius: 4px;
       border: 1px solid transparent;
@@ -222,6 +222,7 @@
       right: 10px;
       transform: rotateX(0deg) translateY(-50%);
       cursor: pointer;
+      z-index: 10000;
 
       &--no-label {
         top: 50%;

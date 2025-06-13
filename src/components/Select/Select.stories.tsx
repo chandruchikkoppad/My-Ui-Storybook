@@ -625,7 +625,6 @@ export const SelectWithCloseIcon: Story = {
             <h1>modal</h1>
           </>
         }
-        showArrowIcon={false}
         showClearIcon={true}
         handelClear={() => setSelectedOption({ label: '', value: '' })}
       />
