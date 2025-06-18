@@ -751,7 +751,7 @@ export default function reducer(
           state.formattedStyle
         );
       }
-      if (state.autoFill.open && state.editable) {
+      if (state.autoFill.open && state.editable && selectedRange) {
         updatedData = dragEndAutoFill(
           state.model.data,
           selectedRange as PointRange,

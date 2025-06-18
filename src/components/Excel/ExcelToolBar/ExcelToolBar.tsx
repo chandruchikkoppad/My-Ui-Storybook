@@ -153,11 +153,12 @@ const ExcelToolBar: React.FC<ExcelToolBarProps> = ({
   return (
     <div className="ff-excel-toolbar">
       <div className="ff-excel-toolbar-font ">
-        <Tooltip placement="top" title={'Font Family'}>
           <div className="ff-excel-toolbar-font-family">
             <Select
               disabled={disable}
               height={24}
+              tooltip
+              showToolTip
               showLabel={false}
               optionZIndex={2000}
               onChange={(e) => {
@@ -169,8 +170,6 @@ const ExcelToolBar: React.FC<ExcelToolBarProps> = ({
               selectedOption={selectedFontFamily}
             />
           </div>
-        </Tooltip>
-        <Tooltip placement="top" title={'Font Size'}>
           <div className="ff-excel-toolbar-font-size">
             <Select
               disabled={disable}
@@ -186,7 +185,6 @@ const ExcelToolBar: React.FC<ExcelToolBarProps> = ({
               selectedOption={selectedFontSize}
             />
           </div>
-        </Tooltip>
       </div>
       <div className="ff-excel-toolbar-divider"></div>
       <div className="ff-excel-toolbar-icon">

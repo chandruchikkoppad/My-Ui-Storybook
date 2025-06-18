@@ -130,7 +130,7 @@ export { capitalize } from './utils/capitalize/capitalize';
 export { default as Comments } from './components/Comments/Comments';
 export { default as useFileDropzone } from './hooks/useFileDropzone';
 export { default as useClickOutside } from './hooks/useClickOutside';
-export { default as useConditionalLock } from './hooks/useConditionalLock';
+export { default as useTriggerControl } from './hooks/useTriggerControl';
 export { default as PopUpModal } from './components/PopUpModal/PopUpModal';
 export { default as FormatString } from './utils/FormatString/FormatString';
 export { default as ConditionalDropdown } from './components/ConditionalDropdown/ConditionalDropdown';
@@ -173,6 +173,7 @@ export { togglePrePostConditions } from './utils/togglePrePostCondition/togglePr
 export { getTopVisibleNodeKey } from './utils/getTopVisibleNodeKey/getTopVisibleNodeKey';
 export { nlpInputDelay } from './utils/nlpInputDelay/nlpInputDelay';
 export { getNavigateToKey } from './utils/TreeNavigateUtils/getNavigateToKey';
+export { checkMicrophoneAccess } from './utils/checkMicrophoneAccess/checkMicrophoneAccess';
 
 export {
   EMAIL_REGEX,
@@ -197,6 +198,7 @@ export {
   UUID_REGEX,
   HTML_TAG_REGEX,
   WHITESPACE_REGEX,
+  BIG_END_WHITESPACE,
   US_ZIP_CODE_REGEX,
   USERNAME_REGEX,
   INDIAN_PHONE_REGEX,
@@ -250,6 +252,7 @@ export {
   ALPHA_NUM_EXTENDED_REGEX,
   ALPHANUMERIC_WITH_DOT_REGEX,
   EXCEL_SPACING_REGEX,
+  ALPHABET_WITH_SPACES_ONLY_REGEX
 } from './validations/regex';
 export {
   setStoreValue,

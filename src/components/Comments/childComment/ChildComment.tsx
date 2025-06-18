@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import '../Comments.scss';
 import Icon from '../../Icon';
 import { CommentProps } from '../type';
@@ -50,6 +50,7 @@ const ChildComment = ({
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const mentionRef = useRef<HTMLDivElement | null>(null);
   const mentionReplyRef = useRef<HTMLDivElement | null>(null);
+  const inputRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (editMode && comment?.description) {
@@ -182,27 +183,27 @@ const ChildComment = ({
     };
   };
 
-  const updateMentionPosition = useCallback(() => {
+  const updateMentionPosition = () => {
     if (!textAreaRef.current) return;
-
+    const textareaEl = textAreaRef?.current;
+    const dropdownEl = mentionRef?.current && mentionReplyRef?.current;
+    const inputEl = inputRef?.current;
     const caretPosition = textAreaRef.current.selectionStart;
-    const caretCoords = getCaretCoordinates(textAreaRef.current, caretPosition);
+    const caretCoords = getCaretCoordinates(textareaEl, caretPosition);
+    const dropdownHeight = dropdownEl?.getBoundingClientRect().height || 370;
+    const inputRect = inputEl?.getBoundingClientRect();
+    if (!inputRect) return;
+    const spaceBelow = window.innerHeight - inputRect.bottom;
+    const spaceAbove = inputRect.top;
+    const showAbove =
+      spaceBelow < dropdownHeight && spaceAbove > dropdownHeight;
     setMentionPosition({
-      top: caretCoords.top + window.scrollY - 625,
-      left: window.scrollX + caretCoords.left + 10,
+      top: showAbove
+        ? caretCoords.top - dropdownHeight - 508
+        : caretCoords.top - 588,
+      left: caretCoords.left + 10,
     });
-  }, [input]);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      updateMentionPosition();
-    };
-
-    window.addEventListener('scroll', handleScroll, true);
-    return () => {
-      window.removeEventListener('scroll', handleScroll, true);
-    };
-  }, [updateMentionPosition]);
+  };
 
   const textAreaInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const textAreaValue = e.target.value;
@@ -285,7 +286,7 @@ const ChildComment = ({
         mentionNameMatch[1] || ''
       );
       const remainder = input.slice(caretPosition);
-      const mentionedUserName = `@${name.replace(/\s+/g, '')}`;
+      const mentionedUserName = `@${name.replace(/\s+/g, '')} `;
 
       const newText =
         input.slice(0, mentionNameStart) + mentionedUserName + remainder;
@@ -320,7 +321,17 @@ const ChildComment = ({
     <div className="commentsContainer">
       <div className={'comment-wrapper'}>
         <div className={'commentContainer'}>
-          <div className="commentContainer__avatar">{avatar}</div>
+          <div className="commentContainer__avatar">
+            {comment?.profileImage ? (
+              <img
+                height={30}
+                width={30}
+                src={`data:image/jpeg;base64,${comment?.profileImage}`}
+              />
+            ) : (
+              avatar
+            )}
+          </div>
           <div className="ff-message-container">
             <div className="ff-message">
               <div className="ff-message-name">{firstName}</div>
@@ -338,7 +349,7 @@ const ChildComment = ({
               )}
 
               {editMode && (
-                <div className="inputContainer">
+                <div className="inputContainer" ref={inputRef}>
                   <textarea
                     rows={input.length < rowBreakCharCount ? 1 : 3}
                     className="inputContainer_input first_input"
@@ -351,12 +362,19 @@ const ChildComment = ({
                   />
 
                   {hasAtSymbol && (
-                    <div ref={mentionRef}>
+                    <div
+                      ref={mentionRef}
+                      id="mention-user"
+                      style={{
+                        position: 'absolute',
+                        top: `${mentionPosition.top}px`,
+                        left: `${mentionPosition.left}px`,
+                      }}
+                    >
                       <MentionUser
                         hasAtSymbol={hasAtSymbol}
                         usersObj={usersObj}
                         optionClicked={optionClicked}
-                        mentionPosition={mentionPosition}
                         charsAfterAt={textAfterAt}
                       />
                     </div>
@@ -457,19 +475,16 @@ const ChildComment = ({
                     )}
 
                     {isEditDeleteActionAllowed && deleteEnable && (
-                      <div
-                        className="action-icon"
-                        onClick={() => handleDeleteNode(comment.id as string)}
-                      >
+                      <div className="action-icon">
                         <Tooltip title="Delete">
                           <Icon
                             name="delete"
                             color="var(--ff-delete-button-attachment)"
-                            disabled={
-                              editMode ||
-                              showInput ||
-                              isDisable 
-                            }
+                            onClick={() => {
+                              if (showInput) return;
+                              handleDeleteNode(comment.id as string);
+                            }}
+                            disabled={editMode || showInput || isDisable}
                             hoverEffect
                           />
                         </Tooltip>
@@ -484,7 +499,7 @@ const ChildComment = ({
 
         <div className="comment-reply-container">
           {showInput && (
-            <div className="inputContainer">
+            <div className="inputContainer" ref={inputRef}>
               <textarea
                 rows={input.length < rowBreakCharCount ? 1 : 3}
                 className="inputContainer_input first_input"
@@ -497,12 +512,19 @@ const ChildComment = ({
               />
 
               {hasAtSymbol && (
-                <div ref={mentionReplyRef}>
+                <div
+                  ref={mentionReplyRef}
+                  id="mention-user"
+                  style={{
+                    position: 'absolute',
+                    top: `${mentionPosition.top}px`,
+                    left: `${mentionPosition.left}px`,
+                  }}
+                >
                   <MentionUser
                     hasAtSymbol={hasAtSymbol}
                     usersObj={usersObj}
                     optionClicked={optionClicked}
-                    mentionPosition={mentionPosition}
                     charsAfterAt={textAfterAt}
                   />
                 </div>

@@ -127,6 +127,7 @@ $blue-theme: (
   delete-text-color: #c50303,
   confirm-tick-icon-color: #5ca700,
   warning-modal-border-color: #e79b0866,
+  web-service-nlp-label: #241ae4,
   brand-color-border:
     linear-gradient(
       94.23deg,
@@ -335,6 +336,13 @@ $blue-theme: (
   ff-content-card-shadow-color: rgba(0, 0, 0, 0.1),
   editor-bg-color: #242425,
   editor-border-color: #0c0213,
+  ff-scrollbar-thumb-bg-color: #a3a3a3,
+  ff-delete-popup-border-color:
+    linear-gradient(
+      94.23deg,
+      rgba(228, 37, 37, 0.4) 16.33%,
+      rgba(201, 0, 0, 0.4) 80.07%
+    ),
 );
 
 :root {

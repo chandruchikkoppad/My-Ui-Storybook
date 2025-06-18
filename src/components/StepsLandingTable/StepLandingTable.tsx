@@ -119,7 +119,12 @@ const StepLandingTable = forwardRef<any, TableProps>(
         return Object.values(rows).some((set) => set.size > 0);
       };
       if (hasSelectedIds(selectedRows)) {
-        onSelectClick?.(selectedRows);
+        const updatedSelection = {
+      ...selectedRows,
+      partialSelected: stepPartialSelect
+      };
+        onSelectClick?.(updatedSelection);
+
       } else {
         onSelectClick?.(null);
       }

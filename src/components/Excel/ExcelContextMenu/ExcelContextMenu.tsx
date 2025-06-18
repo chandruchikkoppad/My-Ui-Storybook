@@ -28,7 +28,7 @@ const ExcelContextMenu: React.FC<ExcelContextMenuProps> = ({
           event.stopPropagation();
         }}
         className="ff-excel-menu"
-        style={{ left: position.x, top: position.y }}
+        style={{ left: position.x, top: position.y, position: 'absolute', zIndex: 9999999999 }}
       >
         {contextMenu.options.map((option) => {
           if (

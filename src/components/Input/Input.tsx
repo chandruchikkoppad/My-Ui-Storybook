@@ -47,7 +47,9 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     },
     ref
   ) => {
-    const isValueFilled = !checkEmpty(value);
+    const isValueFilled =
+      !checkEmpty(value) ||
+      (type === 'password' && (value as string)?.length > 0);
     const isTypeNumber = type === 'number';
     const numericMin =
       minValue !== undefined ? parseInt(minValue as string, 10) || 0 : 0;

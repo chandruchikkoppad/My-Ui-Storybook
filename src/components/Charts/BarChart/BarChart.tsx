@@ -362,7 +362,7 @@ const BarChart: React.FC<BarChartProps> = ({
               (item.normalizedValue / maxValue) * height;
             const minBarHeight = 2;
             const barHeight =
-              item.normalizedValue === 0 ? minBarHeight : computedBarHeight;
+              item.normalizedValue < 1 ? minBarHeight : computedBarHeight;
             const barX = index * (barWidth + barGap) + leftPadding + padding;
             const barY = height - barHeight + topPadding;
             const iconWidth = iconSize || 20;

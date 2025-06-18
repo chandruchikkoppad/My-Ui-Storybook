@@ -557,6 +557,16 @@ const ColorPalette: ColorPaletteType = [
     colorCode: '#F4EDF9',
     variable: '--nlp-header-bg-color',
   },
+  {
+    name: 'ff-scrollbar-thumb-bg-color',
+    colorCode: '#A3A3A3',
+    variable: 'ff-scrollbar-thumb-bg-color',
+  },
+    {
+    name: 'ff-delete-popup-border-color',
+    colorCode: 'linear-gradient(94.23deg, rgba(228, 37, 37, 0.4) 16.33%, rgba(201, 0, 0, 0.4) 80.07%)',
+    variable: 'ff-delete-popup-border-colorr',
+  },
 ];
 
 export default ColorPalette;

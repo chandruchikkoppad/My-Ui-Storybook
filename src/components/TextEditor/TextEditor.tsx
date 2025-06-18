@@ -66,7 +66,7 @@ const TextEditor: FC<RichTextEditorProps> = ({
       } else {
         newEditorState =
           mode === 'view'
-            ? EditorState.createWithContent(ContentState.createFromText('--'))
+            ? EditorState.createWithContent(ContentState.createFromText('---'))
             : EditorState.createEmpty();
       }
     } catch (e) {
@@ -83,7 +83,7 @@ const TextEditor: FC<RichTextEditorProps> = ({
     let editorState = null;
     if (convertedContent.length === 0) {
       if (mode === 'view') {
-        const content = ContentState.createFromText('--');
+        const content = ContentState.createFromText('---');
         editorState = EditorState.createWithContent(content);
       } else {
         editorState = EditorState.createEmpty();

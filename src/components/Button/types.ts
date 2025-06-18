@@ -121,4 +121,8 @@ export interface ButtonProps {
   /* iconColor prop to set the color of the icon
    */
   iconColor?: string;
+  /**
+   * Is the Type ChooseFile Action Mandatory for the button
+   */
+  isMandatory?: boolean;
 }

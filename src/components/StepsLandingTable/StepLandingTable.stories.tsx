@@ -36,6 +36,7 @@ export const StepLandingTableAcc: Story = {
     const [editMode, setEditMode] = useState<any>('');
     const [AddNewNlp, setNewNlp] = useState<AddNlpProp>();
     const [isMaximize, setDoMaximize] = useState(true);
+    const [mode, setMode] = useState<string>('');
     const childRef = useRef<any>(null);
     //Dummy api call
     const newSteps: any = [
@@ -273,6 +274,7 @@ export const StepLandingTableAcc: Story = {
                     width={8}
                     onClick={() => {
                       setEditMode('');
+                      setMode('');
                       setNewNlp({
                         action: 'addBelow',
                         sourceIndex: indexNumber,
@@ -286,6 +288,7 @@ export const StepLandingTableAcc: Story = {
                       disabled={row?.isDisabled}
                       onClick={() => {
                         setEditMode('');
+                        setMode('edit');
                         setNewNlp({
                           action: 'EditNlp',
                           sourceIndex: indexNumber,
@@ -335,7 +338,7 @@ export const StepLandingTableAcc: Story = {
     const handleNlpSelect = (value) => {
       setEditMode(value.stepId);
       setNewNlp({
-        action: 'replaceNlp',
+        action: mode === 'edit' ? 'EditNlp' : 'replaceNlp',
         sourceIndex: value.indexValue,
       });
     };

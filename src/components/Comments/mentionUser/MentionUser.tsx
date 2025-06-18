@@ -5,12 +5,10 @@ import Typography from '../../Typography';
 
 const MentionUser: React.FC<MentionUsers> = ({
   hasAtSymbol,
-  mentionPosition,
   usersObj,
   optionClicked,
   charsAfterAt,
 }) => {
-  const selectSectionRef = useRef<HTMLDivElement>(null);
   const [hoveredIndex, setHoveredIndex] = useState(0);
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
 
@@ -72,17 +70,7 @@ const MentionUser: React.FC<MentionUsers> = ({
   }, [handleKeyDown]);
 
   return (
-    <div
-      className="select-section"
-      ref={selectSectionRef}
-      style={
-        {
-          '--top': `${mentionPosition?.top}px`,
-          '--left': `${mentionPosition?.left + 5}px`,
-        } as React.CSSProperties & Record<string, string>
-      }
-      onMouseDown={(e) => e.preventDefault()}
-    >
+    <div className="select-section" onMouseDown={(e) => e.preventDefault()}>
       <div className="select-group">
         {filteredUsers.length ? (
           filteredUsers.map((option, index) => (

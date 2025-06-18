@@ -5,8 +5,6 @@ import Icon from '../Icon';
 import { ffid } from '../../utils/ffID/ffid';
 import ChildComment from './childComment/ChildComment';
 import useNode from './childComment/useNode';
-import Typography from '../Typography';
-import Tooltip from '../Tooltip';
 import MentionUser from './mentionUser/MentionUser';
 import { formatUserDetails, findUserByName } from './commentCommonUtils';
 import {
@@ -15,6 +13,8 @@ import {
   DETECT_AT_CHAR_AT_START,
   CHECK_AT_FOLLOWED_BY_WORD,
 } from '../../../src/validations/regex';
+import Typography from '../Typography';
+import Tooltip from '../Tooltip';
 
 const Comments = ({
   commentsData,
@@ -39,9 +39,8 @@ const Comments = ({
     { id: string; name: string; emailId: string }[]
   >([]);
   const [mentionPosition, setMentionPosition] = useState({ top: 0, left: 0 });
-  const [scrollY, setScrollY] = useState(0);
   const [textAfterAt, setTextAfterAt] = useState('');
-
+  const inputRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const selectSectionRef = useRef<HTMLDivElement>(null);
 
@@ -181,7 +180,6 @@ const Comments = ({
     setCommentsData((prev) => [...prev, newComment]);
     setInput('');
   };
-
   const getCaretCoordinates = (
     element: HTMLTextAreaElement,
     position: number
@@ -225,36 +223,27 @@ const Comments = ({
       left: spanRect.left,
     };
   };
-
-  const updateMentionPosition = useCallback(() => {
+  const updateMentionPosition = () => {
     if (!textareaRef.current) return;
-
+    const textareaEl = textareaRef?.current;
+    const dropdownEl = selectSectionRef?.current;
+    const inputEl = inputRef?.current;
     const caretPosition = textareaRef.current.selectionStart;
-    const textBeforeCaret = input.slice(0, caretPosition);
-    const hasCaretSymbol = textBeforeCaret.match(
-      DETECT_MENTIONED_USERNAME_AFTER_SPACE
-    );
-    setHasAtSymbol(!!hasCaretSymbol);
-
-    const caretCoords = getCaretCoordinates(textareaRef.current, caretPosition);
-    const topAdjustment = scrollY > 10 ? 75 : 0;
+    const caretCoords = getCaretCoordinates(textareaEl, caretPosition);
+    const dropdownHeight = dropdownEl?.getBoundingClientRect().height || 370;
+    const inputRect = inputEl?.getBoundingClientRect();
+    if (!inputRect) return;
+    const spaceBelow = window.innerHeight - inputRect.bottom;
+    const spaceAbove = inputRect.top;
+    const showAbove =
+      spaceBelow < dropdownHeight && spaceAbove > dropdownHeight;
     setMentionPosition({
-      top: caretCoords.top + window.scrollY - 625 - topAdjustment,
-      left: window.scrollX + caretCoords.left + 10,
+      top: showAbove
+        ? caretCoords.top - dropdownHeight - 528
+        : caretCoords.top - 606,
+      left: caretCoords.left + 10,
     });
-  }, [input]);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      updateMentionPosition();
-    };
-
-    window.addEventListener('scroll', handleScroll, true);
-    return () => {
-      window.removeEventListener('scroll', handleScroll, true);
-    };
-  }, [updateMentionPosition]);
-
+  };
   const textAreaInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const textAreaValue = e.target.value;
     setInput(textAreaValue);
@@ -283,7 +272,7 @@ const Comments = ({
         mentionNameMatch[1] ?? ''
       );
       const remainingText = input.slice(caretPosition);
-      const mentionedUserName = `@${name.replace(/\s+/g, '')}`;
+      const mentionedUserName = `@${name.replace(/\s+/g, '')} `;
 
       const newText =
         input.slice(0, mentionNameStart) + mentionedUserName + remainingText;
@@ -329,12 +318,6 @@ const Comments = ({
     }
   };
 
-  const handleScroll = () => {
-    if (textareaRef.current) {
-      setScrollY(textareaRef.current.scrollTop);
-    }
-  };
-
   return (
     <div className="ff-comments-container-box">
       {!isVewMode && (
@@ -344,27 +327,33 @@ const Comments = ({
           </Typography>
 
           {!showTextarea && (
-            <div className="input-wrapper">
+            <div className="input-wrapper" ref={inputRef}>
               <textarea
                 className="inputContainer_input first_input"
                 rows={input.length < rowBreakCharCount ? 1 : 3}
-                autoFocus={autoFocus} 
+                autoFocus={autoFocus}
                 value={input}
                 onChange={(e) => textAreaInputChange(e)}
                 placeholder="Add a comment"
                 disabled={isDisable}
                 ref={textareaRef}
                 onKeyDown={handleKeyDown}
-                onScroll={handleScroll}
               />
 
               {hasAtSymbol && (
-                <div ref={selectSectionRef} id="mention-user">
+                <div
+                  id="mention-user"
+                  ref={selectSectionRef}
+                  style={{
+                    position: 'absolute',
+                    top: `${mentionPosition.top}px`,
+                    left: `${mentionPosition.left}px`,
+                  }}
+                >
                   <MentionUser
                     hasAtSymbol={hasAtSymbol}
                     usersObj={usersObj}
                     optionClicked={optionClicked}
-                    mentionPosition={mentionPosition}
                     charsAfterAt={textAfterAt}
                   />
                 </div>
@@ -399,7 +388,7 @@ const Comments = ({
             isEditDeleteActionAllowed={comment.createdBy === createdByID}
             createdByID={createdByID}
             isVewMode={isVewMode}
-             deleteEnable={deleteEnable}
+            deleteEnable={deleteEnable}
           />
         ))}
     </div>

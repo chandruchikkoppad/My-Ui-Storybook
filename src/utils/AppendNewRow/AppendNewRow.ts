@@ -21,6 +21,10 @@ export const appendNewRow = (tableData: any, AddNlp: any) => {
             break;
 
         case 'replaceNlp':
+            if (sourceIndex !== undefined) {
+                updatedTreeData.splice(sourceIndex, 0, newNodeBase);
+            }
+            break;
         case 'EditNlp':
             if (sourceIndex !== undefined) {
                 updatedTreeData.splice(sourceIndex, 1);

@@ -54,8 +54,6 @@ export const Toastify = () => {
       message = '';
     }
 
-    const formattedTitle = title.charAt(0).toUpperCase() + title.slice(1);
-
     // Close the existing toast if open, and then immediately show the new one
 
     setToastProps((prev) => ({ ...prev, isOpen: false }));
@@ -68,7 +66,7 @@ export const Toastify = () => {
       setToastProps({
         isOpen: true,
         variant,
-        toastTitle: formattedTitle,
+        toastTitle: title,
         toastMessage: message,
       });
 

@@ -15,6 +15,9 @@
     width: 100%;
     border: none;
     overflow-y: auto;
+    :hover {
+      background-color: var(--hover-color);
+    }
 
     .mention-option {
       display: block;
@@ -31,7 +34,7 @@
     }
 
     .mention-option.hovered {
-      background: var(--ff-progress-bar-bg-color);
+      background: var(--hover-color);
     }
   }
 }

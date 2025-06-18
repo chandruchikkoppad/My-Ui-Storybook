@@ -14,7 +14,7 @@ export interface ChooseFileProps {
    * Width in string format can be sent for needed width
    */
   buttonWidth?: string;
-  
+
   /**
    * Height in string format can be sent for needed height
    */
@@ -80,4 +80,8 @@ export interface ChooseFileProps {
    * handleCloseIcon function will set to the initial state .
    */
   handleCloseIcon?: () => void;
+  /**
+   * Is the Type ChooseFile Action Mandatory.
+   */
+  isMandatory?: boolean;
 }

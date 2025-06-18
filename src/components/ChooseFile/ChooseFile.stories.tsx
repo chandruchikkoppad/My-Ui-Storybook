@@ -143,7 +143,6 @@ export const ChooseFileDisplay: Story = {
       setSelectedFile(file || null);
     };
 
-
     const handleSaveButton = () => {
       setSelectedFile(testDataSelectedFile);
       setShowModal(false);
@@ -152,7 +151,6 @@ export const ChooseFileDisplay: Story = {
     const handleCloseIcon = () => {
       setSelectedFile(null);
       setIsOpen(false);
-
     };
 
     const handleSaveChooseFile = () => {
@@ -209,6 +207,7 @@ export const ChooseFileDisplay: Story = {
           onClick={() => setIsOpen(true)}
           selectedFile={selectedFile}
           handleCloseIcon={handleCloseIcon}
+          isMandatory
         />
 
         <Drawer

@@ -51,7 +51,7 @@ export interface TextareaProps {
   onFocus?: (event: React.FocusEvent<HTMLTextAreaElement>) => void;
 
   onPaste?: (event: React.ClipboardEvent<HTMLTextAreaElement>) => void;
-  
+
   /**
    * id to select the textarea field uniquely
    */
@@ -87,4 +87,12 @@ export interface TextareaProps {
    * To make text are read only state
    */
   readOnly?: boolean;
+  /**
+   * To show the capacity of textArea chars.
+   */
+  displayCapacity?: boolean;
+  /**
+   * isLabe lRequired for the textArea field without label, showing placeholder
+   */
+  isLabelRequired?: boolean;
 }

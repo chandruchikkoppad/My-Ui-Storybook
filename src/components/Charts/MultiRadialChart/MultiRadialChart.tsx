@@ -39,14 +39,48 @@ const MultiRadialChart: React.FC<MultiRadialChartProps> = ({
     x: number;
     y: number;
     content: string;
+    isArc?: boolean;
   }>({
     visible: false,
     x: 0,
     y: 0,
     content: '',
+    isArc: false,
   });
 
   const [hoveredLegend, setHoveredLegend] = useState<string | null>(null);
+
+  const renderGradients = () => (
+    <defs>
+      {barValues.map((bar, i) =>
+        Array.isArray(bar.arcColor) ? (
+          <linearGradient
+            key={`gradient-${i}`}
+            id={`gradient-${i}`}
+            x1="0%"
+            y1="0%"
+            x2="100%"
+            y2="0%"
+            gradientTransform="rotate(90)"
+          >
+            {bar.arcColor.map((color, idx) => (
+              <stop
+                key={idx}
+                offset={`${(idx / (bar.arcColor.length - 1)) * 100}%`}
+                stopColor={color}
+              />
+            ))}
+          </linearGradient>
+        ) : null
+      )}
+    </defs>
+  );
+
+  const getArcColor = (bar: ChartItem, index: number) =>
+    Array.isArray(bar.arcColor) ? `url(#gradient-${index})` : bar.arcColor;
+
+  const getLegendColor = (bar: ChartItem) =>
+    Array.isArray(bar.arcColor) ? bar.arcColor[0] : bar.arcColor;
 
   const parseValueToMB = (value: string | number): number => {
     if (typeof value === 'string') {
@@ -124,19 +158,21 @@ const MultiRadialChart: React.FC<MultiRadialChartProps> = ({
                   setHoveredLegend(item.barLabel || item.label);
                   handleMouseEnter(
                     e,
-                    `${item.barLabel || 'Data'}: ${item.value}`
+                    `${item.barLabel || 'Data'}: ${item.value}`,
+                    false
                   );
                 }}
+                onMouseMove={handleMouseMove}
                 onMouseLeave={() => {
                   setHoveredLegend(null);
-                  handleMouseLeave?.();
+                  handleMouseLeave();
                 }}
               >
                 <Typography
                   fontSize={20}
                   fontWeight="semi-bold"
                   className="ff-legend-value"
-                  color={item.arcColor}
+                  color={getLegendColor(item)}
                 >
                   {item.key.padStart(2, '0')}
                 </Typography>
@@ -169,19 +205,19 @@ const MultiRadialChart: React.FC<MultiRadialChartProps> = ({
                     setHoveredLegend(item.barLabel || item.label);
                     handleMouseEnter(
                       e,
-                      `${item.barLabel || 'Data'}: ${item.value}`
+                      `${item.barLabel || 'Data'}: ${item.value}`,
+                      false
                     );
                   }}
+                  onMouseMove={handleMouseMove}
                   onMouseLeave={() => {
                     setHoveredLegend(null);
-                    handleMouseLeave?.();
+                    handleMouseLeave();
                   }}
                 >
                   <span
                     className="ff-legend-capsule"
-                    style={{
-                      backgroundColor: item.arcColor,
-                    }}
+                    style={{ backgroundColor: getLegendColor(item) }}
                   >
                     <Typography
                       fontSize={10}
@@ -204,29 +240,32 @@ const MultiRadialChart: React.FC<MultiRadialChartProps> = ({
     }
   };
 
-  const handleMouseEnter = (e: React.MouseEvent, content: string) => {
+  const handleMouseEnter = (
+    e: React.MouseEvent,
+    content: string,
+    isArc: boolean
+  ) => {
     const { clientX, clientY } = e;
-    const container = e.currentTarget.getBoundingClientRect();
     setTooltip({
       visible: true,
-      x: clientX - container.left,
-      y: clientY - container.top,
+      x: clientX,
+      y: clientY,
       content: content,
+      isArc,
     });
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
     const { clientX, clientY } = e;
-    const container = e.currentTarget.getBoundingClientRect();
     setTooltip((prev) => ({
       ...prev,
-      x: clientX - container.left,
-      y: clientY - container.top,
+      x: clientX,
+      y: clientY,
     }));
   };
 
   const handleMouseLeave = () => {
-    setTooltip({ visible: false, x: 0, y: 0, content: '' });
+    setTooltip({ visible: false, x: 0, y: 0, content: '', isArc: false });
   };
 
   const textData = (text: string, maxLength: number) => {
@@ -240,9 +279,15 @@ const MultiRadialChart: React.FC<MultiRadialChartProps> = ({
     const matchingBar = normalizedBarValues.find(
       (val) => val.barLabel === valueString
     );
-    return matchingBar?.arcColor || '';
+    if (!matchingBar) return '';
+    const chartItem: ChartItem = {
+      ...matchingBar,
+      label: matchingBar.barLabel,
+      key: matchingBar.labelValue?.toString() ?? '',
+    };
+    return getLegendColor(chartItem);
   };
-
+  const DEFAULT_LINE_HEIGHT = 18;
   return (
     <div
       className={`ff-multi-radial-chart-container ${
@@ -259,6 +304,7 @@ const MultiRadialChart: React.FC<MultiRadialChartProps> = ({
           viewBox={`0 0 ${svgSize} ${svgSize}`}
           className="absolute top-0 left-0"
         >
+          {renderGradients()}
           <g transform={`translate(${svgSize / 2 + 1}, ${svgSize / 2 + 1})`}>
             {reversedBarValues.map((values, i) => {
               const originalIndex = normalizedBarValues.length - 1 - i;
@@ -309,11 +355,19 @@ const MultiRadialChart: React.FC<MultiRadialChartProps> = ({
                       cx={dotX}
                       cy={dotY}
                       r={lineWidth + 1}
-                      fill={values.arcColor}
+                      fill={getArcColor(
+                        {
+                          ...values,
+                          label: values.barLabel || '',
+                          key: values.labelValue?.toString() || '',
+                        },
+                        originalIndex
+                      )}
                       onMouseEnter={(e) =>
                         handleMouseEnter(
                           e,
-                          `${values.barLabel || 'Data'}: ${values.value}`
+                          `${values.barLabel || 'Data'}: ${values.value}`,
+                          true
                         )
                       }
                       onMouseMove={handleMouseMove}
@@ -344,13 +398,21 @@ const MultiRadialChart: React.FC<MultiRadialChartProps> = ({
                   <path
                     d={foregroundArcPath}
                     fill="none"
-                    stroke={values.arcColor}
+                    stroke={getArcColor(
+                      {
+                        ...values,
+                        label: values.barLabel || '',
+                        key: values.labelValue?.toString() || '',
+                      },
+                      originalIndex
+                    )}
                     strokeWidth={lineWidth}
                     strokeLinecap={lineCap === 'square' ? 'butt' : 'round'}
                     onMouseEnter={(e) =>
                       handleMouseEnter(
                         e,
-                        `${values.barLabel || 'Data'}: ${values.value}`
+                        `${values.barLabel || 'Data'}: ${values.value}`,
+                        true
                       )
                     }
                     onMouseMove={handleMouseMove}
@@ -401,7 +463,7 @@ const MultiRadialChart: React.FC<MultiRadialChartProps> = ({
                           </tspan>
                           <tspan
                             x="0"
-                            dy={18}
+                            dy={DEFAULT_LINE_HEIGHT}
                             style={{ fontSize: `${subLabelFontSize}px` }}
                             className="ff-center-text"
                           >
@@ -414,7 +476,7 @@ const MultiRadialChart: React.FC<MultiRadialChartProps> = ({
                       <tspan
                         key={index}
                         x="0"
-                        dy={index === 0 ? 0 : 18}
+                        dy={index === 0 ? 0 : DEFAULT_LINE_HEIGHT}
                         className="ff-center-text"
                         style={{ fontSize: `${subLabelFontSize}px` }}
                       >
@@ -427,19 +489,23 @@ const MultiRadialChart: React.FC<MultiRadialChartProps> = ({
             </text>
           </g>
         </svg>
-        {tooltip.visible && (
-          <div
-            className="ff-multi-radial-tooltip"
-            style={{
-              top: tooltip.y + 10,
-              left: tooltip.x + 100,
-              zIndex: 1000,
-            }}
-          >
-            {tooltip.content}
-          </div>
-        )}
       </div>
+      {tooltip.visible && (
+        <div
+          className="ff-multi-radial-tooltip"
+          style={{
+            position: 'fixed',
+            top: `${tooltip.y - (tooltip.isArc ? 5 : -10)}px`,
+            left: `${tooltip.x + (tooltip.isArc ? 60 : 15)}px`,
+            zIndex: 1000,
+            transform: tooltip.isArc ? 'translateX(-50%)' : 'none',
+            pointerEvents: 'none',
+          }}
+        >
+          {tooltip.content}
+        </div>
+      )}
+
       {isLegendDetails &&
         renderLegend(
           normalizedBarValues.map((value) => ({

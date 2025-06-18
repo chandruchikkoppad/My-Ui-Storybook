@@ -78,37 +78,37 @@ export const MemoryBarChartDashboard: Story = {
   args: {
     data: [
       {
-        label: 'FireFox',
-        value: '2 gb',
+        label: 'Web',
+        value: '150mb',
         percent: 50,
       },
       {
-        label: 'Edge',
-        value: '3 gb',
+        label: 'Mobile',
+        value: '15gb',
         id: 'divya@gmail.com',
         percent: 50,
       },
       {
-        label: 'Chrome',
-        value: '100 mb',
+        label: 'Web & Mobile',
+        value: '150 gb',
         id: 'divya@gmail.com',
         percent: 50,
       },
       {
-        label: 'Safari',
-        value: '200 mb',
+        label: 'Web Service',
+        value: '5 mb',
         id: '',
         percent: 50,
       },
       {
         label: 'IE',
-        value: '50mb',
+        value: '0 Bytes',
         id: 'divya@gmail.com',
         percent: 50,
       },
       {
         label: 'Opera',
-        value: '250mb',
+        value: '25mb',
         id: 'divya@gmail.com',
         percent: 50,
       },

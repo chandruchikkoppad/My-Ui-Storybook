@@ -152,6 +152,7 @@ const Spreadsheet = <CellType extends Types.CellBase>(
     attachmentAction,
     workRef,
     minimumColumnWidth,
+    setContextMenu,
   } = props;
   type State = Types.StoreState<CellType>;
 
@@ -475,7 +476,7 @@ const Spreadsheet = <CellType extends Types.CellBase>(
     const table = ref.current;
     if (!table) return;
     resizeObserver.observe(table);
-  }
+  };
 
   const removeSelection = () => {
     if (!(state.selectedColumn !== null || state.selectedRow !== null)) {
@@ -697,6 +698,18 @@ const Spreadsheet = <CellType extends Types.CellBase>(
           onMouseMove={handleMouseMove}
           onScroll={(e) => {
             scrollOption && handleScroll(e);
+            setContextMenu({
+              open: false,
+              options: [
+                {
+                  label: '',
+                  value: '',
+                  iconName: '',
+                  action: () => {},
+                  disable: false,
+                },
+              ],
+            });
           }}
         >
           {tableNode}

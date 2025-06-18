@@ -668,7 +668,13 @@ const DashboardDonutChart: React.FC<DashboardDonutChartProps> = ({
                   }}
                   onMouseLeave={() => setHoveredItemIndex(null)}
                 >
-                  <div className="ff-legend-item">
+                  <div
+                    className={
+                      item.osIcon && item.osIcon.length > 0
+                        ? 'ff-legend-item-version'
+                        : 'ff-legend-item'
+                    }
+                  >
                     <Typography
                       fontSize={legendValueFontSize}
                       fontWeight="semi-bold"
@@ -698,6 +704,16 @@ const DashboardDonutChart: React.FC<DashboardDonutChartProps> = ({
                         : item.key}
                     </Typography>
                   </div>
+                  {item.osIcon && item.osIcon.length > 0 && (
+                    <Typography
+                      fontSize={legendKeyFontSize}
+                      className="ff-legend-key"
+                      textAlign="center"
+                      fontWeight="semi-bold"
+                    >
+                      OS version
+                    </Typography>
+                  )}
                   {item.version && item.version.length > 0 ? (
                     <div className="ff-legend-version-container">
                       <div className="ff-legend-version-grid">
@@ -1072,7 +1088,11 @@ const DashboardDonutChart: React.FC<DashboardDonutChartProps> = ({
                           )?.value
                         }`
                       : `${
-                          Number.isInteger(total) ? total : total?.toFixed(2)
+                          legendType === 'tableLegend'
+                            ? `${chartValues.length}`
+                            : Number.isInteger(total)
+                            ? total
+                            : total?.toFixed(2)
                         } ${showUnit && unit ? unit.toUpperCase() : ''}`,
                     LABEL_MAX_WIDTH,
                     labelFontSize

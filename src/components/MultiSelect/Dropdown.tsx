@@ -248,7 +248,7 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
                   className={`dropdown-option-container${
                     info.isDisabled ? ' disabled' : ''
                   } ${focusedIndex === index ? 'focused' : ''}`}
-                  key={getLabel(info, labelAccessor)}
+                  key={getLabel(info, labelAccessor) + index}
                   onMouseEnter={() => setFocusedIndex(null)}
                   onClick={(e: React.MouseEvent<HTMLDivElement>) => {
                     const target = e.target as HTMLInputElement;

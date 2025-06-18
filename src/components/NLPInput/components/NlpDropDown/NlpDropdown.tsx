@@ -84,6 +84,9 @@ const NlpDropdown = ({
     } else if (nlpType === 'PROGRAM_ELEMENTS') {
       label = 'PE';
       className = 'ff-pe';
+    } else if (nlpType === 'WORKBENCH_REQUEST') {
+      label = 'WS';
+      className = 'ff-ws';
     } else {
       label = '--';
       className = 'nlp-default';
@@ -109,14 +112,15 @@ const NlpDropdown = ({
         );
       } else if (platform === 'Generic') {
         return <Icon name="generic_nlp" height={10} width={10} />;
-      } else if (platform === 'Webservice') {
-        return <Icon name="web_service_icon" height={10} width={10} />;
       } else {
         return <Icon name="common_nlp" height={10} width={10} />;
       }
-    } else {
-      return <></>;
+    } else if (nlpType === 'WORKBENCH_REQUEST') {
+      if (platform === 'Webservice') {
+        return <Icon name="web_service_icon" height={8} width={8} />;
+      }
     }
+    return <></>;
   };
 
   useIntersectionObserver(['ff-nlp-dropdown-pagination'], {

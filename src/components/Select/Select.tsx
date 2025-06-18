@@ -175,30 +175,40 @@ const Select: FC<SelectProps> = ({
 
     let parent = element.parentElement;
     while (parent) {
-      const overflowY = window.getComputedStyle(parent).overflowY;
-      if (overflowY === 'auto' || overflowY === 'scroll') {
+      const tagName = parent.tagName.toLowerCase();
+
+      // Skip tbody and similar non-scrollable semantic containers
+      if (tagName === 'tbody') {
+        parent = parent.parentElement;
+        continue;
+      }
+
+      const style = window.getComputedStyle(parent);
+      const overflowY = style.overflowY;
+
+      const isScrollable =
+        (overflowY === 'auto' || overflowY === 'scroll') &&
+        parent.scrollHeight > parent.clientHeight;
+
+      if (isScrollable) {
         return parent;
       }
+
       parent = parent.parentElement;
     }
+
     return document.body;
   };
 
-  const hideShowScrollbar = () => {
-    if (disabled) return;
-    if (showDropdownOptions && optionsRequired) {
-      onSelectToggleScroll(!showDropdownOptions);
+  useEffect(() => {
+    if (!showDropdownOptions || disabled) return;
+    if (optionsRequired) {
+      onSelectToggleScroll(false);
     }
     onSelectUpdatePosition();
     const scrollableParent = getScrollParent(inputRef.current);
-
     window.addEventListener('resize', handleResizeOrScroll);
     scrollableParent?.addEventListener('scroll', onSelectBlur);
-  };
-
-  useEffect(() => {
-    hideShowScrollbar();
-    const scrollableParent = getScrollParent(inputRef.current);
     return () => {
       onSelectToggleScroll(true);
       window.removeEventListener('resize', handleResizeOrScroll);
@@ -306,7 +316,7 @@ const Select: FC<SelectProps> = ({
               'ff-select-labels__active': searchedText,
             })}
             fontSize={searchedText || showDropdownOptions ? 10 : 12}
-            lineHeight={searchedText || (showDropdownOptions && '12px')}
+            lineHeight={searchedText || showDropdownOptions ? '10px' : '12px'}
             required={required}
             style={{ maxWidth: `calc(${selectWidth} - 40px)` }}
           >

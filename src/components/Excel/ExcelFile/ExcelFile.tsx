@@ -123,6 +123,8 @@ interface ExcelFileProps {
    */
   rowContextEnable?: boolean;
 
+  sheetBarContextEnable?: boolean;
+
   minimumColumnWidth?: number;
   scroller?: boolean;
 
@@ -157,6 +159,7 @@ const ExcelFile: React.FC<ExcelFileProps> = ({
   scroller = false,
   columnContextEnable = true,
   rowContextEnable = true,
+  sheetBarContextEnable = true,
   minimumColumnWidth = 100,
   disableDeleteOption = false,
 }) => {
@@ -626,17 +629,37 @@ const ExcelFile: React.FC<ExcelFileProps> = ({
     setContextMenu((prev) => ({ ...prev, open: true, options: options }));
   };
 
-  const setContextPosition = (event: React.MouseEvent) => {
+const setContextPosition = (event: React.MouseEvent) => {
     event.preventDefault();
     const rect = sheetRef.current?.parentElement?.getBoundingClientRect();
     const xOffset = window.scrollX;
     const yOffset = window.scrollY;
-    let sheetRefX = event.clientX - (rect?.left || 0) + xOffset + 10;
-    let sheetRefY = event.clientY - (rect?.top || 0) + yOffset - 5;
-
+    let sheetRefX = event.clientX - (rect?.left || 0) + xOffset;
+    let sheetRefY = event.clientY - (rect?.top || 0) + yOffset;
+  
     const menuWidth = 300;
-    let menuHeight = 200;
-
+    const menuHeight = 200;
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
+  
+    const spaceOnRight = windowWidth - event.clientX;
+    const spaceOnLeft = event.clientX;
+    const spaceBelow = windowHeight - event.clientY;
+    const spaceAbove = event.clientY;
+    // Horizontal positioning: left if no space on right
+    if (spaceOnRight < menuWidth && spaceOnLeft >= menuWidth) {
+      sheetRefX = event.clientX - (rect?.left || 0) + xOffset - 150;
+    } else {
+      sheetRefX += 2;
+    }
+  
+    // Vertical positioning: above if no space below
+    if (spaceBelow < menuHeight && spaceAbove >= menuHeight) {
+      sheetRefY = event.clientY - (rect?.top || 0) + yOffset - 20;
+    } else {
+      sheetRefY += 2;
+    }
+  
     if ((event.target as HTMLElement).classList.contains('ff-excel-tab-list')) {
       setPosition({
         x: sheetRefX,
@@ -644,14 +667,12 @@ const ExcelFile: React.FC<ExcelFileProps> = ({
       });
       return;
     }
-
-    const windowWidth = window.innerWidth;
-    const windowHeight = window.innerHeight;
+    // Ensure menu stays within window bounds
     if (sheetRefX + menuWidth > windowWidth) {
-      sheetRefX = windowWidth - menuWidth - 100;
+      sheetRefX = windowWidth - (menuWidth) - 2;
     }
-    if (sheetRefY + menuHeight > windowHeight) {
-      sheetRefY = windowHeight - menuHeight - 100;
+    if (sheetRefX < 0) {
+      sheetRefX = 2; // Prevent clipping off left edge
     }
 
     setPosition({
@@ -706,26 +727,30 @@ const ExcelFile: React.FC<ExcelFileProps> = ({
           </div>
           {sheetBar === 'show' && (
             <div className="ff-excel-sheet-bar">
-              <div className="ff-excel-add-sheet-set">
-                <Tooltip title="Add Sheet" placement="top">
-                  <Icon
-                    disabled={!editable}
-                    className="ff-excel-add-sheet-icon"
-                    hoverEffect={true}
-                    onClick={handleAddSheet}
-                    name="plus_icon"
-                    height={20}
-                    width={20}
-                  />
-                </Tooltip>
-              </div>
+              {sheetBarContextEnable && (
+                <div className="ff-excel-add-sheet-set">
+                  <Tooltip title="Add Sheet" placement="top">
+                    <Icon
+                      disabled={!editable}
+                      className="ff-excel-add-sheet-icon"
+                      hoverEffect={true}
+                      onClick={handleAddSheet}
+                      name="plus_icon"
+                      height={20}
+                      width={20}
+                    />
+                  </Tooltip>
+                </div>
+              )}
               <div className="ff-excel-tab-container">
                 {sheetNames.map((name, index) => (
                   <Typography key={name} lineHeight="16px">
                     <div
                       onContextMenu={(event) => {
                         handleSheetChange(name, index);
-                        contextClick(event, name, index);
+                        if (sheetBarContextEnable) {
+                          contextClick(event, name, index);
+                        }
                       }}
                       className={classNames('ff-excel-tab-list', {
                         active: name === selectedSheet.name,

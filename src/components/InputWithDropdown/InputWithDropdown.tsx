@@ -36,11 +36,7 @@ const InputWithDropdown = forwardRef<HTMLInputElement, InputWithDropdownProps>(
     ref
   ) => {
     const isValueFilled = !checkEmpty(value) || dropdownPosition === 'left';
-    const handleWheel = (e: React.WheelEvent<HTMLInputElement>) => {
-      if (type === 'number') {
-        e.currentTarget.blur();
-      }
-    };
+
     return (
       <div
         className={classNames('ff-input-with-dropdown-container', {
@@ -106,7 +102,6 @@ const InputWithDropdown = forwardRef<HTMLInputElement, InputWithDropdownProps>(
               onClick={onClick}
               onKeyUp={onKeyUp}
               onKeyDown={onKeyDown}
-              onWheel={handleWheel}
               onFocus={onFocus}
               className={classNames('ff-floating-input', {
                 'ff-floating-input--filled': isValueFilled,

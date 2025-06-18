@@ -179,22 +179,56 @@ export const Memory: Story = {
     fontSize: 16,
     barValues: [
       {
-        value: "1TB",
+        value: '1TB',
         arcColor: '#A83FC4',
         arcBackgroundColor: '#F0F0F0',
         barLabel: 'Available',
       },
       {
-        value: "20mb",
+        value: '20mb',
         arcColor: '#10B981',
         arcBackgroundColor: '#F0F0F0',
         barLabel: 'Assigned',
       },
       {
-        value: "30GB",
+        value: '30GB',
         arcColor: '#F59E0B',
         arcBackgroundColor: '#F0F0F0',
         barLabel: 'Used',
+      },
+    ],
+    lineCap: 'round',
+    legendType: 'numberLegend',
+    isLegendDetails: true,
+    chartToLegendGap: '16px',
+    legendGap: '15px',
+  },
+};
+export const RadialWithMemoryData: Story = {
+  args: {
+    radius: 50,
+    lineWidth: 4,
+    labelHeading: 'Memory Usage',
+    fontSize: 16,
+    barValues: [
+      {
+        value: '2.5gb',
+        arcColor: ['#B264FF', '#E0C6FD', '#C893FD'],
+        arcBackgroundColor: '#E5E5EF',
+        barLabel: 'App B',
+      },
+      {
+        value: '1.5gb',
+        arcColor: ['#7E72FF', '#BDB7FF', '#A8A1FF'],
+        arcBackgroundColor: ' #E5E5EF',
+        barLabel: 'App A',
+      },
+
+      {
+        value: '500 mb',
+        arcColor: '#9F2EA1',
+        arcBackgroundColor: '#E5E5EF',
+        barLabel: 'App C',
       },
     ],
     lineCap: 'round',

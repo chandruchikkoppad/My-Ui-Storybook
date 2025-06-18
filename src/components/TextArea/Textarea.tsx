@@ -29,6 +29,8 @@ const Textarea = ({
   resize = false,
   errorText,
   readOnly = false,
+  displayCapacity = true,
+  isLabelRequired = true,
   ...props
 }: TextareaProps) => {
   const labelClasses = classNames(
@@ -44,6 +46,7 @@ const Textarea = ({
     {
       'ff-textarea--danger': error,
       'ff-textarea--resize': !resize,
+      'ff-textarea--placeholder': !isLabelRequired,
     }
   );
 
@@ -128,24 +131,26 @@ const Textarea = ({
 
   return (
     <div className={containerClasses}>
-      <label
-        htmlFor={name}
-        className={classNames('ff-textarea-label-container', {
-          'ff-textarea-label-container--danger': error,
-        })}
-      >
-        <span className={labelClasses}>
-          {required && <span className="required-asterisk">*</span>}
-          {label}
-        </span>
-      </label>
+      {isLabelRequired && (
+        <label
+          htmlFor={name}
+          className={classNames('ff-textarea-label-container', {
+            'ff-textarea-label-container--danger': error,
+          })}
+        >
+          <span className={labelClasses}>
+            {required && <span className="required-asterisk">*</span>}
+            {label}
+          </span>
+        </label>
+      )}
 
       <textarea
         name={name}
         value={value}
         id={name}
         className={textareaClasses}
-        placeholder={placeholder + '...'}
+        placeholder={placeholder}
         disabled={disabled}
         onChange={handleChange}
         onBlur={onBlur}
@@ -165,7 +170,7 @@ const Textarea = ({
         }
       >
         {errorMessage}
-        {capacity > 0 && !readOnly && (
+        {capacity > 0 && !readOnly && displayCapacity && (
           <div className={'ff-textarea-character-count'}>
             <Typography fontSize={8}>{getCharacterCount(value)}/</Typography>
             <Typography fontSize={8}>{capacity}</Typography>

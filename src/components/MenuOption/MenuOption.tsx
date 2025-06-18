@@ -14,6 +14,7 @@ import {
   MenuOptionProps,
   OptionClick,
 } from './types';
+import { checkEmpty } from '../../utils/checkEmpty/checkEmpty';
 
 const Option = ({ option, onClick, alignOption }: OptionProps) => (
   <div
@@ -327,7 +328,7 @@ const MenuOption = ({
           {labelName && <Typography as="label">{labelName}</Typography>}
         </div>
       </Tooltip>
-      {isClicked && displayCard && (
+      {isClicked && displayCard && !checkEmpty(options) && (
         <OptionCard
           options={options}
           onClick={handleOptionClick}

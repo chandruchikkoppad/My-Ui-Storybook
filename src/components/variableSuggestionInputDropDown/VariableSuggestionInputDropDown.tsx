@@ -284,7 +284,7 @@ const VariableSuggestionInputDropDown = forwardRef<
                 <Tooltip title="Create as Variable" style={{ zIndex: 99999 }}>
                   <Icon
                     onClick={onCreateVariableClick}
-                    name="variable"
+                    name="add_variable"
                     height={16}
                     width={16}
                     hoverEffect
@@ -302,7 +302,9 @@ const VariableSuggestionInputDropDown = forwardRef<
             width={dropdownWidthPx}
             height={dropdownHeight}
             optionsList={variableList.filter((file) =>
-              file.name.toLowerCase().includes(result?.searchString)
+              file.name
+                .toLowerCase()
+                .includes(result?.searchString?.toLowerCase())
             )}
             onSelectVariable={handleDropdownClick}
           />

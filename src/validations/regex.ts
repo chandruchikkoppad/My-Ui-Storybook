@@ -67,10 +67,13 @@ const UUID_REGEX =
 const HTML_TAG_REGEX = /<\/?[\w\s=\"'\/\.:;#-]*>/g;
 
 // Whitespace Validation (Leading or Trailing)
-const WHITESPACE_REGEX = /^\s+|\s+$/g;
+const WHITESPACE_REGEX = /^\s|\s$/;
 
 // US ZIP Code Validation (5 or 9 digits)
 const US_ZIP_CODE_REGEX = /^\d{5}(-\d{4})?$/;
+
+// start and end whitespace is valid one.
+const BIG_END_WHITESPACE = /^\s|\s$/;
 
 // Username Validation (Alphanumeric, underscores, 3-16 characters)
 const USERNAME_REGEX = /^[a-zA-Z0-9_]{3,16}$/;
@@ -266,6 +269,9 @@ const ALPHANUMERIC_WITH_DOT_REGEX = /^[A-Za-z0-9.]+$/;
 // Alphanumeric string allowing only dot(.) as special character
 const EXCEL_SPACING_REGEX = /[\n\t"]/;
 
+//Alphabet validation along with spaces
+const ALPHABET_WITH_SPACES_ONLY_REGEX=/^[a-zA-Z ]*$/;
+
 export {
   DYNAMIC_VALUE__PLACEHOLDER_REGEX,
   DYNAMIC_VALUE_PATTERN_REGEX,
@@ -293,6 +299,7 @@ export {
   UUID_REGEX,
   HTML_TAG_REGEX,
   WHITESPACE_REGEX,
+  BIG_END_WHITESPACE,
   US_ZIP_CODE_REGEX,
   USERNAME_REGEX,
   INDIAN_PHONE_REGEX,
@@ -357,5 +364,6 @@ export {
   LINK_VALIDATION_REGEX,
   ALPHA_NUM_EXTENDED_REGEX,
   ALPHANUMERIC_WITH_DOT_REGEX,
-  EXCEL_SPACING_REGEX
+  EXCEL_SPACING_REGEX,
+  ALPHABET_WITH_SPACES_ONLY_REGEX
 };

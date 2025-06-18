@@ -54,6 +54,8 @@ const EditLabel = ({
 
   const [currentSelectedOption, setCurrentSelectedOption] =
     useState<Option>(selectedOption);
+    const [shouldShowToast, setShouldShowToast] = useState(false);
+
   const containerRef = useRef<HTMLDivElement | null>(null);
   const cancelRef = useRef<HTMLDivElement | null>(null);
   const confirmRef = useRef<HTMLDivElement | null>(null);
@@ -119,6 +121,7 @@ const EditLabel = ({
     const errorMessage = handleCustomError ? handleCustomError(text) : '';
 
     if (errorMessage) {
+      setShouldShowToast(true);
       handleToastToggle('error');
       setShowError(errorMessage);
     } else {
@@ -159,6 +162,7 @@ const EditLabel = ({
 
   const handleCancel = () => {
     if (isDisable.cancel) return;
+    setShouldShowToast(false);
     if (required && !value) {
       handleToastToggle('error');
       setShowError('Text is required.');
@@ -389,7 +393,7 @@ const EditLabel = ({
           {showError}
         </Typography>
       )}
-      {!inlineValidationError && (
+      {!inlineValidationError && shouldShowToast && (
         <Toaster
           isOpen={toasts.error}
           variant="info"

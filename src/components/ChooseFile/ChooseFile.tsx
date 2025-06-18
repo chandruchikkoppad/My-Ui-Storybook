@@ -17,6 +17,7 @@ const ChooseFile: FC<ChooseFileProps> = ({
   buttonHeight = 'auto',
   selectedFile = {},
   handleCloseIcon,
+  isMandatory = false,
 }) => {
   return (
     <div>
@@ -36,6 +37,7 @@ const ChooseFile: FC<ChooseFileProps> = ({
         iconPosition="right"
         selectedFile={selectedFile}
         handleCloseIcon={handleCloseIcon}
+        isMandatory={isMandatory}
       />
     </div>
   );

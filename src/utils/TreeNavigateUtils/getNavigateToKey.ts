@@ -93,7 +93,7 @@ export const getNavigateToKey = (
         node.entityType !== 'PRE'
     );
   };
-  if (action === 'inside') {
+  if (action === 'inside' || 'addInside') {
     // Handle root node case
     if (currentNode.path === '/Root') {
       const childrenOfRoot = getRootChildren(treeData, currentNode);
@@ -146,14 +146,14 @@ export const getNavigateToKey = (
         return { navigateTo: currentNode?.key };
       }
     }
-  } else if (action === 'below') {
+  } else if (action === 'below' || 'addBelow') {
     if (currentNode.expanded === false) {
       return { navigateTo: currentNode?.key };
     } else {
       const lastChild = findLastChild(treeData, currentNode);
       return { navigateTo: lastChild };
     }
-  } else if (action === 'above') {
+  } else if (action === 'above' || 'addAbove') {
     return { navigateTo: currentNode?.key };
   }
 

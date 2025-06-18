@@ -30,8 +30,8 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       selectedFile,
       fontSize = 10,
       typographyStyle,
-
       iconColor = '',
+      isMandatory = false,
       ...props
     }: ButtonProps,
     ref
@@ -98,6 +98,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
             'ff-button-choose-file-text': selectedFile,
           })}
         >
+          {isMandatory && <span className="required-asterisk">*</span>}
           {label}
         </Typography>
         {iconPosition === 'right' && renderIcon()}

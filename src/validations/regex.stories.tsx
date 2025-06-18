@@ -23,6 +23,7 @@ import {
   UUID_REGEX,
   HTML_TAG_REGEX,
   WHITESPACE_REGEX,
+  BIG_END_WHITESPACE,
   US_ZIP_CODE_REGEX,
   USERNAME_REGEX,
   INDIAN_PHONE_REGEX,
@@ -199,6 +200,11 @@ export const Playground = () => {
       name: 'WHITESPACE_REGEX',
       regex: WHITESPACE_REGEX,
       description: 'Validates whitespace characters (e.g. spaces, tabs)',
+    },
+    {
+      name: 'BIG_END_WHITESPACE',
+      regex: BIG_END_WHITESPACE,
+      description: 'start and end whitespace is valid one',
     },
     {
       name: 'US_ZIP_CODE_REGEX',

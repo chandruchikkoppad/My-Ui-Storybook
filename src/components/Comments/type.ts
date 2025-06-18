@@ -11,6 +11,7 @@ export interface CommentType {
   emailId?: string[];
   commentParentId?: string;
   comments: CommentType[];
+  profileImage?: string | null;
 }
 
 export type HandleAddComment = (
@@ -72,7 +73,6 @@ export interface CommentProps {
 
 export interface MentionUsers {
   hasAtSymbol: boolean;
-  mentionPosition: { top: number; left: number };
   usersObj: { id: string; name: string; emailId: string }[];
   optionClicked: (_name: string, _emailId: string) => void;
   charsAfterAt?: string;

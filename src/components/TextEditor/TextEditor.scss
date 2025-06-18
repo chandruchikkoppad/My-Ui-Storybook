@@ -1142,7 +1142,7 @@
 .ff-textEditor-container {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
 
   .ff-textEditor-label-asterisk-container {
     @include mixins.center-vertical();

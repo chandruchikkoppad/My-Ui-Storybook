@@ -99,7 +99,7 @@ const MultiSelect = ({
   searchAccessor = valueAccessor,
   withSelectButton = variant === 'machines' ? true : false,
   loadMoreOptions = () => {},
-  onEnter = () => {},
+  onEnter = () => false,
   maxVisibleChips,
   onBlur = () => {},
   maxDropdownHeight = 160,
@@ -235,9 +235,13 @@ const MultiSelect = ({
           return;
         }
       }
-      onEnter?.(searchedKeyword);
-      setSearchedKeyword('');
-      setIsOpen(false);
+      const isDropdownOpen = onEnter?.(searchedKeyword);
+      if (isDropdownOpen) {
+        setIsOpen(true);
+      } else {
+        setSearchedKeyword('');
+        setIsOpen(false);
+      }
     }
   };
 

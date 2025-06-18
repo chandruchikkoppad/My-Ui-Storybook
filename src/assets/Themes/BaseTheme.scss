@@ -38,8 +38,14 @@ $base-theme: (
   available-memory-bg: #9f2ea1,
   assigned-memory-bg:
     linear-gradient(88.75deg, #bdb7ff 1.07%, #a8a1ff 40.23%, #7e72ff 79.4%),
+  assigned-memory-bg-1: #bdb7ff,
+  assigned-memory-bg-2: #a8a1ff,
+  assigned-memory-bg-3: #7e72ff,
   used-memory-bg:
     linear-gradient(90deg, #e0c6fd 0.13%, #c893fd 40.13%, #b264ff 80.13%),
+  used-memory-bg-1: #e0c6fd,
+  used-memory-bg-2: #c893fd,
+  used-memory-bg-3: #b264ff,
   default-icon-color: #a3a3a3,
   tree-connecting-lines-color: #d7b5e3,
   primary-button-color:
@@ -390,6 +396,7 @@ $base-theme: (
   ai-prompt-bg: #fbf5ff,
   state-dropdown-bg-color: #dcd1e5,
   disable-icon-btn-bg-color: #9747ff,
+  web-service-nlp-label: #241ae4,
 
   postman-color: #fd6c35,
   export-collection-bg: #faf4fe,
@@ -402,14 +409,21 @@ $base-theme: (
   ai-prompt-input-border: #a98db5,
   selenium-icon-color: #2cb134,
   line-loader-background-overlay: #14041c33,
-  ff-nlp-container-box-shadow:0px 4px 10px 0px rgba(113, 52, 123, 0.2),
+  ff-nlp-container-box-shadow: 0px 4px 10px 0px rgba(113, 52, 123, 0.2),
   ff-upgrade-button-bg-color: #e16e04,
-  nlp-header-bg-color:#F4EDF9,
+  nlp-header-bg-color: #f4edf9,
   ff-content-card-header-color: #333,
   ff-content-card-body-color: #eee,
   ff-content-card-shadow-color: rgba(0, 0, 0, 0.1),
-    editor-bg-color: #242425,
-  editor-border-color: #0C0213,
+  editor-bg-color: #242425,
+  editor-border-color: #0c0213,
+  ff-scrollbar-thumb-bg-color: #a3a3a3,
+  ff-delete-popup-border-color:
+    linear-gradient(
+      94.23deg,
+      rgba(228, 37, 37, 0.4) 16.33%,
+      rgba(201, 0, 0, 0.4) 80.07%
+    ),
 );
 
 :root {

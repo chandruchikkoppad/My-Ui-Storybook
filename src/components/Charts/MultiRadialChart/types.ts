@@ -1,6 +1,6 @@
 export interface BarValue {
   value: number | string;
-  arcColor: string;
+  arcColor: string | string[];
   arcBackgroundColor: string;
   barLabel: string;
 }
@@ -16,15 +16,16 @@ export interface MultiRadialChartProps {
   barValues: BarValue[];
   legendType?: LegendType;
   isLegendDetails?: boolean;
-  isPillValueVisible?:boolean;
-  labelFontSize?: number,
-  subLabelFontSize?: number
+  isPillValueVisible?: boolean;
+  labelFontSize?: number;
+  subLabelFontSize?: number;
   gapAngle?: number;
   chartToLegendGap?: string;
   legendGap?: string;
   gapBetweenArch?: number;
-  capsuleStyle?:object
+  capsuleStyle?: object;
 }
+
 export interface ChartItem extends BarValue {
   label: string;
   key: string;

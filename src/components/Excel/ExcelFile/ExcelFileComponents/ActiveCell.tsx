@@ -340,8 +340,9 @@ const ActiveCell: React.FC<Props> = (props) => {
           disabled={false}
         />
       )}
-
-      <div onMouseDown={handleMouseDown} className="select_dot"></div>
+      {!['file', 'dropDown'].includes(cell?.inputType?.type ?? '') && (
+        <div onMouseDown={handleMouseDown} className="select_dot"></div>
+      )}
     </div>
   );
 };

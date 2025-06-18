@@ -126,4 +126,25 @@ export const ReadOnlyTextArea: Story = {
   },
 };
 
+export const WebServiceTextArea: Story = {
+  render: () => {
+    const [value, setValue] = useState<string>('');
+
+    return (
+      <>
+        <Textarea
+          {...defaultArgs}
+          disabled={false}
+          value={value}
+          variant="primary"
+          placeholder="Web Service Placeholder....."
+          displayCapacity={false}
+          isLabelRequired={false}
+          onChange={(e) => setValue(e.target.value)}
+        />
+      </>
+    );
+  },
+};
+
 export default meta;

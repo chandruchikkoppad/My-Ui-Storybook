@@ -27,7 +27,7 @@ const TableHead = React.memo(
 
     return (
       <thead className="ff-table-tree-head">
-        <tr className="ff-table-tree-row">
+        <tr className="ff-table-tree-row no-hover">
           {columnsData.map(({ name, width }) => (
             <th
               className="ff-table-tree-th"

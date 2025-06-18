@@ -195,7 +195,8 @@ export const Primary: Story = {
           onHandleSelect={onMachineHandleSelect}
           onAddBrowserInstance={addBrowser}
           readOnly
-          scriptType='manual'
+          scriptType="manual"
+          isRequired
         />
       </>
     );

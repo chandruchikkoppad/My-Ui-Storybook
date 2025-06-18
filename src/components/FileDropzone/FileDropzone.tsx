@@ -7,6 +7,7 @@ import { useEffect, useMemo } from 'react';
 import Dropzone from './Dropzone';
 import FilePreview from './FilePreview';
 import classNames from 'classnames';
+import Typography from '../Typography';
 
 const FileDropzone: React.FC<FileDropzoneProps> = ({
   icon = (
@@ -44,6 +45,8 @@ const FileDropzone: React.FC<FileDropzoneProps> = ({
   isUploadIcon = false,
   onUploadFile,
   fileInputRef,
+  showNoFilesUploadedMessage = false,
+  noFileUploadedText = 'No files are uploaded',
 }) => {
   const {
     getRootProps,
@@ -174,6 +177,17 @@ const FileDropzone: React.FC<FileDropzoneProps> = ({
           className={'ff-file-details-wrapper'}
           style={{ width: `${width}px` }}
         >
+          {showNoFilesUploadedMessage && checkEmpty(acceptedFiles) && (
+            <Typography
+              fontWeight="semi-bold"
+              lineHeight="18px"
+              textAlign="center"
+              color={'var(--text-color)'}
+              className="ff-no-apps-message"
+            >
+              {noFileUploadedText}
+            </Typography>
+          )}
           {!checkEmpty(acceptedFiles) && (
             <div className="ff-file-details">{acceptedFilesList}</div>
           )}

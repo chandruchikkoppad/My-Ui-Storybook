@@ -134,6 +134,8 @@ export interface FileDropzoneProps {
 
   isUploadIcon?: boolean;
   onUploadFile?: () => void;
+  showNoFilesUploadedMessage?: boolean;
+  noFileUploadedText?: string;
 
   /**
    *  Its fileInputRef using inside fileDropZone.

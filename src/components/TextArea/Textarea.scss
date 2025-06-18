@@ -67,6 +67,11 @@
     &--transparentBackground {
       background: transparent;
     }
+    &--placeholder {
+      &::placeholder {
+        opacity: 1;
+      }
+    }
   }
 
   .ff-textarea-label-container {

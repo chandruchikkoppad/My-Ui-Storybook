@@ -37,6 +37,7 @@ export interface SequentialConnectingBranchProps {
   placeholder?: string;
   maxRunCount?: number;
   environmentVariableMaps?: EnvironmentVariableMaps;
+  isRequired?:boolean
 }
 
 export interface IntegrationInstance {

@@ -198,7 +198,7 @@
 
   .ff-table-tree-row:hover,
   .ff-table-tree-row.hover {
-    background-color: transparent;
+    background-color: var(--hover-color);
 
     .ff-table-tree-td {
       &:first-child {
@@ -215,6 +215,10 @@
         width: 16px;
       }
     }
+  }
+  .ff-table-tree-row.no-hover:hover,
+  .ff-table-tree-row.no-hover.hover {
+    background-color: transparent;
   }
 
   .ff-table-tree-row {

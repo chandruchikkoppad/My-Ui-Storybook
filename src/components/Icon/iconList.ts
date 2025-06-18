@@ -447,6 +447,9 @@ import Resolution from '../../assets/icons/resolution_icon.svg?react';
 import VideoRecordIcon from '../../assets/icons/video_record_icon.svg?react';
 import Delete from '../../assets/icons/delete_icon.svg?react';
 import AiApprovedAutomark from '../../assets/icons/ai_approved.svg?react';
+import videoliveicon from '../../assets/icons/Video_recording.svg?react';
+import CaptureIconImage from '../../assets/icons/capture_image.svg?react';
+import EclipsePluginIcon from '../../assets/icons/eclipse_plugin.svg?react';
 
 Components['success'] = ToastSuccessIcon;
 Components['setting_icon'] = SettingIcon;
@@ -894,5 +897,8 @@ Components['delete_icon'] = Delete;
 Components['enable_filled'] = EnableIconFilled;
 Components['disable_filled'] = DisableIconFilled;
 Components['ai_approved'] = AiApprovedAutomark;
+Components['video_live_icon'] = videoliveicon;
+Components['screen_capture_icon'] = CaptureIconImage;
+Components['eclipse_plugin'] = EclipsePluginIcon;
 
 export default Components;

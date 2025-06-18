@@ -5,12 +5,7 @@ import Icon from '../Icon';
 import Select from '../Select';
 import Typography from '../Typography';
 import './SequentialConnectingBranch.scss';
-import {
-  FC,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
 import ConnectingBranches from './components/ConnectingBranches/ConnectingBranches';
 import {
   dataSetValues,
@@ -52,6 +47,7 @@ const SequentialConnectingBranch: FC<SequentialConnectingBranchProps> = ({
   zIndex = 99999,
   maxRunCount = 35,
   environmentVariableMaps,
+  isRequired = false,
 }) => {
   const [selectedMachineInstance, setSelectedMachineInstance] = useState({});
   const selectButtonRef = useRef<HTMLButtonElement>(null);
@@ -118,7 +114,7 @@ const SequentialConnectingBranch: FC<SequentialConnectingBranchProps> = ({
               onChange={onHandleSelect}
               optionsList={machineOptionsList}
               label={placeholder}
-              required={false}
+              required={isRequired}
               showLabel={true}
               className="ff-sequential-select-branch"
               width={'240px'}
