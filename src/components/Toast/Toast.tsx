@@ -62,9 +62,6 @@ const Toaster: React.FC<ToasterProps> = ({
 
   if (!isOpen && !isExiting) return null;
 
-  const rootElement = document.getElementById('root');
-  if (!rootElement) return null;
-
   return createPortal(
     <div
       role="alert"
@@ -113,7 +110,7 @@ const Toaster: React.FC<ToasterProps> = ({
         </div>
       </div>
     </div>,
-    rootElement
+    document.body
   );
 };
 
