@@ -24,6 +24,7 @@ const OverviewModal: React.FC<OverviewModalProps> = ({
   downloadHandler,
   multiData = [],
   setSelectedVideo,
+  customStyle,
 }) => {
   const [videos, setVideos] = useState(multiData);
 
@@ -78,6 +79,7 @@ const OverviewModal: React.FC<OverviewModalProps> = ({
         })}
         style={
           {
+            ...customStyle,
             '--modal-width': width,
             '--modal-height': height,
             '--modal-top': top,

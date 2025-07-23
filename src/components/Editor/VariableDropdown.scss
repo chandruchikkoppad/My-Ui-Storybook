@@ -24,3 +24,13 @@
     background-color: var(--hover-color);
   }
 }
+.ff-truncated_text {
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+}
+.ff-variable-data {
+  padding: 6px;
+}

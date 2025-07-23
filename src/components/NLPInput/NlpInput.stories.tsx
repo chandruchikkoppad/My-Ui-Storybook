@@ -103,6 +103,7 @@ export const NlpChipsAccordion: Story = {
         aiIconClick={() => {
           alert('aiIconClick!');
         }}
+        ChipsAccordionWidth="40%"
       />
     );
   },

@@ -56,6 +56,7 @@ export interface TableHeadProps {
   onCheckBoxChange: (e: any, node: string[] | any) => void;
   hideOnDisable?: boolean;
   transparentHeader?: boolean;
+  scriptLengthTruncate?: number;
 }
 
 export interface TableBodyProps {

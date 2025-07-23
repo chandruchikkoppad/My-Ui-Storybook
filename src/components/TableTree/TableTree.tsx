@@ -277,6 +277,7 @@ const TreeTable = forwardRef<HTMLDivElement, TreeTableProps>(
               tableHeaderBgColor={tableHeaderBgColor}
               hideOnDisable={hideOnDisable}
               transparentHeader={transparentHeader}
+              scriptLengthTruncate={scriptLengthTruncate}
             />
 
             <TableBody

@@ -168,6 +168,7 @@ export interface StepInnerTableProp {
 
   isViewPrivilegeMode?: boolean;
 
+  isClientSide?: boolean;
 }
 
 export interface StepGroupAccordionsProp {
@@ -204,6 +205,7 @@ export interface TableMainRowProp {
   dataLength?: number
   stepPartialSelect?: Set<string>;
   isViewPrivilegeMode?: boolean;
+  isClientSide?: boolean;
 }
 
 export interface FormValues {

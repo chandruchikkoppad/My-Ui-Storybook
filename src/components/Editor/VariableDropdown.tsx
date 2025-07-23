@@ -5,17 +5,19 @@ import './VariableDropdown.scss';
 import Typography from '../Typography';
 import cx from 'classnames';
 import { checkEmpty } from '../../utils/checkEmpty/checkEmpty';
-import { truncateText } from '../../utils/truncateText/truncateText';
+import { isTextTruncated } from '../../utils/truncateText/truncateText';
+import { dynamicObject } from '../variableSuggestionInputDropDown/types';
+import Tooltip from '../Tooltip';
+import { DynamicWidthTooltip } from './DynamicWidthToolTip';
 
 const VariableDropdown: FC<VariableDropdownProps> = ({
   optionsList = [],
   onSelectVariable,
   dropdownPosition,
   position = 'relative',
-  width = '300px',
+  width,
   height = '100px',
   zIndex = 9999,
-  truncateTextValue = 34,
 }): ReactNode => {
   const VARIABLE_ICON_MAP: Record<string, string> = {
     LOCAL: 'local_variable_icon',
@@ -37,6 +39,21 @@ const VariableDropdown: FC<VariableDropdownProps> = ({
     return VARIABLE_ICON_MAP[option.type || ''] || '';
   };
 
+  const getDisplayText = (option: dynamicObject) => {
+    if (option?.type === '_startforloop') return `FLV_for:${option?.name}`;
+    if (option?.type === 'DATAPROVIDER')
+      return `${option?.dpName}:${option?.varname}`;
+    return option?.name;
+  };
+
+  function getNumericValue(value: string): number {
+    if (value.endsWith('px')) {
+      const num = parseInt(value.slice(0, -2), 10);
+      return isNaN(num) ? 212 : num - 66;
+    }
+    return 212;
+  }
+
   return (
     <div
       className={cx('ff-variable-dropdown', position)}
@@ -56,26 +73,48 @@ const VariableDropdown: FC<VariableDropdownProps> = ({
         optionsList?.map((option: DyanamicObj): ReactNode => {
           return (
             <div
-              className="ff-variable-option"
+              className={
+                width.endsWith('px')
+                  ? 'ff-variable-option'
+                  : '  ff-variable-data'
+              }
               onMouseDown={() => onSelectVariable(option)}
               key={option?.id}
             >
-              <Typography as="span" fontSize={14}>
-                {truncateText(
-                  option?.type === '_startforloop'
-                    ? `FLV_for:${option?.name}`
-                    : option?.type === 'DATAPROVIDER'
-                    ? option?.dpName + ':' + option?.varname
-                    : option?.name,
-                  truncateTextValue
-                )}
-              </Typography>
-              <Icon
-                name={getVariableIcon(option)}
-                height={16}
-                width={16}
-                hoverEffect
-              />
+              {width.endsWith('px') ? (
+                <>
+                  <Tooltip
+                    title={
+                      isTextTruncated(
+                        getDisplayText(option),
+                        getNumericValue(width),
+                        'pixel'
+                      )
+                        ? getDisplayText(option)
+                        : ''
+                    }
+                    style={{
+                      width: `${getNumericValue(width)}px`,
+                    }}
+                  >
+                    <Typography
+                      as="span"
+                      fontSize={14}
+                      className="ff-truncated_text"
+                    >
+                      {getDisplayText(option)}
+                    </Typography>
+                  </Tooltip>
+                  <Icon
+                    name={getVariableIcon(option)}
+                    height={16}
+                    width={16}
+                    hoverEffect
+                  />
+                </>
+              ) : (
+                <DynamicWidthTooltip option={option} />
+              )}
             </div>
           );
         })

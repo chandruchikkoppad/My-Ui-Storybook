@@ -8,6 +8,7 @@ const MentionUser: React.FC<MentionUsers> = ({
   usersObj,
   optionClicked,
   charsAfterAt,
+  mentionUserRef,
 }) => {
   const [hoveredIndex, setHoveredIndex] = useState(0);
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -71,7 +72,7 @@ const MentionUser: React.FC<MentionUsers> = ({
 
   return (
     <div className="select-section" onMouseDown={(e) => e.preventDefault()}>
-      <div className="select-group">
+      <div className="select-group" ref={mentionUserRef}>
         {filteredUsers.length ? (
           filteredUsers.map((option, index) => (
             <div

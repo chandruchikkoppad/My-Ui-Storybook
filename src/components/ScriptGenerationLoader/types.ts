@@ -1,8 +1,12 @@
+export interface Action {
+  text?: string;
+  color?: string;
+}
 export interface ScriptGenerationLoaderProps {
   /**
    * array
    */
-  actions?: string[];
+  actions?: Action[];
   /**
    * In percentage
    */

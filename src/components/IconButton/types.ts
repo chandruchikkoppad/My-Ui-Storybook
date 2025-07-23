@@ -5,4 +5,5 @@ export interface IconButtonProps {
   ref?: React.Ref<HTMLButtonElement>;
   iconHide?: boolean;
   isDisable?: boolean;
+  variant?: 'default' | 'primary';
 }

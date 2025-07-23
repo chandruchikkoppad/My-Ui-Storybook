@@ -66,8 +66,9 @@ interface ExcelFileProps {
    * Possible values:
    * - 'show' to display the sheet bar
    * - 'hide' to hide the sheet bar
+   * - 'readOnly' to view the sheet bar
    */
-  sheetBar?: 'show' | 'hide';
+  sheetBar?: 'show' | 'readOnly' | 'hide';
 
   /**
    * Optional: The total number of rows in the Excel sheet.
@@ -126,6 +127,7 @@ interface ExcelFileProps {
   sheetBarContextEnable?: boolean;
 
   minimumColumnWidth?: number;
+  showHider?: boolean;
   scroller?: boolean;
 
   attachmentAction?: {
@@ -162,6 +164,7 @@ const ExcelFile: React.FC<ExcelFileProps> = ({
   sheetBarContextEnable = true,
   minimumColumnWidth = 100,
   disableDeleteOption = false,
+  showHider = true,
 }) => {
   const [sheetNames, setSheetNames] = useState<string[]>([]);
   const [saveInfo, setSaveInfo] = useState<string>('');
@@ -629,19 +632,19 @@ const ExcelFile: React.FC<ExcelFileProps> = ({
     setContextMenu((prev) => ({ ...prev, open: true, options: options }));
   };
 
-const setContextPosition = (event: React.MouseEvent) => {
+  const setContextPosition = (event: React.MouseEvent) => {
     event.preventDefault();
     const rect = sheetRef.current?.parentElement?.getBoundingClientRect();
     const xOffset = window.scrollX;
     const yOffset = window.scrollY;
     let sheetRefX = event.clientX - (rect?.left || 0) + xOffset;
     let sheetRefY = event.clientY - (rect?.top || 0) + yOffset;
-  
+
     const menuWidth = 300;
     const menuHeight = 200;
     const windowWidth = window.innerWidth;
     const windowHeight = window.innerHeight;
-  
+
     const spaceOnRight = windowWidth - event.clientX;
     const spaceOnLeft = event.clientX;
     const spaceBelow = windowHeight - event.clientY;
@@ -652,14 +655,14 @@ const setContextPosition = (event: React.MouseEvent) => {
     } else {
       sheetRefX += 2;
     }
-  
+
     // Vertical positioning: above if no space below
     if (spaceBelow < menuHeight && spaceAbove >= menuHeight) {
       sheetRefY = event.clientY - (rect?.top || 0) + yOffset - 20;
     } else {
       sheetRefY += 2;
     }
-  
+
     if ((event.target as HTMLElement).classList.contains('ff-excel-tab-list')) {
       setPosition({
         x: sheetRefX,
@@ -669,7 +672,7 @@ const setContextPosition = (event: React.MouseEvent) => {
     }
     // Ensure menu stays within window bounds
     if (sheetRefX + menuWidth > windowWidth) {
-      sheetRefX = windowWidth - (menuWidth) - 2;
+      sheetRefX = windowWidth - menuWidth - 2;
     }
     if (sheetRefX < 0) {
       sheetRefX = 2; // Prevent clipping off left edge
@@ -723,11 +726,12 @@ const setContextPosition = (event: React.MouseEvent) => {
               onEvaluatedDataChange={onEvaluateChange}
               workRef={workRef}
               scroller={scroller}
+              showHider={showHider}
             />
           </div>
-          {sheetBar === 'show' && (
+          {sheetBar !== 'hide' && (
             <div className="ff-excel-sheet-bar">
-              {sheetBarContextEnable && (
+              {sheetBar === 'show' && (
                 <div className="ff-excel-add-sheet-set">
                   <Tooltip title="Add Sheet" placement="top">
                     <Icon
@@ -760,12 +764,14 @@ const setContextPosition = (event: React.MouseEvent) => {
                       }}
                       suppressContentEditableWarning={editingSheet === index}
                       onDoubleClick={(e) => {
-                        setEditingSheet(index);
-                        if (editingSheet === null) {
-                          setTimeout(
-                            () => setCursorToEnd(e.target as HTMLDivElement),
-                            0
-                          );
+                        if (sheetBar === 'show') {
+                          setEditingSheet(index);
+                          if (editingSheet === null) {
+                            setTimeout(
+                              () => setCursorToEnd(e.target as HTMLDivElement),
+                              0
+                            );
+                          }
                         }
                       }}
                       contentEditable={editable && editingSheet === index}

@@ -12,7 +12,7 @@ export default {
     label: 'Add Variables',
     placeholder: 'Enter text',
     variableList,
-    dropdownWidth: '138px',
+    // dropdownWidth: 'inherit', User can pass partcular width with px suffix
     variant: 'primary',
   },
   parameters: {

@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { TableHeadProps } from '../types';
 import Checkbox from '../../Checkbox';
 import RadioButton from '../../RadioButton';
+import { prepareData } from '../../../utils/TableCell/TableCell';
+import { formatCellData } from '../Utils/formatDataCell';
 
 const TableHead = React.memo(
   ({
@@ -13,6 +15,7 @@ const TableHead = React.memo(
     tableHeaderBgColor,
     hideOnDisable,
     transparentHeader,
+    scriptLengthTruncate = 25,
   }: TableHeadProps) => {
     // const hasDefaultValues = useMemo(
     //   () => columnsData.some(({ defaultValue }) => !!defaultValue),
@@ -82,7 +85,16 @@ const TableHead = React.memo(
                       />
                     )}
                   <span className="tree-table-td-content-text">
-                    <span>{rootNode.node[col.accessor]}</span>
+                    {col.accessor === 'name' ? (
+                      <span>{rootNode.node[col.accessor]}</span>
+                    ) : (
+                      <span>
+                        {formatCellData(
+                          prepareData(rootNode.node, col),
+                          scriptLengthTruncate
+                        )}
+                      </span>
+                    )}
                     {rootNode.cell && index === 0 && (
                       <span className="table-tree-root-cell">
                         {(() => {

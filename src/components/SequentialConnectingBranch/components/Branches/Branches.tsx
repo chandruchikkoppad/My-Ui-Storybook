@@ -19,7 +19,6 @@ const Branches = ({
   machineInstances,
   rowIndex,
   machineColumnCount,
-  machineColumnWidth,
   nextRowMachineInstance,
   previousRowMachineInstance,
   onAddBrowser,
@@ -70,11 +69,11 @@ const Branches = ({
 
   const getGridTemplateColumnStyle = () => {
     if (machineColumnCount === 1) {
-      return `24px ${machineColumnWidth}px 24px`;
+      return `24px minmax(420px, auto) 24px`;
     }
-    return `24px ${machineColumnWidth}px repeat(${
+    return `24px minmax(420px, auto) repeat(${
       machineColumnCount - 1
-    }, 40px ${machineColumnWidth}px) 24px`;
+    }, 40px minmax(420px, auto)) 24px`;
   };
 
   const getMachineLabelOptionList = (
@@ -125,10 +124,15 @@ const Branches = ({
     // Mobile-specific options
     const mobileOptions = deviceInfo?.reduce((acc, device, index) => {
       if (device?.name) {
-        acc.push({ label: device.name, type: index === 0 ? 'android' : 'mac' });
+        acc.push({
+          label: device?.name,
+          type: index === 0 ? 'android' : 'mac',
+          version:
+            scriptType?.toLowerCase() === 'manual' ? device?.version : '',
+        });
       }
       return acc;
-    }, [] as { label: string; type: string }[]);
+    }, [] as { label: string; type: string; version?: string }[]);
 
     // Determine options based on the type
     switch (type.toLowerCase()) {
@@ -213,7 +217,6 @@ const Branches = ({
                     ></div>
                   )}
                   <MachineInputField
-                    width={`${machineColumnWidth}px`}
                     runCount={runCount}
                     key={ffid()}
                     options={

@@ -398,7 +398,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({
                                             )}
                                           >
                                             {!checkEmpty(
-                                              quickMenuHiddenItemsArray
+                                              quickMenuItemsArray
                                             ) && (
                                               <div>
                                                 <Icon name="vertical_separator" />

@@ -334,6 +334,7 @@ const ConditionalDropdown = forwardRef<
               file.name.toLowerCase().includes(result?.searchString)
             )}
             onSelectVariable={handleDropdownClick}
+            height="230px"
           />
         )}
         {showDropdown && (isHash || onlyDropdown) && (

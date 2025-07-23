@@ -154,6 +154,7 @@ export const EmailGroup: Story = {
         ...prev,
         { label: newOption, value: newOption },
       ]);
+      return false;
     };
     return (
       <MultiSelect
@@ -331,7 +332,7 @@ export const Labels: Story = {
           options={options}
           selectedOptions={selectedOptions}
           onChange={onChange}
-          onLabelPlusIconClick={(searchedKeyword) => {
+          onLabelPlusIconClick={async (searchedKeyword) => {
             alert(searchedKeyword);
           }}
           displayCount

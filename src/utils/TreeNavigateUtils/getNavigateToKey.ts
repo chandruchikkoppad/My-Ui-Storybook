@@ -99,10 +99,16 @@ export const getNavigateToKey = (
       const childrenOfRoot = getRootChildren(treeData, currentNode);
       if (childrenOfRoot.length > 0) {
         const lastChildOfRoot = childrenOfRoot[childrenOfRoot.length - 1];
-        if (lastChildOfRoot?.expanded === false) {
+        if (
+          lastChildOfRoot?.expandedAll === false ||
+          lastChildOfRoot?.expanded === false
+        ) {
           return { navigateTo: lastChildOfRoot?.key };
         }
-        if (lastChildOfRoot?.expanded === true) {
+        if (
+          lastChildOfRoot?.expandedAll === true ||
+          lastChildOfRoot?.expanded === true
+        ) {
           const lastChildExpand = getAllChildrenNodesUsingSearchKey(
             treeData,
             lastChildOfRoot?.searchKey as string
@@ -147,7 +153,7 @@ export const getNavigateToKey = (
       }
     }
   } else if (action === 'below' || 'addBelow') {
-    if (currentNode.expanded === false) {
+    if (currentNode.expandedAll === false || currentNode.expanded === false) {
       return { navigateTo: currentNode?.key };
     } else {
       const lastChild = findLastChild(treeData, currentNode);

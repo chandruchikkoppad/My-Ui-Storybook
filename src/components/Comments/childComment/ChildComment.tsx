@@ -50,7 +50,6 @@ const ChildComment = ({
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const mentionRef = useRef<HTMLDivElement | null>(null);
   const mentionReplyRef = useRef<HTMLDivElement | null>(null);
-  const inputRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (editMode && comment?.description) {
@@ -89,8 +88,8 @@ const ChildComment = ({
       const clickedOutsideTextarea =
         mentionReplyRef.current &&
         !mentionReplyRef.current.contains(event.target as Node) &&
-        mentionReplyRef.current &&
-        !mentionReplyRef.current.contains(event.target as Node);
+        textAreaRef.current &&
+        !textAreaRef.current.contains(event.target as Node);
 
       if (clickedOutsideMentionUser || clickedOutsideTextarea) {
         setHasAtSymbol(false);
@@ -182,34 +181,35 @@ const ChildComment = ({
       left: spanRect.left,
     };
   };
-
-  const updateMentionPosition = () => {
-    if (!textAreaRef.current) return;
-    const textareaEl = textAreaRef?.current;
-    const dropdownEl = mentionRef?.current && mentionReplyRef?.current;
-    const inputEl = inputRef?.current;
-    const caretPosition = textAreaRef.current.selectionStart;
-    const caretCoords = getCaretCoordinates(textareaEl, caretPosition);
-    const dropdownHeight = dropdownEl?.getBoundingClientRect().height || 370;
-    const inputRect = inputEl?.getBoundingClientRect();
-    if (!inputRect) return;
-    const spaceBelow = window.innerHeight - inputRect.bottom;
-    const spaceAbove = inputRect.top;
-    const showAbove =
-      spaceBelow < dropdownHeight && spaceAbove > dropdownHeight;
-    setMentionPosition({
-      top: showAbove
-        ? caretCoords.top - dropdownHeight - 508
-        : caretCoords.top - 588,
-      left: caretCoords.left + 10,
-    });
-  };
+  useEffect(() => {
+    const updateMentionPosition = () => {
+      if (!textAreaRef.current) return;
+      const textareaEl = textAreaRef?.current;
+      const dropdownEl = editMode
+        ? mentionRef?.current
+        : mentionReplyRef?.current;
+      const caretPosition = textAreaRef.current.selectionStart;
+      const caretCoords = getCaretCoordinates(textareaEl, caretPosition);
+      const dropdownHeight = dropdownEl?.getBoundingClientRect().height ?? 0;
+      const inputRect = textareaEl?.getBoundingClientRect();
+      if (!inputRect) return;
+      const spaceBelow = window.innerHeight - inputRect.bottom;
+      const spaceAbove = inputRect.top;
+      const showAbove =
+        spaceBelow < dropdownHeight && spaceAbove > dropdownHeight;
+      setMentionPosition({
+        top: showAbove
+          ? caretPosition - dropdownHeight - 16
+          : caretPosition + 32,
+        left: caretCoords.left + 10,
+      });
+    };
+    updateMentionPosition();
+  }, [input]);
 
   const textAreaInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const textAreaValue = e.target.value;
     setInput(textAreaValue);
-    updateMentionPosition();
-
     const mentionedUserNames = textAreaValue.match(/@\S+/g) || [];
     const mentionedUserEmails = mentionedUserNames
       .map((name) => {
@@ -349,7 +349,7 @@ const ChildComment = ({
               )}
 
               {editMode && (
-                <div className="inputContainer" ref={inputRef}>
+                <div className="inputContainer">
                   <textarea
                     rows={input.length < rowBreakCharCount ? 1 : 3}
                     className="inputContainer_input first_input"
@@ -363,7 +363,6 @@ const ChildComment = ({
 
                   {hasAtSymbol && (
                     <div
-                      ref={mentionRef}
                       id="mention-user"
                       style={{
                         position: 'absolute',
@@ -376,6 +375,7 @@ const ChildComment = ({
                         usersObj={usersObj}
                         optionClicked={optionClicked}
                         charsAfterAt={textAfterAt}
+                        mentionUserRef={mentionRef}
                       />
                     </div>
                   )}
@@ -499,7 +499,7 @@ const ChildComment = ({
 
         <div className="comment-reply-container">
           {showInput && (
-            <div className="inputContainer" ref={inputRef}>
+            <div className="inputContainer">
               <textarea
                 rows={input.length < rowBreakCharCount ? 1 : 3}
                 className="inputContainer_input first_input"
@@ -513,7 +513,6 @@ const ChildComment = ({
 
               {hasAtSymbol && (
                 <div
-                  ref={mentionReplyRef}
                   id="mention-user"
                   style={{
                     position: 'absolute',
@@ -526,6 +525,7 @@ const ChildComment = ({
                     usersObj={usersObj}
                     optionClicked={optionClicked}
                     charsAfterAt={textAfterAt}
+                    mentionUserRef={mentionReplyRef}
                   />
                 </div>
               )}

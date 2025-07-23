@@ -54,6 +54,7 @@ const StepInnerTable = ({
   isStepGroupExpanded,
   stepPartialSelect,
   isViewPrivilegeMode,
+  isClientSide
 }: StepInnerTableProp) => {
   const observerRef = useRef<IntersectionObserver | null>(null);
   useEffect(() => {
@@ -215,6 +216,7 @@ const StepInnerTable = ({
                       dataLength={data?.length}
                       stepPartialSelect={stepPartialSelect}
                       isViewPrivilegeMode={isViewPrivilegeMode}
+                      isClientSide={isClientSide}
                     />
                   );
 

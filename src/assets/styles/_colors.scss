@@ -100,6 +100,9 @@ $dataset-tooltip-value: #ffffff;
 $line-chart-data: #4c90ff;
 $state-dropdown-bg-color: #dcd1e5;
 $line-loader-background-overlay: #14041c33;
+$ff-electric-indigo:#2c25f3;
+$ff-vivid-orange:#ff9900;
+$ff-dodger-blue:#0088ff;
 
 
 
@@ -153,5 +156,8 @@ $line-loader-background-overlay: #14041c33;
   --slider-table-color: #{$slider-table-color};
   --variable-dropdown-bg: #($variable-dropdown-bg);
   --dataset-tooltip-title: #($dataset-tooltip-title),
-    --dataset-tooltip-value: #($dataset-tooltip-value);
+  --dataset-tooltip-value: #($dataset-tooltip-value);
+  --ff-electric-indigo:#($ff-electric-indigo)
+  --ff-vivid-orange:#($ff-vivid-orange)
+  --ff-dodger-blue:#($ff-dodger-blue)
 }

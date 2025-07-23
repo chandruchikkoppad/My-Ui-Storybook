@@ -13,6 +13,7 @@ const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
       onClick,
       iconHide = false,
       isDisable = false,
+      variant,
     },
     ref
   ) => {
@@ -23,6 +24,7 @@ const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
         className={classNames('ff-plus-icon', {
           'ff-plus-no-icon': iconHide,
           'ff-plus-disabled': isDisable,
+          'ff-plus-primary': variant === 'primary',
         })}
         ref={ref}
       >

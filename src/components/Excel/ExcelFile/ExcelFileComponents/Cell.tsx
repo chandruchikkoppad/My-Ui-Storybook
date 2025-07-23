@@ -12,7 +12,6 @@ export const Cell: React.FC<Types.CellComponentProps> = ({
   row,
   column,
   DataViewer,
-  selected,
   active,
   dragging,
   mode,
@@ -59,13 +58,15 @@ export const Cell: React.FC<Types.CellComponentProps> = ({
 
   React.useEffect(() => {
     const root = rootRef.current;
-    if (selected && root) {
+    if (!root) return;
+    const updateDimensions = () => {
       setCellDimensions(point, getOffsetRect(root));
-    }
-    if (root && active && mode === 'view') {
-      root.focus();
-    }
-  }, [setCellDimensions, selected, active, mode, point, data]);
+    };
+    updateDimensions();
+    const observer = new ResizeObserver(updateDimensions);
+    observer.observe(root);
+    return () => observer.disconnect();
+  }, [setCellDimensions, point]);
 
   if (data && data.DataViewer) {
     DataViewer = data.DataViewer;
@@ -100,7 +101,6 @@ export const enhance = (
 ): React.FC<
   Omit<
     Types.CellComponentProps,
-    | 'selected'
     | 'active'
     | 'copied'
     | 'dragging'
@@ -144,17 +144,12 @@ export const enhance = (
     const evaluatedData = useSelector((state) =>
       Matrix.get(point, state.model.evaluatedData)
     );
-
-    const selected = useSelector((state) =>
-      state.selected.has(state.model.data, point)
-    );
     const dragging = useSelector((state) => state.dragging);
     const copied = useSelector((state) => state.copied?.has(point) || false);
 
     return (
       <CellComponent
         {...props}
-        selected={selected}
         active={active}
         copied={copied}
         dragging={dragging}

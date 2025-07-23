@@ -33,6 +33,14 @@ export const Video: Story = {
     headerTitle: 'Recorded Media',
     onDownload: () => alert('Download clicked'),
     onExpand: () => alert('Expand clicked'),
+    showHeader: true,
+    showDownload: true,
+    showExpand: true,
+    showControls: true,
+    width: '620px',
+    height: '336px',
+    customStyle: { top: '50%', left: '50%', position: 'absolute' },
+    overlay: true,
   },
 };
 
@@ -48,5 +56,12 @@ export const Image: Story = {
     headerTitle: 'Preview Image',
     onDownload: () => alert('Download clicked'),
     onExpand: () => alert('Expand clicked'),
+    showHeader: true,
+    showDownload: true,
+    showExpand: true,
+    width: '620px',
+    height: '336px',
+    customStyle: { top: '50%', left: '50%', position: 'absolute' },
+    overlay: true,
   },
 };

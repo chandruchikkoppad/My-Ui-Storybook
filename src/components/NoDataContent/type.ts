@@ -5,4 +5,5 @@ export interface NoDataFoundProps {
   text?: string;
   textFontSize?: string;
   textDirectionRow?: boolean;
+  gap?:string
 }

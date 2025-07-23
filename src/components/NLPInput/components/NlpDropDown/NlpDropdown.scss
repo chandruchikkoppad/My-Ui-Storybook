@@ -15,7 +15,7 @@
 }
 .ff-nlp-dropdown-wrapper {
   .ff-nlp-options-wrapper {
-    max-height: 256px;
+    height: 256px;
     z-index: 999;
     position: absolute;
     border: 1px solid var(--nlp-border-color);
@@ -29,14 +29,14 @@
     overflow: hidden;
     // transition: all 0.3s ease-in-out;
     .ff-nlp-options-primary-wrapper {
-      max-height: 240px;
+      height: 240px;
       z-index: 100;
       min-width: 290px;
       box-sizing: border-box;
       overflow: scroll;
       scrollbar-width: none;
       flex-grow: 1;
-      transition: max-height 0.3s ease-in-out;
+      transition: height 0.3s ease-in-out;
     }
     .ff-nlp-options-primary-wrapper::-webkit-scrollbar {
       display: none;

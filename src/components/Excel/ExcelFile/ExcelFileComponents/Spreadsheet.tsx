@@ -39,6 +39,7 @@ import Copied from './Copied';
 import './Spreadsheet.scss';
 import ExcelToolBar from '../../ExcelToolBar/ExcelToolBar';
 import { hasKeyDownHandler } from './reducerFunctions';
+import { throttle } from '../../../../utils/throttle/throttle';
 
 /** The Spreadsheet component props */
 export type Props<CellType extends Types.CellBase> = {
@@ -124,6 +125,7 @@ export type Props<CellType extends Types.CellBase> = {
   workRef: React.MutableRefObject<HTMLDivElement | null>;
   minimumColumnWidth: number;
   scroller: boolean;
+  showHider: boolean;
 };
 
 /**
@@ -153,12 +155,15 @@ const Spreadsheet = <CellType extends Types.CellBase>(
     workRef,
     minimumColumnWidth,
     setContextMenu,
+    showHider,
   } = props;
   type State = Types.StoreState<CellType>;
 
   const [sheetChange, setSheetChange] = React.useState(false);
   const [maxWidth, setMaxWidth] = React.useState(0);
   const [maxHeight, setMaxHeight] = React.useState(0);
+  const [renderReady, setRenderReady] = React.useState(true);
+
 
   const resizeObserver = new ResizeObserver((entries) => {
     const entry = entries[0];
@@ -167,8 +172,11 @@ const Spreadsheet = <CellType extends Types.CellBase>(
       if (target) {
         const { clientWidth, clientHeight } = target;
         setMaxHeight(Math.min(rootRef.current.clientHeight, clientHeight));
-        setMaxWidth(Math.min(rootRef.current.clientWidth, clientWidth));
+        if (showHider) {
+          setMaxWidth(Math.min(rootRef.current.clientWidth, clientWidth));
+        }
       }
+      removeSelect();
     }
   });
 
@@ -479,58 +487,90 @@ const Spreadsheet = <CellType extends Types.CellBase>(
   };
 
   const removeSelection = () => {
-    if (!(state.selectedColumn !== null || state.selectedRow !== null)) {
+    if (
+      (state.selectedColumn === null || state.selectedRow === null) &&
+      !state.autoFill.open
+    ) {
       removeSelect();
     }
   };
 
-  const handleScroll = (e: React.UIEvent<HTMLElement>) => {
-    const { scrollTop, scrollHeight, offsetHeight } = e.target as HTMLElement;
-    const rowHeight = 50;
-    const visibleRows = 100;
-    const totalScroll = Math.ceil((size.rows - visibleRows) / rowHeight);
-    const dynamicScroll = scrollHeight - offsetHeight;
+  const updateVisibleRange = (
+  newStart: number,
+  newEnd: number,
+  newScrollCount: number
+) => {
+  setScrollCount(newScrollCount);
+  setVisibleRange({ start: newStart, end: newEnd });
 
-    if (size.rows < 100) {
-      setVisibleRange({
-        start: 0,
-        end: size.rows,
+  // Wait until next frame to scroll
+  requestAnimationFrame(() => {
+    rootRef.current?.scrollTo({
+      top: 1300,
+      behavior: 'instant',
+    });
+  });
+
+  removeSelection();
+};
+
+  const throttledHandleScroll = React.useMemo(
+  () =>
+    throttle((e: React.UIEvent<HTMLElement>) => {
+      setRenderReady(false);
+
+      requestAnimationFrame(() => {
+        const { scrollTop, scrollHeight, offsetHeight } = e.target as HTMLElement;
+        const visibleRows = 100;
+        const rowHeight = 50;
+        const totalScroll = Math.ceil((size.rows - visibleRows) / rowHeight);
+        const dynamicScroll = scrollHeight - offsetHeight;
+
+        if (size.rows < 100) {
+          updateVisibleRange(0, size.rows, 0);
+          setScrollCount(0);
+        } else if (scrollTop === 0 && scrollCount !== 0) {
+          const newScroll = scrollCount - 1;
+          updateVisibleRange(
+            newScroll * rowHeight,
+            newScroll * rowHeight + visibleRows,
+            newScroll
+          );
+          setScrollCount(newScroll);
+        } else if (scrollTop > dynamicScroll - 30 && scrollCount < totalScroll - 1) {
+          const newScroll = scrollCount + 1;
+          updateVisibleRange(
+            newScroll * rowHeight,
+            newScroll * rowHeight + visibleRows,
+            newScroll
+          );
+          setScrollCount(newScroll);
+        } else if (scrollTop > dynamicScroll - 30 && scrollCount < totalScroll) {
+          updateVisibleRange(
+            (scrollCount + 1) * rowHeight,
+            size.rows,
+            scrollCount + 1
+          );
+          setScrollCount(scrollCount + 1);
+        }
+        setRenderReady(true);
       });
-      setScrollCount(0);
-      removeSelection();
-    } else if (scrollTop === 0 && scrollCount !== 0) {
-      setScrollCount((prev) => prev - 1);
-      setVisibleRange({
-        start: (scrollCount - 1) * rowHeight,
-        end: (scrollCount - 1) * rowHeight + visibleRows,
+
+      setContextMenu({
+        open: false,
+        options: [
+          {
+            label: '',
+            value: '',
+            iconName: '',
+            action: () => {},
+            disable: false,
+          },
+        ],
       });
-      rootRef.current?.scrollTo({
-        top: 1300,
-        behavior: 'instant',
-      });
-      removeSelection();
-    } else if (
-      scrollTop > dynamicScroll - 30 &&
-      scrollCount < totalScroll - 1
-    ) {
-      setVisibleRange({
-        start: (scrollCount + 1) * rowHeight,
-        end: (scrollCount + 1) * rowHeight + visibleRows,
-      });
-      setScrollCount((prev) => prev + 1);
-      rootRef.current?.scrollTo({
-        top: 1300,
-        behavior: 'instant',
-      });
-      removeSelection();
-    } else if (scrollTop > dynamicScroll - 30 && scrollCount < totalScroll) {
-      setVisibleRange({
-        start: (scrollCount + 1) * rowHeight,
-        end: size.rows,
-      });
-      removeSelection();
-    }
-  };
+    }, 100),
+  [size.rows, scrollCount]
+);
 
   const scrollerFunction = () => {
     if (scrollOption) {
@@ -580,7 +620,7 @@ const Spreadsheet = <CellType extends Types.CellBase>(
             )
           )}
         </HeaderRow>
-        {scrollerFunction().map((rowNumber) => (
+        {renderReady && scrollerFunction().map((rowNumber) => (
           <Row key={rowNumber} row={rowNumber}>
             {rowLabels ? (
               <RowIndicator
@@ -697,7 +737,7 @@ const Spreadsheet = <CellType extends Types.CellBase>(
           onClick={handleClick}
           onMouseMove={handleMouseMove}
           onScroll={(e) => {
-            scrollOption && handleScroll(e);
+            scrollOption && throttledHandleScroll(e);
             setContextMenu({
               open: false,
               options: [
@@ -726,6 +766,7 @@ const Spreadsheet = <CellType extends Types.CellBase>(
       handleMouseMove,
       tableNode,
       activeCellNode,
+      maxWidth,
     ]
   );
 

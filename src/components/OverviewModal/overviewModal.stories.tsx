@@ -21,6 +21,7 @@ const meta: Meta<typeof OverviewModal> = {
     isMaximized: false,
     showHeader: true,
     header: <></>,
+    customStyle: { top: '50%', left: '50%', position: 'absolute' },
     children: (
       <Typography color="white" fontSize={20}>
         This Is Overview Modal
@@ -40,6 +41,10 @@ const meta: Meta<typeof OverviewModal> = {
     downloadFileIcon: {
       control: 'boolean',
       description: 'Displays the download file icon',
+    },
+    customStyle: {
+      control: 'object',
+      description: 'Inline custom positioning (requires position: custom)',
     },
   },
 };
@@ -118,6 +123,7 @@ export const Default: Story = {
           isOpen={isOpen}
           isMaximized={isMaximized}
           onClose={() => setIsOpen(false)}
+          customStyle={args.customStyle}
           onMaximizeToggle={() => setIsMaximized((m) => !m)}
           icons={
             <>
@@ -168,6 +174,7 @@ export const MultipleScreen: Story = {
           onClose={() => setIsOpen(false)}
           onMaximizeToggle={() => setIsMaximized((m) => !m)}
           multiData={multiData}
+          customStyle={args.customStyle}
           setSelectedVideo={setSelectedVideo}
           icons={
             <>
@@ -185,7 +192,6 @@ export const MultipleScreen: Story = {
               />
             </>
           }
-          
         />
       </>
     );
@@ -225,6 +231,7 @@ export const MultipleScreenWithCarousel: Story = {
           isMaximized={isMaximized}
           onClose={closeEntireModal}
           onMaximizeToggle={() => setIsMaximized((m) => !m)}
+          customStyle={args.customStyle}
           multiData={selection ? [] : multiData}
           children={
             selection ? (

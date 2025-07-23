@@ -1,6 +1,7 @@
 @use '../../assets/styles/fonts';
 
 .ff-drawer-container {
+  border-radius: 4px;
   .ff-overlay {
     position: fixed;
     inset: 0;
@@ -18,6 +19,7 @@
     background-color: var(--primary-button-text-color);
     transform: translateX(100%);
     opacity: 0;
+    border-radius: 4px;
 
     &--open {
       transform: translateX(0);
@@ -102,6 +104,7 @@
       background-color: var(--drawer-footer-bg);
       width: 100%;
       padding: 0;
+      border-radius: 4px;
     }
 
     .ff-drawer-body {
@@ -124,7 +127,7 @@
       background-color: var(--base-bg-color);
       transform: translateY(3px);
       border-radius: 0 0 4px 4px;
-      height: 31px;
+      height: 32px;
       align-items: center;
 
       .button-container {

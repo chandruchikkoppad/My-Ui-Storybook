@@ -16,7 +16,7 @@ type Story = StoryObj<typeof Toastify>;
 
 const defaultArgs = {
   isOpen: false,
-  toastTitle: 'Success',
+  toastTitle: '',
   toastMessage: 'Variable name Requested for Review successfully',
   closeButtonLabel: 'x',
   displayDuration: 3000,
@@ -40,11 +40,26 @@ export const Controlled: Story = {
       <Button
         variant="primary"
         label="Show Success Toast"
-        onClick={() => toast.success('Your request was successful!','Your request was successful! Your request was successful! Your request was successful! Your request was successful!')}
+        onClick={() =>
+          toast.success(
+            'Successful!',
+            'Your request was successful! Your request was successful! Your request was successful! Your request was successful!'
+          )
+        }
+      />
+      <Button
+        variant="primary"
+        label="Show Success Toast w/o passing title"
+        onClick={() => toast.success('Your request was successful!')}
       />
       <Button
         variant="delete"
         label="Show Error Toast"
+        onClick={() => toast.error('Oops it`s an error!', 'Something went wrong!')}
+      />
+      <Button
+        variant="delete"
+        label="Show Error Toast w/o passing title"
         onClick={() => toast.error('Something went wrong!')}
       />
       <Button

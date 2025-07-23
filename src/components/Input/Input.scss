@@ -13,6 +13,7 @@
     background: var(--input-disabled-background-color);
     border-radius: 4px;
     opacity: 0.5;
+    pointer-events: none;
   }
   .ff-input-container {
     display: flex;
@@ -37,6 +38,7 @@
       }
       &:disabled {
         cursor: not-allowed;
+        pointer-events: none;
         border: 1px solid var(--input-default-border-color);
         background: transparent;
       }
@@ -157,6 +159,9 @@
       &--space {
         height: 15px;
       }
+      &--showHelperText {
+        color: var(--input-default-label-color);
+      }
       &--danger {
         color: var(--input-error-text-color);
       }
@@ -215,7 +220,4 @@ input[type='number']::-webkit-outer-spin-button {
     top: 50%;
     cursor: pointer;
   }
-}
-.ff-input-container:hover .ff-input:not(:disabled) {
-  border-color: var(--brand-color);
 }

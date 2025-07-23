@@ -264,7 +264,7 @@ const LINK_VALIDATION_REGEX = /^(https?:\/\/)?((?!.*\.\.)[\da-z.-]+)\.([\da-z.-]
 const ALPHA_NUM_EXTENDED_REGEX  = /^[a-zA-Z0-9 _\-()]+$/;
 
 // Alphanumeric string allowing only dot(.) as special character
-const ALPHANUMERIC_WITH_DOT_REGEX = /^[A-Za-z0-9.]+$/;
+const ALPHANUMERIC_WITH_DOT_REGEX = /^[A-Za-z0-9. ]+$/;
 
 // Alphanumeric string allowing only dot(.) as special character
 const EXCEL_SPACING_REGEX = /[\n\t"]/;

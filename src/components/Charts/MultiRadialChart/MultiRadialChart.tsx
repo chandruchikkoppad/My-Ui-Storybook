@@ -495,10 +495,9 @@ const MultiRadialChart: React.FC<MultiRadialChartProps> = ({
           className="ff-multi-radial-tooltip"
           style={{
             position: 'fixed',
-            top: `${tooltip.y - (tooltip.isArc ? 5 : -10)}px`,
-            left: `${tooltip.x + (tooltip.isArc ? 60 : 15)}px`,
+            top: `${tooltip.y + 10}px`,
+            left: `${tooltip.x + 15}px`,
             zIndex: 1000,
-            transform: tooltip.isArc ? 'translateX(-50%)' : 'none',
             pointerEvents: 'none',
           }}
         >

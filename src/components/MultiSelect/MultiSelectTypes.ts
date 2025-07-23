@@ -54,6 +54,7 @@ interface MultiSelectProps {
    */
   dropdownContainerRef?: RefObject<HTMLDivElement>;
   noResultsMessage?: string;
+  chipAccessor?: string;
 }
 
 export { Option, MultiSelectProps };

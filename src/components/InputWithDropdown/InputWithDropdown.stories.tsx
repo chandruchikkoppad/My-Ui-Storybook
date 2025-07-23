@@ -110,6 +110,7 @@ export const Controlled: Story = {
             e.preventDefault();
           }
         }}
+        pattern='^[0-9]*$'
       />
     );
   },

@@ -37,7 +37,7 @@ export interface SequentialConnectingBranchProps {
   placeholder?: string;
   maxRunCount?: number;
   environmentVariableMaps?: EnvironmentVariableMaps;
-  isRequired?:boolean
+  isRequired?: boolean;
 }
 
 export interface IntegrationInstance {
@@ -57,6 +57,7 @@ export interface MachineInfo {
 export interface DeviceInfo {
   name: string;
   platform: string;
+  version?: string;
 }
 
 export interface ExecutionContext {

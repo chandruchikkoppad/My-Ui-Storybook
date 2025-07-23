@@ -48,6 +48,7 @@ const VariableSuggestionInputDropDown = forwardRef<
       type = 'text',
       clearIcon = true,
       inputTitle = '',
+      onBlur,
       ...props
     },
     ref
@@ -259,7 +260,10 @@ const VariableSuggestionInputDropDown = forwardRef<
               onClick={handleClick}
               onKeyUp={handleKeyUp}
               onFocus={() => setIsFocused(true)}
-              onBlur={(e) => handleBlur(e)}
+              onBlur={(e) => {
+                handleBlur(e);
+                onBlur?.(e);
+              }}
               autoComplete={autoComplete}
               helperText={helperText}
               error={error}

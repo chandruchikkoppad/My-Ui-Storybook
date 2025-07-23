@@ -432,7 +432,7 @@ import SettingIcon from '../../assets/icons/setting-icon.svg?react';
 import SeleniumIcon from '../../assets/icons/selenium_icon.svg?react';
 import DeletePopUpIcon from '../../assets/icons/delete_popup_icon.svg?react';
 import VideoPreviewIcon from '../../assets/icons/video_preview_icon.svg?react';
-import FilterActive from '../../assets/icons/filter_active.svg?react';
+import FilterActive from '../../assets/icons/Filter_active.svg?react';
 import MaximizedNewIcon from '../../assets/icons/maximize_new_icon.svg?react';
 import AutoHealing from '../../assets/icons/auto_healing.svg?react';
 import ClockFilled from '../../assets/icons/clock_filled.svg?react';
@@ -450,6 +450,21 @@ import AiApprovedAutomark from '../../assets/icons/ai_approved.svg?react';
 import videoliveicon from '../../assets/icons/Video_recording.svg?react';
 import CaptureIconImage from '../../assets/icons/capture_image.svg?react';
 import EclipsePluginIcon from '../../assets/icons/eclipse_plugin.svg?react';
+import AiToken from '../../assets/icons/ai_token.svg?react';
+import CloudClock from '../../assets/icons/cloud_clock.svg?react';
+import ScreenExpand from '../../assets/icons/screen_expand_icon.svg?react';
+import ScreenShotCapture from '../../assets/icons/screenshot_capture_icon.svg?react';
+import SamsungIcon from '../../assets/icons/samsung_icon.svg?react';
+import GoogleIcon from '../../assets/icons/google_icon.svg?react';
+import OnePlusIcon from '../../assets/icons/oneplus_icon.svg?react';
+import XiaomiIcon from '../../assets/icons/xiaomi_icon.svg?react';
+import HuaweiIcon from '../../assets/icons/huawei_icon.svg?react';
+import AmazonIcon from '../../assets/icons/amazon_icon.svg?react';
+import ScriptsIcon from '../../assets/icons/scripts.svg?react';
+import DialogInfoIcon from '../../assets/icons/dialog_info.svg?react';
+import RecordPauseIcon from '../../assets/icons/record_pause_icon.svg?react'
+import RecordStopIcon from '../../assets/icons/record_stop_icon.svg?react'
+import AddSettings from '../../assets/icons/add_setting.svg?react'
 
 Components['success'] = ToastSuccessIcon;
 Components['setting_icon'] = SettingIcon;
@@ -793,6 +808,9 @@ Components['link'] = LinkIcon;
 Components['arrow_left'] = ArrowLeft;
 Components['accordion_back'] = AccordionBack;
 Components['fia_icon'] = FiaIcon;
+Components['record_pause_icon'] = RecordPauseIcon
+Components['record_stop_icon'] = RecordStopIcon
+Components['add_setting'] = AddSettings
 
 Components['arrow_left_accordian'] = ArrowLeftAccordian;
 Components['arrow_right_icon'] = ArrowRightIcon;
@@ -900,5 +918,17 @@ Components['ai_approved'] = AiApprovedAutomark;
 Components['video_live_icon'] = videoliveicon;
 Components['screen_capture_icon'] = CaptureIconImage;
 Components['eclipse_plugin'] = EclipsePluginIcon;
+Components['ai_token'] = AiToken;
+Components['cloud_clock'] = CloudClock;
+Components['screen_expand_icon'] = ScreenExpand;
+Components['screenshot_capture_icon'] = ScreenShotCapture;
+Components['samsung_icon'] = SamsungIcon;
+Components['google_icon'] = GoogleIcon;
+Components['oneplus_icon'] = OnePlusIcon;
+Components['xiaomi_icon'] = XiaomiIcon;
+Components['huawei_icon'] = HuaweiIcon;
+Components['amazon_icon'] = AmazonIcon;
+Components['scripts'] = ScriptsIcon;
+Components['dialog_info'] = DialogInfoIcon;
 
 export default Components;

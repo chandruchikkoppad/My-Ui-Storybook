@@ -21,10 +21,16 @@ const useFileDropzone = (options: DropzoneOptions): DropzoneState => {
     invalidFileMessage,
     fileExistMessage,
     validateMIMEType = false,
-    isApiResponseError,
+    selectedFile,
+    setSelectedFile,
+    handleReplaceFile,
   } = options;
 
-  const [files, setFiles] = useState<FileState>({ accepted: [], rejected: [] });
+  const file = !selectedFile ? [] : [selectedFile as File];
+  const [files, setFiles] = useState<FileState>({
+    accepted: file,
+    rejected: [],
+  });
   const [isDragActive, setIsDragActive] = useState(false);
 
   const validateFileMIMEType = (
@@ -57,7 +63,7 @@ const useFileDropzone = (options: DropzoneOptions): DropzoneState => {
       const extensionWithPeriod = getExtensionWithPeriod(file).toLowerCase();
 
       if (validateMIMEType) {
-        if (!validateFileMIMEType(file, extensionWithPeriod) || isApiResponseError ) {
+        if (!validateFileMIMEType(file, extensionWithPeriod)) {
           errors.push({
             message: invalidFileMessage
               ? invalidFileMessage
@@ -65,7 +71,7 @@ const useFileDropzone = (options: DropzoneOptions): DropzoneState => {
             code: 'file-invalid-type',
           });
         }
-      } else if ((accept && !accept.includes(extensionWithPeriod)) || isApiResponseError) {
+      } else if (accept && !accept.includes(extensionWithPeriod)) {
         errors.push({
           message: invalidFileMessage
             ? invalidFileMessage
@@ -96,6 +102,7 @@ const useFileDropzone = (options: DropzoneOptions): DropzoneState => {
       maxSizeErrorMessage,
       invalidFileMessage,
       fileExistMessage,
+      validateMIMEType,
     ]
   );
 
@@ -105,29 +112,39 @@ const useFileDropzone = (options: DropzoneOptions): DropzoneState => {
         fileToReplace.name === newFile.name &&
         fileToReplace.size === newFile.size
       ) {
+        handleReplaceFile && handleReplaceFile(newFile);
         return;
       }
+      if (handleReplaceFile) handleReplaceFile();
       const errors = validateFile(newFile);
+      const isValid = checkEmpty(errors);
 
       setFiles((prevFiles) => {
         const updatedAccepted = prevFiles.accepted.filter(
-          (file) => file.name !== fileToReplace.name
-        );
-        const updatedRejected = prevFiles.rejected.filter(
-          (rejection) => rejection.file.name !== fileToReplace.name
+          (file) =>
+            file.name !== fileToReplace.name || file.size !== fileToReplace.size
         );
 
+        const updatedRejected = prevFiles.rejected.filter(
+          (rejection) =>
+            rejection.file.name !== fileToReplace.name ||
+            rejection.file.size !== fileToReplace.size
+        );
+
+        // If valid, update selectedFile too
+        if (isValid && setSelectedFile) {
+          setSelectedFile([...updatedAccepted, newFile]);
+        }
+
         return {
-          accepted: !checkEmpty(errors)
-            ? updatedAccepted
-            : [...updatedAccepted, newFile],
-          rejected: !checkEmpty(errors)
-            ? [...updatedRejected, { file: newFile, errors }]
-            : updatedRejected,
+          accepted: isValid ? [...updatedAccepted, newFile] : updatedAccepted,
+          rejected: isValid
+            ? updatedRejected
+            : [...updatedRejected, { file: newFile, errors }],
         };
       });
     },
-    [validateFile]
+    [validateFile, setSelectedFile]
   );
 
   const handleReplaceClick = useCallback(

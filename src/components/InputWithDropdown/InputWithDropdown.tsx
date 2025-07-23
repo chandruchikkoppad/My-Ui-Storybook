@@ -32,10 +32,23 @@ const InputWithDropdown = forwardRef<HTMLInputElement, InputWithDropdownProps>(
       type = 'text',
       leftDropDownPositionZindex,
       rightDropDownPositionZindex,
+      pattern,
+      inputMode,
+      disableSelectHover = false,
     },
     ref
   ) => {
     const isValueFilled = !checkEmpty(value) || dropdownPosition === 'left';
+    const handleWheel = (e: React.WheelEvent<HTMLInputElement>) => {
+      if (type !== 'number') return;
+      const input = e.currentTarget;
+      const currentValue = parseFloat(input.value);
+      const isScrollDown = e.deltaY > 0;
+      if (!isNaN(currentValue) && currentValue <= 0 && isScrollDown) {
+        input.blur();
+        setTimeout(() => input.focus(), 0);
+      }
+    };
 
     return (
       <div
@@ -67,6 +80,7 @@ const InputWithDropdown = forwardRef<HTMLInputElement, InputWithDropdownProps>(
                   'ff-floating-dropdown--disabled': !!disabled,
                   'ff-floating-dropdown--error': !!error,
                   'ff-floating-dropdown--left': dropdownPosition === 'left',
+                  'ff-floating-dropdown--no-hover': disableSelectHover,
                 })}
                 width={94}
                 height={30}
@@ -102,6 +116,7 @@ const InputWithDropdown = forwardRef<HTMLInputElement, InputWithDropdownProps>(
               onClick={onClick}
               onKeyUp={onKeyUp}
               onKeyDown={onKeyDown}
+              onWheel={handleWheel}
               onFocus={onFocus}
               className={classNames('ff-floating-input', {
                 'ff-floating-input--filled': isValueFilled,
@@ -109,6 +124,8 @@ const InputWithDropdown = forwardRef<HTMLInputElement, InputWithDropdownProps>(
                 'ff-floating-input--error': !!error,
                 'ff-floating-input--left-dropdown': dropdownPosition === 'left',
               })}
+              inputMode={inputMode}
+              pattern={pattern}
             />
           </div>
           {dropdownPosition === 'right' && (
@@ -124,6 +141,7 @@ const InputWithDropdown = forwardRef<HTMLInputElement, InputWithDropdownProps>(
               className={classNames('ff-floating-dropdown', {
                 'ff-floating-dropdown--disabled': !!disabled,
                 'ff-floating-dropdown--error': !!error,
+                'ff-floating-dropdown--no-hover': disableSelectHover,
               })}
               width={120}
               height={30}

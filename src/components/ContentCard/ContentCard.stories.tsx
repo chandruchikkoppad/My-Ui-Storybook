@@ -20,6 +20,7 @@ export const Sample: Story = {
       Value: '#Small\\-Searchterms',
       Using: 'Css Selector',
     },
+    maxHeight: '100px',
   },
 };
 

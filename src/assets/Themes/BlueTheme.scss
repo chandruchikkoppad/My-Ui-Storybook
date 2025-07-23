@@ -337,12 +337,35 @@ $blue-theme: (
   editor-bg-color: #242425,
   editor-border-color: #0c0213,
   ff-scrollbar-thumb-bg-color: #a3a3a3,
+  ff-step-variable-color:#FF9D00,
+  ff-step-element-color:#0485E1,
   ff-delete-popup-border-color:
     linear-gradient(
       94.23deg,
       rgba(228, 37, 37, 0.4) 16.33%,
       rgba(201, 0, 0, 0.4) 80.07%
     ),
+  ai-prompt-token-border-color: #dddddd,
+  ff-delete-icon-color: #a91224,
+  ai_prompt_list_divider-border: #967ca8,
+  ff-fireflink-ai-text-background:
+    linear-gradient(
+      270deg,
+      rgba(255, 16, 255, 1) 0%,
+      rgba(219, 54, 254, 1) 25%,
+      rgba(127, 152, 253, 1) 50%,
+      rgba(70, 214, 252, 1) 75%,
+      rgba(48, 239, 252, 1) 100%
+    ),
+  ff-orchid-Purple-color: #a169b3,
+  ff-execution-timer-color: #5b5b5b,
+  ff-windows-Icon-color: #00bcd4,
+  ff-electric-indigo: #2c25f3,
+  ff-vivid-orange: #ff9900,
+  ff-dodger-blue: #0088ff,
+  ff-electric-cyan: #03b7c7,
+  ff-video-background-play: #14041c4d,
+  ff-screenshot-background: rgba(0, 0, 0, 0.6),
 );
 
 :root {

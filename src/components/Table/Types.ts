@@ -147,7 +147,6 @@ export interface TableProps {
    * The content that to be displayed if editComponent
    */
   editComponent?: ReactNode;
-  columnSticky?: boolean;
   /**
    * tableRef to get the scroll position & to pass control of table to parent component
    */
@@ -168,11 +167,11 @@ export interface TableProps {
    * z-index for the table header
    */
   tableHeaderZindex?: number;
+
+  freezeColumns?: number;
+  displayCard?: boolean;
 }
 
 export interface FormValues {
   ifFailed: string | null;
-}
-export interface SortableRowProps {
-  columnSticky?: boolean;
 }

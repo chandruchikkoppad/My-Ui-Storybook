@@ -54,7 +54,7 @@ const EditLabel = ({
 
   const [currentSelectedOption, setCurrentSelectedOption] =
     useState<Option>(selectedOption);
-    const [shouldShowToast, setShouldShowToast] = useState(false);
+  const [shouldShowToast, setShouldShowToast] = useState(false);
 
   const containerRef = useRef<HTMLDivElement | null>(null);
   const cancelRef = useRef<HTMLDivElement | null>(null);
@@ -162,10 +162,11 @@ const EditLabel = ({
 
   const handleCancel = () => {
     if (isDisable.cancel) return;
-    setShouldShowToast(false);
     if (required && !value) {
+      const errorMessage = handleCustomError ? handleCustomError(text) : '';
       handleToastToggle('error');
-      setShowError('Text is required.');
+      setShowError(errorMessage);
+      setShouldShowToast(true);
       return;
     }
     if (onCancel) {
@@ -176,11 +177,13 @@ const EditLabel = ({
     setIsEditing(false);
     setShowError('');
     setIsEditable && setIsEditable(null);
+    setShouldShowToast(false);
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter') {
+    if (event.key === 'Enter' && inputRef.current === document.activeElement) {
       handleConfirm();
+      event.stopPropagation();
     } else if (event.key === 'Escape') {
       handleCancel();
     }
@@ -363,7 +366,11 @@ const EditLabel = ({
         </div>
       ) : (
         <Tooltip
-          title={getTooltipTitle()}
+          title={
+            isTextTruncated(text, truncatedTextCount, truncatedType)
+              ? getTooltipTitle()
+              : ''
+          }
           placement={tooltip?.tooltipPlacement ?? 'bottom'}
         >
           <span

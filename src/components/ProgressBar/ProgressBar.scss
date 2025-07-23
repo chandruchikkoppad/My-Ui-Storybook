@@ -12,33 +12,32 @@
       flex: 1;
     }
   }
-}
 
-.ff-progress-bar-track {
-  flex: 1;
-  background-color: var(--ff-progress-bar-bg-color);
-  border-radius: 5px;
-  overflow: hidden;
-  position: relative;
-}
+  .ff-progress-bar-track {
+    flex: 1;
+    background-color: var(--ff-progress-bar-bg-color);
+    border-radius: 5px;
+    overflow: hidden;
+    position: relative;
+    width: 80%;
 
-.ff-progress-bar {
-  border-radius: 5px;
-  transition: width 0.3s ease;
-}
+    .ff-progress-bar {
+      border-radius: 5px;
+      transition: width 0.3s ease;
+    }
 
-.ff-progress-bar-percentage {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.ff-progress-bar-label {
-  width: 82px;
-  font-size: 14px;
-  color: var(--ff-card-status-text-color);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+    .ff-progress-bar-percentage {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+  }
+  .ff-progress-bar-label {
+    font-size: 14px;
+    color: var(--ff-card-status-text-color);
+    white-space: nowrap;
+    overflow: hidden;
+    width: 24%;
+  }
 }

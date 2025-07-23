@@ -2,6 +2,11 @@ import React from 'react';
 import type { ProgressBarProps } from './types';
 import './ProgressBar.scss';
 import Typography from '../Typography';
+import Tooltip from '../Tooltip';
+import {
+  isTextTruncated,
+  truncateText,
+} from '../../utils/truncateText/truncateText';
 
 const ProgressBar: React.FC<ProgressBarProps> = ({
   progressPercentage,
@@ -91,14 +96,20 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
         </div>
       </div>
       {computedLabel && (
-        <Typography
-          as="div"
-          className="ff-progress-bar-label"
-          fontSize={labelFontSize}
-          color={labelTextColor}
-        >
-          {computedLabel}
-        </Typography>
+        <div className="ff-progress-bar-label">
+          <Typography
+            fontSize={labelFontSize}
+            color={labelTextColor}
+          >
+            <Tooltip
+              title={
+                isTextTruncated(computedLabel, 10, 'count') ? computedLabel : ''
+              }
+            >
+              {truncateText(computedLabel, 10, 'count')}
+            </Tooltip>
+          </Typography>
+        </div>
       )}
     </div>
   );

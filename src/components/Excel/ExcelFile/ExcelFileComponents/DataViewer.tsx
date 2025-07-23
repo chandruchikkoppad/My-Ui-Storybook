@@ -17,19 +17,19 @@ const DataViewer = <Cell extends Types.CellBase<Value>, Value>({
   const value = getValue(cell, evaluatedCell);
 
   const getFileList = (value: string) => {
-    if (checkEmpty(value)) {
-      return <></>;
-    }
-    const fileList = JSON.parse(value);
+  if (checkEmpty(value)) {
+    return <></>;
+  }
+  const fileList = JSON.parse(value);
 
-    return fileList.map((file: { name: string }, index: number) => {
-      return (
-        <div key={file.name} className="ff-spreadsheet-data-viewer--fileType">
-          {index + 1}. {file.name}
-        </div>
-      );
-    });
-  };
+  return fileList.map((file: { name: string }) => {
+    return (
+      <div key={file.name} className="ff-spreadsheet-data-viewer--fileType">
+        {file.name.split('*')[0]}
+      </div>
+    );
+  });
+};
 
   return typeof value === 'boolean' ? (
     <span className="ff-spreadsheet-data-viewer ff-spreadsheet-data-viewer--boolean">

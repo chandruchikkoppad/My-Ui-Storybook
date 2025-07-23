@@ -34,7 +34,15 @@ export const Toastify = () => {
       showTimeoutRef.current = null;
     }
 
-    let title = '';
+    const defaultTitles: Record<Variant, string> = {
+      success: 'Success',
+      danger: 'Error',
+      warning: 'Warning',
+      info: 'Info',
+      alert: 'Alert',
+    };
+
+    let title = defaultTitles[variant];
     let message = '';
 
     const formatMessage = (input: AcceptedType) => {
@@ -50,8 +58,7 @@ export const Toastify = () => {
       title = formatMessage(arg1);
       message = formatMessage(arg2);
     } else {
-      title = formatMessage(arg1);
-      message = '';
+      message = formatMessage(arg1);
     }
 
     // Close the existing toast if open, and then immediately show the new one

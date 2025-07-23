@@ -1,34 +1,81 @@
-import { useEffect, useState, forwardRef, useRef } from 'react';
+import {
+  useEffect,
+  useState,
+  forwardRef,
+  useRef,
+  useImperativeHandle,
+} from 'react';
 import './ChipsAccordion.scss';
 import Icon from '../../../Icon';
 import { NlpChipsAccordionProps, NlpChip } from '../../types';
 import Typography from '../../../Typography';
 import { checkEmpty } from '../../../../utils/checkEmpty/checkEmpty';
+import usePortalPosition from '../../../../hooks/usePortalPosition';
+import { createPortal } from 'react-dom';
 const ChipsAccordion = forwardRef<HTMLDivElement, NlpChipsAccordionProps>(
-  ({ chipOptionList, selectedChips, optionZIndex = 0 }, ref) => {
+  ({ chipOptionList, selectedChips, optionZIndex = 0, inputRef, ChipsAccordionWidth}, ref) => {
     const [filterData, setFilterData] = useState<NlpChip[]>([]);
     const [isExpanded, setIsExpanded] = useState(false);
-    const [IsArrowEnable, setIsArrowEnable] = useState(false);
+    const [positionChipContainer, setPositionChipContainer] = useState<{
+      left: number;
+      top: number;
+    }>({ left: 0, top: 0 });
+    const [expandDirection, setExpandDirection] = useState<'down' | 'up'>(
+      'down'
+    );
+    const localRef = useRef<HTMLDivElement>(null);
+    useImperativeHandle(ref, () => localRef.current as HTMLDivElement);
+    const portalPosition = usePortalPosition(localRef, isExpanded);
+
     useEffect(() => {
       if (checkEmpty(chipOptionList)) return;
       setFilterData(chipOptionList);
     }, [chipOptionList]);
+
     const chipsRowRef = useRef<HTMLDivElement>(null);
     const checkOverflow = () => {
       const rowEl = chipsRowRef.current;
       if (!rowEl) return;
-      const overflowing = rowEl.scrollHeight > rowEl.clientHeight;
-      setIsArrowEnable(overflowing);
     };
+
     useEffect(() => {
       checkOverflow();
     }, [filterData]);
+
+    useEffect(() => {
+      const handleUpdate = () => {
+        if (!inputRef?.current) return;
+        const { positionX, positionY, width, fromBottom } =
+          portalPosition(inputRef);
+        const estimatedHeight = 160;
+        const expandUp = fromBottom < estimatedHeight;
+        setExpandDirection(expandUp ? 'up' : 'down');
+        setPositionChipContainer({
+          left: positionX + width,
+          top: positionY,
+        });
+      };
+      handleUpdate();
+
+      const observer = new ResizeObserver(() => handleUpdate());
+      if (inputRef?.current) observer.observe(inputRef.current);
+
+      window.addEventListener('scroll', handleUpdate, true);
+
+      return () => {
+        if (inputRef?.current) observer.unobserve(inputRef.current);
+        observer.disconnect();
+        window.removeEventListener('scroll', handleUpdate, true);
+      };
+    }, [portalPosition, inputRef]);
+
     const toggleExpand = () => {
       setIsExpanded((prev) => !prev);
       if (isExpanded) {
         document.querySelector('.ff-chips-row')?.scrollTo({ top: 0 });
       }
     };
+
     const toggleAction = (index: number) => {
       const updatedActions = filterData.map((chip, i) =>
         i === index ? { ...chip, isSelected: !chip.isSelected } : chip
@@ -39,6 +86,7 @@ const ChipsAccordion = forwardRef<HTMLDivElement, NlpChipsAccordionProps>(
         selectedChips(selected);
       }
     };
+
     useEffect(() => {
       const handleResize = () => {
         checkOverflow();
@@ -48,15 +96,27 @@ const ChipsAccordion = forwardRef<HTMLDivElement, NlpChipsAccordionProps>(
         window.removeEventListener('resize', handleResize);
       };
     }, []);
-    return (
+
+    return createPortal(
       <div
         className="ff-chips-accordion"
-        style={{ zIndex: optionZIndex + 100 }}
-        ref={ref}
+        style={{
+          left: positionChipContainer.left,
+          top: positionChipContainer.top,
+          zIndex: optionZIndex + 100,
+          transform:
+            expandDirection === 'up'
+              ? 'translateY(calc(-100% + 33px))'
+              : 'none',
+          width: ChipsAccordionWidth,
+          position: 'absolute',
+        }}
+        ref={localRef}
       >
         <div
           ref={chipsRowRef}
           className={`ff-chips-row ${isExpanded ? 'expanded' : ''}`}
+          style={{ maxHeight: isExpanded ? '280px' : '20px' }}
         >
           <div className="chips-container">
             {filterData?.map(({ name, isSelected }, index) => (
@@ -83,15 +143,19 @@ const ChipsAccordion = forwardRef<HTMLDivElement, NlpChipsAccordionProps>(
             aria-expanded={isExpanded}
           >
             <Icon
-              name="arrows_down_icon"
+              name={
+                expandDirection === 'down'
+                  ? 'arrows_down_icon'
+                  : 'arrows_top_icon'
+              }
               height={8}
               width={8}
               onClick={toggleExpand}
-              disabled={!IsArrowEnable}
             />
           </div>
         </div>
-      </div>
+      </div>,
+      document.body
     );
   }
 );

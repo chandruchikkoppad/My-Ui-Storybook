@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { togglePrePostConditions } from './togglePrePostCondition';
+import { toggleShowHideEntity } from './toggleShowHideEntity';
 import { TreeNodeProps } from '../../ComponentProps/TreeNodeProps';
 
 export default {
-  title: 'Utils/togglePrePostConditions',
-  component: togglePrePostConditions,
+  title: 'Utils/toggleShowHideEntity',
+  component: toggleShowHideEntity,
 };
 
 const initialData: TreeNodeProps[] = [
@@ -245,12 +245,12 @@ const initialData: TreeNodeProps[] = [
   },
 ];
 
-export const InteractiveTogglePrePostConditions = () => {
+export const InteractivetoggleShowHideEntity = () => {
   const [data, setData] = useState<TreeNodeProps[]>(initialData);
   const [isHide, setIsHide] = useState<boolean>(false);
 
   const handleUpdateTree = () => {
-    const updatedTree = togglePrePostConditions(data, isHide);
+    const updatedTree = toggleShowHideEntity(data, isHide, true);
     setData([...updatedTree]);
   };
 
@@ -274,7 +274,7 @@ export const InteractiveTogglePrePostConditions = () => {
           cols={80}
         />
       </div>
-      <br/>
+      <br />
       <div>
         <label>
           <input

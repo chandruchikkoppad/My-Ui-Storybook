@@ -148,6 +148,7 @@ const AllProjectsDropdown = ({
               showClose={false}
               placeholder={placeholder}
               disabled={disabled}
+              showToaster={false}
             />
           </div>
           <div className={classNames('option-card')}>

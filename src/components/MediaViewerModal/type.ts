@@ -3,9 +3,18 @@ export interface MediaViewerModalProps {
   onClose: () => void;
   isPlaying: boolean;
   onTogglePlay?: () => void;
-  mediaType: 'image' | 'video';
+  mediaType: 'video' | 'image';
   src: string;
-  headerTitle: string;
+  headerTitle?: string;
   onDownload?: () => void;
   onExpand?: () => void;
+  showHeader?: boolean;
+  showDownload?: boolean;
+  showExpand?: boolean;
+  width?: string;
+  height?: string;
+  showControls?: boolean;
+  customStyle?: React.CSSProperties;
+  overlay?: boolean;
+  children?: React.ReactNode;
 }

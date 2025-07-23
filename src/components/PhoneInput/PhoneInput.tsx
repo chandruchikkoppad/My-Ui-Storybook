@@ -20,6 +20,7 @@ const PhoneInputField: React.FC<PhoneInputProps> = ({
   isVerified = false,
   isVerifyDisplay = false,
   onVerifyClick = () => {},
+  onValidationChange = () => {},
 }) => {
   const [phone, setPhone] = useState<string>(initialValue);
   const [isFocused, setIsFocused] = useState(false);
@@ -34,6 +35,15 @@ const PhoneInputField: React.FC<PhoneInputProps> = ({
       setPhone(formattedPhone);
     }
   }, [initialValue]);
+
+  const validatePhoneNumber = (phoneNumber: string) => {
+    const isPhoneValid = isValidPhoneNumber(phoneNumber);
+    const isOnlyCountryCode =
+      !!phoneNumber && phoneNumber.replace(/[^\d]/g, '').length <= 3;
+    const isValidNumber = isPhoneValid || isOnlyCountryCode;
+    setIsValid(isValidNumber);
+    onValidationChange(isValidNumber);
+  };
 
   const handlePhoneChange = (phone: string, countryData: CountryData) => {
     const newCountryCode = countryData?.countryCode?.toLowerCase();
@@ -51,9 +61,7 @@ const PhoneInputField: React.FC<PhoneInputProps> = ({
     }
     setPhone(formattedPhone);
     onChange(formattedPhone);
-    const isPhoneValid = isValidPhoneNumber(formattedPhone);
-    const isOnlyCountryCode = phone && phone.replace(/[^\d]/g, '').length <= 3;
-    setIsValid(isPhoneValid || isOnlyCountryCode);
+    validatePhoneNumber(formattedPhone);
   };
 
   const handleFocus = (event: React.FocusEvent<HTMLInputElement>) => {
@@ -64,10 +72,9 @@ const PhoneInputField: React.FC<PhoneInputProps> = ({
   const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
     setIsFocused(false);
     if (onBlur) onBlur(event);
-    const isOnlyCountryCode = phone && phone.replace(/[^\d]/g, '').length <= 3;
-    const isPhoneValid = isValidPhoneNumber(phone);
-    setIsValid(isPhoneValid || isOnlyCountryCode);
+    validatePhoneNumber(phone);
   };
+
   return (
     <div id={id}>
       <PhoneInput

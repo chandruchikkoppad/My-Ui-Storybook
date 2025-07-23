@@ -15,16 +15,25 @@ const MediaViewerModal: React.FC<MediaViewerModalProps> = ({
   headerTitle,
   onDownload,
   onExpand,
+  showHeader = true,
+  showDownload = true,
+  showExpand = true,
+  width = '800px',
+  height = '432px',
+  showControls = true,
+  customStyle,
+  overlay = true,
+  children, 
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
 
   useEffect(() => {
-    if (mediaType === 'video' && videoRef.current) {
+    if (mediaType === 'video' && videoRef.current && !children) {
       isPlaying ? videoRef.current.play() : videoRef.current.pause();
     }
-  }, [isPlaying, mediaType]);
+  }, [isPlaying, mediaType, children]);
 
   const handleTimeUpdate = useCallback(() => {
     if (videoRef.current) {
@@ -45,7 +54,9 @@ const MediaViewerModal: React.FC<MediaViewerModalProps> = ({
 
   const formatTime = (time: number): string => {
     const minutes = Math.floor(time / 60);
-    const seconds = Math.floor(time % 60).toString().padStart(2, '0');
+    const seconds = Math.floor(time % 60)
+      .toString()
+      .padStart(2, '0');
     return `${minutes}:${seconds}`;
   };
 
@@ -56,13 +67,16 @@ const MediaViewerModal: React.FC<MediaViewerModalProps> = ({
     }
   }, []);
 
-  const handleSliderClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const clickX = e.clientX - rect.left;
-    const width = rect.width;
-    const newTime = (clickX / width) * duration;
-    handleSliderChange(newTime);
-  }, [duration, handleSliderChange]);
+  const handleSliderClick = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const width = rect.width;
+      const newTime = (clickX / width) * duration;
+      handleSliderChange(newTime);
+    },
+    [duration, handleSliderChange]
+  );
 
   const progressPercentage = duration ? (currentTime / duration) * 100 : 0;
 
@@ -73,8 +87,10 @@ const MediaViewerModal: React.FC<MediaViewerModalProps> = ({
       isOpen={isOpen}
       onClose={onClose}
       isMaximized={false}
-      showHeader={true}
-      downloadHandler={() => console.log('Download clicked')}
+      showHeader={showHeader}
+      overlay={overlay}
+      downloadHandler={() => {}}
+      customStyle={customStyle}
       header={
         <div className="ff-header-content">
           <Icon width={23} height={23} name="automatic_locator" />
@@ -84,12 +100,14 @@ const MediaViewerModal: React.FC<MediaViewerModalProps> = ({
         </div>
       }
       icons={<Icon width={33} height={33} name="close" onClick={onClose} />}
-      width="620px"
-      height="336px"
+      width={width}
+      height={height}
       zIndex={999}
     >
       <div className="ff-video-wrapper">
-        {mediaType === 'video' ? (
+        {children ? (
+          children
+        ) : mediaType === 'video' ? (
           <video
             ref={videoRef}
             src={src}
@@ -102,26 +120,36 @@ const MediaViewerModal: React.FC<MediaViewerModalProps> = ({
           <img src={src} alt="Preview" className="ff-media-image" />
         )}
         <div className="ff-top-right-icons">
-          <Icon
-            width={20}
-            height={23}
-            name="download_file"
-            color="white"
-            onClick={onDownload}
-          />
-          <Icon
-            width={20}
-            height={23}
-            name="expand_icon"
-            color="white"
-            onClick={onExpand}
-          />
+          {showDownload && (
+            <Icon
+              width={20}
+              height={23}
+              name="download_file"
+              color="white"
+              onClick={onDownload}
+            />
+          )}
+          {showExpand && (
+            <Icon
+              width={20}
+              height={23}
+              name="expand_icon"
+              color="white"
+              onClick={onExpand}
+            />
+          )}
         </div>
-        {mediaType === 'video' && (
+
+        {mediaType === 'video' && showControls && !children && (
           <div className="ff-media-controls">
             <button onClick={onTogglePlay} className="ff-play-pause-btn">
               {isPlaying ? (
-                <Icon width={35} height={35} name="pause_button" color="white" />
+                <Icon
+                  width={35}
+                  height={35}
+                  name="pause_button"
+                  color="white"
+                />
               ) : (
                 <Icon width={35} height={35} name="play_button" color="white" />
               )}

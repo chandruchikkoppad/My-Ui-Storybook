@@ -113,6 +113,7 @@ const NlpInput = ({
   isWebservice = true,
   closeInputOnOutsideClick = () => {},
   tooltipText = 'Help',
+  ChipsAccordionWidth = '27.8%',
 }: SelectProps) => {
   const initialState: SelectState = {
     isInputFocused: false,
@@ -249,6 +250,33 @@ const NlpInput = ({
   }, []);
 
   const applyActiveOptionClasses = !isInputFocused && Boolean(option);
+
+  useEffect(() => {
+    const inputEl = InputRef.current;
+    if (!inputEl) return;
+    let scrollContainer: HTMLElement | null = inputEl.parentElement;
+    while (scrollContainer && scrollContainer !== document.body) {
+      const style = getComputedStyle(scrollContainer);
+      if (['scroll', 'auto'].includes(style.overflowY)) {
+        break;
+      }
+      scrollContainer = scrollContainer.parentElement;
+    }
+    if (!scrollContainer) return;
+    const originalOverflow = scrollContainer.style.overflow;
+
+    const shouldFreeze = showOptions || chipOptionList;
+
+    if (shouldFreeze) {
+      scrollContainer.style.overflow = 'hidden';
+    } else {
+      scrollContainer.style.overflow = originalOverflow || 'auto';
+    }
+
+    return () => {
+      scrollContainer.style.overflow = originalOverflow || 'auto';
+    };
+  }, [showOptions, chipOptionList]);
 
   return (
     <section className="main-section">
@@ -398,6 +426,8 @@ const NlpInput = ({
             selectedChips={selectedChips}
             optionZIndex={optionZIndex}
             ref={ChipRef}
+            inputRef={InputRef}
+            ChipsAccordionWidth={ChipsAccordionWidth}
           />
         )}
       </div>

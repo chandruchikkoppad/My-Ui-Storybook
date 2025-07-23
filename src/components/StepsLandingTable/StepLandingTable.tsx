@@ -16,6 +16,7 @@ import {
   getUpdatedExpandedRows,
   getUpdatedPartialSelect,
   getUpdatedSelectedRows,
+  hasSelectedIds,
   updateCheckboxStatus,
 } from './Components/handleStepCheckBox';
 import StepsTitle from './Components/StepsTitle';
@@ -44,6 +45,7 @@ const StepLandingTable = forwardRef<any, TableProps>(
       isViewPrivilegeMode = false,
       defaultExpanded = 'Steps',
       isHeaderRequired = true,
+      isClientSide = false,
     },
     ref
   ) => {
@@ -96,9 +98,14 @@ const StepLandingTable = forwardRef<any, TableProps>(
       new Set()
     );
     useEffect(() => {
+      setSelectedRows((pre: any) => getUpdatedSelectedRows(tableData, pre));
+      setStepPartialSelect((prevPartialSelect) =>
+        getUpdatedPartialSelect(tableData, prevPartialSelect)
+      );
       setExpandedRows((prev) =>
         getUpdatedExpandedRows(tableData, prev, defaultExpanded)
       );
+      if (selectedRows && !hasSelectedIds(selectedRows)) return;
       let { updateSelectRow, updateStepPartialSelect } = gettingBlockMap(
         tableData,
         selectedRows,
@@ -107,26 +114,15 @@ const StepLandingTable = forwardRef<any, TableProps>(
       if (updateStepPartialSelect)
         setStepPartialSelect(updateStepPartialSelect as Set<string>);
       if (updateSelectRow) setSelectedRows(updateSelectRow);
-
-      setSelectedRows((pre: any) => getUpdatedSelectedRows(tableData, pre));
-      setStepPartialSelect((prevPartialSelect) =>
-        getUpdatedPartialSelect(tableData, prevPartialSelect)
-      );
     }, [tableData]);
 
     useEffect(() => {
-      const hasSelectedIds = (rows: { [key: string]: Set<string> }) => {
-        return Object.values(rows).some((set) => set.size > 0);
-      };
       if (hasSelectedIds(selectedRows)) {
         const updatedSelection = {
-      ...selectedRows,
-      partialSelected: stepPartialSelect
-      };
+          ...selectedRows,
+          partialSelected: stepPartialSelect,
+        };
         onSelectClick?.(updatedSelection);
-
-      } else {
-        onSelectClick?.(null);
       }
     }, [selectedRows]);
 
@@ -237,6 +233,7 @@ const StepLandingTable = forwardRef<any, TableProps>(
             isStepGroupExpanded={isStepGroupExpanded}
             stepPartialSelect={stepPartialSelect}
             height={tableData.length === 1 ? height : ''}
+            isClientSide={isClientSide}
           />
         );
       } else {
@@ -258,6 +255,8 @@ const StepLandingTable = forwardRef<any, TableProps>(
             handleStepGroupExpand={handleStepGroupExpand}
             isStepGroupExpanded={isStepGroupExpanded}
             isViewPrivilegeMode={isViewPrivilegeMode}
+            height={tableData.length === 1 ? height : ''}
+            isClientSide={isClientSide}
           />
         );
       }
@@ -292,6 +291,9 @@ const StepLandingTable = forwardRef<any, TableProps>(
           )
         );
       },
+      resetStepGroupAccordion: () => {
+        setExpandStepGroup(new Map());
+      },
     }));
 
     useEffect(() => {
@@ -308,7 +310,7 @@ const StepLandingTable = forwardRef<any, TableProps>(
           'ff-accordion-fixed-header-table': withFixedHeader,
         })}
       >
-        {isHeaderRequired && (
+        {isHeaderRequired && !isClientSide && (
           <table
             cellSpacing={0}
             className={classNames('ff-accordion-table', {
@@ -370,6 +372,7 @@ const StepLandingTable = forwardRef<any, TableProps>(
                   tableMeta={tableMeta}
                   isHeaderRequired={isHeaderRequired}
                   isBulkEnable={isBulkEnable}
+                  isClientSide={isClientSide}
                 />
                 {expanded && getAccordionTableContent(row)}
               </div>

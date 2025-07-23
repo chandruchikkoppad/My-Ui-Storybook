@@ -621,27 +621,26 @@ export function clearEditMode(state: Types.StoreState): Types.StoreState {
     return state;
   }
 
-  const selectedRange = state.selected.toRange(state.model.data);
-
-  const changes: Types.CommitChanges = [];
-  let newData = state.model.data;
-
-  for (const point of selectedRange || []) {
-    const cell = Matrix.get(point, state.model.data);
+  if (state.mode === 'view') {
+    const resultState = clear(state);
+    return resultState;
+  } else {
+    const changes: Types.CommitChanges = [];
+    let newData = state.model.data;
+    const cell = Matrix.get(state.active, state.model.data);
     const clearedCell = clearCell(cell);
     changes.push({
       prevCell: cell || null,
       nextCell: clearedCell || null,
     });
-    newData = Matrix.set(point, clearedCell, newData);
+    newData = Matrix.set(state.active, clearedCell, newData);
+    return {
+      ...state,
+      mode: 'edit',
+      model: new Model(createFormulaParser, newData),
+      ...commit(changes),
+    };
   }
-
-  return {
-    ...state,
-    mode: 'edit',
-    model: new Model(createFormulaParser, newData),
-    ...commit(changes),
-  };
 }
 export function enterFunctionality(state: Types.StoreState): Types.StoreState {
   if (!state.active) {
@@ -743,7 +742,6 @@ const editKeyDownHandlers: KeyDownHandlers = {
   Escape: view,
   Tab: keyDownHandlers.Tab,
   Enter: keyDownHandlers.ArrowDown,
-  Backspace: clearEditMode,
   Delete: clear,
 };
 

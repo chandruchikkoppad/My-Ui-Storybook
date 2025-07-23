@@ -26,14 +26,49 @@ import {
   isValidElement,
 } from 'react';
 
-const getColumnWidth = (
+const getColumnLeftPosition = (
   index: number,
-  column?: { width?: number },
-  columns?: { width?: number }[]
+  columns: { width?: number }[],
+  freezeColumns?: number
 ) => {
-  if (index === 0) return `${index * (column?.width || 0)}px`;
-  if (index === 1) return `${columns?.[0]?.width || 0}px`;
-  return 'auto';
+  if (index === 0) return '0px';
+
+  // Calculate cumulative width of all previous columns including padding
+  let leftPosition = 0;
+  const CELL_PADDING = 8; // Each cell has 8px padding
+
+  for (let i = 0; i < index; i++) {
+    const width = columns[i]?.width;
+    // Add column width plus left padding only
+    leftPosition += width
+      ? parseInt(width.toString(), 10)
+      : DEFAULT_COLUMN_WIDTH;
+
+    // Add padding between frozen columns
+    if (freezeColumns && i < freezeColumns - 1) {
+      leftPosition += CELL_PADDING;
+    }
+  }
+
+  return `${leftPosition}px`;
+};
+const DEFAULT_COLUMN_WIDTH = 400;
+
+const calculateFrozenWidth = (
+  columnData: { width?: number }[],
+  freezeColumns: number
+) => {
+  return (
+    columnData
+      .slice(0, freezeColumns)
+      .reduce(
+        (acc, col) =>
+          acc +
+          parseInt(col.width?.toString() || `${DEFAULT_COLUMN_WIDTH}`, 10),
+        1
+      ) +
+    8 * (freezeColumns - 0.17)
+  );
 };
 
 const SortableRow = ({
@@ -49,9 +84,10 @@ const SortableRow = ({
   editMode,
   isAccordionOpen,
   accordionContent,
-  columnSticky,
   isRowCheckBoxDisable,
   isRowDisabled = true,
+  freezeColumns,
+  displayCard,
 }: any) => {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({
@@ -72,22 +108,29 @@ const SortableRow = ({
         key={key}
         className={classNames(tableBodyRowClass, {
           'disabled-row': row.disabled && isRowDisabled,
+          'display-card': displayCard,
         })}
         id={key}
       >
         {columns.map((column: any, index: number) => {
-          const isSticky = columnSticky && (index === 0 || index === 1);
+          const isFrozen = freezeColumns && index < freezeColumns;
           return (
             <td
               style={{
-                paddingLeft: index === 0 && draggable ? '0px' : '8px',
-                position: isSticky ? 'sticky' : 'static',
-                left: getColumnWidth(index, column, columns),
-                zIndex: isSticky ? 999 : 'auto',
-                backgroundColor: isSticky
+                position: isFrozen ? 'sticky' : 'static',
+                left: isFrozen
+                  ? getColumnLeftPosition(index, columns, freezeColumns)
+                  : 'auto',
+                zIndex: isFrozen ? 99 : 'auto',
+                backgroundColor: isFrozen
                   ? 'var(--input-label-bg-color)'
                   : 'transparent',
+                width: column.width ? `${column.width}px` : 'auto',
+                padding: '7px 8px',
+                boxSizing: 'border-box',
+                paddingRight: isFrozen ? 0 : '8px',
               }}
+              data-frozen={isFrozen || undefined} // Add this line
               key={column.accessor + index}
               onClick={() => handleOnclick(column, row)}
               className={classNames(column.className, {
@@ -176,17 +219,22 @@ const Table = ({
   editComponent,
   getAccordionStatus = () => {},
   accordionContent,
-  columnSticky = false,
   tableRef = null,
   isRowCheckBoxDisable,
   isRowDisabled = true,
   tableHeaderZindex = 99,
+  freezeColumns,
 }: TableProps) => {
   const observerRef = useRef<IntersectionObserver | null>(null);
 
+  let frozenWidth = 0;
+  if (freezeColumns) {
+    frozenWidth = calculateFrozenWidth(columns, freezeColumns);
+  }
+
   useEffect(() => {
     const scrollContainer = document.getElementById(
-      'ff-table-scroll-container'
+      'ff-sortable-table-scroll-container'
     );
     const firstNode = document.getElementById('ff-table-first-node');
     const lastNode = document.getElementById('ff-table-last-node');
@@ -258,14 +306,16 @@ const Table = ({
         strategy={verticalListSortingStrategy}
       >
         <div
-          style={{
-            height: height,
-            position: 'relative',
-            overflowX: 'auto',
-            whiteSpace: 'nowrap',
-            scrollbarWidth: draggable ? 'none' : 'auto',
-          }}
-          id="ff-table-scroll-container"
+          style={
+            {
+              height: height,
+              scrollbarWidth: draggable ? 'none' : 'auto',
+              '--frozen-column-width': freezeColumns
+                ? `${frozenWidth}px`
+                : '0px',
+            } as React.CSSProperties
+          }
+          id="ff-sortable-table-scroll-container"
           className={classNames(className, {
             'ff-fixed-header-table': withFixedHeader,
             'border-borderRadius': borderWithRadius,
@@ -285,57 +335,64 @@ const Table = ({
               }}
             >
               <tr>
-                {columns.map((column, index) => (
-                  <th
-                    className={classNames(
-                      `${headerType !== 'default' ? `${headerType}-bg` : ''}`,
-                      `${headerTextColor && `${headerTextColor}-color`}`,
-                      {
-                        'sticky-column':
-                          columnSticky && (index === 0 || index === 1),
-                      }
-                    )}
-                    key={column.header}
-                    style={{
-                      width: column?.width,
-                      left: getColumnWidth(index, column, columns),
-                    }}
-                  >
-                    <div className="ff-table-icon">
-                      <Icon
-                        height={14}
-                        width={14}
-                        name={headerIconName}
-                        onClick={headerIconOnClick}
-                      />
-                    </div>
-                    <Typography
-                      style={column?.width && { width: column?.width }}
-                      as="div"
-                      fontWeight="semi-bold"
-                      className="ff-label-checkbox-container"
-                    >
-                      {index === 0 && withCheckbox && (
-                        <span className="ff-table-checkbox">
-                          <Checkbox
-                            onChange={(e) => {
-                              onSelectClick(e, {
-                                allSelected: e.target.checked,
-                              });
-                            }}
-                            checked={
-                              allSelected !== undefined ? allSelected : false
-                            }
-                            partial={!!partialSelected}
-                            disabled={headerCheckboxDisabled}
-                          />
-                        </span>
+                {columns.map((column, index) => {
+                  const isFrozen = freezeColumns && index < freezeColumns;
+                  return (
+                    <th
+                      className={classNames(
+                        `${headerType !== 'default' ? `${headerType}-bg` : ''}`,
+                        `${headerTextColor && `${headerTextColor}-color`}`
                       )}
+                      key={column.header}
+                      style={{
+                        position: isFrozen ? 'sticky' : 'static',
+                        left: isFrozen
+                          ? getColumnLeftPosition(index, columns, freezeColumns)
+                          : 'auto',
+                        zIndex: isFrozen ? 999 : 'auto',
+                        width: column.width ? `${column.width}px` : 'auto',
+                        padding: '7px 8px',
+                        boxSizing: 'border-box',
+                        // Remove right padding from frozen columns to prevent overlap
+                        paddingRight: isFrozen ? 0 : '8px',
+                      }}
+                    >
+                      <div className="ff-table-icon">
+                        <Icon
+                          height={14}
+                          width={14}
+                          name={headerIconName}
+                          onClick={headerIconOnClick}
+                        />
+                      </div>
+                      <Typography
+                        style={column?.width && { width: column?.width }}
+                        as="div"
+                        fontWeight="semi-bold"
+                        className="ff-label-checkbox-container"
+                      >
+                        {index === 0 && withCheckbox && (
+                          <span className="ff-table-checkbox">
+                            <Checkbox
+                              onChange={(e) => {
+                                onSelectClick(e, {
+                                  allSelected: e.target.checked,
+                                });
+                              }}
+                              checked={
+                                allSelected !== undefined ? allSelected : false
+                              }
+                              partial={!!partialSelected}
+                              disabled={headerCheckboxDisabled}
+                            />
+                          </span>
+                        )}
 
-                      {column.header}
-                    </Typography>
-                  </th>
-                ))}
+                        {column.header}
+                      </Typography>
+                    </th>
+                  );
+                })}
               </tr>
             </thead>
             <tbody className="ff-fixed-header-table">
@@ -377,11 +434,12 @@ const Table = ({
                           withCheckbox={withCheckbox}
                           onSelectClick={onSelectClick}
                           draggable={draggable}
-                          columnSticky={columnSticky}
                           isAccordionOpen={isOpen}
                           accordionContent={accordionContent}
                           isRowCheckBoxDisable={isRowCheckBoxDisable}
                           isRowDisabled={isRowDisabled}
+                          freezeColumns={freezeColumns}
+                          frozenWidth={frozenWidth}
                         />
                       )}
                     </>

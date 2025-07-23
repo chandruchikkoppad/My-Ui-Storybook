@@ -256,5 +256,49 @@ export const Controlled: Story = {
     );
   },
 };
+export const DefaultHelperTextForUser: Story = {
+  render: () => {
+    const [value, setValue] = useState('');
+    const [error, setError] = useState<boolean>(false);
+    const [helperText, setHelperText] = useState<string>(
+      'default helper text to guide users'
+    );
+
+    const onChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
+      const value = event.target.value;
+      if (value.length <= 0) {
+        setError(true);
+        setHelperText(`${event.target.name} is required`);
+      } else if (value.length >= 10) {
+        setError(true);
+        setHelperText(`Name should be within 10 characters`);
+      } else {
+        setError(false);
+        setHelperText('');
+      }
+      setValue(value);
+    };
+
+    return (
+      <>
+        <Input
+          {...defaultArgs}
+          type="text"
+          onChange={onChangeHandler}
+          disabled={false}
+          value={value}
+          name="Name"
+          label="Name"
+          placeholder="Enter name here"
+          variant="primary"
+          required={true}
+          error={error}
+          helperText={helperText}
+          isHelperTextRequired={true}
+        />
+      </>
+    );
+  },
+};
 
 export default meta;

@@ -106,4 +106,6 @@ export interface TableProps {
   defaultExpanded?: 'Steps' | 'POST' | 'PRE' | 'Depends' | 'All';
 
   isHeaderRequired?: boolean;
+
+  isClientSide?: boolean;
 }

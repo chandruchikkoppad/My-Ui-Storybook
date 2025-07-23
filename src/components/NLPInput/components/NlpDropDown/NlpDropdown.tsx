@@ -45,14 +45,14 @@ const NlpDropdown = ({
 
     if (checkEmpty(options)) {
       dropdownContainerHeight = optionHeight + 2 * dropDownWrapperPadding;
-    } else if (options.length > 5) {
+    } else if (options.length > 0) {
       dropdownContainerHeight = 5 * optionHeight + 2 * dropDownWrapperPadding;
     } else {
       dropdownContainerHeight =
         options.length * optionHeight + 2 * dropDownWrapperPadding;
     }
 
-    if (fromBottom > dropdownContainerHeight + margin) {
+    if (fromBottom > dropdownContainerHeight + margin + 80) {
       return {
         left: positionX,
         top: positionY,
@@ -111,7 +111,7 @@ const NlpDropdown = ({
           />
         );
       } else if (platform === 'Generic') {
-        return <Icon name="generic_nlp" height={10} width={10} />;
+        return <Icon name="mobile_icon" height={10} width={10} />;
       } else {
         return <Icon name="common_nlp" height={10} width={10} />;
       }

@@ -88,7 +88,7 @@ const AttachmentButton: React.FC<AttachmentUploaderProps> = ({
     if (fileInputRef.current?.files) {
       const files = Array.from(fileInputRef.current.files);
       if (files.length > 5) {
-        setFileError('Maximun file(s) can be uploaded: 5');
+        setFileError('Maximum file(s) can be uploaded: 5');
         fileInputRef.current.value = '';
         return;
       }
@@ -185,7 +185,7 @@ const AttachmentButton: React.FC<AttachmentUploaderProps> = ({
         <Toaster
           isOpen={!!fileError}
           variant="info"
-          toastTitle="Error"
+          toastTitle="Info"
           toastMessage={fileError}
           zIndex={10000000}
         />

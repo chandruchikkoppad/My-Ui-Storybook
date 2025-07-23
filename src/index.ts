@@ -102,7 +102,7 @@ export { default as OsTree } from './components/OsTree';
 export { default as OtpVerification } from './components/OtpVerification';
 export { default as MediaViewerModel } from './components/MediaViewerModal';
 export { default as SessionDropdown } from './components/SessionDropdown';
-
+export { default as TableTreeFn } from './components/TableTreeFn';
 // Utils exports
 export { checkEmpty } from './utils/checkEmpty/checkEmpty';
 export {
@@ -169,7 +169,7 @@ export { toCamelCase } from './utils/toCamelCase/toCamelCase';
 export { autoScrollToTableLastRow } from './utils/autoScrollToTableLastRow/autoScrollToTableLastRow';
 export { handleTreeExpandAllCollapseAll } from './utils/handleTreeExpandAllCollapseAll/handleTreeExpandAllCollapseAll';
 export { scrollToView } from './utils/ScrollToview/ScrollToView';
-export { togglePrePostConditions } from './utils/togglePrePostCondition/togglePrePostCondition';
+export { toggleShowHideEntity } from './utils/toggleShowHideEntity/toggleShowHideEntity';
 export { getTopVisibleNodeKey } from './utils/getTopVisibleNodeKey/getTopVisibleNodeKey';
 export { nlpInputDelay } from './utils/nlpInputDelay/nlpInputDelay';
 export { getNavigateToKey } from './utils/TreeNavigateUtils/getNavigateToKey';
@@ -252,7 +252,7 @@ export {
   ALPHA_NUM_EXTENDED_REGEX,
   ALPHANUMERIC_WITH_DOT_REGEX,
   EXCEL_SPACING_REGEX,
-  ALPHABET_WITH_SPACES_ONLY_REGEX
+  ALPHABET_WITH_SPACES_ONLY_REGEX,
 } from './validations/regex';
 export {
   setStoreValue,

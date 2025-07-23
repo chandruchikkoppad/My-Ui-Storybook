@@ -8,9 +8,10 @@ import {
   truncateText,
 } from '../../utils/truncateText/truncateText';
 import Tooltip from '../Tooltip';
+import { checkEmpty } from '../../utils/checkEmpty/checkEmpty';
 
 const MachineInputField = ({
-  width = '',
+  width = '100%',
   options = [],
   runCount = 0,
   className = '',
@@ -40,6 +41,7 @@ const MachineInputField = ({
     firefox: 'fire_fox',
     chrome: 'chrome_icon',
     explorer: 'internet_explorer',
+    ios: 'mac_icon',
   };
   const isManualScript = scriptType.toLowerCase() === 'manual';
   return (
@@ -71,7 +73,7 @@ const MachineInputField = ({
           'ff-machine-input-field-reverse': contentReverse,
         })}
       >
-        {options.map(({ label, type = 'local' }) => (
+        {options.map(({ label, type = 'local', version }) => (
           <div
             key={type}
             className={classNames('ff-machine-icon-text-wrapper', {
@@ -89,9 +91,25 @@ const MachineInputField = ({
                 })}
                 color="var(--ff-machine-input-field-text-color)"
               >
-                {isTextTruncated(label, 15) ? truncateText(label, 15) : label}
+                {isTextTruncated(label, 10) ? truncateText(label, 10) : label}
               </Typography>
             </Tooltip>
+            {isManualScript && !checkEmpty(version) && (
+              <Tooltip title={version}>
+                <Typography
+                  className={classNames('ff-machine-text', {
+                    'ff-machine-text-reverse': contentReverse,
+                  })}
+                  color="var(--ff-machine-input-field-text-color)"
+                >
+                  {' '}
+                  -{' '}
+                  {isTextTruncated(version ?? '', 10)
+                    ? truncateText(version ?? '', 10)
+                    : version}
+                </Typography>
+              </Tooltip>
+            )}
           </div>
         ))}
       </div>

@@ -40,7 +40,6 @@ const Comments = ({
   >([]);
   const [mentionPosition, setMentionPosition] = useState({ top: 0, left: 0 });
   const [textAfterAt, setTextAfterAt] = useState('');
-  const inputRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const selectSectionRef = useRef<HTMLDivElement>(null);
 
@@ -223,34 +222,34 @@ const Comments = ({
       left: spanRect.left,
     };
   };
-  const updateMentionPosition = () => {
-    if (!textareaRef.current) return;
-    const textareaEl = textareaRef?.current;
-    const dropdownEl = selectSectionRef?.current;
-    const inputEl = inputRef?.current;
-    const caretPosition = textareaRef.current.selectionStart;
-    const caretCoords = getCaretCoordinates(textareaEl, caretPosition);
-    const dropdownHeight = dropdownEl?.getBoundingClientRect().height || 370;
-    const inputRect = inputEl?.getBoundingClientRect();
-    if (!inputRect) return;
-    const spaceBelow = window.innerHeight - inputRect.bottom;
-    const spaceAbove = inputRect.top;
-    const showAbove =
-      spaceBelow < dropdownHeight && spaceAbove > dropdownHeight;
-    setMentionPosition({
-      top: showAbove
-        ? caretCoords.top - dropdownHeight - 528
-        : caretCoords.top - 606,
-      left: caretCoords.left + 10,
-    });
-  };
+  useEffect(() => {
+    const updateMentionPosition = () => {
+      if (!textareaRef.current) return;
+      const textareaEl = textareaRef?.current;
+      const dropdownEl = selectSectionRef?.current;
+      const caretPosition = textareaRef.current.selectionStart;
+      const caretCoords = getCaretCoordinates(textareaEl, caretPosition);
+      const dropdownHeight = dropdownEl?.getBoundingClientRect().height ?? 0;
+      const inputRect = textareaEl?.getBoundingClientRect();
+      if (!inputRect) return;
+      const spaceBelow = window.innerHeight - inputRect.bottom;
+      const spaceAbove = inputRect.top;
+      const showAbove =
+        spaceBelow < dropdownHeight && spaceAbove > dropdownHeight;
+      setMentionPosition({
+        top: showAbove
+          ? caretPosition - dropdownHeight - 16
+          : caretPosition + 32,
+        left: caretCoords.left + 10,
+      });
+    };
+    updateMentionPosition();
+  }, [input]);
   const textAreaInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const textAreaValue = e.target.value;
     setInput(textAreaValue);
-    updateMentionPosition();
     const caretPosition = e.target.selectionStart;
     const textBeforeCaret = textAreaValue.slice(0, caretPosition);
-
     const match = textBeforeCaret.match(CHECK_AT_FOLLOWED_BY_WORD);
     const mentionWords = match?.[1] || '';
     setTextAfterAt(mentionWords);
@@ -327,7 +326,7 @@ const Comments = ({
           </Typography>
 
           {!showTextarea && (
-            <div className="input-wrapper" ref={inputRef}>
+            <div className="input-wrapper">
               <textarea
                 className="inputContainer_input first_input"
                 rows={input.length < rowBreakCharCount ? 1 : 3}
@@ -343,7 +342,6 @@ const Comments = ({
               {hasAtSymbol && (
                 <div
                   id="mention-user"
-                  ref={selectSectionRef}
                   style={{
                     position: 'absolute',
                     top: `${mentionPosition.top}px`,
@@ -355,6 +353,7 @@ const Comments = ({
                     usersObj={usersObj}
                     optionClicked={optionClicked}
                     charsAfterAt={textAfterAt}
+                    mentionUserRef={selectSectionRef}
                   />
                 </div>
               )}

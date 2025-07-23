@@ -1,14 +1,44 @@
+@mixin sticky-columns-style {
+  position: sticky;
+  left: 0;
+  z-index: 10;
+  background-color: var(--input-label-bg-color);
+}
+
+#ff-sortable-table-scroll-container {
+  overflow-x: auto;
+  position: relative;
+  scrollbar-width: thin;
+
+  &::-webkit-scrollbar {
+    height: 5px; // Horizontal scrollbar height
+    width: 5px; // Vertical scrollbar width
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--description-text); // Scrollbar color
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    margin-left: var(
+      --frozen-column-width
+    ); // This pushes the scrollbar track to start after frozen columns
+  }
+}
+
 .ff-fixed-header-table {
   overflow-y: auto;
   position: relative;
 }
 
 .ff-table {
-  width: 100%;
+  width: auto;
+  min-width: 100%;
 
   .sticky-column {
     position: sticky;
-    z-index: 999;
+    z-index: 99;
     background-color: var(--input-label-bg-color);
   }
 
@@ -25,6 +55,22 @@
     text-align: left;
     font-size: 12px;
     padding: 7px 8px;
+  }
+
+  tbody {
+    tr {
+      th,
+      td {
+        &:first-child {
+          @include sticky-columns-style;
+        }
+
+        // Add this for additional frozen columns
+        &[data-frozen='true'] {
+          @include sticky-columns-style;
+        }
+      }
+    }
   }
 
   thead {
@@ -47,6 +93,21 @@
   }
 
   tbody {
+    tr {
+      &:hover {
+        td {
+          background-color: var(--hover-color) !important;
+        }
+        td[data-frozen='true'] {
+          background-color: var(--hover-color) !important;
+          z-index: 20;
+        }
+      }
+      &:display-card {
+        background-color: var(--hover-color) !important;
+      }
+    }
+
     scrollbar-width: none;
 
     tr:hover,
@@ -69,7 +130,6 @@
             cursor: grabbing !important;
           }
         }
-
       }
     }
 

@@ -772,8 +772,10 @@ const DashboardDonutChart: React.FC<DashboardDonutChartProps> = ({
             {legendData?.map((item) => {
               const legendItem = (
                 <div className="ff-legend-item" key={item.originalIndex}>
-                  <span
+                  <Typography
+                    as="span"
                     className="ff-legend-capsule"
+                    fontSize={legendValueFontSize}
                     style={{
                       backgroundColor: item?.color
                         ? item.color
@@ -783,13 +785,8 @@ const DashboardDonutChart: React.FC<DashboardDonutChartProps> = ({
                       ...capsuleStyle,
                     }}
                   >
-                    <Typography
-                      className="ff-legend-capsule-content"
-                      fontSize={legendValueFontSize}
-                    >
-                      {item?.labelValue === 0 ? '00' : item?.labelValue}
-                    </Typography>
-                  </span>
+                    {item?.labelValue === 0 ? '00' : item?.labelValue}
+                  </Typography>
                   <Typography
                     fontSize={legendKeyFontSize}
                     className="ff-legend-key"
@@ -884,7 +881,7 @@ const DashboardDonutChart: React.FC<DashboardDonutChartProps> = ({
                   </th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="ff-legend-table-tbody">
                 {legendData?.map((item) => (
                   <tr
                     className="ff-legend-item"
@@ -989,6 +986,48 @@ const DashboardDonutChart: React.FC<DashboardDonutChartProps> = ({
     document.body.removeChild(svgContainer);
     return `${truncatedText}...`;
   };
+  const getCenterText = () => {
+    if (legendType === 'tableLegend' && hoveredItemIndex !== null) {
+      const hoveredItem = chartValues.find(
+        (item) => item.originalIndex === hoveredItemIndex
+      );
+      return total === 0
+        ? '0%'
+        : `${Math.round(((hoveredItem?.value || 0) / total) * 100)}%`;
+    }
+    if (legendType === 'memoryLegend') {
+      return `${totalMemory}`;
+    }
+    if (isOnClick && hoveredItemIndex !== null) {
+      const hoveredItem = chartValues.find(
+        (item) => item.originalIndex === hoveredItemIndex
+      );
+      return `${hoveredItem?.value}`;
+    }
+    return `${
+      legendType === 'tableLegend'
+        ? `${chartValues.length}`
+        : Number.isInteger(total)
+        ? total
+        : total?.toFixed(2)
+    } ${showUnit && unit ? unit.toUpperCase() : ''}`;
+  };
+
+  const getSubLabelText = () => {
+    if (legendType === 'tableLegend' && hoveredItemIndex !== null) {
+      const hoveredItem = chartValues.find(
+        (item) => item.originalIndex === hoveredItemIndex
+      );
+      return truncateChartText(hoveredItem?.key || '');
+    }
+    if (isOnClick && hoveredItemIndex !== null) {
+      const hoveredItem = chartValues.find(
+        (item) => item.originalIndex === hoveredItemIndex
+      );
+      return truncateChartText(hoveredItem?.key || '');
+    }
+    return truncateChartText(legendDetailsType);
+  };
 
   return (
     <div
@@ -1061,39 +1100,7 @@ const DashboardDonutChart: React.FC<DashboardDonutChartProps> = ({
                   style={{ fontSize: `${labelFontSize}px` }}
                 >
                   {wrapText(
-                    legendType === 'tableLegend' &&
-                      hoveredItemIndex !== null &&
-                      chartValues.find(
-                        (item) => item.originalIndex === hoveredItemIndex
-                      )
-                      ? total === 0
-                        ? '0%'
-                        : `${Math.round(
-                            ((chartValues.find(
-                              (item) => item.originalIndex === hoveredItemIndex
-                            )?.value || 0) /
-                              total) *
-                              100
-                          )}%`
-                      : legendType === 'memoryLegend'
-                      ? `${totalMemory}`
-                      : isOnClick &&
-                        hoveredItemIndex !== null &&
-                        chartValues.find(
-                          (item) => item.originalIndex === hoveredItemIndex
-                        )?.value
-                      ? `${
-                          chartValues.find(
-                            (item) => item.originalIndex === hoveredItemIndex
-                          )?.value
-                        }`
-                      : `${
-                          legendType === 'tableLegend'
-                            ? `${chartValues.length}`
-                            : Number.isInteger(total)
-                            ? total
-                            : total?.toFixed(2)
-                        } ${showUnit && unit ? unit.toUpperCase() : ''}`,
+                    getCenterText(),
                     LABEL_MAX_WIDTH,
                     labelFontSize
                   ).map((line, index) => (
@@ -1125,25 +1132,7 @@ const DashboardDonutChart: React.FC<DashboardDonutChartProps> = ({
                   style={{ fontSize: `${subLabelFontSize}px` }}
                 >
                   {wrapText(
-                    legendType === 'tableLegend' &&
-                      hoveredItemIndex !== null &&
-                      chartValues.find(
-                        (item) => item.originalIndex === hoveredItemIndex
-                      )
-                      ? chartValues.find(
-                          (item) => item.originalIndex === hoveredItemIndex
-                        )?.key || ''
-                      : isOnClick &&
-                        hoveredItemIndex !== null &&
-                        chartValues.find(
-                          (item) => item.originalIndex === hoveredItemIndex
-                        )?.key
-                      ? `${
-                          chartValues.find(
-                            (item) => item.originalIndex === hoveredItemIndex
-                          )?.key
-                        }`
-                      : legendDetailsType,
+                    getSubLabelText(),
                     LABEL_MAX_WIDTH,
                     subLabelFontSize
                   ).map((line, index) => (
@@ -1164,19 +1153,7 @@ const DashboardDonutChart: React.FC<DashboardDonutChartProps> = ({
                         ''
                       }
                     >
-                      {selectedItemIndex !== null &&
-                      chartValues.find(
-                        (item) => item.originalIndex === selectedItemIndex
-                      )
-                        ? index === 0
-                          ? truncateChartText(
-                              chartValues.find(
-                                (item) =>
-                                  item.originalIndex === selectedItemIndex
-                              )?.key || ''
-                            )
-                          : null
-                        : truncateChartText(line)}
+                      {line}
                     </tspan>
                   ))}
                 </text>

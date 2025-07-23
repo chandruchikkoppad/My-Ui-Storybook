@@ -14,6 +14,7 @@ export interface OverviewModalProps {
   overlay?: boolean;
   downloadHandler: () => void;
   zIndex?: number;
+  customStyle?: React.CSSProperties;
   multiData?: Array<{
     machineName: string;
     scriptName: string;

@@ -122,7 +122,10 @@ export const getTreeDetails = (
       throw new Error(`Invalid action: ${action}`);
   }
 
-  if (checkEmpty(treeDataList) && action !== 'start' && action !== 'delete') {
+  if (
+    checkEmpty(treeDataList) &&
+    !['start', 'delete', 'hide', 'refresh'].includes(action)
+  ) {
     throw new Error('Tree data list is empty.');
   }
 

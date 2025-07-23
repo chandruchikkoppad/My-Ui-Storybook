@@ -181,19 +181,28 @@ export default function reducer(
       }
       selectedRow = selectedRow as number;
       let updatedData = [...model.data];
-
       updatedData.splice(selectedRow, 1);
-
       const updatedModel = new Model(model.createFormulaParser, updatedData);
-
       let newSelectedRow = selectedRow > 0 ? selectedRow - 1 : 0;
-      let newSelectedColumn = !checkEmpty(selectedColumn) ? selectedColumn : 0;
+      const newSelectedColumn = selectedColumn !== null ? selectedColumn : 0;
+      const newActive =
+        updatedData.length > 0
+          ? { row: newSelectedRow, column: newSelectedColumn }
+          : null;
+      const newSelected =
+        updatedData.length > 0
+          ? new EntireRowsSelection(newSelectedRow, newSelectedRow)
+          : new EmptySelection();
+      const { [selectedRow]: _, ...cleanedRowDimensions } = state.rowDimensions;
 
       return {
         ...state,
         model: updatedModel,
         selectedRow: newSelectedRow,
         selectedColumn: newSelectedColumn,
+        selected: newSelected,
+        active: newActive,
+        rowDimensions: cleanedRowDimensions,
       };
     }
 

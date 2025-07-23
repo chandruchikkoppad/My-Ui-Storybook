@@ -141,6 +141,7 @@ export interface FileDropzoneProps {
    *  Its fileInputRef using inside fileDropZone.
    **/
   fileInputRef?: RefObject<HTMLInputElement>;
+  handleReplaceFile?: (file?: File | DynamicObj | null) => void;
 }
 export interface FileState {
   accepted: File[];
@@ -172,6 +173,9 @@ export interface DropzoneOptions {
   fileExistMessage?: string;
   validateMIMEType?: boolean;
   isApiResponseError?: boolean;
+  selectedFile?: File | DynamicObj | null;
+  setSelectedFile?: (file: File | DynamicObj | null) => void;
+  handleReplaceFile?: (file?: File | DynamicObj | null) => void;
 }
 
 export interface DropzoneState {

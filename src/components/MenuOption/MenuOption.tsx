@@ -156,6 +156,7 @@ const OptionCard = ({
         (opt) =>
           !opt.hide && (
             <Tooltip
+              key={opt.value}
               title={opt?.tooltipForOption ? opt?.tooltipForOption : ''}
               placement={opt?.tooltipPlacementForOption}
             >
@@ -207,7 +208,7 @@ const MenuOption = ({
   });
   const closeDropDown = () => setIsClicked(false);
   useEffect(() => {
-    if (targetRef) {
+    if (targetRef && !checkEmpty(options)) {
       const parentDom = getAnchorElement(targetRef);
       parentDom?.classList.toggle('hover', isClicked);
     }
@@ -217,8 +218,7 @@ const MenuOption = ({
         parentDom?.classList.remove('hover');
       }
     };
-  }, [isClicked, targetRef]);
-
+  }, [isClicked, targetRef, options]);
   const getScrollableParent = (
     element: HTMLElement | null
   ): HTMLElement | null => {
@@ -299,7 +299,8 @@ const MenuOption = ({
         <div className="ff-icon-label">
           <div
             className={classNames('ff-menuicon-container', {
-              'ff-menuicon-container-clicked': isClicked && displayCard,
+              'ff-menuicon-container-clicked':
+                isClicked && displayCard && !checkEmpty(options),
               dark: variant === 'dark',
               'ff-menuicon-container-add-resource': isAddResourceButton,
             })}
@@ -317,7 +318,7 @@ const MenuOption = ({
               name={iconName}
               disabled={disabled}
               color={
-                displayCard
+                displayCard && !checkEmpty(options)
                   ? isClicked === (variant === 'dark')
                     ? 'var(--menu-option-icon-clicked)'
                     : 'var(--menu-option-icon-color)'

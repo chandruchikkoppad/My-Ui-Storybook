@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useRef, useState } from 'react';
 import { StoryObj, Meta } from '@storybook/react';
 import PrePostTable from './PrePostTable';
 import { ffid } from '../../utils/ffID/ffid';
@@ -163,6 +163,7 @@ export const DynamicTable: Story = {
     );
     const [editMode, setEditMode] = useState<number | string>('');
     const [AddNewNlp, setNewNlp] = useState<AddNlpProp>();
+    const prePostRef = useRef<any>();
 
     //Dummy data from api call
     const newSteps: any = [
@@ -345,6 +346,13 @@ export const DynamicTable: Story = {
             setNewNlp({ action: 'addLast' });
           }}
         />
+        <Icon
+          name="refresh_icon"
+          onClick={() => {
+            prePostRef?.current?.resetStepGroupAccordion();
+          }}
+        />
+
         <PrePostTable
           draggable
           onDragEnd={onDragEnd}
@@ -355,6 +363,7 @@ export const DynamicTable: Story = {
           headerIconName={'expand_icon'}
           editMode={editMode}
           height="500px"
+          ref={prePostRef}
           AddNlp={AddNewNlp}
           handleDragStart={handleDragStart}
           handleAccordion={handleAccordion}

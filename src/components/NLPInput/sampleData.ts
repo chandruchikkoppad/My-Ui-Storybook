@@ -4,7 +4,7 @@ export const nlpList = [
     displayName: 'PostgreSQL : Update value *setValues* into *tableName* table',
     failMessage: 'randomNumber has failed',
     isNonPE: false,
-    platform: 'Mobile (Android or iOS)',
+    platform: 'Generic',
     name: 'randomNumber',
     nlpName: 'randomNumber',
     videoSrc: '',

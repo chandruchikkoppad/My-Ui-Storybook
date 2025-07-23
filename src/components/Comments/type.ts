@@ -76,4 +76,5 @@ export interface MentionUsers {
   usersObj: { id: string; name: string; emailId: string }[];
   optionClicked: (_name: string, _emailId: string) => void;
   charsAfterAt?: string;
+  mentionUserRef?: React.RefObject<HTMLDivElement>;
 }

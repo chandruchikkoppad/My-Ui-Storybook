@@ -4,6 +4,8 @@ import Drawer from './Drawer';
 import { useState } from 'react';
 import Button from '../Button';
 import Icon from '../Icon';
+import Search from '../Search/Search';
+import EditLabel from '../EditLabel/EditLabel';
 const meta: Meta<typeof Drawer> = {
   title: 'Components/Drawer',
   component: Drawer,
@@ -213,6 +215,109 @@ export const Controlled: Story = {
             overlay
           >
             <span>Drawer Body Small</span>
+          </Drawer>
+        )}
+      </>
+    );
+  },
+};
+let optionsList = [
+  { label: 'option 1', value: 'option 1' },
+  { label: 'option 2', value: 'option 2' },
+  { label: 'option 3', value: 'option 3' },
+  { label: 'option 4', value: 'option 4' },
+];
+let selectedOption = { label: 'option 2', value: 'option 2' };
+
+export const EnterFunctionality: Story = {
+  render: () => {
+    const [showXLDrawer, setShowXLDrawer] = useState(false);
+    const [isExpand, setIsExpand] = useState(false);
+    const [searchValue, setSearchValue] = useState('');
+    const [isAISearchActive, setIsAISearchActive] = useState(true);
+
+    const handleSearch = (value: string) => {
+      setSearchValue(value);
+    };
+
+    const handleClose = () => {
+      setIsExpand(false);
+      setSearchValue('');
+    };
+    const [text, setText] = useState('script 123');
+    const handleOnConfirm = (text, currentSelectedOption) => {
+      setText(text);
+      return { text, currentSelectedOption };
+    };
+    const handleCustomError = (inputValue: string) => {
+      if (!inputValue) {
+        return 'Text is required';
+      }
+      if (inputValue.length < 3) {
+        return 'Please enter at least 3 characters.';
+      }
+      return '';
+    };
+    return (
+      <>
+        <Button
+          onClick={() => setShowXLDrawer(true)}
+          label="Show X-Large Drawer"
+          variant="primary"
+        />
+
+        {showXLDrawer && (
+          <Drawer
+            {...defaultArgs}
+            isOpen={showXLDrawer}
+            onClose={() => setShowXLDrawer(false)}
+            isFooterRequired
+            _isExpanded={false}
+            size="small"
+            overlay
+            onCloseIconClick={() => setShowXLDrawer(false)}
+            isClickOutside
+          >
+            <span>Drawer Body XL</span>
+            <Search
+              placeholder={
+                isAISearchActive ? 'Ask Me Anything' : 'Search here...'
+              }
+              isExpand={isExpand}
+              value={searchValue}
+              onSearch={handleSearch}
+              onExpand={(expand) => setIsExpand(expand)}
+              onClose={handleClose}
+              disabled={false}
+              width={100}
+            />
+
+            <EditLabel
+              withDropdown={true}
+              value={text}
+              optionsList={optionsList}
+              selectedOption={selectedOption}
+              onConfirm={handleOnConfirm}
+              inputFieldWidth={100}
+              selectFieldWidth={100}
+              tooltip={{
+                tooltipTitle: 'text',
+                tooltipPlacement: 'bottom',
+              }}
+              required
+              handleCustomError={handleCustomError}
+              onClick={() => {
+                console.log('single click');
+              }}
+              handleTriggerDoubleClick={() =>
+                console.log('Double-click triggered!')
+              }
+            />
+            <input
+              type="text"
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+            />
           </Drawer>
         )}
       </>

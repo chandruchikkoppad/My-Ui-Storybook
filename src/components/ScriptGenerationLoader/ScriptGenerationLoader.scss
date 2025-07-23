@@ -6,101 +6,18 @@
 
   .ff-gif-container {
     @include flex-center;
-
     .ff-typing-wrapper {
       position: relative;
-      width: 105px;
+      width: 440px;
       height: 24px;
 
       .ff-typing-text {
-        position: absolute;
-        top: 0;
-        left: 0;
-        overflow: hidden;
         white-space: nowrap;
-        visibility: hidden;
-
-        &.t1 {
-          animation: show1 12s infinite;
-          color: var(--brand-color);
-        }
-
-        &.t2 {
-          animation: show2 12s infinite;
-          color: var(--ff-ai-toggle-bg-color);
-        }
-
-        &.t3 {
-          animation: show3 12s infinite;
-          color: var(--line-chart-data);
-        }
-      }
-
-      @keyframes show1 {
-        0% {
-          width: 0;
-          visibility: visible;
-        }
-        16.6% {
-          width: 100%;
-        }
-        25% {
-          width: 100%;
-          visibility: hidden;
-        }
-        100% {
-          width: 0;
-          visibility: hidden;
-        }
-      }
-
-      @keyframes show2 {
-        0%,
-        25% {
-          width: 0;
-          visibility: hidden;
-        }
-        33.3% {
-          width: 0;
-          visibility: visible;
-        }
-        41.6% {
-          width: 100%;
-        }
-        50% {
-          width: 100%;
-          visibility: hidden;
-        }
-        100% {
-          width: 0;
-          visibility: hidden;
-        }
-      }
-
-      @keyframes show3 {
-        0%,
-        50% {
-          width: 0;
-          visibility: hidden;
-        }
-        58.3% {
-          width: 0;
-          visibility: visible;
-        }
-        66.6% {
-          width: 100%;
-        }
-        75% {
-          width: 100%;
-          visibility: hidden;
-        }
-        100% {
-          width: 0;
-          visibility: hidden;
-        }
+        overflow: hidden;
       }
     }
   }
+
   .ff-moving-sections-container {
     position: absolute;
     top: -50px;

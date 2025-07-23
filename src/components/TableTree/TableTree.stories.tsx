@@ -270,8 +270,8 @@ export const Default: Story = {
     loadMore: (node) => {
       console.log(node);
     },
-    onExpand: (node, index) => {
-      console.log(node, index);
+    onExpand: (node) => {
+      console.log(node);
     },
     select: 'checkbox',
     onChange: (node: string[]) => {
@@ -294,13 +294,14 @@ export const ControlledCheckBox: Story = {
       useState<TreeNodeProps[]>(treeData);
 
     const handleCheck = (e, node) => {
-      const updatedTree: TreeNodeProps[] = handleTreeNodeSect(
+      const updatedTree = handleTreeNodeSect(
         controlledTreeData,
         node.key,
+        null,
         e.target.checked
       );
       console.log('🚀 ~ handleCheck ~ updatedTree:', updatedTree);
-      setControlledTreeData([...updatedTree]);
+      setControlledTreeData([...(updatedTree as any)]);
     };
     const handleCustomError = (inputValue: string) => {
       if (!inputValue) {
@@ -315,7 +316,7 @@ export const ControlledCheckBox: Story = {
     return (
       <TableTree
         height={'200px'}
-        onExpand={(node, index) => {
+        onExpand={(node) => {
           setControlledTreeData((prevData) => {
             const cloneTreeData = JSON.parse(JSON.stringify(prevData));
             const toggleNodeExpandedByKey = (tree, key) => {
@@ -334,7 +335,7 @@ export const ControlledCheckBox: Story = {
 
             return toggleNodeExpandedByKey(cloneTreeData, node.key);
           });
-          console.log(node, index);
+          console.log(node);
         }}
         select="checkbox"
         onChange={handleCheck}
@@ -360,8 +361,8 @@ export const ControlledRadio: Story = {
     const [selected, setSelected] = useState<string[]>([]);
     return (
       <TableTree
-        onExpand={(node, index) => {
-          console.log(node, index);
+        onExpand={(node) => {
+          console.log(node);
         }}
         select="radio"
         onChange={(e, node: TreeNodeProps) => {
@@ -383,8 +384,8 @@ export const EmptyTree: Story = {
     const [selected, setSelected] = useState<string[]>([]);
     return (
       <TableTree
-        onExpand={(node, index) => {
-          console.log(node, index);
+        onExpand={(node) => {
+          console.log(node);
         }}
         select="checkbox"
         onChange={(e, node: TreeNodeProps) => {

@@ -158,7 +158,14 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
           })}
         >
           {!checkEmpty(options) ? (
-            options.map((option, index) => (
+            [
+              ...options.filter(
+                (option) => getValue(option, valueAccessor) === selectedOption
+              ),
+              ...options.filter(
+                (option) => getValue(option, valueAccessor) !== selectedOption
+              ),
+            ].map((option, index) => (
               <div
                 className={classNames(
                   'ff-select-dropdown-option',

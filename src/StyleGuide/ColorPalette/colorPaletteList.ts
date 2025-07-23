@@ -562,11 +562,78 @@ const ColorPalette: ColorPaletteType = [
     colorCode: '#A3A3A3',
     variable: 'ff-scrollbar-thumb-bg-color',
   },
-    {
+  {
     name: 'ff-delete-popup-border-color',
-    colorCode: 'linear-gradient(94.23deg, rgba(228, 37, 37, 0.4) 16.33%, rgba(201, 0, 0, 0.4) 80.07%)',
-    variable: 'ff-delete-popup-border-colorr',
+    colorCode:
+      'linear-gradient(94.23deg, rgba(228, 37, 37, 0.4) 16.33%, rgba(201, 0, 0, 0.4) 80.07%)',
+    variable: 'ff-delete-popup-border-color',
   },
+  {
+    name: 'ai-prompt-token-border-color',
+    colorCode: '#dddddd',
+    variable: '--ai-prompt-token-border-color',
+  },
+  {
+    name: 'ai_prompt_list_divider-border',
+    colorCode: '#967ca8',
+    variable: '--ai_prompt_list_divider-border',
+  },
+  {
+    name: 'ff-fireflink-ai-text-background',
+    colorCode:
+      'linear-gradient(270deg, rgba(255, 16, 255, 1) 0%,rgba(219, 54, 254, 1) 25%, rgba(127, 152, 253, 1) 50%, rgba(70, 214, 252, 1) 75%, rgba(48, 239, 252, 1) 100%)',
+    variable: '--ff-fireflink-ai-text-background',
+  },
+  {
+    name: 'ff-orchid-Purple-color',
+    colorCode: '#a169b3',
+    variable: '--ff-orchid-Purple-color',
+  },
+  {
+    name: 'ff-execution-timer-color',
+    colorCode: '#5b5b5b',
+    variable: '--ff-execution-timer-color',
+  },
+  {
+    name: 'ff-delete-icon-color',
+    colorCode: '#A91224',
+    variable: 'ff-delete-icon-color',
+  },
+  {
+    name: 'ff-windows-Icon-color',
+    colorCode: '#00BCD4',
+    variable: 'ff-windows-Icon-color',
+  },
+  {
+    name: 'ff-electric-indigo',
+    colorCode: '#2c25f3',
+    variable: '--ff-electric-indigo',
+  },
+  {
+    name: 'ff-vivid-orange',
+    colorCode: '#ff9900',
+    variable: '--ff-vivid-orange',
+  },
+  {
+    name: 'ff-dodger-blue',
+    colorCode: '#0088ff',
+    variable: '--ff-dodger-blue',
+  },
+  {
+    name: 'ff-electric-cyan',
+    colorCode: '#03b7c7',
+    variable: '--ff-electric-cyan',
+  },
+  {
+    name: 'ff-step-variable-color',
+    colorCode: '#FF9D00',
+    variable: 'ff-step-variable-color',
+  },
+  {
+    name: 'ff-step-element-color',
+    colorCode: '#0485E1',
+    variable: 'ff-step-element-color',
+  }
 ];
 
 export default ColorPalette;

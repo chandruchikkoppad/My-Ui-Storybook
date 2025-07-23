@@ -49,6 +49,7 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
   ) => {
     const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
     const [validationError, setValidationError] = useState<string | null>(null);
+    const [selectDisable, setSelectDisable] = useState(true);
     const filteredOptions = options
       ? options.filter((option) =>
           getValue(option, searchAccessor)
@@ -82,6 +83,13 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
           setValidationError(null);
       }
     }, [searchedKeyword, variant, maxSearchCharacterLength]);
+
+    useEffect(() => {
+      const hasChecked = filteredOptions.some(
+        (option) => option.isChecked === true
+      );
+      setSelectDisable(!hasChecked);
+    }, [filteredOptions]);
 
     const onSelectClick = (e: React.MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation();
@@ -289,7 +297,12 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
         </div>
         {withSelectButton && filteredOptions.length > 0 && (
           <div className="select-button-container">
-            <Button label="Select" variant="tertiary" onClick={onSelectClick} />
+            <Button
+              label="Select"
+              variant="tertiary"
+              onClick={onSelectClick}
+              disabled={selectDisable}
+            />
           </div>
         )}
       </div>

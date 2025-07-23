@@ -107,6 +107,9 @@
       &:hover {
         background-color: var(--dropdown-bg-color);
       }
+      &.ff-floating-dropdown--no-hover:hover {
+        background-color: transparent;
+      }
     }
 
     .ff-floating-dropdown--left {

@@ -1,10 +1,11 @@
 export interface MachineType {
   type: string;
   label: string;
+  version?: string;
 }
 
 export interface MachineInputFieldProps {
-  width: string;
+  width?: string;
   options: MachineType[];
   runCount: number;
   className?: string;

@@ -68,4 +68,8 @@ export type TreeNodeProps = {
   expandedAll?: boolean;
   hideResources?: boolean;
   hidePreOrPost?: boolean;
+  isScript?: boolean;
+  stepId?: string;
+  conditionId?: string;
+  machInstanceId?: string;
 };

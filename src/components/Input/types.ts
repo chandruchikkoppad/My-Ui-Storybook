@@ -30,6 +30,10 @@ export interface InputProps {
    */
   helperText?: string;
   /**
+   * isHelperTextRequired for Helper/Info message to be shown
+   */
+  isHelperTextRequired?: boolean;
+  /**
    * to disable the input field
    */
   disabled?: boolean;
@@ -126,4 +130,8 @@ export interface InputProps {
    * background for handle input component background
    */
   background?: string;
+  /**
+   * Prevents the user from entering values greater than the specified maxValue.
+   */
+  disableAfterMaxValueReached?: boolean;
 }

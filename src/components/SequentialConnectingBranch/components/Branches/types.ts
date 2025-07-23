@@ -4,7 +4,7 @@ export interface BranchesProps {
   machineInstances: ExecutionContext[] | {}[];
   rowIndex: number;
   machineColumnCount: number;
-  machineColumnWidth: number;
+  machineColumnWidth?: number;
   nextRowMachineInstance?: ExecutionContext | {} | undefined;
   previousRowMachineInstance?: ExecutionContext | {} | undefined;
   onAddBrowser: (modalId: string) => void;

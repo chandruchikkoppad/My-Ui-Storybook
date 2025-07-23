@@ -27,7 +27,14 @@ export const PrimaryIconButton: Story = {
     const icon = 'plus_user_icon';
     const onClick = () => {};
 
-    return <IconButton label={name} iconName={icon} onClick={onClick} />;
+    return (
+      <IconButton
+        label={name}
+        iconName={icon}
+        onClick={onClick}
+        variant="primary"
+      />
+    );
   },
 };
 

@@ -468,6 +468,7 @@ export const StepLandingTableAcc: Story = {
             isViewPrivilegeMode={false}
             defaultExpanded="All"
             ref={childRef}
+            isClientSide={false}
           />
         </Drawer>
       </>

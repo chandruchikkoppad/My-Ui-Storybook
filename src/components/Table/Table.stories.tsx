@@ -373,6 +373,9 @@ export const FixedHeaderWithBorder: Story = {
           withFixedHeader={true}
           borderWithRadius={true}
           noDataContent="No data found"
+          height="300px"
+          freezeColumns={2}
+          tableHeaderZindex={100}
         />
       </>
     );

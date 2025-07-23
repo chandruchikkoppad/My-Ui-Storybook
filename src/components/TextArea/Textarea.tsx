@@ -37,6 +37,7 @@ const Textarea = ({
     'ff-textarea-label ff-textarea-label--' + variant,
     {
       'ff-textarea-label--danger': error,
+      'ff-textarea-label--disabled': disabled && !value,
     }
   );
 

@@ -298,6 +298,15 @@ export function getUpdatedExpandedRows(
     return newExpandedRows;
 }
 
+export const hasSelectedIds = (rows?: { [key: string]: Set<string> }): boolean => {
+    if (!rows) return false;
+    for (const set of Object.values(rows)) {
+        if (set && set.size > 0) return true;
+    }
+    return false;
+}
+
+
 export const gettingBlockMap = (tableData: any, selectedRows: any,
     stepPartialSelect: any): any => {
     let dynamicUpdate = getBlockMap(tableData);

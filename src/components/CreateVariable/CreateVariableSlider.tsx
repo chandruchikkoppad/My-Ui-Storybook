@@ -132,6 +132,7 @@ const CreateVariableSlider: FC<CreateVariableProps> = ({
   };
   return (
     <Drawer
+      zIndex={1350}
       onClose={onClose}
       isOpen={isOpen}
       title={mode === 'create' ? 'Create Variable' : 'Edit Variable'}

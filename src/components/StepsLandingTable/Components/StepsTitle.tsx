@@ -27,6 +27,7 @@ const StepsTitle = ({
   actionCell,
   row,
   metaData,
+  isClientSide,
 }: any) => {
   const columnWidths = tableMeta?.map((col: any) => col.width);
 
@@ -49,50 +50,57 @@ const StepsTitle = ({
     <article
       className="step-title-article"
       style={{
-        ...(!isHeaderRequired && { backgroundColor: 'var(--hover-color)' }),
+        ...(!isHeaderRequired &&
+          !isClientSide && { backgroundColor: 'var(--hover-color)' }),
       }}
     >
       <div style={{ width: `${getWidth(0)}px` }}>
         <div
           className="accordion-header"
           style={{
-            paddingLeft: isViewPrivilegeMode ? '8px' : '24px',
+            paddingLeft: isViewPrivilegeMode || isClientSide ? '8px' : '24px',
           }}
         >
-          {!isViewPrivilegeMode && (
-            <div>
-              <Checkbox
-                onChange={(e) => handleMainCheckbox(title, e.target.checked)}
-                checked={isAllSelected(title, totalRows)}
-                partial={isPartialSelected(title, totalRows)}
-                disabled={totalRows === 0}
-              />
-            </div>
+          {!isViewPrivilegeMode && !isClientSide && (
+            <Checkbox
+              onChange={(e) => handleMainCheckbox(title, e.target.checked)}
+              checked={isAllSelected(title, totalRows)}
+              partial={isPartialSelected(title, totalRows)}
+              disabled={totalRows === 0}
+            />
           )}
+
           <div className="header-title">
             <Typography
               as="div"
               fontWeight="semi-bold"
-              color="var(--nlp-option-color)"
+              color={
+                isClientSide ? 'var(--brand-color)' : 'var(--nlp-option-color)'
+              }
               cursor="default"
               lineHeight="18px"
             >
               {title}
             </Typography>
           </div>
-          <div
-            className={`accordion-arrow ${expanded ? 'expanded' : ''}`}
-            onClick={() => onAccordionClick(title)}
-          >
-            <Icon
-              name="arrow_right"
-              color={expanded ? 'var(--brand-color)' : 'var(--default-color)'}
-              width={16}
-              height={16}
-              className="steps-arrow-svg"
-            />
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          {isClientSide ? (
+            //TODO: added temporary div will replace with add Icon
+            <div style={{ padding: '12px' }}></div>
+          ) : (
+            <div
+              className={`accordion-arrow ${expanded ? 'expanded' : ''}`}
+              onClick={() => onAccordionClick(title)}
+            >
+              <Icon
+                name="arrow_right"
+                color={expanded ? 'var(--brand-color)' : 'var(--default-color)'}
+                width={16}
+                height={16}
+                className="steps-arrow-svg"
+              />
+            </div>
+          )}
+          <div className="ff_action_container">
             {metaData && <StepResultStats metaData={metaData} />}
             {showActionCell && !isBulkEnable && <>{actionCell(row)}</>}
           </div>

@@ -47,6 +47,7 @@ const FileDropzone: React.FC<FileDropzoneProps> = ({
   fileInputRef,
   showNoFilesUploadedMessage = false,
   noFileUploadedText = 'No files are uploaded',
+  handleReplaceFile,
 }) => {
   const {
     getRootProps,
@@ -67,7 +68,9 @@ const FileDropzone: React.FC<FileDropzoneProps> = ({
     fileExistMessage,
     validateMIMEType,
     isApiResponseError,
-
+    selectedFile,
+    setSelectedFile,
+    handleReplaceFile,
     // onDrop: (accepted, rejected, event) => {}, //onDrop function to handle dropped or selected files explicitly.
   });
   useEffect(() => {

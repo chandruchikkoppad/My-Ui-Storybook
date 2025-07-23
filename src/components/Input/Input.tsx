@@ -18,6 +18,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       placeholder = 'Enter input',
       value = type === 'number' ? 0 : '',
       helperText = '',
+      isHelperTextRequired = false,
       error,
       noBorder,
       className = '',
@@ -41,6 +42,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       handleSearchIconClick,
       readOnly = false,
       adjustToValidRange = true,
+      disableAfterMaxValueReached = false,
       pattern,
       background,
       ...props
@@ -112,6 +114,9 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 
         const parsedValue = Number(newValue);
 
+        if (disableAfterMaxValueReached && parsedValue > numericMax) {
+          return;
+        }
         if (!isNaN(parsedValue)) {
           setInternalValue(parsedValue);
           setUpdatedNumberValue(parsedValue);
@@ -162,7 +167,17 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 
       onBlur?.(e);
     };
-
+    const handleWheel = (e: React.WheelEvent<HTMLInputElement>) => {
+      if (type === 'number') {
+        const input = e.currentTarget;
+        const currentValue = parseFloat(input.value);
+        const isScrollDown = e.deltaY > 0;
+        if (!isNaN(currentValue) && currentValue <= 0 && isScrollDown) {
+          input.blur();
+          setTimeout(() => input.focus(), 0);
+        }
+      }
+    };
     return (
       <fieldset
         className={classNames('ff-input-fieldset', {
@@ -216,7 +231,6 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
               `ff-input ff-input-${variant} default-input ff-input--${size}`,
               {
                 ['ff-input--transparentBackground']: !!transparentBackground,
-                'ff-input--no-hover': !!internalValue,
                 'ff-input--disabled': !!disabled,
                 'ff-input--danger':
                   (displayErrorImmediately || touched) && !!error,
@@ -240,6 +254,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             onClick={onClick}
             onKeyUp={onKeyUp}
             onKeyDown={handleKeyDown}
+            onWheel={handleWheel}
             {...props}
           />
           {type === 'number' && (
@@ -260,7 +275,10 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
                     ? 'var(--private-chip-bg-color)'
                     : 'var(--text-area-default-color)'
                 }
-                onClick={() => handleIncrementDecrement('increment')}
+                onClick={() => {
+                  if (disabled) return;
+                  handleIncrementDecrement('increment');
+                }}
                 disabled={disabled}
               />
               <Icon
@@ -272,7 +290,10 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
                     ? 'var(--private-chip-bg-color)'
                     : 'var(--text-area-default-color)'
                 }
-                onClick={() => handleIncrementDecrement('decrement')}
+                onClick={() => {
+                  if (disabled) return;
+                  handleIncrementDecrement('decrement');
+                }}
                 disabled={disabled}
               />
             </div>
@@ -304,19 +325,24 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             <span
               className={classNames('ff-input-message', {
                 'ff-input-message--space': !!reserveHelperTextSpace,
+                'ff-input-message--showHelperText': !!isHelperTextRequired,
                 'ff-input-message--danger':
                   (displayErrorImmediately || touched) && !!error,
               })}
             >
-              {(displayErrorImmediately || touched) && error ? helperText : ''}
+              {(displayErrorImmediately || touched) &&
+              (error || isHelperTextRequired)
+                ? helperText
+                : ''}
             </span>
           )}
           {!reserveHelperTextSpace &&
             (displayErrorImmediately || touched) &&
             helperText &&
-            error && (
+            (error || isHelperTextRequired) && (
               <span
                 className={classNames('ff-input-message', {
+                  'ff-input-message--showHelperText': !!isHelperTextRequired,
                   'ff-input-message--danger': !!error,
                 })}
               >

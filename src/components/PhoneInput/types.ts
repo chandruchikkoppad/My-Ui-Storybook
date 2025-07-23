@@ -16,6 +16,7 @@ export interface PhoneInputProps {
   isVerified?:boolean,
   isVerifyDisplay?:boolean,
   onVerifyClick?:() => void,
+  onValidationChange?: (isValid: boolean) => void,
 }
 export type CountryData = {
   name: string;

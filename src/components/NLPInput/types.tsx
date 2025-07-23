@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode, RefObject } from 'react';
 
 export interface NlpChip {
   name: string;
@@ -11,6 +11,9 @@ export interface NlpChipsAccordionProps {
   selectedChips: (selected: NlpChip[]) => void;
 
   optionZIndex: number;
+
+  inputRef: RefObject<HTMLElement>;
+  ChipsAccordionWidth?: string;
 }
 
 export interface SelectProps {
@@ -96,6 +99,10 @@ export interface SelectProps {
   isWebservice?: boolean;
   closeInputOnOutsideClick?: () => void;
   tooltipText?: string;
+  /*
+   * Provide the dynamic width of the ChipsAccordion default is 27.8%
+   */
+  ChipsAccordionWidth?: string;
 }
 
 export interface DrowdownPosition {

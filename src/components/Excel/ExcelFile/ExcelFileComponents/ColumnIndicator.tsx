@@ -55,7 +55,7 @@ const ColumnIndicator: Types.ColumnIndicatorComponent = ({
         disable: cell?.contextDisable?.['Delete Column'] ?? false,
       },
     ];
-  }, [selectedColumn]);
+  }, [selectedColumn, cell, addColumnLeft, addColumnRight, deleteColumn]);
 
   const onMouseDrag = React.useCallback(
     (event: React.MouseEvent, isRight: boolean) => {

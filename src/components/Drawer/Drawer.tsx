@@ -101,8 +101,21 @@ const Drawer: FC<DrawerProps> = ({
   }, [isOpen]);
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Enter' && isOpen && primaryButtonProps?.onClick) {
-        console.log('Enter key pressed — triggering primary button action');
+      if (
+        e.key === 'Enter' &&
+        isOpen &&
+        primaryButtonProps?.onClick &&
+        !primaryButtonProps.disabled
+      ) {
+        const activeElement = document.activeElement;
+        const isSpecialInput = ['ff-add-module-input', 'ff-search-input'].some(
+          (className) =>
+            activeElement?.classList?.contains(className) ||
+            activeElement?.closest(`.${className}`)
+        );
+        if (isSpecialInput) {
+          return;
+        }
         primaryButtonProps.onClick();
       }
     };

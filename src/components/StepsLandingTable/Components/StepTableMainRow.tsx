@@ -30,6 +30,7 @@ const StepTableMainRow: FC<TableMainRowProp> = ({
   dataLength,
   stepPartialSelect,
   isViewPrivilegeMode,
+  isClientSide,
 }) => {
   const isDisabled = useMemo(
     () => row?.isDisabled || (dataLength ?? 0) <= 1 || row.isSpecialNlp,
@@ -52,7 +53,7 @@ const StepTableMainRow: FC<TableMainRowProp> = ({
   const key = row?._id || row?.stepId;
 
   const getPadding = (index: number): string => {
-    if (isViewPrivilegeMode) {
+    if (isViewPrivilegeMode || isClientSide) {
       if (
         ['Group', 'PRE', 'POST', 'Script'].includes(row.type) &&
         index === 0
@@ -150,8 +151,14 @@ const StepTableMainRow: FC<TableMainRowProp> = ({
                   color={tableDataTextColor}
                   className="ff-data-checkbox-container"
                 >
-                  {index === 0 && draggable && renderDragHandle()}
-                  {index === 0 && withCheckbox && renderCheckbox()}
+                  {index === 0 &&
+                    !isClientSide &&
+                    draggable &&
+                    renderDragHandle()}
+                  {index === 0 &&
+                    !isClientSide &&
+                    withCheckbox &&
+                    renderCheckbox()}
                   <div
                     className="ff-margin-container"
                     style={{
@@ -162,6 +169,7 @@ const StepTableMainRow: FC<TableMainRowProp> = ({
 
                     {['Group', 'PRE', 'POST', 'Script'].includes(row.type) &&
                       index === 0 &&
+                      !isClientSide &&
                       renderGroupToggle()}
                     {column.extraInfo?.({ row, indexNumber, tableType })}
                   </div>

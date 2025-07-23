@@ -61,8 +61,39 @@
       color: var(--primary-icon-color);
     }
   }
+}
+//primary variant styles
+
+.ff-plus-primary {
+  background: var(--primary-button-color);
   .icon-name {
-    color: var(--secondary-icon-color);
+    font-weight: 600;
+    color: var(--primary-icon-color);
+    @include mixins.center-content();
+  }
+
+  .button-icon {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    @include mixins.center-content();
+    background-color: var(--hover-color);
+
+    .ff-icon-color {
+      path {
+        color: var(--secondary-icon-color);
+      }
+    }
+  }
+  &:not(:disabled):hover {
+    background: var(--primary-button-hover);
+  }
+
+  &:disabled {
+    background-color: var(--disable-icon-btn-bg-color);
+    .icon-name {
+      color: var(--primary-icon-color);
+    }
   }
 }
 

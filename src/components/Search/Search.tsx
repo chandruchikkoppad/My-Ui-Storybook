@@ -111,6 +111,32 @@ const Search = ({
       onSearch(data);
     }
   };
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (
+        e.key === 'Enter' &&
+        isExpand &&
+        inputRef.current === document.activeElement
+      ) {
+        if (searchValue.trim().length < minLength && showToaster) {
+          toast.info(helperText);
+        } else if (!checkEmpty(searchValue.trim())) {
+          onSearch(searchValue.trim());
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [
+    isExpand,
+    onClose,
+    searchValue,
+    minLength,
+    showToaster,
+    helperText,
+    onSearch,
+  ]);
 
   return (
     <div

@@ -105,6 +105,7 @@ const MultiSelect = ({
   maxDropdownHeight = 160,
   dropdownContainerRef,
   noResultsMessage,
+  chipAccessor = labelAccessor,
 }: MultiSelectProps) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [allOptions, setAllOptions] = useState(options);
@@ -186,13 +187,13 @@ const MultiSelect = ({
     const updatedOptions = allOptions.map((option) =>
       getValue(option, valueAccessor) ===
       getValue(selectedOption, valueAccessor)
-        ? { ...option, isChecked }
+        ? { ...option, isChecked, sort: Date.now() }
         : option
     );
-
     setAllOptions(updatedOptions);
     const tempCheckedOptions = updatedOptions
       .filter((option) => option.isChecked)
+      .sort((a, b) => a.sort - b.sort)
       .map(({ isChecked, ...rest }) => rest);
     if (!isSelectFocusedOnce) {
       setIsSelectFocusedOnce(true);
@@ -341,7 +342,7 @@ const MultiSelect = ({
     setSearchedKeyword(input);
 
     onSearch?.(input);
-    if (input?.length > 2) {
+    if (input?.length > 2 && input === input.trim()) {
       const matchedOption = allOptions.find(
         (option) =>
           getLabel(option, searchAccessor)?.toLowerCase() ===
@@ -410,14 +411,19 @@ const MultiSelect = ({
     if (!checkEmpty(options)) {
       let initializeOptions = options;
       if (!checkEmpty(selectedOptions)) {
-        initializeOptions = options.map((option) => ({
-          ...option,
-          isChecked: selectedOptions.some(
+        initializeOptions = options.map((option) => {
+          const selectedIndex = selectedOptions.findIndex(
             (selectedOption) =>
               getValue(selectedOption, valueAccessor) ===
               getValue(option, valueAccessor)
-          ),
-        }));
+          );
+
+          return {
+            ...option,
+            isChecked: selectedIndex !== -1,
+            ...(selectedIndex !== -1 && { sort: selectedIndex }),
+          };
+        });
       }
       setAllOptions(initializeOptions);
     }
@@ -517,7 +523,7 @@ const MultiSelect = ({
                         <ChipElement
                           zIndex={zIndex}
                           key={getLabel(option, labelAccessor)}
-                          label={getLabel(option, labelAccessor) || ''}
+                          label={getLabel(option, chipAccessor) || ''}
                           onChipCloseClick={(e) =>
                             handleChipCloseClick(option, e)
                           }
@@ -530,7 +536,7 @@ const MultiSelect = ({
                     <ChipElement
                       zIndex={zIndex}
                       key={getLabel(option, labelAccessor)}
-                      label={getLabel(option, labelAccessor) || ''}
+                      label={getLabel(option, chipAccessor) || ''}
                       onChipCloseClick={(e) => handleChipCloseClick(option, e)}
                       disableChip={option?.isDisabled || false}
                     />

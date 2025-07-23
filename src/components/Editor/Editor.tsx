@@ -327,7 +327,7 @@ const Editor = forwardRef<any, EditorProps>(
             jslint_happy: true,
             end_with_newline: true,
             wrap_line_length: 0,
-            comma_first: true,
+            comma_first: false,
             e4x: true,
             indent_empty_lines: true,
           });
@@ -345,7 +345,7 @@ const Editor = forwardRef<any, EditorProps>(
             jslint_happy: true,
             end_with_newline: true,
             wrap_line_length: 0,
-            comma_first: true,
+            comma_first: false,
             e4x: true,
             indent_empty_lines: true,
           });
