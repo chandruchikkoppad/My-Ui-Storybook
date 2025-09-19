@@ -9,6 +9,7 @@ import * as Matrix from '../ExcelFile/ExcelFileComponents/matrix';
 import ColorBarSelector from '../ColorBarSelector/ColorBarSelector';
 import useSelector from '../ExcelFile/ExcelFileComponents/use-selector';
 import { convertStyleToBackend } from '../dataConversion';
+import { EntireWorksheetSelection } from '../ExcelFile/ExcelFileComponents/selection';
 import {
   convertPxToPt,
   EmptyCell,
@@ -49,7 +50,12 @@ const ExcelToolBar: React.FC<ExcelToolBarProps> = ({
   setBorderType,
   setFormatePainter,
 }) => {
-  const disable = toolbar === 'disable' || !editable;
+  const selected = useSelector(
+    (state) => state.selected instanceof EntireWorksheetSelection
+  );
+
+  const [disable, setDisable] = useState(toolbar === 'disable' || !editable);
+
   const cell = useSelector((state) =>
     state.active ? Matrix.get(state.active, state.model.data) : null
   );
@@ -73,6 +79,17 @@ const ExcelToolBar: React.FC<ExcelToolBarProps> = ({
       JSON.stringify(cell.style) !== JSON.stringify(cellStyle)
     ) {
       setCellStyle(cell?.style || basicStyle);
+    }
+
+    if (selected) {
+      setDisable(false);
+    } else if (cell && typeof cell.readOnly === 'boolean') {
+      setDisable(
+        cell.readOnly ||
+          toolbar === 'disable' ||
+          !editable ||
+          cell?.inputType?.type === 'dropDown'
+      );
     }
   }, [cell]);
 
@@ -153,38 +170,38 @@ const ExcelToolBar: React.FC<ExcelToolBarProps> = ({
   return (
     <div className="ff-excel-toolbar">
       <div className="ff-excel-toolbar-font ">
-          <div className="ff-excel-toolbar-font-family">
-            <Select
-              disabled={disable}
-              height={24}
-              tooltip
-              showToolTip
-              showLabel={false}
-              optionZIndex={2000}
-              onChange={(e) => {
-                setSelectedFontFamily({ label: e.label, value: e.label });
-                setFontFamily(data, e.value);
-              }}
-              required={false}
-              optionsList={fontFamilyList}
-              selectedOption={selectedFontFamily}
-            />
-          </div>
-          <div className="ff-excel-toolbar-font-size">
-            <Select
-              disabled={disable}
-              height={24}
-              showLabel={false}
-              optionZIndex={2000}
-              required={false}
-              onChange={(e) => {
-                setSelectedFontSize({ label: e.label, value: e.value });
-                setFontSize(data, e.value);
-              }}
-              optionsList={fontSize}
-              selectedOption={selectedFontSize}
-            />
-          </div>
+        <div className="ff-excel-toolbar-font-family">
+          <Select
+            disabled={disable}
+            height={24}
+            tooltip
+            showToolTip
+            showLabel={false}
+            optionZIndex={2000}
+            onChange={(e) => {
+              setSelectedFontFamily({ label: e.label, value: e.label });
+              setFontFamily(data, e.value);
+            }}
+            required={false}
+            optionsList={fontFamilyList}
+            selectedOption={selectedFontFamily}
+          />
+        </div>
+        <div className="ff-excel-toolbar-font-size">
+          <Select
+            disabled={disable}
+            height={24}
+            showLabel={false}
+            optionZIndex={2000}
+            required={false}
+            onChange={(e) => {
+              setSelectedFontSize({ label: e.label, value: e.value });
+              setFontSize(data, e.value);
+            }}
+            optionsList={fontSize}
+            selectedOption={selectedFontSize}
+          />
+        </div>
       </div>
       <div className="ff-excel-toolbar-divider"></div>
       <div className="ff-excel-toolbar-icon">
@@ -307,32 +324,39 @@ const ExcelToolBar: React.FC<ExcelToolBarProps> = ({
       </div>
       <div className="ff-excel-toolbar-divider"></div>
       <div className="ff-excel-toolbar-menu">
-        <Tooltip placement="top" title={'Border Type'}>
-          <div className="ff-excel-toolbar-menu-option">
+        <div className="ff-excel-toolbar-menu-option">
+          <Tooltip placement="top" title={'Border Type'}>
             <Icon
               hoverEffect
               disabled={disable}
-              onClick={() => setBorderType(data, border, 'black')}
+              onClick={() =>
+                setBorderType(data, border, 'var(--input-hover-border-color)')
+              }
               name={getBorderIcon()}
             />
-            <span ref={borderMenuRef}>
-              <MenuOption
-                disabled={disable}
-                iconName="arrow_down"
-                targetRef={borderMenuRef}
-                iconSize={12}
-                zIndex={2000}
-                options={borderTypeIcon}
-                tooltipPlacement="top"
-                onOptionClick={(e) => {
-                  let selectedValue = e.value as string;
-                  setBorderType(data, selectedValue, 'black');
-                  setBorder(selectedValue);
-                }}
-              />
-            </span>
-          </div>
-        </Tooltip>
+          </Tooltip>
+          <span ref={borderMenuRef}>
+            <MenuOption
+              disabled={disable}
+              iconName="arrow_down"
+              targetRef={borderMenuRef}
+              iconSize={12}
+              zIndex={2000}
+              options={borderTypeIcon}
+              tooltipTitle="Border Type"
+              tooltipPlacement="top"
+              onOptionClick={(e) => {
+                let selectedValue = e.value as string;
+                setBorderType(
+                  data,
+                  selectedValue,
+                  'var(--input-hover-border-color)'
+                );
+                setBorder(selectedValue);
+              }}
+            />
+          </span>
+        </div>
       </div>
 
       {/* <div className="ff-excel-toolbar-divider"></div>  TODO */}

@@ -438,6 +438,16 @@ const ColorPalette: ColorPaletteType = [
     variable: '--prompt-shadow-color',
   },
   {
+    name: 'ChatBot header',
+    colorCode: 'linear-gradient(90deg, rgba(249, 138, 227, 0.5) 0%, rgba(91, 96, 255, 0.5) 100%)',
+    variable: '--fireflink-chatbot-header',
+  },
+  {
+    name: 'ChatBot hover leaf',
+    colorCode: 'linear-gradient(90deg, rgba(78, 92, 239, 0.365) 0%, rgba(224, 75, 187, 0.5) 100%)',
+    variable: '--fireflink-chatbot-hover-leaf',
+  },
+  {
     name: 'Default Chip With Count Background',
     colorCode: '#f4e7f4',
     variable: '--default-chip-count-background-color',

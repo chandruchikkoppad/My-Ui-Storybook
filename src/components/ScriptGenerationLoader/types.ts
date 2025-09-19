@@ -16,4 +16,5 @@ export interface ScriptGenerationLoaderProps {
    */
   height?: number;
   path?: string;
+  DynamicHeight?: number;
 }

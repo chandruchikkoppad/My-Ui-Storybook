@@ -23,7 +23,7 @@ const VariableInput = ({
   onKeyDown,
   onBlur,
   onFocus,
-  list=[],
+  list = [],
   ...props
 }: VariableInputProps) => {
   const [inputValue, setInputValue] = useState<string>('');
@@ -52,7 +52,10 @@ const VariableInput = ({
       const isInList = list?.includes(variable ?? '');
 
       if (match.index > lastIndex) {
-        parts.push({ text: url.slice(lastIndex, match.index), textType: 'normal' });
+        parts.push({
+          text: url.slice(lastIndex, match.index),
+          textType: 'normal',
+        });
       }
 
       parts.push({
@@ -76,7 +79,7 @@ const VariableInput = ({
 
     if (contentEditableElement) {
       contentEditableElement.innerHTML = parsedParts
-        .map((part) => {
+        .map((part, index) => {
           const varClassName = classNames({
             ['ff_var_red']: part.textType === 'nonVariable',
             ['ff_var_green']: part.textType === 'variable',
@@ -84,7 +87,7 @@ const VariableInput = ({
               part.textType !== 'nonVariable' && part.textType !== 'variable',
           });
 
-          return `<Typography class="${varClassName}">${part.text}</Typography>`;
+          return `<Typography key="${index}" class="${varClassName}">${part.text}</Typography>`;
         })
         .join('');
       restoreCursorPosition(contentEditableElement);

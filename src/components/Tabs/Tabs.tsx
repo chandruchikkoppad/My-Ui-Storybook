@@ -3,6 +3,7 @@ import './Tabs.scss';
 import classNames from 'classnames';
 import Typography from '../Typography';
 import '../../assets/styles/_colors.scss';
+import Icon from '../Icon';
 
 const Tabs = ({
   variant = 'default',
@@ -12,14 +13,22 @@ const Tabs = ({
   noBorder = false,
   noPadding = false,
   titleSize = '12px',
+  isBorderBottomLine = false,
+  isHoverBackground = false,
+  isBorderRadius = false,
+  tabFlexSpacing = 'flex-start',
 }: TabsProps) => {
   return (
     <div className={`ff-tabs-container`}>
       <div
-        className={classNames(`ff-tab-row--${variant}`, {
-          'ff-tab-row--no-border': noBorder,
-          'ff-tab-row--no-padding': noPadding,
-        })}
+        className={classNames(
+          `ff-tab-row--${variant} ff-tab-row-spacing--${tabFlexSpacing}`,
+          {
+            'ff-tab-row--no-border': noBorder,
+            'ff-tab-row--no-padding': noPadding,
+            'ff-tab-row--borderBottomLine': isBorderBottomLine,
+          }
+        )}
       >
         {tabsData.map((tab) => (
           <button
@@ -29,6 +38,7 @@ const Tabs = ({
             className={classNames(`ff-tab-button--${variant}`, {
               disabled: tab.disabled,
               active: activeTabId === tab.id,
+              'ff-tab-button-bg': isHoverBackground,
             })}
           >
             <div className="label-count-section">
@@ -55,10 +65,20 @@ const Tabs = ({
                   {tab.count}
                 </span>
               )}
+              {tab.icon && (
+                <Icon
+                  name={tab.icon}
+                  className={classNames('ff-tab-icon', {
+                    'ff-tab-icon--active': activeTabId === tab.id,
+                  })}
+                />
+              )}
             </div>
             <div
               className={classNames('ff-tab-bar', {
                 'ff-tab-bar--active': activeTabId === tab.id,
+                'ff-tab-bar--radius-4': isBorderRadius,
+                'ff-tab-bar--radius-2': !isBorderRadius,
               })}
             ></div>
             <span

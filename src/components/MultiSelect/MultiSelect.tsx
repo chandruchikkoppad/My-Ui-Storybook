@@ -17,8 +17,9 @@ import {
   getValue,
 } from '../../utils/getSelectOptionValue/getSelectOptionValue';
 import { useMergeRefs } from '../../hooks/useMergeRefs';
+import { ALPHA_NUM_EXTENDED_REGEX } from '../../validations/regex';
 
-const MAX_SEARCH_CHARACTER_LENGTH = 25;
+const MAX_SEARCH_CHARACTER_LENGTH = 100;
 const MAX_ALLOWED_PIXEL = 150;
 const FONT_SIZE = 6;
 
@@ -645,7 +646,7 @@ const MultiSelect = ({
             onClick={handleIconClick}
             className="ff-label-plus-icon"
             disabled={
-              MAX_SEARCH_CHARACTER_LENGTH <= (searchedKeyword?.length || 0)
+              (MAX_SEARCH_CHARACTER_LENGTH <= (searchedKeyword?.length || 0)) || (!ALPHA_NUM_EXTENDED_REGEX.test(searchedKeyword))
             }
           />
         </Tooltip>

@@ -15,6 +15,7 @@ export interface PromptContainerProps {
   isViewAccess?: boolean;
   versionsLength?: number;
   count?: number;
+  hiddenActions?: string[] | string;
 }
 
 export type Action = {

@@ -133,7 +133,7 @@ const ConnectingBranch: React.FC<ConnectBranchProps> = ({
                 gap
               );
               return (
-                <React.Fragment>
+                <React.Fragment key={parentNodeIndex}>
                   <div
                     className="ff-selectedMachines"
                     style={{

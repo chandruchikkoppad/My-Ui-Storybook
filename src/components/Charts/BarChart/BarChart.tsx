@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import './BarChart.scss';
 import Typography from '../../Typography';
 import Icon from '../../Icon';
@@ -17,6 +17,7 @@ type BarChartProps = {
     percent?: number;
     versions?: string[];
   }[];
+  isYaxisSticky?: boolean;
   barWidth: number;
   height: number;
   barGap?: number;
@@ -45,10 +46,12 @@ type BarChartProps = {
   isDashboardVersions?: boolean;
   type?: string;
   isMemory?: boolean;
+  tooltipWidth?: string;
 };
 
 const BarChart: React.FC<BarChartProps> = ({
   data,
+  isYaxisSticky = false,
   barWidth,
   height,
   barGap = 20,
@@ -76,11 +79,25 @@ const BarChart: React.FC<BarChartProps> = ({
   isDashboardVersions,
   type = '',
   isMemory,
+  tooltipWidth = 'fit-content',
 }) => {
   const tooltipRef = useRef<HTMLDivElement | null>(null);
   const [hoveredLegendIndex, setHoveredLegendIndex] = useState<number | null>(
     null
   );
+  const [isHoveringBar, setIsHoveringBar] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const tooltip = tooltipRef.current;
+      if (tooltip && isHoveringBar) {
+        tooltip.style.display = 'none';
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, true);
+    return () => window.removeEventListener('scroll', handleScroll, true);
+  }, [isHoveringBar]);
 
   const getHighestPriorityMemoryUnit = (
     data: {
@@ -106,6 +123,7 @@ const BarChart: React.FC<BarChartProps> = ({
 
     return null;
   };
+
   const unit = getHighestPriorityMemoryUnit(data);
   const normalizedData = data.map((item) => {
     if (typeof item.value === 'string') {
@@ -172,35 +190,43 @@ const BarChart: React.FC<BarChartProps> = ({
   const totalBarWidth =
     normalizedData.length * barWidth + (normalizedData.length - 1) * barGap;
   const chartWidth =
-    totalBarWidth + leftPadding * 2 + 10 + extendBarChartRightWidth;
+    totalBarWidth +
+    (isYaxisSticky ? leftPadding : leftPadding * 2 + 10) +
+    extendBarChartRightWidth;
 
   const id = Date.now();
   const renderGradients = (gradients: string[][]) => {
-    return gradients.map((gradient, index) => (
-      <defs key={index}>
-        <linearGradient
-          id={`gradient-${id}-${type}-${index}`}
-          x1="0%"
-          y1="0%"
-          x2="0%"
-          y2="100%"
-        >
-          {gradient.map((color, i) => (
-            <stop
-              key={`${index}-${i}`}
-              offset={`${(i / (gradient.length - 1)) * 100}%`}
-              stopColor={color}
-            />
-          ))}
-        </linearGradient>
-      </defs>
-    ));
+    return gradients
+      .filter((gradient) => gradient.length > 1)
+      .map((gradient, index) => (
+        <defs key={index}>
+          <linearGradient
+            id={`gradient-${id}-${type}-${index}`}
+            x1="0%"
+            y1="0%"
+            x2="0%"
+            y2="100%"
+          >
+            {gradient.map((color, i) => (
+              <stop
+                key={`${index}-${i}`}
+                offset={`${(i / (gradient.length - 1)) * 100}%`}
+                stopColor={color}
+              />
+            ))}
+          </linearGradient>
+        </defs>
+      ));
   };
 
-  const getFillColor = (index: number) =>
-    colors?.[index % colors.length]?.[0]
-      ? `url(#gradient-${id}-${type}-${index % colors.length})`
-      : 'grey';
+  const getFillColor = (index: number) => {
+    if (!colors.length) return 'grey';
+
+    const colorGroup = colors[index % colors.length];
+    return colorGroup?.length === 1
+      ? colorGroup[0]
+      : `url(#gradient-${id}-${type}-${index % colors.length})`;
+  };
 
   const handleMouseEnter = (
     label: string,
@@ -209,6 +235,7 @@ const BarChart: React.FC<BarChartProps> = ({
     percent: number | undefined,
     versions?: string[]
   ) => {
+    setIsHoveringBar(true);
     const tooltip = tooltipRef.current;
     if (tooltip) {
       tooltip.style.display = 'block';
@@ -259,6 +286,7 @@ const BarChart: React.FC<BarChartProps> = ({
   };
 
   const handleMouseLeave = () => {
+    setIsHoveringBar(false);
     const tooltip = tooltipRef.current;
     if (tooltip) {
       tooltip.style.display = 'none';
@@ -274,9 +302,54 @@ const BarChart: React.FC<BarChartProps> = ({
     }
   };
 
+  const renderYAxis = () => (
+    <>
+      {Array.from({ length: yAxisDivisions + 1 }).map((_, i) => {
+        const yAxisLabelYPosition =
+          height - (i / yAxisDivisions) * height + topPadding + 4;
+        const yAxisValue = (i * maxValue) / yAxisDivisions;
+        const formattedValue =
+          type === 'memory'
+            ? yAxisValue.toFixed(1)
+            : isYAxisValuePercentage
+            ? `${yAxisValue.toFixed(0).padStart(2, '0')}%`
+            : yAxisValue.toFixed(0).padStart(2, '0');
+        return (
+          <text
+            key={i}
+            x={50}
+            y={yAxisLabelYPosition}
+            fill="black"
+            textAnchor="middle"
+            className="ff-bar-chart-labels"
+          >
+            {formattedValue}
+          </text>
+        );
+      })}
+      {yAxisLabel && (
+        <text
+          x={-(height / 2 + 35)}
+          y={isYaxisSticky ? 20 : leftPadding - 30}
+          transform="rotate(-90)"
+          fill="black"
+          textAnchor="middle"
+          alignmentBaseline="middle"
+          className="ff-bar-chart-labels"
+        >
+          {yAxisLabel}
+        </text>
+      )}
+    </>
+  );
+
   return (
-    <div className="ff-bar-chart-container" style={{ width: chartWidth }}>
-      <div ref={tooltipRef} className="ff-bar-chart-tooltip" />
+    <div className="ff-bar-chart-container">
+      <div
+        ref={tooltipRef}
+        className="ff-bar-chart-tooltip"
+        style={{ width: tooltipWidth }}
+      />
       {legend && legendPosition === 'top' && (
         <div className="ff-legend-container">
           <div
@@ -318,131 +391,288 @@ const BarChart: React.FC<BarChartProps> = ({
           </div>
         </div>
       )}
-      <div>
-        <svg
-          width={chartWidth}
-          height={
-            height +
-            topPadding +
-            5 +
-            (showXAxisLabels ? 20 : 0) +
-            (xAxisLabel ? 20 : 0)
-          }
-        >
-          {Array.isArray(colors) &&
-            colors.length > 0 &&
-            renderGradients(colors)}
-          {/* Y-Axis Labels */}
-          {Array.from({ length: yAxisDivisions + 1 }).map((_, i) => {
-            const yAxisLabelYPosition =
-              height - (i / yAxisDivisions) * height + topPadding + 4;
-            const yAxisValue = (i * maxValue) / yAxisDivisions;
-            const formattedValue =
-              type === 'memory'
-                ? yAxisValue.toFixed(1)
-                : isYAxisValuePercentage
-                ? `${yAxisValue.toFixed(0).padStart(2, '0')}%`
-                : yAxisValue.toFixed(0).padStart(2, '0');
-            return (
-              <text
-                key={i}
-                x={leftPadding}
-                y={yAxisLabelYPosition}
-                fill="black"
-                textAnchor="middle"
-                className="ff-bar-chart-labels"
-              >
-                {formattedValue}
-              </text>
-            );
-          })}
+      {isYaxisSticky ? (
+        <div className="ff-bar-chart-wrapper">
+          <div className="ff-y-axis">
+            <svg
+              width={60}
+              height={height + topPadding + (xAxisLabel ? 20 : 0)}
+            >
+              {renderYAxis()}
+            </svg>
+          </div>
+          <div className="ff-chart-scrollable">
+            <svg
+              width={chartWidth}
+              height={
+                height +
+                topPadding +
+                5 +
+                (showXAxisLabels ? 20 : 0) +
+                (xAxisLabel ? 20 : 0)
+              }
+            >
+              {Array.isArray(colors) &&
+                colors.length > 0 &&
+                renderGradients(colors)}
+              {normalizedData.map((item, index) => {
+                const computedBarHeight =
+                  (item.normalizedValue / maxValue) * height;
+                const minBarHeight = 2;
+                const barHeight =
+                  item.normalizedValue < 1 ? minBarHeight : computedBarHeight;
+                const barX = index * (barWidth + barGap) + padding;
+                const barY = height - barHeight + topPadding;
+                const iconWidth = iconSize || 20;
+                const iconX = barX + barWidth / 2 - iconWidth / 2;
+                const iconY = barY - iconWidth;
+                const isSelected = selectedBar === item.label;
+                const isHovered = hoveredLegendIndex === index;
 
-          {normalizedData.map((item, index) => {
-            const computedBarHeight =
-              (item.normalizedValue / maxValue) * height;
-            const minBarHeight = 2;
-            const barHeight =
-              item.normalizedValue < 1 ? minBarHeight : computedBarHeight;
-            const barX = index * (barWidth + barGap) + leftPadding + padding;
-            const barY = height - barHeight + topPadding;
-            const iconWidth = iconSize || 20;
-            const iconX = barX + barWidth / 2 - iconWidth / 2;
-            const iconY = barY - iconWidth;
-            const isSelected = selectedBar === item.label;
-            const isHovered = hoveredLegendIndex === index;
-
-            return (
-              <g key={index}>
-                {icons[index] && typeof icons[index] === 'string' && (
-                  <g
-                    onMouseEnter={() =>
-                      handleMouseEnter(
-                        item.label,
-                        type === 'memory' ? item.value : item.normalizedValue,
-                        item.id,
-                        item.percent,
-                        item.versions
-                      )
-                    }
-                    onMouseMove={(e) =>
-                      handleMouseMove(e, index === normalizedData.length - 1)
-                    }
-                    onMouseLeave={handleMouseLeave}
-                  >
-                    <Icon
-                      name={String(icons[index])}
-                      x={String(iconX)}
-                      y={String(iconY)}
-                      width={iconWidth}
-                      height={iconWidth}
-                      chartIcon={true}
-                    />
+                return (
+                  <g key={index}>
+                    {icons[index] && typeof icons[index] === 'string' && (
+                      <g
+                        onMouseEnter={() =>
+                          handleMouseEnter(
+                            item.label,
+                            type === 'memory'
+                              ? item.value
+                              : item.normalizedValue,
+                            item.id,
+                            item.percent,
+                            item.versions
+                          )
+                        }
+                        onMouseMove={(e) =>
+                          handleMouseMove(
+                            e,
+                            index === normalizedData.length - 1
+                          )
+                        }
+                        onMouseLeave={handleMouseLeave}
+                      >
+                        <Icon
+                          name={String(icons[index])}
+                          x={String(iconX)}
+                          y={String(iconY)}
+                          width={iconWidth}
+                          height={iconWidth}
+                          chartIcon={true}
+                        />
+                      </g>
+                    )}
+                    <rect
+                      x={barX}
+                      y={barY}
+                      width={barWidth}
+                      height={barHeight}
+                      fill={getFillColor(index)}
+                      rx={barBorderRadius}
+                      ry={barBorderRadius}
+                      style={{
+                        strokeWidth: isSelected ? 3 : 0,
+                        opacity:
+                          hoveredLegendIndex === null || isHovered ? 1 : 0.3,
+                        cursor: isOnclick ? 'pointer' : 'default',
+                        transition: 'opacity 0.5s ease',
+                      }}
+                      onMouseEnter={() =>
+                        handleMouseEnter(
+                          item.label,
+                          type === 'memory' || isMemory
+                            ? item.value
+                            : item.normalizedValue,
+                          item.id,
+                          item.percent,
+                          item.versions
+                        )
+                      }
+                      onMouseMove={(e) =>
+                        handleMouseMove(e, index === normalizedData.length - 1)
+                      }
+                      onMouseLeave={handleMouseLeave}
+                      onClick={() => handleSelectLabel(item.label)}
+                    ></rect>
+                    {isSelected && isOnclick && (
+                      <rect
+                        x={barX}
+                        y={barY}
+                        width={barWidth}
+                        height={barHeight}
+                        fill="var(--select-chart-highlight-color)"
+                        rx={barBorderRadius}
+                        ry={barBorderRadius}
+                        onMouseEnter={() =>
+                          handleMouseEnter(
+                            item.label,
+                            type === 'memory'
+                              ? item.value
+                              : item.normalizedValue,
+                            item.id,
+                            item.percent,
+                            item.versions
+                          )
+                        }
+                        onMouseMove={(e) =>
+                          handleMouseMove(
+                            e,
+                            index === normalizedData.length - 1
+                          )
+                        }
+                        onMouseLeave={handleMouseLeave}
+                      ></rect>
+                    )}
+                    {showXAxisLabels && (
+                      <text
+                        x={
+                          index === 0
+                            ? barX
+                            : index === normalizedData.length - 1
+                            ? barX + barWidth
+                            : barX + barWidth / 2
+                        }
+                        y={height + topPadding + 15}
+                        className="ff-bar-chart-labels"
+                        fill={isSelected ? 'var(--brand-color)' : 'black'}
+                        fontWeight={isSelected ? 'bold' : 'normal'}
+                        textAnchor={index === 0 ? 'start' : 'middle'}
+                      >
+                        {isTruncateText
+                          ? truncateText(item.label, 10)
+                          : item.label}
+                      </text>
+                    )}
                   </g>
-                )}
-                <rect
-                  x={barX}
-                  y={barY}
-                  width={barWidth}
-                  height={barHeight}
-                  fill={getFillColor(index)}
-                  rx={barBorderRadius}
-                  ry={barBorderRadius}
-                  style={{
-                    strokeWidth: isSelected ? 3 : 0,
-                    opacity: hoveredLegendIndex === null || isHovered ? 1 : 0.3,
-                    cursor: isOnclick ? 'pointer' : 'default',
-                    transition: 'opacity 0.5s ease',
-                  }}
-                  onMouseEnter={() =>
-                    handleMouseEnter(
-                      item.label,
-                      type === 'memory' || isMemory
-                        ? item.value
-                        : item.normalizedValue,
-                      item.id,
-                      item.percent,
-                      item.versions
-                    )
-                  }
-                  onMouseMove={(e) =>
-                    handleMouseMove(e, index === normalizedData.length - 1)
-                  }
-                  onMouseLeave={handleMouseLeave}
-                  onClick={() => handleSelectLabel(item.label)}
-                ></rect>
-                {isSelected && isOnclick && (
+                );
+              })}
+              <line
+                x1={isYaxisSticky ? 0 : padding}
+                y1={height + topPadding}
+                x2={chartWidth}
+                y2={height + topPadding}
+                stroke="#D9D9D9"
+                strokeWidth="1"
+              />
+              {!isYaxisSticky && xAxisLabel && (
+                <text
+                  x={chartWidth / 2}
+                  y={height + topPadding + (showXAxisLabels ? 40 : 20)}
+                  fontSize="12"
+                  fill="black"
+                  textAnchor="middle"
+                  className="ff-bar-chart-labels"
+                >
+                  {xAxisLabel}
+                </text>
+              )}
+            </svg>
+          </div>
+          <div className="ff-bar-chart-x-axis-label">{xAxisLabel}</div>
+        </div>
+      ) : (
+        <div>
+          <svg
+            width={chartWidth}
+            height={
+              height +
+              topPadding +
+              5 +
+              (showXAxisLabels ? 20 : 0) +
+              (xAxisLabel ? 20 : 0)
+            }
+          >
+            {Array.isArray(colors) &&
+              colors.length > 0 &&
+              renderGradients(colors)}
+            {/* Y-Axis Labels */}
+            {Array.from({ length: yAxisDivisions + 1 }).map((_, i) => {
+              const yAxisLabelYPosition =
+                height - (i / yAxisDivisions) * height + topPadding + 4;
+              const yAxisValue = (i * maxValue) / yAxisDivisions;
+              const formattedValue =
+                type === 'memory'
+                  ? yAxisValue.toFixed(1)
+                  : isYAxisValuePercentage
+                  ? `${yAxisValue.toFixed(0).padStart(2, '0')}%`
+                  : yAxisValue.toFixed(0).padStart(2, '0');
+              return (
+                <text
+                  key={i}
+                  x={leftPadding}
+                  y={yAxisLabelYPosition}
+                  fill="black"
+                  textAnchor="middle"
+                  className="ff-bar-chart-labels"
+                >
+                  {formattedValue}
+                </text>
+              );
+            })}
+
+            {normalizedData.map((item, index) => {
+              const computedBarHeight =
+                (item.normalizedValue / maxValue) * height;
+              const minBarHeight = 2;
+              const barHeight =
+                item.normalizedValue < 1 ? minBarHeight : computedBarHeight;
+              const barX = index * (barWidth + barGap) + leftPadding + padding;
+              const barY = height - barHeight + topPadding;
+              const iconWidth = iconSize || 20;
+              const iconX = barX + barWidth / 2 - iconWidth / 2;
+              const iconY = barY - iconWidth;
+              const isSelected = selectedBar === item.label;
+              const isHovered = hoveredLegendIndex === index;
+
+              return (
+                <g key={index}>
+                  {icons[index] && typeof icons[index] === 'string' && (
+                    <g
+                      onMouseEnter={() =>
+                        handleMouseEnter(
+                          item.label,
+                          type === 'memory' ? item.value : item.normalizedValue,
+                          item.id,
+                          item.percent,
+                          item.versions
+                        )
+                      }
+                      onMouseMove={(e) =>
+                        handleMouseMove(e, index === normalizedData.length - 1)
+                      }
+                      onMouseLeave={handleMouseLeave}
+                    >
+                      <Icon
+                        name={String(icons[index])}
+                        x={String(iconX)}
+                        y={String(iconY)}
+                        width={iconWidth}
+                        height={iconWidth}
+                        chartIcon={true}
+                      />
+                    </g>
+                  )}
                   <rect
                     x={barX}
                     y={barY}
                     width={barWidth}
                     height={barHeight}
-                    fill="var(--select-chart-highlight-color)"
+                    fill={getFillColor(index)}
                     rx={barBorderRadius}
                     ry={barBorderRadius}
+                    style={{
+                      strokeWidth: isSelected ? 3 : 0,
+                      opacity:
+                        hoveredLegendIndex === null || isHovered ? 1 : 0.3,
+                      cursor: isOnclick ? 'pointer' : 'default',
+                      transition: 'opacity 0.5s ease',
+                    }}
                     onMouseEnter={() =>
                       handleMouseEnter(
                         item.label,
-                        type === 'memory' ? item.value : item.normalizedValue,
+                        type === 'memory' || isMemory
+                          ? item.value
+                          : item.normalizedValue,
                         item.id,
                         item.percent,
                         item.versions
@@ -452,68 +682,94 @@ const BarChart: React.FC<BarChartProps> = ({
                       handleMouseMove(e, index === normalizedData.length - 1)
                     }
                     onMouseLeave={handleMouseLeave}
+                    onClick={() => handleSelectLabel(item.label)}
                   ></rect>
-                )}
-                {showXAxisLabels && (
-                  <text
-                    x={
-                      index === 0
-                        ? barX
-                        : index === normalizedData.length - 1
-                        ? barX + barWidth
-                        : barX + barWidth / 2
-                    }
-                    y={height + topPadding + 15}
-                    className="ff-bar-chart-labels"
-                    fill={isSelected ? 'var(--brand-color)' : 'black'}
-                    fontWeight={isSelected ? 'bold' : 'normal'}
-                    textAnchor={index === 0 ? 'start' : 'middle'}
-                  >
-                    {isTruncateText ? truncateText(item.label, 10) : item.label}
-                  </text>
-                )}
-              </g>
-            );
-          })}
+                  {isSelected && isOnclick && (
+                    <rect
+                      x={barX}
+                      y={barY}
+                      width={barWidth}
+                      height={barHeight}
+                      fill="var(--select-chart-highlight-color)"
+                      rx={barBorderRadius}
+                      ry={barBorderRadius}
+                      onMouseEnter={() =>
+                        handleMouseEnter(
+                          item.label,
+                          type === 'memory' ? item.value : item.normalizedValue,
+                          item.id,
+                          item.percent,
+                          item.versions
+                        )
+                      }
+                      onMouseMove={(e) =>
+                        handleMouseMove(e, index === normalizedData.length - 1)
+                      }
+                      onMouseLeave={handleMouseLeave}
+                    ></rect>
+                  )}
+                  {showXAxisLabels && (
+                    <text
+                      x={
+                        index === 0
+                          ? barX
+                          : index === normalizedData.length - 1
+                          ? barX + barWidth
+                          : barX + barWidth / 2
+                      }
+                      y={height + topPadding + 15}
+                      className="ff-bar-chart-labels"
+                      fill={isSelected ? 'var(--brand-color)' : 'black'}
+                      fontWeight={isSelected ? 'bold' : 'normal'}
+                      textAnchor={index === 0 ? 'start' : 'middle'}
+                    >
+                      {isTruncateText
+                        ? truncateText(item.label, 10)
+                        : item.label}
+                    </text>
+                  )}
+                </g>
+              );
+            })}
 
-          <line
-            x1={60}
-            y1={height + topPadding}
-            x2={chartWidth}
-            y2={height + topPadding}
-            stroke="#D9D9D9"
-            strokeWidth="1"
-          />
+            <line
+              x1={60}
+              y1={height + topPadding}
+              x2={chartWidth}
+              y2={height + topPadding}
+              stroke="#D9D9D9"
+              strokeWidth="1"
+            />
 
-          {xAxisLabel && (
-            <text
-              x={chartWidth / 2}
-              y={height + topPadding + (showXAxisLabels ? 40 : 20)}
-              fontSize="12"
-              fill="black"
-              textAnchor="middle"
-              className="ff-bar-chart-labels"
-            >
-              {xAxisLabel}
-            </text>
-          )}
+            {xAxisLabel && (
+              <text
+                x={chartWidth / 2}
+                y={height + topPadding + (showXAxisLabels ? 40 : 20)}
+                fontSize="12"
+                fill="black"
+                textAnchor="middle"
+                className="ff-bar-chart-labels"
+              >
+                {xAxisLabel}
+              </text>
+            )}
 
-          {yAxisLabel && (
-            <text
-              x={-(height / 2 + 35)}
-              y={leftPadding - 30}
-              transform="rotate(-90)"
-              fill="black"
-              textAnchor="middle"
-              alignmentBaseline="middle"
-              className="ff-bar-chart-labels"
-            >
-              {yAxisLabel}
-            </text>
-          )}
-        </svg>
-      </div>
-
+            {yAxisLabel && (
+              <text
+                x={-(height / 2 + 35)}
+                y={leftPadding - 30}
+                transform="rotate(-90)"
+                fill="black"
+                textAnchor="middle"
+                alignmentBaseline="middle"
+                className="ff-bar-chart-labels"
+              >
+                {yAxisLabel}
+              </text>
+            )}
+          </svg>
+        </div>
+      )}
       {legend && legendPosition === 'bottom' && (
         <div className="ff-legend-container">
           <div

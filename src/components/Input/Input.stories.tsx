@@ -122,7 +122,7 @@ export const withSearchIcon: Story = {
     searchIconProps: {
       name: 'search',
       disabled: false,
-      toolTipTitle: 'Search'
+      toolTipTitle: 'Search',
     },
   },
 };
@@ -214,7 +214,7 @@ export const Controlled: Story = {
   },
 };
 
-  export const OnBlurErrorDisplay: Story = {
+export const OnBlurErrorDisplay: Story = {
   render: () => {
     const [value, setValue] = useState('');
     const [error, setError] = useState<boolean>(false);
@@ -295,6 +295,53 @@ export const DefaultHelperTextForUser: Story = {
           error={error}
           helperText={helperText}
           isHelperTextRequired={true}
+        />
+      </>
+    );
+  },
+};
+
+export const LabelActive: Story = {
+  render: () => {
+    const [value, setValue] = useState('');
+    const [error, setError] = useState<boolean>(false);
+    const [helperText, setHelperText] = useState<string>(
+      'default helper text to guide users'
+    );
+
+    const onChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
+      const value = event.target.value;
+      if (value.length <= 0) {
+        setError(true);
+        setHelperText(`${event.target.name} is required`);
+      } else if (value.length >= 10) {
+        setError(true);
+        setHelperText(`Name should be within 10 characters`);
+      } else {
+        setError(false);
+        setHelperText('');
+      }
+      setValue(value);
+    };
+
+    return (
+      <>
+        <Input
+          {...defaultArgs}
+          type="email"
+          onChange={onChangeHandler}
+          disabled={false}
+          value={value}
+          name="Email"
+          label="Email"
+          placeholder="Enter your email here"
+          variant="primary"
+          required={true}
+          error={error}
+          helperText={helperText}
+          isHelperTextRequired={false}
+          fixedLabel={true}
+          autoComplete="on"
         />
       </>
     );

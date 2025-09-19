@@ -33,6 +33,10 @@ export interface ConditionalDropdownProps {
    */
   variableList?: dynamicObject[];
   /**
+   * If true, adds 'FLV_for:' prefix to for loop variables in the dropdown and while searching.
+   */
+  addForloopPrefix?: boolean;
+  /**
    * Place holder for the input field
    */
   placeholder?: string;
@@ -41,7 +45,10 @@ export interface ConditionalDropdownProps {
    * @param value
    * @returns
    */
-  onChange?: (event: React.ChangeEvent<HTMLInputElement>, dropdownItem?: dynamicObject) => void;
+  onChange?: (
+    event: React.ChangeEvent<HTMLInputElement>,
+    dropdownItem?: dynamicObject
+  ) => void;
   /**
    * Function to handle create variable icon click
    */
@@ -142,6 +149,9 @@ export interface ConditionalDropdownProps {
 
   formProps?: Record<string, any>;
   readOnly?: boolean;
+  height?: string;
+  isTruncateText?: boolean;
+  truncateTextValue?: number;
 }
 
 export interface OptionsDropdownProps {
@@ -172,5 +182,12 @@ export interface OptionsDropdownProps {
   /**
    * zIndex for the dropdown options container
    */
-  zIndex? : number;
+  zIndex?: number;
+
+  /**
+   * Dropdown Height
+   */
+  height?: string;
+  isTruncateText?: boolean;
+  truncateTextValue?: number;
 }

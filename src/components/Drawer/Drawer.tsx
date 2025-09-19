@@ -191,18 +191,18 @@ const Drawer: FC<DrawerProps> = ({
                       title={isExpanded ? 'Minimize' : 'Maximize'}
                       placement="bottom"
                     >
-                      <button
+                      <div
                         className="ff-expand-collapse-button"
                         onClick={toggleExpand}
                       >
                         <Icon
-                          name={
-                            isExpanded ? 'minimize_script' : 'maximize_icon'
-                          }
+                          name={isExpanded ? 'maximize_tree' : 'minimize_tree'}
                           height={16}
                           width={16}
+                          hoverEffect
+                          cursorType="pointer"
                         />
-                      </button>
+                      </div>
                     </Tooltip>
                   )}
                   {isBackButtonVisible &&
@@ -228,6 +228,7 @@ const Drawer: FC<DrawerProps> = ({
                         height={16}
                         width={16}
                         color="var(--tabs-label-active-color)"
+                        cursorType="pointer"
                       />
                     </Tooltip>
                   </div>

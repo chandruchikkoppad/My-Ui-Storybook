@@ -172,7 +172,7 @@ export interface SelectProps {
    * Handle background color
    */
   background?: string;
- /**
+  /**
    * No Result message
    */
   noResultsMessage?: string;
@@ -180,6 +180,14 @@ export interface SelectProps {
    * Ref for select option dropdown
    */
   dropDownRef?: RefObject<HTMLDivElement>;
+  /**
+   * handling dropdownDown height
+   */
+  dropDownHeight?: number;
+
+  onSearchText?: (text: string) => void;
+
+  isCustomButtonDisabled?:boolean;
 }
 export interface DropdownPosition {
   positionX: number;

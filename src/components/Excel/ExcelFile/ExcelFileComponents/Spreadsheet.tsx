@@ -105,16 +105,7 @@ export type Props<CellType extends Types.CellBase> = {
   /** Set your dynamic sheet Height*/
   sheetHeight: string;
   toolbar?: 'show' | 'disable' | 'hide';
-  contextOption?: {
-    open: boolean;
-    options: {
-      label: string;
-      value: string;
-      iconName: string;
-      action: () => void;
-      disable: boolean;
-    }[];
-  };
+  contextOption?: ContextMenuState;
   columnContextEnable: boolean;
   rowContextEnable: boolean;
   attachmentAction?: {
@@ -126,14 +117,24 @@ export type Props<CellType extends Types.CellBase> = {
   minimumColumnWidth: number;
   scroller: boolean;
   showHider: boolean;
+  maxRowLimit: number;
+  maxColLimit: number;
+  disableDeleteOption: boolean;
+  contextMenu: ContextMenuState;
+  getActiveCell: (cell: { value: string; active: Point.Point }) => void;
+  onAddColumn?: (column: number, isLeft: boolean) => void;
+  onDeleteColumn?: (column: number) => void;
 };
 
 /**
  * The Spreadsheet component
  */
-const Spreadsheet = <CellType extends Types.CellBase>(
-  props: Props<CellType>
-): React.ReactElement => {
+const Spreadsheet = React.forwardRef(function Spreadsheet<
+  CellType extends Types.CellBase
+>(
+  props: Props<CellType>,
+  ref: React.ForwardedRef<{ removeSelect: () => void }>
+) {
   const {
     className,
     columnLabels,
@@ -156,29 +157,23 @@ const Spreadsheet = <CellType extends Types.CellBase>(
     minimumColumnWidth,
     setContextMenu,
     showHider,
+    maxRowLimit,
+    maxColLimit,
+    disableDeleteOption,
+    contextMenu,
+    getActiveCell,
+    onAddColumn,
+    onDeleteColumn,
   } = props;
   type State = Types.StoreState<CellType>;
 
   const [sheetChange, setSheetChange] = React.useState(false);
   const [maxWidth, setMaxWidth] = React.useState(0);
   const [maxHeight, setMaxHeight] = React.useState(0);
-  const [renderReady, setRenderReady] = React.useState(true);
-
-
-  const resizeObserver = new ResizeObserver((entries) => {
-    const entry = entries[0];
-    if (entry && rootRef.current) {
-      const target = entry.target as HTMLElement | null;
-      if (target) {
-        const { clientWidth, clientHeight } = target;
-        setMaxHeight(Math.min(rootRef.current.clientHeight, clientHeight));
-        if (showHider) {
-          setMaxWidth(Math.min(rootRef.current.clientWidth, clientWidth));
-        }
-      }
-      removeSelect();
-    }
-  });
+  const [scrollPos, setScrollPos] = React.useState<{
+    top: number;
+    left: number;
+  }>({ top: 0, left: 0 });
 
   const scrollOption = props.scroller;
   const initialState = React.useMemo(() => {
@@ -253,6 +248,11 @@ const Spreadsheet = <CellType extends Types.CellBase>(
   const deleteRow = useAction(Actions.deleteRow);
   const deleteColumn = useAction(Actions.deleteColumn);
 
+  // Expose removeSelect
+  React.useImperativeHandle(ref, () => ({
+    removeSelect,
+  }));
+
   // Track active
   const prevActiveRef = React.useRef<Point.Point | null>(state.active);
   React.useEffect(() => {
@@ -266,7 +266,6 @@ const Spreadsheet = <CellType extends Types.CellBase>(
         }
       }
     }
-
     prevActiveRef.current = state.active;
   }, [onActivate, state.active]);
 
@@ -280,20 +279,6 @@ const Spreadsheet = <CellType extends Types.CellBase>(
 
     prevEvaluatedDataRef.current = state.model.evaluatedData;
   }, [state?.model?.evaluatedData, onEvaluatedDataChange]);
-
-  React.useEffect(() => {
-    if (size.rows < 100) {
-      setVisibleRange({
-        start: 0,
-        end: size.rows,
-      });
-    } else {
-      setVisibleRange({
-        start: 0,
-        end: 100,
-      });
-    }
-  }, [sheetChange, size.rows]);
 
   const prevSelectedRef = React.useRef<Selection>(state.selected);
   React.useEffect(() => {
@@ -331,7 +316,7 @@ const Spreadsheet = <CellType extends Types.CellBase>(
       setData(props.data);
     }
     prevDataPropRef.current = props.data;
-  }, [props.data, setData]);
+  }, [props.data, setData, editable]);
 
   const prevCreateFormulaParserPropRef = React.useRef<
     Types.CreateFormulaParser | undefined
@@ -413,18 +398,6 @@ const Spreadsheet = <CellType extends Types.CellBase>(
     [state, onKeyDown, onKeyDownAction]
   );
 
-  React.useEffect(() => {
-    const handleDocumentClick = (event: MouseEvent): void => {
-      if (workRef.current && !workRef.current.contains(event.target as Node)) {
-        removeSelect();
-      }
-    };
-    document.addEventListener('click', handleDocumentClick);
-    return () => {
-      document.removeEventListener('click', handleDocumentClick);
-    };
-  }, [workRef]);
-
   const handleClick = React.useCallback(() => {
     if (state.formattedStyle.open && state.active) {
       formateClick(state.active);
@@ -449,7 +422,7 @@ const Spreadsheet = <CellType extends Types.CellBase>(
   const Cell = React.useMemo(() => {
     // @ts-ignore
     return enhanceCell(props.Cell || DefaultCell);
-  }, [props.Cell, sheetChange]);
+  }, [props.Cell, sheetChange, editable]);
 
   const CornerIndicator = React.useMemo(
     () =>
@@ -481,96 +454,107 @@ const Spreadsheet = <CellType extends Types.CellBase>(
   }, [handleCut, handleCopy, handlePaste]);
 
   const useTableRef = (ref: React.RefObject<HTMLTableElement>): void => {
+    const resizeObserver = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      if (entry && rootRef.current) {
+        const target = entry.target as HTMLElement | null;
+        if (target) {
+          const { clientWidth, clientHeight } = target;
+          setMaxHeight(Math.min(rootRef.current.clientHeight, clientHeight));
+          if (showHider) {
+            setMaxWidth(Math.min(rootRef.current.clientWidth, clientWidth));
+          }
+        }
+      }
+    });
     const table = ref.current;
     if (!table) return;
     resizeObserver.observe(table);
   };
 
-  const removeSelection = () => {
-    if (
-      (state.selectedColumn === null || state.selectedRow === null) &&
-      !state.autoFill.open
-    ) {
-      removeSelect();
+  const updateVisibleRange = (
+    newStart: number,
+    newEnd: number,
+    newScrollCount: number
+  ) => {
+    setScrollCount(newScrollCount);
+    setVisibleRange({ start: newStart, end: newEnd });
+
+    // Wait until next frame to scroll
+    if (size.rows > 100) {
+      requestAnimationFrame(() => {
+        rootRef.current?.scrollTo({
+          top: 1300,
+          behavior: 'instant',
+        });
+      });
     }
   };
 
-  const updateVisibleRange = (
-  newStart: number,
-  newEnd: number,
-  newScrollCount: number
-) => {
-  setScrollCount(newScrollCount);
-  setVisibleRange({ start: newStart, end: newEnd });
-
-  // Wait until next frame to scroll
-  requestAnimationFrame(() => {
-    rootRef.current?.scrollTo({
-      top: 1300,
-      behavior: 'instant',
-    });
-  });
-
-  removeSelection();
-};
-
   const throttledHandleScroll = React.useMemo(
-  () =>
-    throttle((e: React.UIEvent<HTMLElement>) => {
-      setRenderReady(false);
+    () =>
+      throttle((e: React.UIEvent<HTMLElement>) => {
+        requestAnimationFrame(() => {
+          const { scrollTop, scrollHeight, offsetHeight } =
+            e.target as HTMLElement;
+          const visibleRows = 100;
+          const rowHeight = 50;
+          const totalScroll = Math.ceil((size.rows - visibleRows) / rowHeight);
+          const dynamicScroll = scrollHeight - offsetHeight;
 
-      requestAnimationFrame(() => {
-        const { scrollTop, scrollHeight, offsetHeight } = e.target as HTMLElement;
-        const visibleRows = 100;
-        const rowHeight = 50;
-        const totalScroll = Math.ceil((size.rows - visibleRows) / rowHeight);
-        const dynamicScroll = scrollHeight - offsetHeight;
+          if (size.rows < visibleRows) {
+            updateVisibleRange(0, size.rows, 0);
+            setScrollCount(0);
+          } else if (scrollTop === 0 && scrollCount !== 0) {
+            const newScroll = scrollCount - 1;
+            updateVisibleRange(
+              newScroll * rowHeight,
+              newScroll * rowHeight + visibleRows,
+              newScroll
+            );
+            setScrollCount(newScroll);
+          } else if (
+            scrollTop > dynamicScroll - 30 &&
+            scrollCount < totalScroll - 1
+          ) {
+            const newScroll = scrollCount + 1;
+            updateVisibleRange(
+              newScroll * rowHeight,
+              newScroll * rowHeight + visibleRows,
+              newScroll
+            );
+            setScrollCount(newScroll);
+          } else if (
+            scrollTop > dynamicScroll - 30 &&
+            scrollCount < totalScroll
+          ) {
+            updateVisibleRange(
+              (scrollCount + 1) * rowHeight,
+              size.rows,
+              scrollCount + 1
+            );
+            setScrollCount(scrollCount + 1);
+          }
+        });
 
-        if (size.rows < 100) {
-          updateVisibleRange(0, size.rows, 0);
-          setScrollCount(0);
-        } else if (scrollTop === 0 && scrollCount !== 0) {
-          const newScroll = scrollCount - 1;
-          updateVisibleRange(
-            newScroll * rowHeight,
-            newScroll * rowHeight + visibleRows,
-            newScroll
-          );
-          setScrollCount(newScroll);
-        } else if (scrollTop > dynamicScroll - 30 && scrollCount < totalScroll - 1) {
-          const newScroll = scrollCount + 1;
-          updateVisibleRange(
-            newScroll * rowHeight,
-            newScroll * rowHeight + visibleRows,
-            newScroll
-          );
-          setScrollCount(newScroll);
-        } else if (scrollTop > dynamicScroll - 30 && scrollCount < totalScroll) {
-          updateVisibleRange(
-            (scrollCount + 1) * rowHeight,
-            size.rows,
-            scrollCount + 1
-          );
-          setScrollCount(scrollCount + 1);
-        }
-        setRenderReady(true);
-      });
-
-      setContextMenu({
-        open: false,
-        options: [
-          {
-            label: '',
-            value: '',
-            iconName: '',
-            action: () => {},
-            disable: false,
-          },
-        ],
-      });
-    }, 100),
-  [size.rows, scrollCount]
-);
+        setContextMenu({
+          open: false,
+          contextType: null,
+          options: [
+            {
+              label: '',
+              value: '',
+              iconName: '',
+              action: () => {},
+              disableTooltip: '',
+              visible: false,
+              disable: false,
+            },
+          ],
+        });
+      }, 100),
+    [size.rows, scrollCount]
+  );
 
   const scrollerFunction = () => {
     if (scrollOption) {
@@ -578,6 +562,67 @@ const Spreadsheet = <CellType extends Types.CellBase>(
     } else {
       return range(size.rows);
     }
+  };
+
+  const scrollToRow = (row: number, visibleRangeValue: Types.VisibleRange) => {
+    const DEFAULT_ROW_HEIGHT = 32;
+    if (scrollOption) {
+      if (!rootRef?.current) return;
+      requestAnimationFrame(() => {
+        let scrollTop = 0;
+        for (let r = 0; r <= row; r++) {
+          scrollTop += state.rowDimensions?.[r]?.height || DEFAULT_ROW_HEIGHT;
+        }
+
+        if (row >= visibleRange.end - 1) {
+          setVisibleRange((prev) => ({
+            ...prev,
+            start: visibleRangeValue?.start,
+            end: visibleRangeValue?.end,
+          }));
+          rootRef?.current?.scrollTo({
+            top: scrollTop + DEFAULT_ROW_HEIGHT,
+            behavior: 'smooth',
+          });
+        }
+      });
+    } else {
+      requestAnimationFrame(() => {
+        let scrollTop = 0;
+        for (let r = 0; r <= row; r++) {
+          scrollTop += state.rowDimensions?.[r]?.height || DEFAULT_ROW_HEIGHT;
+        }
+
+        requestAnimationFrame(() => {
+          if (!rootRef.current) return;
+          if (row >= size.rows - 1) {
+            rootRef?.current?.scrollTo({
+              top: scrollTop + DEFAULT_ROW_HEIGHT,
+              behavior: 'smooth',
+            });
+          }
+        });
+      });
+    }
+  };
+
+  const scrollToColumn = (column: number) => {
+    requestAnimationFrame(() => {
+      let scrollLeft = 0;
+      for (let c = 0; c <= column; c++) {
+        scrollLeft += state.columnDimensions?.[c]?.left || minimumColumnWidth;
+      }
+
+      requestAnimationFrame(() => {
+        if (!rootRef.current) return;
+        if (column >= size.columns - 1) {
+          rootRef.current.scrollTo({
+            left: scrollLeft + 60,
+            behavior: 'smooth',
+          });
+        }
+      });
+    });
   };
 
   const tableNode = React.useMemo(
@@ -605,6 +650,12 @@ const Spreadsheet = <CellType extends Types.CellBase>(
                 addColumnLeft={addColumnLeft}
                 addColumnRight={addColumnRight}
                 columnContextEnable={props.columnContextEnable}
+                maxColLimit={maxColLimit}
+                disableDeleteOption={disableDeleteOption}
+                contextMenu={contextMenu}
+                onAddColumn={onAddColumn}
+                onDeleteColumn={onDeleteColumn}
+                scrollToColumn={scrollToColumn}
               />
             ) : (
               <ColumnIndicator
@@ -616,11 +667,17 @@ const Spreadsheet = <CellType extends Types.CellBase>(
                 addColumnLeft={addColumnLeft}
                 addColumnRight={addColumnRight}
                 columnContextEnable={props.columnContextEnable}
+                maxColLimit={maxColLimit}
+                disableDeleteOption={disableDeleteOption}
+                contextMenu={contextMenu}
+                onAddColumn={onAddColumn}
+                onDeleteColumn={onDeleteColumn}
+                scrollToColumn={scrollToColumn}
               />
             )
           )}
         </HeaderRow>
-        {renderReady && scrollerFunction().map((rowNumber) => (
+        {scrollerFunction().map((rowNumber) => (
           <Row key={rowNumber} row={rowNumber}>
             {rowLabels ? (
               <RowIndicator
@@ -632,6 +689,11 @@ const Spreadsheet = <CellType extends Types.CellBase>(
                 deleteRow={deleteRow}
                 setContextMenu={props.setContextMenu}
                 rowContextEnable={props.rowContextEnable}
+                maxRowLimit={maxRowLimit}
+                disableDeleteOption={disableDeleteOption}
+                contextMenu={contextMenu}
+                setVisibleRange={setVisibleRange}
+                scrollToRow={scrollToRow}
               />
             ) : (
               <RowIndicator
@@ -642,6 +704,11 @@ const Spreadsheet = <CellType extends Types.CellBase>(
                 deleteRow={deleteRow}
                 setContextMenu={props.setContextMenu}
                 rowContextEnable={props.rowContextEnable}
+                maxRowLimit={maxRowLimit}
+                disableDeleteOption={disableDeleteOption}
+                contextMenu={contextMenu}
+                setVisibleRange={setVisibleRange}
+                scrollToRow={scrollToRow}
               />
             )}
             {range(size.columns).map((columnNumber) => (
@@ -651,6 +718,7 @@ const Spreadsheet = <CellType extends Types.CellBase>(
                 column={columnNumber}
                 // @ts-ignore
                 DataViewer={DataViewer}
+                editable={editable}
               />
             ))}
           </Row>
@@ -680,12 +748,14 @@ const Spreadsheet = <CellType extends Types.CellBase>(
       <ActiveCell
         attachmentAction={attachmentAction}
         contextOption={contextOption}
+        getActiveCell={getActiveCell}
         setContextMenu={props.setContextMenu}
         // @ts-ignore
         DataEditor={DataEditor}
+        visibleRange={visibleRange}
       />
     ),
-    [DataEditor]
+    [DataEditor, visibleRange]
   );
 
   const rootNode = React.useMemo(
@@ -737,15 +807,20 @@ const Spreadsheet = <CellType extends Types.CellBase>(
           onClick={handleClick}
           onMouseMove={handleMouseMove}
           onScroll={(e) => {
+            const target = e.target as HTMLElement;
+            setScrollPos({ top: target.scrollTop, left: target.scrollLeft });
             scrollOption && throttledHandleScroll(e);
             setContextMenu({
               open: false,
+              contextType: null,
               options: [
                 {
                   label: '',
                   value: '',
                   iconName: '',
                   action: () => {},
+                  disableTooltip: '',
+                  visible: false,
                   disable: false,
                 },
               ],
@@ -754,8 +829,8 @@ const Spreadsheet = <CellType extends Types.CellBase>(
         >
           {tableNode}
           {activeCellNode}
-          <Selected />
-          <Copied />
+          <Selected visibleRange={visibleRange} scrollPos={scrollPos} />
+          <Copied visibleRange={visibleRange} scrollPos={scrollPos} />
         </div>
       </div>
     ),
@@ -773,6 +848,6 @@ const Spreadsheet = <CellType extends Types.CellBase>(
   return (
     <context.Provider value={reducerElements}>{rootNode}</context.Provider>
   );
-};
+});
 
 export default Spreadsheet;

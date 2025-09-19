@@ -61,6 +61,7 @@ const SessionManager = forwardRef<HTMLDivElement, SessionManagerProps>(
               onMouseEnter={() => handleMouseEnter(index, iconName)}
               onMouseLeave={handleMouseLeave}
               onClick={() => handleIconClick(index, iconName)}
+              id={iconName}
             >
               <Icon
                 className="ff-body-container__icon"

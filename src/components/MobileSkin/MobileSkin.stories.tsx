@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import MobileSkin from './MobileSkin';
-import React from 'react';
 
 const meta: Meta<typeof MobileSkin> = {
   title: 'Components/MobileSkin',
@@ -110,6 +109,32 @@ export const LandscapeViewWithNavbar: Story = {
   },
 };
 
+export const PortraitViewWithSideNavbar: Story = {
+  args: {
+    ...defaultArgs,
+    orientation: 'portrait',
+    UtilityBar: true,
+    navBarIcons: navBarIcons,
+    navBarPosition: 'left',
+    tooltip: {
+      right_arrow_icon: 'Go Forward',
+      left_arrow_icon: 'Go Back',
+      refresh_icon: 'Reload Screen',
+      minimize_script: 'Capture Frame',
+      replace_icon: 'Rotate View',
+    },
+  },
+};
+
+export const LandscapeViewWithSidebar: Story = {
+  args: {
+    ...defaultArgs,
+    orientation: 'landscape',
+    navBarPosition: 'left',
+    UtilityBar: true,
+    navBarIcons: navBarIcons,
+  },
+};
 export const PortraitViewWithBackground: Story = {
   args: {
     ...defaultArgs,

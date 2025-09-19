@@ -42,6 +42,7 @@ const Comments = ({
   const [textAfterAt, setTextAfterAt] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const selectSectionRef = useRef<HTMLDivElement>(null);
+  const [enterKeyPressed, setEnterKeyPressed] = useState(false);
 
   useEffect(() => {
     const formattedUsersDetails = formatUserDetails(userDetails);
@@ -255,8 +256,16 @@ const Comments = ({
     setTextAfterAt(mentionWords);
     const hasExplicitAtSymbol = DETECT_AT_CHAR_AT_START.test(textBeforeCaret);
     setHasAtSymbol(!!hasExplicitAtSymbol);
+    if (!textAreaValue) {
+      setEnterKeyPressed(false);
+    }
   };
 
+  useEffect(() => {
+    if (!input.includes('\n')) {
+      setEnterKeyPressed(false);
+    }
+  }, [input]);
   const optionClicked = (name: string) => {
     if (!textareaRef.current) return;
 
@@ -271,7 +280,7 @@ const Comments = ({
         mentionNameMatch[1] ?? ''
       );
       const remainingText = input.slice(caretPosition);
-      const mentionedUserName = `@${name.replace(/\s+/g, '')} `;
+      const mentionedUserName = `@${name} `;
 
       const newText =
         input.slice(0, mentionNameStart) + mentionedUserName + remainingText;
@@ -315,6 +324,9 @@ const Comments = ({
         }, 0);
       }
     }
+    if (e.key === 'Enter') {
+      setEnterKeyPressed(true);
+    }
   };
 
   return (
@@ -329,7 +341,9 @@ const Comments = ({
             <div className="input-wrapper">
               <textarea
                 className="inputContainer_input first_input"
-                rows={input.length < rowBreakCharCount ? 1 : 3}
+                rows={
+                  enterKeyPressed ? 3 : input.length < rowBreakCharCount ? 1 : 3
+                }
                 autoFocus={autoFocus}
                 value={input}
                 onChange={(e) => textAreaInputChange(e)}

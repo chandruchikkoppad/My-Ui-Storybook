@@ -102,7 +102,10 @@ const SequentialConnectingBranch: FC<SequentialConnectingBranchProps> = ({
     dataSetValues,
     'Id'
   );
-
+  const showBranchPoint =
+    (readOnly && !isMachineInstances) ||
+    (!readOnly && isMachineInstances) ||
+    (!readOnly && !isMachineInstances);
   return (
     <EnvironmentVariableMapsContext.Provider
       value={environmentVariableMaps as EnvironmentVariableMaps}
@@ -131,14 +134,18 @@ const SequentialConnectingBranch: FC<SequentialConnectingBranchProps> = ({
                   'ff-select-branch-arrow-down': !isMachineInstances,
                 })}
               >
-                <div className="ff-select-branch-point"></div>
+                {showBranchPoint && (
+                  <div className="ff-select-branch-point"></div>
+                )}
                 <div className="ff-select-branch-arrow">
-                  <div className="ff-branch-arrow-wrapper">
-                    {isMachineInstances && (
-                      <div className="ff-branch-arrow"></div>
-                    )}
-                  </div>
-                  {isMachineInstances && (
+                  {!readOnly && (
+                    <div className="ff-branch-arrow-wrapper">
+                      {isMachineInstances && (
+                        <div className="ff-branch-arrow"></div>
+                      )}
+                    </div>
+                  )}
+                  {isMachineInstances && !readOnly && (
                     <>
                       <Button
                         variant="tertiary"
@@ -214,13 +221,15 @@ const SequentialConnectingBranch: FC<SequentialConnectingBranchProps> = ({
                   </div>
                 )}
                 {!readOnly && (
-                  <Icon
-                    name="delete"
-                    className="ff-run-delete-icon"
-                    color="var(--ff-connecting-branch-delete-color)"
-                    onClick={onDeleteMachineInstance}
-                    hoverEffect
-                  />
+                  <Tooltip title="Delete" placement="bottom">
+                    <Icon
+                      name="delete"
+                      className="ff-run-delete-icon"
+                      color="var(--ff-connecting-branch-delete-color)"
+                      onClick={onDeleteMachineInstance}
+                      hoverEffect
+                    />
+                  </Tooltip>
                 )}
               </div>
             </div>

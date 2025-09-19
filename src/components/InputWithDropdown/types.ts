@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode, RefObject } from 'react';
 
 export interface Option {
   label: string | ReactNode; // The display label for the dropdown option
@@ -128,4 +128,5 @@ export interface InputWithDropdownProps {
    * props for disableSelectHover
    */
   disableSelectHover?: boolean;
+  inputRefWithDropdown?: RefObject<HTMLInputElement>;
 }

@@ -80,6 +80,7 @@ export type StoreState<Cell extends CellBase = CellBase> = {
   selectedColumn: null | number;
   formattedStyle: formattedStyle;
   editable: boolean;
+  ctrl: boolean;
 };
 
 export type rowDimensions = Record<
@@ -130,6 +131,8 @@ export type CellComponentProps<Cell extends CellBase = CellBase> = {
   setCellDimensions: (point: Point, dimensions: Dimensions) => void;
   /** Set data of the cell */
   setCellData: (cell: Cell) => void;
+  /**Indicates whether the cell is editable.*/
+  editable?: boolean;
 };
 
 /** Type of the Spreadsheet Cell component */
@@ -149,6 +152,7 @@ export type DataViewerProps<Cell extends CellBase = CellBase> =
     evaluatedCell: Cell | undefined;
     inputValue: () => React.ReactNode;
     active: boolean;
+    editable?: boolean;
   };
 
 /** Type of the Spreadsheet DataViewer component */
@@ -195,6 +199,16 @@ export type HeaderRowProps = React.PropsWithChildren<{}>;
 /** Type of the HeaderRow component */
 export type HeaderRowComponent = React.ComponentType<HeaderRowProps>;
 
+export type VisibleRange = {
+  start: number;
+  end: number;
+};
+
+export type FullRange = {
+  start: { row: number; column: number };
+  end: { row: number; column: number };
+};
+
 /** Type of the Spreadsheet RowIndicator component props */
 export type RowIndicatorProps = {
   /** The row the indicator indicates */
@@ -208,19 +222,25 @@ export type RowIndicatorProps = {
 
   setContextMenu: React.Dispatch<React.SetStateAction<ContextMenuState>>;
 
-  deleteRow: () => void;
+  deleteRow: (_row?: number) => void;
 
-  addRowTop: () => void;
+  addRowTop: (_row?: number) => void;
 
-  addRowBottom: () => void;
+  addRowBottom: (_row?: number) => void;
 
   rowContextEnable: boolean;
   cell?: CellBase;
   selectedRow?: number;
+  maxRowLimit: number;
+  disableDeleteOption: boolean;
+  contextMenu: ContextMenuState;
+  setVisibleRange: React.Dispatch<React.SetStateAction<VisibleRange>>;
+  scrollToRow: (_row: number, _visibleRange: VisibleRange) => void;
 };
 
 export type ContextMenuState = {
   open: boolean;
+  contextType: 'sheet' | 'column' | 'row' | 'cell' | null;
   options: optionsType[];
 };
 
@@ -229,6 +249,8 @@ type optionsType = {
   value: string;
   iconName: string;
   action: () => void;
+  disableTooltip: string;
+  visible: boolean;
   disable: boolean;
 };
 
@@ -251,14 +273,20 @@ export type ColumnIndicatorProps = {
 
   setContextMenu: React.Dispatch<React.SetStateAction<ContextMenuState>>;
 
-  deleteColumn: () => void;
+  deleteColumn: (_col?: number) => void;
 
-  addColumnLeft: () => void;
+  addColumnLeft: (columnWidth: number, _col?: number) => void;
 
-  addColumnRight: () => void;
+  addColumnRight: (columnWidth: number, _col?: number) => void;
   columnContextEnable: boolean;
   cell?: CellBase;
   selectedColumn?: number;
+  maxColLimit: number;
+  disableDeleteOption: boolean;
+  contextMenu: ContextMenuState;
+  onAddColumn?: (_columnIndex: number, _isLeft: boolean) => void;
+  onDeleteColumn?: (_columnIndex: number) => void;
+  scrollToColumn: (_column: number) => void;
 };
 
 /** Type of the ColumnIndicator component */

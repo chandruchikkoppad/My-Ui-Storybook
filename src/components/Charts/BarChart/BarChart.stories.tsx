@@ -74,6 +74,74 @@ export const BarChartDashboard: Story = {
     isOnclick: true,
   },
 };
+
+export const BarChartIsStickyYAxis: Story = {
+  args: {
+    isYaxisSticky : true,
+    data: [
+      { label: 'FireFox', value: 0, percent: 50 },
+      { label: 'Edge', value: 20, id: 'divya@gmail.com', percent: 50 },
+      { label: 'Chrome', value: 25, id: 'divya@gmail.com', percent: 50 },
+      { label: 'Safari', value: 10, id: '', percent: 50 },
+      { label: 'IE', value: 1, id: 'divya@gmail.com', percent: 50 },
+      { label: 'Opera', value: 15, id: 'divya@gmail.com', percent: 50 },
+      { label: 'FireFox', value: 0, percent: 50 },
+      { label: 'Edge', value: 20, id: 'divya@gmail.com', percent: 50 },
+      { label: 'Chrome', value: 25, id: 'divya@gmail.com', percent: 50 },
+      { label: 'Safari', value: 10, id: '', percent: 50 },
+      { label: 'IE', value: 1, id: 'divya@gmail.com', percent: 50 },
+      { label: 'Opera', value: 15, id: 'divya@gmail.com', percent: 50 },
+      { label: 'FireFox', value: 0, percent: 50 },
+      { label: 'Edge', value: 20, id: 'divya@gmail.com', percent: 50 },
+      { label: 'Chrome', value: 25, id: 'divya@gmail.com', percent: 50 },
+      { label: 'Safari', value: 10, id: '', percent: 50 },
+      { label: 'IE', value: 1, id: 'divya@gmail.com', percent: 50 },
+      { label: 'Opera', value: 15, id: 'divya@gmail.com', percent: 50 },
+      { label: 'FireFox', value: 0, percent: 50 },
+      { label: 'Edge', value: 20, id: 'divya@gmail.com', percent: 50 },
+      { label: 'Chrome', value: 25, id: 'divya@gmail.com', percent: 50 },
+      { label: 'Safari', value: 10, id: '', percent: 50 },
+      { label: 'IE', value: 1, id: 'divya@gmail.com', percent: 50 },
+      { label: 'Opera', value: 15, id: 'divya@gmail.com', percent: 50 },
+    ],
+
+    barWidth: 20,
+    height: 250,
+    colors: [
+      ['#FFC300', '#FF5733'],
+      ['#01D34F', '#013E7C'],
+      ['#FFC107', '#E4AD09'],
+      ['#5FC2F5', '#3061C5'],
+      ['#00BBEF', '#0FA2CB'],
+      ['#9C0000', '#9C0000'],
+    ],
+    isTruncateText: true,
+    xAxisLabel: 'Status',
+    yAxisLabel: 'Count',
+    padding: 30,
+    barGap: 40,
+    barBorderRadius: 0,
+    legend: false,
+    showXAxisLabels: true,
+    legendPosition: 'top',
+    icons: [
+      'fire_fox',
+      'edge',
+      'chrome_icon',
+      'safari_icon',
+      'internet_explorer',
+      'opera',
+    ],
+    iconSize: 20,
+    onSelectedBar: (label) => {
+      console.log(label);
+    },
+    totalLabel: 'Total count',
+    customToolTip: true,
+    isOnclick: true,
+  },
+};
+
 export const MemoryBarChartDashboard: Story = {
   args: {
     data: [

@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useRef, forwardRef } from 'react';
 import ReactDOM from 'react-dom';
 import { DayPicker } from 'react-day-picker';
-import { toZonedTime, format } from 'date-fns-tz';
+import { startOfDay } from 'date-fns';
+import { format, toZonedTime } from 'date-fns-tz';
 import TimePicker from './Timepicker';
 import Icon from '../Icon';
 import './DatePicker.scss';
@@ -36,6 +37,7 @@ const CustomDatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
       isFilterDatePicker = false,
       isSelectableDate = false,
       onBlur,
+      withOutDateFormat = false,
     },
     ref
   ) => {
@@ -64,12 +66,8 @@ const CustomDatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
 
     const mergedRef = useMergeRefs(pickerRef, ref);
 
-    const toTimeZoneDate = (date: Date): Date => {
-      const zoned = toZonedTime(date, timezone);
-      return new Date(zoned.getFullYear(), zoned.getMonth(), zoned.getDate());
-    };
-
-    const todayInTimeZone = toTimeZoneDate(new Date());
+    const todayInTimeZone = startOfDay(toZonedTime(new Date(), timezone));
+    const systemTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
     useEffect(() => {
       selectedDateRef.current = selectedDate;
@@ -162,7 +160,14 @@ const CustomDatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
       if (dateOnly) {
         if (!isSelectableDate || date) {
           setSelectedDate(date);
-          onChange(date);
+          if (withOutDateFormat && date) {
+            const formatted = format(date, dateFormat, {
+              timeZone: timezone,
+            });
+            onChange(date, formatted);
+          } else {
+            onChange(date);
+          }
         }
         resetAndCloseDatePicker();
       } else {
@@ -182,7 +187,16 @@ const CustomDatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
     };
 
     const handleSave = () => {
-      onChange(selectedDateRef.current);
+      if (selectedDateRef.current) {
+        if (withOutDateFormat) {
+          const formatted = format(selectedDateRef.current, dateFormat, {
+            timeZone: timezone,
+          });
+          onChange(selectedDateRef.current, formatted);
+        } else {
+          onChange(selectedDateRef.current);
+        }
+      }
       resetAndCloseDatePicker();
     };
 
@@ -532,7 +546,7 @@ const CustomDatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
                       after: new Date(maxDate ? maxDate : ''),
                     },
                   ]}
-                  timeZone={timezone}
+                  timeZone={systemTimeZone}
                   components={{
                     CaptionLabel: (props) => <CustomCaption {...props} />,
                     PreviousMonthButton: (props) => (

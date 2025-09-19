@@ -201,7 +201,7 @@ export const StepLandingTableAcc: Story = {
       {
         header: 'Description',
         accessor: 'name',
-        width: isMaximize ? 470 : 700,
+        width: isMaximize ? 470 : 750,
         cell: ({ row, value, index }: DynamicObj) => {
           return (
             <>
@@ -214,7 +214,9 @@ export const StepLandingTableAcc: Story = {
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
                       whiteSpace: 'nowrap',
-                      maxWidth: isMaximize ? 220 : 700,
+                      maxWidth: isMaximize
+                        ? 250 - (row?.marginLeft ?? 0)
+                        : 480 - (row?.marginLeft ?? 0),
                     }}
                   >
                     <Typography
@@ -228,7 +230,10 @@ export const StepLandingTableAcc: Story = {
                           setEditMode(row.stepId);
                         }
                       }}
-                      style={{ opacity: row?.isDisabled ? '0.5' : '' }}
+                      style={{
+                        opacity: row?.isDisabled ? '0.5' : '',
+                        textWrap: 'nowrap',
+                      }}
                     >
                       {index + 1}.{value}
                     </Typography>
@@ -254,11 +259,37 @@ export const StepLandingTableAcc: Story = {
             setTableData(updatedData);
           };
           if (tableType === 'Steps') {
+            let metadata: any = {
+              total: 12,
+              totalPassed: 6,
+              totalFailed: 1,
+              totalWarning: 1,
+              totalSkipped: 1,
+              totalTerminated: 2,
+              totalAborted: 2,
+              totalNA: 3,
+              totalPartiallyExecuted: 0,
+              totalNonCascadedPreConditionFailed: 0,
+              totalNonCascadedPostConditionFailed: 0,
+              totalNonCascadedPreConditionWarning: 0,
+              totalNonCascadedPostConditionWarning: 0,
+              executionDuration: 80129,
+              executionDurationInHourMinSecFormat: '00:01:20:129',
+              message: 'One or more steps are failed',
+              status: 'FAIL',
+            };
             return (
               <>
                 {row?.stepResultStats && (
-                  <StepResultStats metaData={row?.stepResultStats} />
-                )}
+                <StepResultStats
+                  metaData={metadata}
+                  width={
+                    isMaximize
+                      ? 100 - (row?.marginLeft ?? 0)
+                      : 250 - (row?.marginLeft ?? 0)
+                  }
+                />
+                 )} 
                 <div
                   className="icon-container"
                   style={{

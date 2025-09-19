@@ -1,11 +1,12 @@
-import { TreeNodeProps } from "../../ComponentProps/TreeNodeProps";
-import { checkEmpty } from "../checkEmpty/checkEmpty";
+import { TreeNodeProps } from '../../ComponentProps/TreeNodeProps';
+import { checkEmpty } from '../checkEmpty/checkEmpty';
 
 export const handleTreeNodeExpandCollapse = (
   data: TreeNodeProps[],
   key: string | undefined,
   rootNode: TreeNodeProps | null,
-  isExpanded: boolean
+  isExpanded: boolean,
+  hidePrePostScript: boolean = false
 ): { data: TreeNodeProps[]; rootNode?: TreeNodeProps } => {
   if (!key) {
     throw new Error('Key is required');
@@ -42,6 +43,7 @@ export const handleTreeNodeExpandCollapse = (
     const children = childMap.get(nodeKey) || [];
     children.forEach((child) => {
       child.hide = hide;
+      child.expanded = false;
       if (hide) {
         updateChildren(child.key, true); // If parent is collapsed, hide all descendants
       }
@@ -57,11 +59,12 @@ export const handleTreeNodeExpandCollapse = (
 
     if (!isExpanded) {
       // Collapse: Hide all child nodes
+      targetNode.expandedAll = false;
       updateChildren(key, true);
     } else {
       // Expand: Show direct child nodes
       const children = childMap.get(key) || [];
-      children.forEach((child) => (child.hide = false));
+      children.forEach((child) => (child.hide = hidePrePostScript ? true : false));
     }
   }
 

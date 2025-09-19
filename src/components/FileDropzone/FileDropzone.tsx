@@ -48,6 +48,8 @@ const FileDropzone: React.FC<FileDropzoneProps> = ({
   showNoFilesUploadedMessage = false,
   noFileUploadedText = 'No files are uploaded',
   handleReplaceFile,
+  isRemoveDisabled,
+  isReplaceDisabled,
 }) => {
   const {
     getRootProps,
@@ -91,6 +93,8 @@ const FileDropzone: React.FC<FileDropzoneProps> = ({
           isUploadIcon={isUploadIcon}
           error={invalidFileMessage}
           isError={isApiResponseError}
+          isRemoveDisabled={isRemoveDisabled}
+          isReplaceDisabled={isReplaceDisabled}
         />
       )),
     [
@@ -119,11 +123,18 @@ const FileDropzone: React.FC<FileDropzoneProps> = ({
         <FilePreview
           key={rejectedFile.file.name}
           file={rejectedFile.file}
-          error={rejectedFile.errors[0]?.message}
+          error={
+            invalidFileMessage
+              ? invalidFileMessage
+              : rejectedFile.errors[0]?.message
+          }
           onRemoveClick={handleRemoveClick}
           onReplaceClick={handleReplaceClick}
           onUploadFile={onUploadFile}
           isUploadIcon={isUploadIcon}
+          isRemoveDisabled={isRemoveDisabled}
+          isReplaceDisabled={isReplaceDisabled}
+          isError={rejectedFile.errors[0]?.message ? true : false}
         />
       )),
     [

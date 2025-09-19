@@ -4,6 +4,7 @@ import { ReactNode, RefObject } from 'react';
 export interface DropdownProps {
   options: Option[];
   dropdownPosition: DropdownPosition;
+  dropDownHeight: number;
   optionZIndex: number;
   labelAccessor?: string;
   valueAccessor?: string;
@@ -22,7 +23,9 @@ export interface DropdownProps {
   recurrence?: boolean;
   showArrowIcon?: boolean;
   showClearIcon?: boolean;
-  noResultsMessage?:string
+  noResultsMessage?: string;
+  searchedIcon?: string;
+  isCustomButtonDisabled?: boolean;
 }
 
 export const dropdownDefaultCSSData = {

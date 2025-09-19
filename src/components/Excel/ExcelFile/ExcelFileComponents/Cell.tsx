@@ -21,6 +21,7 @@ export const Cell: React.FC<Types.CellComponentProps> = ({
   activate,
   setCellDimensions,
   setCellData,
+  editable,
 }): React.ReactElement => {
   const rootRef = React.useRef<HTMLTableCellElement | null>(null);
   const point = React.useMemo(
@@ -33,6 +34,7 @@ export const Cell: React.FC<Types.CellComponentProps> = ({
 
   const handleMouseDown = React.useCallback(
     (event: React.MouseEvent<HTMLTableCellElement>) => {
+      if (!editable) return;
       if (mode === 'view') {
         setCellDimensions(point, getOffsetRect(event.currentTarget));
 
@@ -75,7 +77,10 @@ export const Cell: React.FC<Types.CellComponentProps> = ({
   return (
     <td
       ref={rootRef}
-      style={data?.style}
+      style={{
+        ...data?.style,
+        ...(data?.inputType?.type === 'dropDown' && { fontSize: '12px' }),
+      }}
       className={classnames('ff-spreadsheet-cell', data?.className, {
         'ff-spreadsheet-active-cell': active || dragging,
       })}

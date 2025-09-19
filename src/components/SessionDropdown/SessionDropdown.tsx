@@ -22,7 +22,10 @@ const SessionDropdown: React.FC<SessionDropdownProps> = ({
   onDeleteClick,
   tabsData,
 }) => {
-  const itemsToDisplay = secondaryHeader && activeTab === 'secondary' ? secondaryItems : primaryItems;
+  const itemsToDisplay =
+    secondaryHeader && activeTab === 'secondary'
+      ? secondaryItems
+      : primaryItems;
 
   const handleTabClick = (tabId: string) => {
     if (onTabClick) {
@@ -36,7 +39,10 @@ const SessionDropdown: React.FC<SessionDropdownProps> = ({
   };
 
   return (
-    <div className="ff-resolution-dropdown" style={width ? { minWidth: width } : {}}>
+    <div
+      className="ff-resolution-dropdown"
+      style={width ? { minWidth: width } : {}}
+    >
       <div className="ff-dropdown-notch" />
       <div className="ff-dropdown-header">
         <div className="ff-dropdown-header-content">
@@ -67,22 +73,30 @@ const SessionDropdown: React.FC<SessionDropdownProps> = ({
           ) : secondaryHeader ? (
             <div className="ff-dropdown-header-dual">
               <div
-                className={`ff-dropdown-header-item ${activeTab === 'primary' ? 'active' : ''}`}
+                className={`ff-dropdown-header-item ${
+                  activeTab === 'primary' ? 'active' : ''
+                }`}
                 onClick={onPrimaryTabClick}
               >
-                <Typography fontSize={16} fontWeight="semi-bold" className="ff-dropdown-text">
+                <Typography fontWeight="semi-bold" className="ff-dropdown-text">
                   {header}
                 </Typography>
-                {primaryCount && <span className="ff-dropdown-count">{primaryCount}</span>}
+                {primaryCount && (
+                  <span className="ff-dropdown-count">{primaryCount}</span>
+                )}
               </div>
               <div
-                className={`ff-dropdown-header-item ${activeTab === 'secondary' ? 'active' : ''}`}
+                className={`ff-dropdown-header-item ${
+                  activeTab === 'secondary' ? 'active' : ''
+                }`}
                 onClick={onSecondaryTabClick}
               >
-                <Typography fontSize={16} fontWeight="semi-bold" className="ff-dropdown-text">
+                <Typography fontWeight="semi-bold" className="ff-dropdown-text">
                   {secondaryHeader}
                 </Typography>
-                {secondaryCount && <span className="ff-dropdown-count">{secondaryCount}</span>}
+                {secondaryCount && (
+                  <span className="ff-dropdown-count">{secondaryCount}</span>
+                )}
               </div>
               <div className="ff-dropdown-header-icons">
                 <Icon
@@ -102,13 +116,17 @@ const SessionDropdown: React.FC<SessionDropdownProps> = ({
               </div>
             </div>
           ) : (
-            <Typography fontSize={16} fontWeight="semi-bold">{header}</Typography>
+            <Typography fontSize={16} fontWeight="semi-bold">
+              {header}
+            </Typography>
           )}
         </div>
       </div>
       <ul className="ff-dropdown-list">
         {itemsToDisplay?.map((item, index) => (
-          <li key={index} className="ff-dropdown-item">{item}</li>
+          <li key={index} className="ff-dropdown-item">
+            {item}
+          </li>
         ))}
       </ul>
     </div>

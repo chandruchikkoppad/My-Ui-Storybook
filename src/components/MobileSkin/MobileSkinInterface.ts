@@ -13,6 +13,6 @@ export interface MobileSkinProps {
   UtilityBar?: boolean;
   background?: string;
   tooltip?: Record<string, string>;
-  navBarPosition?: 'top' | 'bottom';
+  navBarPosition?: 'top' | 'bottom' | 'left';
   tooltipFormatter?: ((title: string) => React.ReactNode) | undefined;
 }

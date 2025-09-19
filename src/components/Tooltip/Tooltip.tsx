@@ -1,4 +1,10 @@
-import React, { useEffect, useRef, useState, useContext } from 'react';
+import React, {
+  useLayoutEffect,
+  useEffect,
+  useRef,
+  useState,
+  useContext,
+} from 'react';
 import './Tooltip.scss';
 import { createPortal } from 'react-dom';
 import {
@@ -163,17 +169,21 @@ const Tooltip: React.FC<TooltipProps> = ({
     });
   };
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (isVisible) {
       calculateDim();
     }
   }, [isVisible]);
+  const showTooltip = () => {
+    calculateDim();
+    setIsVisible(true);
+  };
 
   return (
     <Element
       ref={tooltipContainerRef}
       className={classNames('ff-tooltip-container', currentTheme)}
-      onMouseEnter={() => setIsVisible(true)}
+      onMouseEnter={showTooltip}
       onMouseLeave={() => setIsVisible(false)}
       style={style}
     >

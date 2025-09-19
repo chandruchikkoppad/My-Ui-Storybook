@@ -31,7 +31,7 @@ const TableRow = React.memo(
         data-level={node.hierarchy}
         ref={treeRowRef}
         className={`ff-table-tree-row show ${
-          selectedNode && selectedNode === node.key ? 'hover' : ''
+          selectedNode && selectedNode === node.key ? 'hover-selected' : ''
         }`}
         onClick={(e) => onRowClick(e, node)}
         id={index === 0 ? 'table-first-row' : node.key}

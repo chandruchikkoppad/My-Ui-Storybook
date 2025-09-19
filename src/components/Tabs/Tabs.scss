@@ -48,11 +48,17 @@
 
           .ff-tab-bar {
             width: 100%;
-            border-radius: 2px 2px 0 0;
+
             border-color: var(--input-default-label-color);
 
             &--active {
               border-top: 2px solid var(--tabs-label-active-color);
+            }
+            &--radius-4 {
+              border-radius: 4px 4px 0 0;
+            }
+            &--radius-2 {
+              border-radius: 2px 2px 0 0;
             }
           }
 
@@ -85,6 +91,12 @@
           &.disabled {
             opacity: 0.5;
             cursor: not-allowed;
+          }
+          &.ff-tab-button-bg:hover {
+            background-color:  var(--file-details-bg);
+            border-radius: 4px;
+            height: 24px;
+            transition: 0.6s;
           }
         }
       }
@@ -127,6 +139,22 @@
       }
     }
 
+    &-spacing--space-between {
+      justify-content: space-between;
+    }
+    &-spacing--space-around {
+      justify-content: space-around;
+    }
+    &-spacing--flex-start {
+      justify-content: flex-start;
+    }
+    &-spacing--flex-end {
+      justify-content: flex-end;
+    }
+    &-spacing--center {
+      justify-content: center;
+    }
+
     &--no-border {
       border: none;
     }
@@ -165,6 +193,9 @@
           }
         }
       }
+    }
+    &--borderBottomLine {
+      border-bottom: 1px solid var(--tabs-label-active-color);
     }
   }
   .ff-tab-content {

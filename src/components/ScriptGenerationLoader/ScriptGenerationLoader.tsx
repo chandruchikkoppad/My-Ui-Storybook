@@ -22,6 +22,7 @@ const ScriptGenerationLoader: React.FC<ScriptGenerationLoaderProps> = ({
   width,
   height,
   path,
+  DynamicHeight = 500,
 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [visibleChars, setVisibleChars] = useState('');
@@ -58,7 +59,11 @@ const ScriptGenerationLoader: React.FC<ScriptGenerationLoaderProps> = ({
     >
       <div className="ff-moving-sections-container">
         {numberOfDivs?.map((order) => (
-          <div key={order} className={`ff-moving-section${order}`} />
+          <div
+            key={order}
+            className={`ff-moving-section${order}`}
+            style={{ height: `${DynamicHeight + 'px'}` }}
+          />
         ))}
       </div>
 

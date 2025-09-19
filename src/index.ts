@@ -85,6 +85,7 @@ export { default as MobileSkin } from './components/MobileSkin';
 export { default as Prompt } from './components/Prompt';
 export { default as MessageBox } from './components/MessageBox';
 export { default as ChatModal } from './components/ChatModal';
+export { default as ChatModalAi } from './components/ChatModalAi';
 export { default as HistoryCard } from './components/HistoryCard';
 
 export { default as AiToggle } from './components/AiToggle';
@@ -174,6 +175,8 @@ export { getTopVisibleNodeKey } from './utils/getTopVisibleNodeKey/getTopVisible
 export { nlpInputDelay } from './utils/nlpInputDelay/nlpInputDelay';
 export { getNavigateToKey } from './utils/TreeNavigateUtils/getNavigateToKey';
 export { checkMicrophoneAccess } from './utils/checkMicrophoneAccess/checkMicrophoneAccess';
+export { default as DebugToolsPanel } from './components/DebugToolsPanel';
+export { default as SessionManager } from './components/SessionManager';
 
 export {
   EMAIL_REGEX,
@@ -267,3 +270,5 @@ export { default as Janus } from './ThirdPartyPackages/JanusGateway';
 export { default as adapter } from './ThirdPartyPackages/Adapter';
 export { default as StepResultStats } from './components/StepsLandingTable/Components/StepResultStats';
 export { default as ScriptGenerationLoader } from './components/ScriptGenerationLoader/ScriptGenerationLoader';
+
+export { useDeviceType } from './utils/useDeviceType/useDeviceType';

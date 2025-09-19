@@ -10,23 +10,27 @@ import { js as beautifyJS, html as beautifyHTML } from 'js-beautify';
 import { dropdownPositionType, EditorProps, DyanamicObj } from './types';
 import './Editor.scss';
 import VariableDropdown from './VariableDropdown';
+import { DynamicObj } from '../CreateVariable/types';
 
 const Editor = forwardRef<any, EditorProps>(
   (
     {
       width = '100%',
       height = '100%',
+      VariableDropdownHeight = '160px',
       readOnly = false,
       value = '',
       handleChange,
       setValue,
       variableOptionsList = [],
+      addForloopPrefix = false,
       language = 'json',
       theme = 'light',
       isRequisiteType = false,
       onPaste,
       showVariableDropdown = true,
       defaultValue,
+      customOptions = {},
     },
     ref
   ) => {
@@ -35,19 +39,44 @@ const Editor = forwardRef<any, EditorProps>(
     const varRef = useRef<number | null>(null);
     const filterVarRef = useRef<string | null>(null);
     const [currentLine, setCurrentLine] = useState<number>(0);
+    const [isTextSelected, setIsTextSelected] = useState(false);
     const [showDropdown, setShowDropdown] = useState<boolean>(false);
     const [dropdownPosition, setDropdownPosition] =
       useState<dropdownPositionType>({ top: 0, left: 0 });
-    const [filteredVariableOptions, setFilteredVariableOptions] =
-      useState<DyanamicObj[]>(variableOptionsList);
+    const [filteredVariableOptions, setFilteredVariableOptions] = useState<
+      DyanamicObj[]
+    >([]);
+
+    const variableOptionsRef = useRef<DyanamicObj[]>(variableOptionsList);
+
+    useEffect(() => {
+      variableOptionsRef.current = variableOptionsList;
+    }, [variableOptionsList]);
 
     const handleEditorDidMount: OnMount = (editor: any, monaco) => {
       editorRef.current = editor;
 
+      // Track caret line
       editor.onDidChangeCursorPosition((e: any) => {
         setCurrentLine(e.position.lineNumber);
       });
 
+      editor.onMouseDown(() => {
+        setShowDropdown(false);
+      });
+
+      // Track selection changes (user highlighting text)
+      editor.onDidChangeCursorSelection(() => {
+        const selections = editor.getSelections?.() || [];
+        const hasSelection = selections.some(
+          (sel: DynamicObj) =>
+            sel.startLineNumber !== sel.endLineNumber ||
+            sel.startColumn !== sel.endColumn
+        );
+        setIsTextSelected(hasSelection);
+      });
+
+      // Model content listener (variable trigger, etc.)
       editor.onDidChangeModelContent(() => {
         const content = editor.getValue();
         setValue(content);
@@ -65,9 +94,15 @@ const Editor = forwardRef<any, EditorProps>(
             varRef.current + 1,
             columnIndex
           );
-          const filteredVariable = variableOptionsList.filter((e) =>
-            e?.name.toLowerCase().includes(filterVarRef.current?.toLowerCase())
-          );
+          const filteredVariable = variableOptionsRef.current.filter((e) => {
+            const variableName =
+              e.type === '_startforloop' && addForloopPrefix
+                ? `FLV_for:${e.name}`
+                : e.name;
+            return variableName
+              .toLowerCase()
+              .includes(filterVarRef.current?.toLowerCase());
+          });
           if (filteredVariable.length) {
             setFilteredVariableOptions(filteredVariable);
           } else {
@@ -98,7 +133,7 @@ const Editor = forwardRef<any, EditorProps>(
             dropdownTop + dropdownHeight >
             editorHeight - dropdownHeight + 100
           ) {
-            dropdownTop -= Math.floor(dropdownHeight / 2) + dropdownHeight + 25;
+            dropdownTop -= Math.floor(dropdownHeight / 2) + dropdownHeight - 25;
           } else {
             dropdownTop -= 5;
           }
@@ -108,7 +143,6 @@ const Editor = forwardRef<any, EditorProps>(
           } else if (left < editorRect.width * 0.5 + dropdownHeight) {
             dropdownLeft = dropdownLeft + 35;
           }
-
           setDropdownPosition({ top: dropdownTop, left: dropdownLeft });
           setShowDropdown(true);
         } else {
@@ -122,7 +156,6 @@ const Editor = forwardRef<any, EditorProps>(
       editor.onDidPaste(() => {
         const pastedText = editor.getValue();
 
-        // Perform an action when pasting (example: beautify the pasted content)
         if (pastedText) {
           const beautifiedText = beautifyContent(pastedText, language);
           editor.setValue(beautifiedText);
@@ -200,43 +233,46 @@ const Editor = forwardRef<any, EditorProps>(
     };
 
     useEffect(() => {
-      if (editorRef.current && currentLine) {
-        const decorations = [
-          {
-            range: {
-              startLineNumber: currentLine,
-              startColumn: 1,
-              endLineNumber: currentLine,
-              endColumn: 1,
-            },
-            options: {
-              isWholeLine: true,
-              className: 'current-line-background',
-            },
-          },
-        ];
+      const editor = editorRef.current;
+      if (!editor || !currentLine) return;
 
-        const lineNumberDecorations = [
-          {
-            range: {
-              startLineNumber: currentLine,
-              startColumn: 1,
-              endLineNumber: currentLine,
-              endColumn: 1,
-            },
-            options: {
-              isWholeLine: false,
-              linesDecorationsClassName: 'active-line-number',
-            },
-          },
-        ];
+      const decorations = [];
+      const lineNumberDecorations = [];
 
-        decorationsRef.current = editorRef.current.deltaDecorations(
-          decorationsRef.current,
-          [...decorations, ...lineNumberDecorations]
-        );
+      // Only push the background decoration when NO selection
+      if (!isTextSelected) {
+        decorations.push({
+          range: {
+            startLineNumber: currentLine,
+            startColumn: 1,
+            endLineNumber: currentLine,
+            endColumn: 1,
+          },
+          options: {
+            isWholeLine: true,
+            className: 'current-line-background',
+          },
+        });
       }
-    }, [currentLine]);
+
+      lineNumberDecorations.push({
+        range: {
+          startLineNumber: currentLine,
+          startColumn: 1,
+          endLineNumber: currentLine,
+          endColumn: 1,
+        },
+        options: {
+          isWholeLine: false,
+          linesDecorationsClassName: 'active-line-number',
+        },
+      });
+
+      decorationsRef.current = editor.deltaDecorations(decorationsRef.current, [
+        ...decorations,
+        ...lineNumberDecorations,
+      ]);
+    }, [currentLine, isTextSelected]);
 
     const handleSelectSuggestion = (suggestion: string, type: string) => {
       if (editorRef.current) {
@@ -406,6 +442,7 @@ const Editor = forwardRef<any, EditorProps>(
             autoClosingBrackets: 'always',
             scrollBeyondLastLine: false,
             readOnly,
+            ...customOptions,
           }}
           onMount={handleEditorDidMount}
           onChange={(newValue, event) => handleChange(newValue, event)}
@@ -415,7 +452,7 @@ const Editor = forwardRef<any, EditorProps>(
           <VariableDropdown
             position="absolute"
             width="300px"
-            height="210px"
+            height={VariableDropdownHeight}
             optionsList={filteredVariableOptions}
             onSelectVariable={handleSelectVariable}
             dropdownPosition={dropdownPosition}

@@ -3,7 +3,7 @@
 .ff-add-module-container {
   .ff-add-module-edit-container {
     display: flex;
-
+    gap: 4px;
     .ff-add-module-input-with-dropdown {
       display: flex;
       border: 1px solid var(--input-default-border-color);
@@ -98,7 +98,7 @@
 
       &--float {
         .ff-add-module-label-container {
-          top: -6px;
+          top: -8px;
           @extend .fontXs;
           background-color: var(--input-label-bg-color);
           line-height: 12px;
@@ -115,6 +115,7 @@
     .ff-module-icon-container {
       display: flex;
       gap: 8px;
+      padding-left: 8px;
       align-items: center;
     }
 

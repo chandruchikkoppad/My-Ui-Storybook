@@ -17,7 +17,7 @@ export interface DatePickerProps {
   /**
    * Function to handle date selection.
    */
-  onChange: (value: DateValue) => void;
+  onChange: (value: DateValue, formatted?: string) => void;
 
   /**
    * Placeholder text for the input field.
@@ -74,11 +74,16 @@ export interface DatePickerProps {
   /**
    * The selected date don't want to be deselected .
    */
-  isSelectableDate?: boolean
+  isSelectableDate?: boolean;
   /**
    * Function to handle onBlur for datepicker.
    */
   onBlur?: (date: DateValue) => void;
+
+  /**
+   * Default:False,if true, the date picker will not apply any date formatting.
+   */
+  withOutDateFormat?: boolean;
 }
 
 export type DateValue = Date | undefined;

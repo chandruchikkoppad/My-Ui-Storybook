@@ -37,14 +37,13 @@
       }
 
       .pre-edit-row {
-        &>td {
+        & > td {
           padding: 0px;
         }
 
         &:hover {
           background-color: transparent;
         }
-
       }
 
       tr {
@@ -65,7 +64,7 @@
           display: flex;
           align-items: center;
 
-          .ff-table-checkbox {
+          .ff-table-pre-post-checkbox {
             padding-right: 8px;
           }
 
@@ -164,13 +163,12 @@
     align-items: center;
   }
 
-
   .pre-accordion-arrow {
     margin-left: 4px;
     transition: transform 0.25s ease-in-out;
     cursor: pointer;
 
-    .pre-arrow-svg>svg:hover {
+    .pre-arrow-svg > svg:hover {
       color: var(--text-color) !important;
     }
   }
@@ -190,6 +188,5 @@
   &-disabled {
     cursor: default !important;
     opacity: 0;
-    ;
   }
 }

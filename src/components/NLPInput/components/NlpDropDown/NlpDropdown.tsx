@@ -44,7 +44,7 @@ const NlpDropdown = ({
     let dropdownContainerHeight;
 
     if (checkEmpty(options)) {
-      dropdownContainerHeight = optionHeight + 2 * dropDownWrapperPadding;
+      dropdownContainerHeight = 5 * optionHeight + 2 * dropDownWrapperPadding;
     } else if (options.length > 0) {
       dropdownContainerHeight = 5 * optionHeight + 2 * dropDownWrapperPadding;
     } else {
@@ -180,12 +180,21 @@ const NlpDropdown = ({
 
   const getDisplayName = (
     item?: {
+      searchName?: ReactNode;
       displayName?: ReactNode;
       name?: ReactNode;
       nlpName?: ReactNode;
+      desc?: ReactNode;
     } | null
   ): ReactNode => {
-    return item?.displayName || item?.name || item?.nlpName || '---';
+    return (
+      item?.searchName ||
+      item?.displayName ||
+      item?.desc ||
+      item?.name ||
+      item?.nlpName ||
+      '---'
+    );
   };
 
   return (

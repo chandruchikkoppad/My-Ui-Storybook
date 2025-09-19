@@ -71,7 +71,7 @@ const EditLabel = ({
     if (typeof handleOnChange === 'function') {
       handleOnChange(e);
     }
-    if ((inlineValidationError && onChangeValidationError) || isThrowingError) {
+    if (inlineValidationError && onChangeValidationError && isThrowingError) {
       const errorMessage = handleCustomError ? handleCustomError(newValue) : '';
       if (errorMessage) {
         setShowError(errorMessage);
@@ -124,7 +124,10 @@ const EditLabel = ({
       setShouldShowToast(true);
       handleToastToggle('error');
       setShowError(errorMessage);
+      return;
     } else {
+      setShouldShowToast(false);
+      setToasts({ error: false });
       setIsEditing(false);
       setShowError('');
       if (onConfirm) onConfirm(text, currentSelectedOption);
@@ -167,6 +170,7 @@ const EditLabel = ({
       handleToastToggle('error');
       setShowError(errorMessage);
       setShouldShowToast(true);
+      setToasts({ error: true });
       return;
     }
     if (onCancel) {
@@ -178,6 +182,7 @@ const EditLabel = ({
     setShowError('');
     setIsEditable && setIsEditable(null);
     setShouldShowToast(false);
+    setToasts({ error: false });
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -219,7 +224,7 @@ const EditLabel = ({
   };
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!containerRef.current || !isEditing) return;
 
     const scrollableParent = getScrollableParent(containerRef.current);
 
@@ -234,7 +239,7 @@ const EditLabel = ({
     return () => {
       scrollableParent.removeEventListener('scroll', handleScroll);
     };
-  }, []);
+  }, [isEditing]);
 
   useEffect(() => {
     if (value) {
@@ -355,8 +360,8 @@ const EditLabel = ({
                     ? 'var(--default-color)'
                     : 'var(--label-edit-cancel-icon)'
                 }
-                height={16}
-                width={16}
+                height={12}
+                width={12}
                 ref={cancelRef}
                 tabIndex={-1}
                 disabled={isDisable?.cancel}
@@ -400,7 +405,7 @@ const EditLabel = ({
           {showError}
         </Typography>
       )}
-      {!inlineValidationError && shouldShowToast && (
+      {!inlineValidationError && shouldShowToast && !!showError && (
         <Toaster
           isOpen={toasts.error}
           variant="info"

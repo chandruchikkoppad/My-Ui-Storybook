@@ -75,4 +75,5 @@ export type DashboardDonutChartProps = {
   selectedStatusKey?: string;
   setSelectedStatusKey?: (_selectedStatusKey: string) => void;
   isOnClick?: boolean;
+  zIndex?: number;
 };

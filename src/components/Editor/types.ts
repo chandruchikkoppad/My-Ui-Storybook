@@ -29,6 +29,11 @@ export interface EditorProps {
    */
   variableOptionsList?: [] | DyanamicObj[];
 
+  /**  
+   * If true, adds 'FLV_for:' prefix to for loop variables in the dropdown and while searching.
+   */
+  addForloopPrefix?: boolean;
+
   /**
    *Value to set in the editor
    */
@@ -69,6 +74,16 @@ export interface EditorProps {
    * Defaukt value for the editor
    */
   defaultValue?: string;
+
+  /**
+   * Height of the variable dropdown
+   */
+  VariableDropdownHeight?: string;
+
+  /**
+   * Custom Monaco Editor options
+   */
+  customOptions?: any;
 }
 
 export interface dropdownPositionType {

@@ -78,6 +78,8 @@ const Toggle: React.FC<ToggleProps> = ({
               width={iconNames.checked.width}
               height={iconNames.checked.height}
               className={`ff-checked-icon--${variant}`}
+              disabled={disabled}
+              cursorType="pointer"
             />
           ) : (
             <Icon
@@ -85,6 +87,8 @@ const Toggle: React.FC<ToggleProps> = ({
               width={iconNames.unchecked.width}
               height={iconNames.unchecked.height}
               className={`ff-unchecked-icon--${variant}`}
+              disabled={disabled}
+              cursorType="pointer"
             />
           )}
         </span>

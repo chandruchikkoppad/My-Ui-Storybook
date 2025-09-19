@@ -5,232 +5,221 @@
   background-color: var(--input-label-bg-color);
 }
 
-#ff-sortable-table-scroll-container {
-  overflow-x: auto;
-  position: relative;
-  scrollbar-width: thin;
-
-  &::-webkit-scrollbar {
-    height: 5px; // Horizontal scrollbar height
-    width: 5px; // Vertical scrollbar width
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background-color: var(--description-text); // Scrollbar color
-    border-radius: 4px;
-  }
-
-  &::-webkit-scrollbar-track {
-    margin-left: var(
-      --frozen-column-width
-    ); // This pushes the scrollbar track to start after frozen columns
-  }
-}
-
-.ff-fixed-header-table {
-  overflow-y: auto;
-  position: relative;
-}
-
 .ff-table {
-  width: auto;
-  min-width: 100%;
+  &-scroll-container {
+    overflow-x: auto;
+    position: relative;
+    scrollbar-width: thin;
 
-  .sticky-column {
-    position: sticky;
+    &::-webkit-scrollbar {
+      height: 5px;
+      width: 5px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: var(--description-text);
+      border-radius: 4px;
+    }
+
+    &::-webkit-scrollbar-track {
+      margin-left: var(--frozen-column-width);
+    }
+  }
+  &-fixed-header {
+    position: sticky !important;
+    top: 0;
     z-index: 99;
-    background-color: var(--input-label-bg-color);
+    background-color: var(--file-details-bg);
+  }
+  &-container {
+    width: auto;
+    min-width: 100%;
+
+    &--border-radius {
+      border: 1px solid var(--slider-table-color);
+      border-radius: 5px;
+      border-collapse: separate !important;
+    }
+  }
+  &-header-cell,
+  &-data-cell {
+    text-align: left;
+    font-size: 12px;
+    padding: 8px 8px;
+  }
+  &-sticky-column {
+    @include sticky-columns-style;
   }
 
-  .ff-table-icon {
+  &-icon {
     position: absolute;
     top: 4px;
-    right: 0;
+    right: 4px;
     z-index: 100;
     cursor: pointer;
   }
-
-  th,
-  td {
-    text-align: left;
-    font-size: 12px;
-    padding: 7px 8px;
-  }
-
-  tbody {
-    tr {
-      th,
-      td {
-        &:first-child {
-          @include sticky-columns-style;
-        }
-
-        // Add this for additional frozen columns
-        &[data-frozen='true'] {
-          @include sticky-columns-style;
-        }
-      }
+  &-header-row {
+    .ff-table-header-cell {
+      border-bottom: 1px solid var(--slider-table-color);
     }
   }
 
-  thead {
-    tr {
-      th {
-        border-bottom: 1px solid var(--slider-table-color);
-      }
-
-      th {
-        .ff-label-checkbox-container {
-          display: flex;
-          align-items: center;
-
-          .ff-table-checkbox {
-            padding-right: 8px;
-          }
-        }
-      }
-    }
+  &-label-checkbox-container {
+    display: flex;
+    align-items: center;
   }
 
-  tbody {
-    tr {
-      &:hover {
-        td {
-          background-color: var(--hover-color) !important;
-        }
-        td[data-frozen='true'] {
-          background-color: var(--hover-color) !important;
-          z-index: 20;
-        }
-      }
-      &:display-card {
-        background-color: var(--hover-color) !important;
-      }
-    }
-
-    scrollbar-width: none;
-
-    tr:hover,
-    tr.hover {
-      background-color: var(--hover-color);
-
+  &-checkbox-table {
+    padding-right: 8px;
+  }
+  &-data-row {
+    .ff-table-data-cell {
       .icon-container {
-        opacity: 1;
-        transform: translateX(0);
-      }
-
-      .ff-table-drag,
-      .ff-table-drag-icon {
-        opacity: 1 !important;
-
-        &-active {
-          cursor: grab !important;
-
-          &:active {
-            cursor: grabbing !important;
-          }
-        }
-      }
-    }
-
-    .edit-row:hover {
-      background-color: transparent;
-    }
-
-    tr {
-      .action-column {
-        opacity: 0;
-      }
-
-      .icon-container {
-        padding-left: 8px;
         opacity: 0;
         display: flex;
         justify-content: flex-end;
+        padding-left: 8px;
         transition: opacity 0.3s ease, transform 0.3s ease;
         transform: translateX(20px);
       }
 
-      .ff-data-checkbox-container {
-        display: flex;
-        align-items: center;
+      .ff-table-drag,
+      .ff-table-drag-icon {
+        opacity: 0 !important;
+      }
+    }
 
-        .ff-table-checkbox {
-          padding-right: 8px;
+    &:hover,
+    &.hover,
+    &.menu-hover-active {
+      .ff-table-data-cell {
+        background-color: var(--hover-color) !important;
+
+        &[data-frozen='true'] {
+          z-index: 20;
         }
 
-        .ff-table-drag {
-          opacity: 0;
-          transition: opacity 0.3s ease, transform 0.3s ease;
+        .icon-container {
+          opacity: 1;
+          transform: translateX(0);
         }
 
+        .ff-table-drag,
         .ff-table-drag-icon {
-          @extend .ff-table-drag;
+          opacity: 1 !important;
         }
       }
+    }
 
-      td {
-        position: relative;
-        color: var(--table-column-text-color);
+    &.display-card {
+      background-color: var(--hover-color) !important;
+    }
 
-        &.clickable-cell {
-          cursor: pointer;
-        }
+    &.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  &-action-column {
+    opacity: 0;
+  }
+
+  &-data-container {
+    display: flex;
+    align-items: center;
+  }
+
+  &-drag {
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+
+    &-icon {
+      @extend .ff-table-drag;
+    }
+
+    &-active {
+      cursor: grab !important;
+
+      &:active {
+        cursor: grabbing !important;
       }
+    }
+  }
 
-      .edit_depends_on_script {
-        border-radius: 8px;
-        margin: 8px;
-        border: 1px solid var(--ff-select-option-wrapper-box-shadow);
+  &-clickable-cell {
+    cursor: pointer;
+  }
 
-        &__header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          border-radius: 8px 8px 0 0;
-          background: var(--slider-table-color);
-          min-height: 32px;
-          padding: 0 8px;
+  &-edit-row {
+    &:hover {
+      .ff-table-data-cell {
+        background-color: inherit !important;
 
-          &__link {
-            border-bottom: 2px solid var(--nlp-color);
-            cursor: pointer;
-          }
+        .icon-container {
+          opacity: 0 !important;
+          transform: translateX(20px) !important;
         }
 
-        &__form {
-          display: flex;
-          flex-direction: column;
-          gap: 16px;
-          padding: 8px;
-
-          &__button {
-            display: flex;
-            justify-content: end;
-            gap: 8px;
-          }
+        .ff-table-drag,
+        .ff-table-drag-icon {
+          opacity: 0 !important;
         }
       }
     }
   }
 
-  .primary-bg {
+  &-edit-depends {
+    border-radius: 8px;
+    margin: 8px;
+    border: 1px solid var(--ff-select-option-wrapper-box-shadow);
+
+    &-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 8px 8px 0 0;
+      background: var(--slider-table-color);
+      min-height: 32px;
+      padding: 0 8px;
+
+      &-link {
+        border-bottom: 2px solid var(--nlp-color);
+        cursor: pointer;
+      }
+    }
+
+    &-form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding: 8px;
+
+      &-button {
+        display: flex;
+        justify-content: end;
+        gap: 8px;
+      }
+    }
+  }
+
+  &-primary-bg {
     background-color: var(--table-header-color-primary);
   }
 
-  .secondary-bg {
+  &-secondary-bg {
     background-color: var(--custom-table-header-bg-color);
   }
 
-  .default-bg {
+  &-default-bg {
     background-color: transparent;
   }
 
-  .default-color {
+  &-default-color {
     color: var(--table-header-text-color);
   }
 
-  .primary-color {
+  &-primary-color {
     color: var(--brand-color);
   }
 }
@@ -248,14 +237,14 @@
   background-color: Var(--file-details-bg);
 }
 
-.no-data-content {
+.ff-no-data-content {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
 }
 
-tbody tr.disabled-row {
+.ff-table-disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }

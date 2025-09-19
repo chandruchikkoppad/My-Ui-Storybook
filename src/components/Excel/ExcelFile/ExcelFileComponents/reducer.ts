@@ -9,7 +9,15 @@ import {
   EntireRowsSelection,
   EntireWorksheetSelection,
 } from './selection';
-import { isPasteAllowed, EmptyCell, isActive } from './util';
+import {
+  isPasteAllowed,
+  EmptyCell,
+  isActive,
+  insertColumnDimension,
+  insertRowDimension,
+  deleteRowDimension,
+  deleteColumnDimension,
+} from './util';
 import * as Actions from './actions';
 import { Model, updateCellValue, createFormulaParser } from './engine';
 import {
@@ -54,6 +62,7 @@ export const INITIAL_STATE: Types.StoreState = {
   selectedRow: null,
   formattedStyle: { open: false, style: undefined },
   editable: false,
+  ctrl: true,
 };
 
 export default function reducer(
@@ -87,55 +96,60 @@ export default function reducer(
     }
 
     case Actions.ADD_ROW_TOP: {
-      let { selectedRow, selectedColumn, model } = state;
-      if (checkEmpty(selectedRow)) {
+      let { selectedRow, selectedColumn, model, rowDimensions } = state;
+      const { row } = action;
+      if (checkEmpty(row ?? selectedRow)) {
         return state;
       }
-      selectedRow = selectedRow as number;
+      selectedRow = row ?? selectedRow as number;
       let updatedData = [...model.data];
       const newRow = Array(updatedData[0]?.length || 0).fill(EmptyCell);
-      updatedData.splice(selectedRow, 0, newRow);
+      updatedData.splice(row ?? selectedRow, 0, newRow);
       const updatedModel = new Model(model.createFormulaParser, updatedData);
 
       return {
         ...state,
         model: updatedModel,
-        selectedRow: selectedRow,
+        selectedRow: row ?? selectedRow,
         selectedColumn: selectedColumn,
+        rowDimensions: insertRowDimension(rowDimensions, (row ?? selectedRow), 32),
       };
     }
 
     case Actions.ADD_ROW_BOTTOM: {
-      let { selectedRow, selectedColumn, model } = state;
+      let { selectedRow, selectedColumn, model, rowDimensions } = state;
+      const { row } = action;
       if (checkEmpty(selectedRow)) {
         return state;
       }
-      selectedRow = selectedRow as number;
+      selectedRow = row ?? selectedRow as number;
       let updatedData = [...model.data];
       const newRow = Array(updatedData[0]?.length || 0).fill(EmptyCell);
-      updatedData.splice(selectedRow + 1, 0, newRow);
+      updatedData.splice((row ?? selectedRow) + 1, 0, newRow);
       const updatedModel = new Model(model.createFormulaParser, updatedData);
 
       return {
         ...state,
         model: updatedModel,
-        selectedRow: selectedRow + 1,
+        selectedRow: (row ?? selectedRow) + 1,
         selectedColumn: selectedColumn,
+        rowDimensions: insertRowDimension(rowDimensions, (row ?? selectedRow) + 1, 32),
       };
     }
 
     case Actions.ADD_COLUMN_LEFT: {
-      let { selectedRow, selectedColumn, model } = state;
-      if (checkEmpty(selectedColumn)) {
+      let { selectedRow, selectedColumn, model, columnDimensions } = state;
+      const { column, columnWidth = 100 } = action;
+      if (checkEmpty(column ?? selectedColumn)) {
         return state;
       }
-      selectedColumn = selectedColumn as number;
+      const insertIndex = column ?? selectedColumn as number;
       let updatedData = [...model.data];
       updatedData = updatedData.map((row) => {
         return [
-          ...row.slice(0, selectedColumn),
+          ...row.slice(0, insertIndex),
           EmptyCell,
-          ...row.slice(selectedColumn),
+          ...row.slice(insertIndex),
         ];
       });
 
@@ -145,22 +159,24 @@ export default function reducer(
         ...state,
         model: updatedModel,
         selectedRow: selectedRow,
-        selectedColumn: selectedColumn - 1,
+        selectedColumn: insertIndex,
+        columnDimensions: insertColumnDimension(columnDimensions, insertIndex, columnWidth),
       };
     }
 
     case Actions.ADD_COLUMN_RIGHT: {
-      let { selectedRow, selectedColumn, model } = state;
-      if (checkEmpty(selectedColumn)) {
+      let { selectedRow, selectedColumn, model, columnDimensions } = state;
+      const { column, columnWidth = 100 } = action;
+      if (checkEmpty(column ?? selectedColumn)) {
         return state;
       }
-      selectedColumn = selectedColumn as number;
+      selectedColumn = column ?? selectedColumn as number;
       let updatedData = [...model.data];
       updatedData = updatedData.map((row) => {
         return [
-          ...row.slice(0, selectedColumn + 1),
+          ...row.slice(0, (column ?? selectedColumn) + 1),
           EmptyCell,
-          ...row.slice(selectedColumn + 1),
+          ...row.slice((column ?? selectedColumn) + 1),
         ];
       });
 
@@ -170,20 +186,23 @@ export default function reducer(
         ...state,
         model: updatedModel,
         selectedRow: selectedRow,
-        selectedColumn: selectedColumn + 1,
+        selectedColumn: (column ?? selectedColumn) + 1,
+        columnDimensions: insertColumnDimension(columnDimensions, (column ?? selectedColumn) + 1, columnWidth)
       };
     }
 
     case Actions.DELETE_ROW: {
-      let { selectedRow, selectedColumn, model } = state;
+      let { selectedRow, selectedColumn, model, rowDimensions } = state;
+      const { row } = action;
       if (checkEmpty(selectedRow)) {
         return state;
       }
-      selectedRow = selectedRow as number;
+      const deleteIndex = row ?? selectedRow as number;
       let updatedData = [...model.data];
-      updatedData.splice(selectedRow, 1);
+      updatedData.splice(deleteIndex, 1);
       const updatedModel = new Model(model.createFormulaParser, updatedData);
-      let newSelectedRow = selectedRow > 0 ? selectedRow - 1 : 0;
+
+      let newSelectedRow = deleteIndex > 0 ? deleteIndex - 1 : 0;
       const newSelectedColumn = selectedColumn !== null ? selectedColumn : 0;
       const newActive =
         updatedData.length > 0
@@ -193,7 +212,6 @@ export default function reducer(
         updatedData.length > 0
           ? new EntireRowsSelection(newSelectedRow, newSelectedRow)
           : new EmptySelection();
-      const { [selectedRow]: _, ...cleanedRowDimensions } = state.rowDimensions;
 
       return {
         ...state,
@@ -202,26 +220,29 @@ export default function reducer(
         selectedColumn: newSelectedColumn,
         selected: newSelected,
         active: newActive,
-        rowDimensions: cleanedRowDimensions,
+        rowDimensions: deleteRowDimension(rowDimensions, deleteIndex),
       };
     }
 
     case Actions.DELETE_COLUMN: {
-      const { selectedRow, selectedColumn, model } = state;
-      if (checkEmpty(selectedColumn)) return state;
-      const colIndex = selectedColumn as number;
+      const { selectedRow, selectedColumn, model, columnDimensions } = state;
+      const { column } = action;
+      if (checkEmpty(column ?? selectedColumn)) return state;
+      const deleteIndex = column ?? selectedColumn as number;
       const updatedData = model.data.map((row) =>
-        row.filter((_, cellIndex) => cellIndex !== colIndex)
+        row.filter((_, cellIndex) => cellIndex !== deleteIndex)
       );
       const updatedModel = new Model(model.createFormulaParser, updatedData);
+
       const newSelectedRow = selectedRow || 0;
-      const newSelectedColumn = colIndex > 0 ? colIndex - 1 : 0;
+      const newSelectedColumn = deleteIndex > 0 ? deleteIndex - 1 : 0;
 
       return {
         ...state,
         model: updatedModel,
         selectedRow: newSelectedRow,
         selectedColumn: newSelectedColumn,
+        columnDimensions: deleteColumnDimension(columnDimensions, deleteIndex)
       };
     }
 
@@ -407,13 +428,18 @@ export default function reducer(
       const { row, extend } = action.payload;
       const { active } = state;
 
+      const newSelected = extend && active
+        ? new EntireRowsSelection(active.row, row)
+        : new EntireRowsSelection(row, row);
+
+      const newActive = extend && active
+        ? active
+        : { ...Point.ORIGIN, row }
+
       return {
         ...state,
-        selected:
-          extend && active
-            ? new EntireRowsSelection(active.row, row)
-            : new EntireRowsSelection(row, row),
-        active: extend && active ? active : { ...Point.ORIGIN, row },
+        selected: newSelected,
+        active: newActive,
         mode: 'view',
         selectedColumn: null,
         selectedRow: row,
@@ -423,13 +449,19 @@ export default function reducer(
     case Actions.SELECT_ENTIRE_COLUMN: {
       const { column, extend } = action.payload;
       const { active } = state;
+
+      const newSelected = extend && active
+        ? new EntireColumnsSelection(active.column, column)
+        : new EntireColumnsSelection(column, column);
+
+      const newActive = extend && active
+        ? active
+        : { ...Point.ORIGIN, column }
+
       return {
         ...state,
-        selected:
-          extend && active
-            ? new EntireColumnsSelection(active.column, column)
-            : new EntireColumnsSelection(column, column),
-        active: extend && active ? active : { ...Point.ORIGIN, column },
+        selected: newSelected,
+        active: newActive,
         mode: 'view',
         selectedColumn: column,
         selectedRow: null,
@@ -681,6 +713,9 @@ export default function reducer(
 
     case Actions.KEY_DOWN: {
       const { event } = action.payload;
+      if (event.ctrlKey) {
+        return { ...state, ctrl: !state.ctrl };
+      }
       if (isActiveReadOnly(state) || event.metaKey || !state.editable) {
         return state;
       }
@@ -765,7 +800,8 @@ export default function reducer(
           state.model.data,
           selectedRange as PointRange,
           state.autoFill.cellValue,
-          activeCell
+          activeCell,
+          state.ctrl
         );
         let { start, end } = selectedRange as PointRange;
         const rowCount = start.row - end.row;
@@ -773,12 +809,12 @@ export default function reducer(
         let startPoint = { row: 0, column: 0 };
         let endPoint = { row: 0, column: 0 };
 
-        if (rowCount > columnCount) {
-          startPoint = { row: activeCell?.row ?? 0, column: start.column };
-          endPoint = { row: activeCell?.row ?? 0, column: end.column };
+        if (Math.abs(rowCount) > Math.abs(columnCount)) {
+          startPoint = { row: Math.min(start.row, end.row), column: activeCell?.column ?? 0 };
+          endPoint = { row: Math.max(start.row, end.row), column: activeCell?.column ?? 0 };
         } else {
-          startPoint = { row: start.row, column: activeCell?.column ?? 0 };
-          endPoint = { row: end.row, column: activeCell?.column ?? 0 };
+          startPoint = { row: activeCell?.row ?? 0, column: Math.min(start.column, end.column) };
+          endPoint = { row: activeCell?.row ?? 0, column: Math.max(start.column, end.column) };
         }
         return {
           ...state,

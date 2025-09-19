@@ -4,7 +4,11 @@ import { dynamicObject, OptionsDropdownProps } from './types';
 import './VariableSuggestionInputDropDown.scss';
 import Typography from '../Typography';
 import { checkEmpty } from '../../utils/checkEmpty/checkEmpty';
-import { truncateText } from '../../utils/truncateText/truncateText';
+import Tooltip from '../Tooltip';
+import {
+  isTextTruncated,
+  truncateText,
+} from '../../utils/truncateText/truncateText';
 
 const OptionsDropdown: FC<OptionsDropdownProps> = ({
   onSelectVariable,
@@ -37,14 +41,22 @@ const OptionsDropdown: FC<OptionsDropdownProps> = ({
               onMouseDown={() => onSelectVariable(option)}
               key={option?.id}
             >
-              <Typography as="span" fontSize={14}>
-                {truncateText(option?.name, truncateTextValue)}
-              </Typography>
+              <Tooltip
+                title={
+                  isTextTruncated(option?.name, truncateTextValue, 'pixel')
+                    ? option?.name
+                    : ''
+                }
+              >
+                <Typography>
+                  {truncateText(option?.name, truncateTextValue, 'pixel')}
+                </Typography>
+              </Tooltip>
             </div>
           );
         })
       ) : (
-        <div className="ff-variable-option">
+        <div className="ff-variable-option no-data">
           <Typography as="div" children="No Option" fontSize={14} />
         </div>
       )}

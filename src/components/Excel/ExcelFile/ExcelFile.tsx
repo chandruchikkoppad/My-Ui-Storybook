@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import Spreadsheet, { CellBase } from './ExcelFileComponents/index';
+import Spreadsheet, { CellBase, Point } from './ExcelFileComponents/index';
 import * as Matrix from './ExcelFileComponents/matrix';
 import './ExcelFile.scss';
 import Tooltip from '../../Tooltip';
@@ -32,26 +32,14 @@ interface ExcelFileProps {
   /**
    * Optional configuration for the context menu (usually shown on right-click).
    * This allows customization of the context menu options with a label, value, icon, and action to be performed.
+   * open: boolean;
+   * Whether the context menu should be enabled (open or not).
+   * If set to true, the context menu will be shown, otherwise, it will be disabled.
+   * options: optionsType[];
+   * Array of options available in the context menu. Each option contains a label (display name),
+   * value (identifier), iconName (icon to display), and action (function to be executed on click).
    */
-  contextOption?: {
-    /**
-     * Whether the context menu should be enabled (open or not).
-     * If set to true, the context menu will be shown, otherwise, it will be disabled.
-     */
-    open: boolean;
-
-    /**
-     * Array of options available in the context menu. Each option contains a label (display name),
-     * value (identifier), iconName (icon to display), and action (function to be executed on click).
-     */
-    options: {
-      label: string;
-      value: string;
-      iconName: string;
-      action: () => void;
-      disable: boolean;
-    }[];
-  };
+  contextOption?: ContextMenuState;
 
   /**
    * Controls whether the toolbar is shown or hidden.
@@ -81,12 +69,13 @@ interface ExcelFileProps {
    * This helps in determining the structure of the sheet.
    */
   colCount?: number;
-
-  /**
-   * Callback function triggered when saving the Excel data.
-   */
-  onSave?: (saveData: SaveData[]) => void;
-
+  onSave?: (
+    saveData: SaveData[],
+    headerOldNewData?: {
+      sheetName: string;
+      headers: { newData: string; oldData: string }[];
+    }[]
+  ) => void;
   onSaveInfoChange?: (info: string) => void;
 
   /**
@@ -137,6 +126,15 @@ interface ExcelFileProps {
   };
 
   disableDeleteOption?: boolean;
+
+  maxRowLimit?: number;
+  maxColLimit?: number;
+  maxSheetLimit?: number;
+  getActiveCell?: (cell: { value: string; active: Point }) => void;
+}
+
+interface SpreadsheetRef {
+  removeSelect: () => void;
 }
 
 const ExcelFile: React.FC<ExcelFileProps> = ({
@@ -165,13 +163,26 @@ const ExcelFile: React.FC<ExcelFileProps> = ({
   minimumColumnWidth = 100,
   disableDeleteOption = false,
   showHider = true,
+  maxRowLimit = Infinity,
+  maxColLimit = Infinity,
+  maxSheetLimit = Infinity,
+  getActiveCell = () => {},
 }) => {
   const [sheetNames, setSheetNames] = useState<string[]>([]);
   const [saveInfo, setSaveInfo] = useState<string>('');
   const [contextMenu, setContextMenu] = React.useState<ContextMenuState>({
     open: false,
+    contextType: null,
     options: [
-      { label: '', value: '', iconName: '', action: () => {}, disable: false },
+      {
+        label: '',
+        value: '',
+        iconName: '',
+        action: () => {},
+        disableTooltip: '',
+        disable: false,
+        visible: false,
+      },
     ],
   });
 
@@ -188,6 +199,10 @@ const ExcelFile: React.FC<ExcelFileProps> = ({
     Matrix.Matrix<CellBase>
   >([[EmptyCell]]);
 
+  const [headerOldNew, setHeaderOldNew] = useState<{
+    [key: string]: { newData: string; oldData: string }[];
+  }>(onSave.length > 1 ? {} : {});
+
   const [position, setPosition] = useState<{ x: number; y: number }>({
     x: 0,
     y: 0,
@@ -196,6 +211,7 @@ const ExcelFile: React.FC<ExcelFileProps> = ({
   const pageRef = useRef<string>('');
   const workRef = useRef<HTMLDivElement | null>(null);
   const sheetRef = useRef<HTMLDivElement | null>(null);
+  const spreadsheetRef = useRef<SpreadsheetRef>(null);
 
   const checkVal = (val: any) => {
     if (val === undefined || val === null) {
@@ -219,6 +235,9 @@ const ExcelFile: React.FC<ExcelFileProps> = ({
       }
 
       const newWorksheetsData: { [key: string]: Matrix.Matrix<CellBase> } = {};
+      const newHeaderOldNew: {
+        [key: string]: { newData: string; oldData: string }[];
+      } = {};
 
       payload.forEach((sheet) => {
         const sheetName = sheet.sheetName;
@@ -318,9 +337,24 @@ const ExcelFile: React.FC<ExcelFileProps> = ({
           });
         });
         newWorksheetsData[sheetName] = spreadsheetData;
+
+        // Only set headerOldNew if onSave expects two arguments
+        if (onSave.length > 1) {
+          const firstRow = json[0] || [];
+          newHeaderOldNew[sheetName] = Array.from(
+            { length: maxCols },
+            (_, col) => ({
+              newData: '',
+              oldData: firstRow[col]?.value || '',
+            })
+          );
+        }
       });
 
       setWorksheetsData(newWorksheetsData);
+      if (onSave.length > 1) {
+        setHeaderOldNew(newHeaderOldNew);
+      }
       const firstSheetName = Object.keys(newWorksheetsData)[0];
       if (firstSheetName && newWorksheetsData[firstSheetName] !== undefined) {
         setSelectedSheetData(newWorksheetsData[firstSheetName]);
@@ -346,10 +380,34 @@ const ExcelFile: React.FC<ExcelFileProps> = ({
 
   const debounceDispatch = React.useCallback(
     debounce((val) => {
-      onSave(val);
+      if (onSave.length > 1) {
+        const updatedHeader = { ...headerOldNew };
+        sheetNames.forEach((sheetName, index) => {
+          const firstRow = val[index].data[0] || [];
+          const currentHeaders = firstRow.map(
+            (cell: { value: string }) => cell?.value || ''
+          );
+          updatedHeader[sheetName] = (updatedHeader[sheetName] || []).map(
+            (h, i) => ({
+              ...h,
+              newData: currentHeaders[i] || '',
+            })
+          );
+        });
+        setHeaderOldNew(updatedHeader);
+
+        const headerOldNewData = sheetNames.map((sheetName) => ({
+          sheetName,
+          headers: updatedHeader[sheetName] || [],
+        }));
+
+        onSave(val, headerOldNewData);
+      } else {
+        onSave(val);
+      }
       setSaveInfo('File saved');
     }, onSaveDelay),
-    [onSave]
+    [onSave, headerOldNew, sheetNames]
   );
 
   const handleSave = React.useCallback(
@@ -418,7 +476,11 @@ const ExcelFile: React.FC<ExcelFileProps> = ({
 
   const [editingSheet, setEditingSheet] = useState<number | null>(null);
 
+  const addSheetIconDisable = (): boolean => sheetNames.length >= maxSheetLimit;
+
   const handleAddSheet = () => {
+    if (addSheetIconDisable()) return;
+
     const generateUniqueSheetName = (
       baseName: string,
       existingNames: string[]
@@ -441,17 +503,23 @@ const ExcelFile: React.FC<ExcelFileProps> = ({
     setSelectedSheet({ index: sheetNames?.length, name: newSheetName });
     setWorksheetsData({ ...worksheetsData, [newSheetName]: newSheetData });
     setSelectedSheetData(newSheetData);
+    if (onSave.length > 1) {
+      setHeaderOldNew((prev) => ({
+        ...prev,
+        [newSheetName]: Array.from({ length: colCount }, () => ({
+          newData: '',
+          oldData: '',
+        })),
+      }));
+    }
     pageRef.current = newSheetName;
   };
 
-  useEffect(() => {
-    const selectedData = worksheetsData[selectedSheet.name];
-    if (selectedData !== undefined) {
-      setSelectedSheetData(selectedData);
-    } else {
-      setSelectedSheetData([]);
-    }
-  }, [selectedSheet.name]);
+  const handleToSetSelectedSheetData = (
+    selectedData: Matrix.Matrix<CellBase> = [[EmptyCell]]
+  ) => {
+    setSelectedSheetData(selectedData);
+  };
 
   const handleDeleteSheet = (name: string, index: number) => {
     if (sheetNames.length > 1) {
@@ -465,10 +533,22 @@ const ExcelFile: React.FC<ExcelFileProps> = ({
 
       setSheetNames(updatedSheetNames);
       setWorksheetsData(updatedWorksheetsData);
+      if (onSave.length > 1) {
+        setHeaderOldNew((prev) => {
+          const newPrev = { ...prev };
+          delete newPrev[name];
+          return newPrev;
+        });
+      }
+      const sheetName = updatedSheetNames[newIndex]
+        ? updatedSheetNames[newIndex]
+        : '';
       setSelectedSheet({
         index: newIndex,
-        name: updatedSheetNames[newIndex] ? updatedSheetNames[newIndex] : '',
+        name: sheetName,
       });
+      handleToSetSelectedSheetData(updatedWorksheetsData?.[sheetName]);
+      pageRef.current = sheetName;
     } else {
       toast.warning('Cannot delete the last sheet.');
     }
@@ -485,7 +565,7 @@ const ExcelFile: React.FC<ExcelFileProps> = ({
       return;
     }
 
-    const updatedSheetValue = target.textContent?.trim();
+    const updatedSheetValue = (target.textContent || '').trim();
 
     if (!updatedSheetValue) {
       toast.warning('Sheet name cannot be empty.');
@@ -513,6 +593,8 @@ const ExcelFile: React.FC<ExcelFileProps> = ({
 
     let updatedSheetNames = sheetNames;
 
+    handleToSetSelectedSheetData(worksheetsData?.[name]);
+
     updatedSheetNames.splice(index, 1, updatedSheetValue);
 
     let remainingSheets = worksheetsData;
@@ -520,29 +602,37 @@ const ExcelFile: React.FC<ExcelFileProps> = ({
     const updatedData = replaceKeyValueByKeyName(
       remainingSheets,
       name,
-      updatedSheetValue,
-      selectedSheetData
+      updatedSheetValue
     );
     pageRef.current = updatedSheetValue;
     setSelectedSheet((prev) => ({ ...prev, name: updatedSheetValue }));
     setWorksheetsData(updatedData);
+    if (onSave.length > 1) {
+      setHeaderOldNew((prev) => {
+        const newPrev = { ...prev };
+        const headers = newPrev[name];
+        delete newPrev[name];
+        newPrev[updatedSheetValue] = headers ?? [];
+        return newPrev;
+      });
+    }
     setEditingSheet(null);
   };
 
   function replaceKeyValueByKeyName(
-    obj: {
-      [key: string]: Matrix.Matrix<CellBase>;
-    },
+    obj: { [key: string]: Matrix.Matrix<CellBase> },
     oldKey: string,
-    newKey: string,
-    newValue: Matrix.Matrix<CellBase>
+    newKey: string
   ) {
     if (!(oldKey in obj)) {
       throw new Error(`Key "${oldKey}" not found in object`);
     }
-    delete obj[oldKey];
-    obj[newKey] = newValue;
-    return obj;
+
+    const { [oldKey]: oldValue, ...rest } = obj;
+    return {
+      ...rest,
+      [newKey]: oldValue ?? [],
+    };
   }
 
   const handleSheetChange = (name: string, index: number) => {
@@ -556,12 +646,8 @@ const ExcelFile: React.FC<ExcelFileProps> = ({
       return updatedSheetNames;
     });
 
-    const selectedSheetData = worksheetsData[name];
-    if (selectedSheetData) {
-      setSelectedSheetData(selectedSheetData);
-    } else {
-      setSelectedSheetData([[EmptyCell]]);
-    }
+    handleToSetSelectedSheetData(worksheetsData[name]);
+
     pageRef.current = name;
   };
 
@@ -575,31 +661,48 @@ const ExcelFile: React.FC<ExcelFileProps> = ({
   };
 
   const handleClickOutside = React.useCallback(
-    (event: MouseEvent) => {
-      if (contextMenu.open) {
-        event.preventDefault();
-        event.stopPropagation();
-        setContextMenu({
-          open: false,
-          options: [
-            {
-              label: '',
-              value: '',
-              iconName: '',
-              action: () => {},
-              disable: false,
-            },
-          ],
-        });
+    (event: MouseEvent, isLeftClick: boolean = false) => {
+      const target = event.target as HTMLElement;
+      if (
+        !(
+          target.closest('.ff-excel-tab-list') ||
+          target.closest('.ff-excel-sheet')
+        ) ||
+        isLeftClick
+      ) {
+        if (contextMenu.open) {
+          setContextMenu({
+            open: false,
+            contextType: null,
+            options: [
+              {
+                label: '',
+                value: '',
+                iconName: '',
+                action: () => {},
+                disableTooltip: '',
+                visible: false,
+                disable: false,
+              },
+            ],
+          });
+          if (!isLeftClick) {
+            event.preventDefault();
+            event.stopPropagation();
+          }
+        }
       }
     },
     [contextMenu.open]
   );
 
   React.useEffect(() => {
-    document.addEventListener('click', handleClickOutside);
+    document.addEventListener('contextmenu', handleClickOutside);
+    document.addEventListener('click', (e) => handleClickOutside(e, true));
+
     return () => {
-      document.removeEventListener('click', handleClickOutside);
+      document.removeEventListener('contextmenu', handleClickOutside);
+      document.removeEventListener('click', (e) => handleClickOutside(e, true));
     };
   }, [handleClickOutside]);
 
@@ -614,22 +717,32 @@ const ExcelFile: React.FC<ExcelFileProps> = ({
         label: 'Add Sheet',
         value: 'Add Sheet',
         iconName: 'plus_icon',
-        action: () => {
-          handleAddSheet();
-        },
-        disable: false,
+        action: () => handleAddSheet(),
+        disableTooltip: 'Sheet limit reached',
+        visible: false,
+        disable: addSheetIconDisable(),
       },
-      {
-        label: 'Delete Sheet',
-        value: 'Delete Sheet',
-        iconName: 'delete',
-        action: () => {
-          handleDeleteSheet(name, index);
-        },
-        disable: false,
-      },
+      ...(!disableDeleteOption
+        ? [
+            {
+              label: 'Delete Sheet',
+              value: 'Delete Sheet',
+              iconName: 'delete',
+              action: () => handleDeleteSheet(name, index),
+              disableTooltip: '',
+              visible: false,
+              disable: false,
+            },
+          ]
+        : []),
     ];
-    setContextMenu((prev) => ({ ...prev, open: true, options: options }));
+
+    setContextMenu((prev) => ({
+      ...prev,
+      open: true,
+      contextType: 'sheet',
+      options,
+    }));
   };
 
   const setContextPosition = (event: React.MouseEvent) => {
@@ -666,7 +779,7 @@ const ExcelFile: React.FC<ExcelFileProps> = ({
     if ((event.target as HTMLElement).classList.contains('ff-excel-tab-list')) {
       setPosition({
         x: sheetRefX,
-        y: sheetRefY - 65,
+        y: sheetRefY - (disableDeleteOption ? 32 : 65),
       });
       return;
     }
@@ -689,18 +802,48 @@ const ExcelFile: React.FC<ExcelFileProps> = ({
     if (contextMenu.open) {
       setContextMenu({
         open: false,
+        contextType: null,
         options: [
           {
             label: '',
             value: '',
             iconName: '',
             action: () => {},
+            disableTooltip: '',
+            visible: false,
             disable: false,
           },
         ],
       });
     }
   };
+
+  const handleAddColumn = (column: number, isLeft: boolean) => {
+    if (onSave.length > 1) {
+      setHeaderOldNew((prev) => {
+        const sheetName = selectedSheet.name;
+        const arr = [...(prev[sheetName] || [])];
+        const pos = isLeft ? column : column + 1;
+        arr.splice(pos, 0, { newData: '', oldData: '' });
+        return { ...prev, [sheetName]: arr };
+      });
+    }
+  };
+
+  const handleDeleteColumn = (column: number) => {
+    if (onSave.length > 1) {
+      setHeaderOldNew((prev) => {
+        const sheetName = selectedSheet.name;
+        const arr = [...(prev[sheetName] || [])];
+        arr.splice(column, 1);
+        return { ...prev, [sheetName]: arr };
+      });
+    }
+  };
+
+  useEffect(() => {
+    spreadsheetRef.current?.removeSelect();
+  }, [selectedSheet.name]);
 
   return (
     <>
@@ -713,6 +856,8 @@ const ExcelFile: React.FC<ExcelFileProps> = ({
         >
           <div ref={sheetRef} className="ff-excel-sheet">
             <Spreadsheet
+              key={selectedSheet.name}
+              ref={spreadsheetRef}
               editable={editable}
               attachmentAction={attachmentAction}
               toolbar={toolbar}
@@ -727,15 +872,29 @@ const ExcelFile: React.FC<ExcelFileProps> = ({
               workRef={workRef}
               scroller={scroller}
               showHider={showHider}
+              maxRowLimit={maxRowLimit}
+              maxColLimit={maxColLimit}
+              disableDeleteOption={disableDeleteOption}
+              contextMenu={contextMenu}
+              getActiveCell={getActiveCell}
+              onAddColumn={handleAddColumn}
+              onDeleteColumn={handleDeleteColumn}
             />
           </div>
           {sheetBar !== 'hide' && (
             <div className="ff-excel-sheet-bar">
               {sheetBar === 'show' && (
                 <div className="ff-excel-add-sheet-set">
-                  <Tooltip title="Add Sheet" placement="top">
+                  <Tooltip
+                    title={
+                      addSheetIconDisable()
+                        ? 'Sheet limit reached'
+                        : 'Add Sheet'
+                    }
+                    placement="top"
+                  >
                     <Icon
-                      disabled={!editable}
+                      disabled={!editable || addSheetIconDisable()}
                       className="ff-excel-add-sheet-icon"
                       hoverEffect={true}
                       onClick={handleAddSheet}
@@ -797,7 +956,6 @@ const ExcelFile: React.FC<ExcelFileProps> = ({
               contextMenu={contextMenu}
               position={position}
               editable={editable}
-              disableDeleteOption={disableDeleteOption}
             />
           )}
           <Toastify />

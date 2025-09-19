@@ -1,6 +1,6 @@
 export interface RichTextEditorProps {
   convertedContent: string;
-  label?:string;
+  label?: string;
   setConvertedContent: (content: string) => void;
   onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
   readOnly?: boolean;
@@ -10,7 +10,10 @@ export interface RichTextEditorProps {
   analyticsClasses?: boolean;
   descriptionContentNotEditable?: boolean;
   required?: boolean;
-  helperText?:string;
+  helperText?: string;
+  error?: boolean;
+  editableTextEditor?: boolean;
+  onSubmit?: (content: string) => void;
 }
 
 export default RichTextEditorProps;

@@ -4,6 +4,7 @@ import {
   forwardRef,
   useRef,
   useImperativeHandle,
+  useLayoutEffect,
 } from 'react';
 import './ChipsAccordion.scss';
 import Icon from '../../../Icon';
@@ -13,7 +14,16 @@ import { checkEmpty } from '../../../../utils/checkEmpty/checkEmpty';
 import usePortalPosition from '../../../../hooks/usePortalPosition';
 import { createPortal } from 'react-dom';
 const ChipsAccordion = forwardRef<HTMLDivElement, NlpChipsAccordionProps>(
-  ({ chipOptionList, selectedChips, optionZIndex = 0, inputRef, ChipsAccordionWidth}, ref) => {
+  (
+    {
+      chipOptionList,
+      selectedChips,
+      optionZIndex = 0,
+      inputRef,
+      ChipsAccordionWidth,
+    },
+    ref
+  ) => {
     const [filterData, setFilterData] = useState<NlpChip[]>([]);
     const [isExpanded, setIsExpanded] = useState(false);
     const [positionChipContainer, setPositionChipContainer] = useState<{
@@ -42,7 +52,7 @@ const ChipsAccordion = forwardRef<HTMLDivElement, NlpChipsAccordionProps>(
       checkOverflow();
     }, [filterData]);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
       const handleUpdate = () => {
         if (!inputRef?.current) return;
         const { positionX, positionY, width, fromBottom } =

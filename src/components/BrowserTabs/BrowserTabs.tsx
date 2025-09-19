@@ -19,6 +19,11 @@ const BrowserTabs = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const [tabWidth, setTabWidth] = useState<number>();
   const [failedIcons, setFailedIcons] = useState<Record<string, boolean>>({});
+  const labelRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const labelObservers = useRef<Record<string, ResizeObserver>>({});
+  const [overflowedTabs, setOverflowedTabs] = useState<Record<string, boolean>>(
+    {}
+  );
 
   useEffect(() => {
     const updateTabWidth = () => {
@@ -37,8 +42,34 @@ const BrowserTabs = ({
   }, [tabsData.length, maxTabWidth]);
 
   const handleIconError = (tabId: string) => {
-    setFailedIcons(prev => ({ ...prev, [tabId]: true }));
+    setFailedIcons((prev) => ({ ...prev, [tabId]: true }));
   };
+
+  useEffect(() => {
+    tabsData.forEach((tab) => {
+      const el = labelRefs.current[tab.id];
+      if (!el) return;
+
+      if (labelObservers.current[tab.id]) {
+        labelObservers.current[tab.id]?.disconnect();
+      }
+
+      const observer = new ResizeObserver(() => {
+        setOverflowedTabs((prev) => ({
+          ...prev,
+          [tab.id]: el.scrollWidth > el.clientWidth,
+        }));
+      });
+
+      observer.observe(el);
+      labelObservers.current[tab.id] = observer;
+    });
+
+    return () => {
+      Object.values(labelObservers.current).forEach((obs) => obs.disconnect());
+      labelObservers.current = {};
+    };
+  }, [tabsData, tabWidth]);
 
   return (
     <div className="ff-browser-tabs-container" ref={containerRef}>
@@ -46,13 +77,12 @@ const BrowserTabs = ({
         <div className="ff-tab-button-container">
           {tabsData.map((tab, index) => {
             const isActive = activeTabId === tab.id;
-            const isTabTooSmall = tabWidth && tabWidth < 80;
             return (
               <div
                 key={tab.id}
                 className={classNames('ff-tab-wrapper', { active: isActive })}
               >
-                <Tooltip title={isTabTooSmall ? tab.label : ''}>
+                <Tooltip title={overflowedTabs[tab.id] ? tab.label : ''}>
                   <button
                     onClick={() => onTabClick(tab.id)}
                     className={classNames('ff-tab-button', {
@@ -86,7 +116,7 @@ const BrowserTabs = ({
                               />
                             ) : (
                               <Icon
-                                name={tab.tabIcon ||"web_icon"}
+                                name={tab.tabIcon || 'web_icon'}
                                 hoverEffect={false}
                                 color="inherit"
                               />
@@ -96,37 +126,37 @@ const BrowserTabs = ({
 
                       {tabWidth && tabWidth > 40 && (
                         <div className="ff-tab-label-container">
-                          <Typography
-                            children={tab.label}
-                            lineHeight="18px"
-                            fontWeight={isActive ? 'semi-bold' : 'regular'}
-                            color={
-                              isActive
-                                ? 'var(--tabs-label-active-color)'
-                                : 'var(--tabs-label-default-color)'
-                            }
+                          <div
+                            ref={(el) => (labelRefs.current[tab.id] = el)}
                             className="ff-tab-label"
-                          />
+                          >
+                            <Typography
+                              children={tab.label}
+                              lineHeight="18px"
+                              fontWeight={isActive ? 'semi-bold' : 'regular'}
+                              color={
+                                isActive
+                                  ? 'var(--tabs-label-active-color)'
+                                  : 'var(--tabs-label-default-color)'
+                              }
+                            />
+                          </div>
                         </div>
                       )}
 
                       {((tabWidth && tabWidth >= 80) || isActive) &&
                         showCloseOnActive && (
-                          <Tooltip title="Close ">
-                            <Icon
-                              name="close"
-                              className="ff-close-icon"
-                              height={10}
-                              width={10}
-                              hoverEffect={true}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                if (onTabClose) {
-                                  onTabClose(tab.id);
-                                }
-                              }}
-                            />
-                          </Tooltip>
+                          <Icon
+                            name="close"
+                            className="ff-close-icon"
+                            hoverEffect={true}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (onTabClose) {
+                                onTabClose(tab.id);
+                              }
+                            }}
+                          />
                         )}
                     </div>
                   </button>
@@ -153,7 +183,13 @@ const BrowserTabs = ({
         </div>
         <Tooltip title="Add">
           <div className="ff-tab-plus-icon" onClick={onTabAdd}>
-            <Icon name="add_file" color='var(--secondary-icon-color)' width={10} height={10} hoverEffect={true} />
+            <Icon
+              name="add_file"
+              color="var(--secondary-icon-color)"
+              width={12}
+              height={12}
+              hoverEffect={true}
+            />
           </div>
         </Tooltip>
       </div>

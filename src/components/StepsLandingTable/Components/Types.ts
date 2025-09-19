@@ -187,7 +187,7 @@ export interface StepGroupAccordionsProp {
 
 export interface TableMainRowProp {
   row: DataProps;
-  columns:  ColumnsProps[];
+  columns: ColumnsProps[];
   tableBodyRowClass?: string;
   handleOnclick?: any
   tableDataTextColor?: string;
@@ -210,4 +210,15 @@ export interface TableMainRowProp {
 
 export interface FormValues {
   ifFailed: string | null;
+}
+
+export type StatusItem = {
+  name: string;
+  count: number;
+  color: string;
+};
+
+export interface StepResultStatsProps {
+  metaData: any;
+  width?: number;
 }

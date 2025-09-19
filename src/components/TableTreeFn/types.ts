@@ -13,6 +13,7 @@ interface NewNode {
   label?: string;
   confirmIconTooltip?: string;
   cancelIconTooltip?: string;
+  firstNodeKey?: string;
 }
 
 declare type JSX = ReactNode | JSX.Element[] | string | null;

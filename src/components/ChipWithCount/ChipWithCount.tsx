@@ -11,16 +11,17 @@ const ChipWithCount: FC<ChipsWithCountProps> = ({
 }: ChipsWithCountProps) => {
   const getRemainingLabels: JSX.Element = (
     <div className="ff-chip-tooltip">
-      {labelsList.map((labels, index) =>
-        index > 0 ? (
+      {labelsList
+        .filter((_, index) => index > 0) // Filter first, then map (more efficient)
+        .map((labels, index) => (
           <Typography
             as="div"
-            children={labels}
-            key={index}
+            key={`label-${index}-${labels}`} // More stable key
             className="ff-chip-tooltip-label"
-          />
-        ) : null
-      )}
+          >
+            {labels}
+          </Typography>
+        ))}
     </div>
   );
 

@@ -24,7 +24,7 @@ const MachineInputField = ({
   const getIcon: Record<MachineType['type'], string> = {
     local: 'local',
     browserstack: 'browserstack_icon',
-    saucelabs: 'sause_lab',
+    saucelabs: 'sause_lab_icon',
     lambdatest: 'lambda_icon',
     mac: 'mac_icon',
     mac_icon: 'mac_icon',
@@ -73,7 +73,7 @@ const MachineInputField = ({
           'ff-machine-input-field-reverse': contentReverse,
         })}
       >
-        {options.map(({ label, type = 'local', version }) => (
+        {options.map(({ label, type, version }) => (
           <div
             key={type}
             className={classNames('ff-machine-icon-text-wrapper', {
@@ -81,7 +81,7 @@ const MachineInputField = ({
             })}
           >
             <Icon
-              name={getIcon[type?.toLowerCase()] || 'local'}
+              name={getIcon[type?.toLowerCase()] || ''}
               className="ff-machine-icon"
             />
             <Tooltip title={label}>
@@ -102,8 +102,7 @@ const MachineInputField = ({
                   })}
                   color="var(--ff-machine-input-field-text-color)"
                 >
-                  {' '}
-                  -{' '}
+                  &nbsp;-{' '}
                   {isTextTruncated(version ?? '', 10)
                     ? truncateText(version ?? '', 10)
                     : version}

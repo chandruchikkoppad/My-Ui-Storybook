@@ -134,4 +134,10 @@ export interface InputProps {
    * Prevents the user from entering values greater than the specified maxValue.
    */
   disableAfterMaxValueReached?: boolean;
+
+  /*Sets a custom width for the input field.*/
+  helperTextWidth?: string | number;
+
+  /*If true, the label will always be in the fixed position.*/
+  fixedLabel?: boolean;
 }

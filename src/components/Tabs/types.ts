@@ -24,6 +24,7 @@ export interface TabsProps {
   tabsData: {
     id: string;
     label: string;
+    icon?: string;
     component?: JSX.Element;
     disabled?: boolean;
     count?: number | string;
@@ -48,7 +49,28 @@ export interface TabsProps {
   noBorder?: boolean;
   noPadding?: boolean;
   /**
-   * titleSize is to accpect dynamic font size 
+   * titleSize is to accpect dynamic font size
    */
   titleSize?: number | string;
+  /**
+   * to add borderBottom line
+   */
+  isBorderBottomLine?: boolean;
+  /**
+   *  to change background on hover
+   */
+  isHoverBackground?: boolean;
+  /**
+   *  to add border-radius to tabs
+   */
+  isBorderRadius?: boolean;
+  /**
+   * tabFlexSpacing : Defines the flex spacing for the tab row.
+   */
+  tabFlexSpacing?:
+    | 'space-between'
+    | 'space-around'
+    | 'flex-start'
+    | 'flex-end'
+    | 'center';
 }

@@ -59,6 +59,10 @@ export const CustomInitialContent: Story = {
       setValue(newValue);
     };
 
+    const handleSubmit = (newContent: string) => {
+      setValue(newContent);
+    };
+
     return (
       <TextEditor
         helperText="Text Editor is required."
@@ -66,13 +70,15 @@ export const CustomInitialContent: Story = {
         label="Text Editor Label"
         convertedContent={value}
         setConvertedContent={handleChange}
+        editableTextEditor={true}
+        onSubmit={handleSubmit}
       />
     );
   },
   parameters: {
     docs: {
       storyDescription:
-        'This story demonstrates the TextEditor component with a custom initial content value.',
+        'This story demonstrates the EditableTextEditor component with a custom initial content value.',
     },
   },
 };

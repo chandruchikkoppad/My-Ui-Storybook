@@ -111,7 +111,10 @@ export const ThreeArrowsButton: Story = {
             label: 'Authorization',
             value: 'add_authorization_sibling',
             icon: 'authorization_icon',
-            disable: false,
+            disable: true,
+            tooltipForOption:
+              'No Authorization so its disable if want to enable it then please contact admin',
+            tooltipPlacementForOption: 'bottom',
           },
           {
             label: 'Data Provider',

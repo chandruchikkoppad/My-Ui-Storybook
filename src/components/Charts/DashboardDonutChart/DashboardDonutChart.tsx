@@ -123,6 +123,7 @@ const DashboardDonutChart: React.FC<DashboardDonutChartProps> = ({
   selectedStatusKey = '',
   setSelectedStatusKey = (_selectedStatusKey) => {},
   isOnClick = false,
+  zIndex = 99,
 }) => {
   const [hoveredItemIndex, setHoveredItemIndex] = useState<number | null>(null);
   const [hoveredVersion, setHoveredVersion] = useState<{
@@ -1040,7 +1041,10 @@ const DashboardDonutChart: React.FC<DashboardDonutChartProps> = ({
       })}
       style={{ gap: `${chartGap}px` }}
     >
-      <div className="ff-dashboard-donut-chart-svg-container">
+      <div
+        className="ff-dashboard-donut-chart-svg-container"
+        style={{ zIndex: zIndex }}
+      >
         <svg
           width={DONUT_SVG_SIZE}
           height={DONUT_SVG_SIZE}

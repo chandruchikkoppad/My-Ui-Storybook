@@ -23,7 +23,6 @@ const RadioGroup: React.FC<RadioGroupProps> = ({
     <>
       <div
         className={classNames('ff-radio-group', className)}
-        tabIndex={0}
         onBlur={onBlur}
       >
         {isLabel && (

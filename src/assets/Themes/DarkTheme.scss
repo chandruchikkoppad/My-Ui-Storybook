@@ -382,6 +382,25 @@ $dark-theme: (
   ai-search-icon-color: #bcbcbc,
   default-chip-count-background-color: #f4e7f4,
   chatbot-icon-hover-color: #f4cbfa,
+  fireflink-chatbot-header:
+    linear-gradient(
+      90deg,
+      rgba(249, 138, 227, 0.5) 0%,
+      rgba(91, 96, 255, 0.5) 100%
+    ),
+  fireflink-chatbot-hover-leaf:
+    linear-gradient(
+      90deg,
+      rgba(78, 92, 239, 0.365) 0%,
+      rgba(224, 75, 187, 0.5) 100%
+    ),
+  super-automation-flag-bg : linear-gradient(276.62deg, rgba(78, 92, 239, 0.4) 8.63%, rgba(224, 75, 187, 0.4) 95.47%),
+  super-automation-flag-border : linear-gradient(90deg, rgba(78, 92, 239, 0.6) 0%, rgba(224, 75, 187, 0.6) 100%),
+  fia-queries-flag-bg: linear-gradient(to right, rgb(253, 244, 255), rgb(247, 238, 253)),
+  fia-queries-flag-border : linear-gradient(90deg, rgba(254, 153, 35, 0.6) 0%, rgba(109, 240, 111, 0.6) 100%),
+  fia-header-flag-bg : linear-gradient(276.62deg, rgba(254, 153, 35, 0.5) 8.63%, rgba(109, 240, 111, 0.5) 95.47%),
+  fia-header-flag-border : linear-gradient(90deg, #FE9923 0%, #6DF06F 100%),
+  chatbot-leaf-text: #4b4b4b,
   phone-number-verified-color: #009934,
   ff-chips-shadow-color: #575757,
   select-chart-highlight-color: #00000066,
@@ -413,8 +432,8 @@ $dark-theme: (
   editor-bg-color: #242425,
   editor-border-color: #0c0213,
   ff-scrollbar-thumb-bg-color: #a3a3a3,
-  ff-step-variable-color:#FF9D00,
-  ff-step-element-color:#0485E1,
+  ff-step-variable-color: #ff9d00,
+  ff-step-element-color: #0485e1,
   ff-delete-popup-border-color:
     linear-gradient(
       94.23deg,
@@ -442,6 +461,9 @@ $dark-theme: (
   ff-electric-cyan: #03b7c7,
   ff-video-background-play: #14041c4d,
   ff-screenshot-background: rgba(0, 0, 0, 0.6),
+  ff-debug-button-shadow: #00000033,
+  ff-debug-primary-shadow: #71347b40,
+  ff-overlay-background: rgba(0, 0, 0, 0.25),
 );
 
 :root {

@@ -1,6 +1,7 @@
 import { HighlightTextProps } from './types';
 import './HighlightText.scss';
 import classNames from 'classnames';
+import { Fragment } from 'react';
 
 // Function to escape special characters in the search term
 const escapeRegExp = (text: String): string => {
@@ -33,11 +34,11 @@ const HighlightText: React.FC<HighlightTextProps> = ({
     <>
       {parts.map((part, index) =>
         part?.toLowerCase() === highlight?.toLowerCase() ? (
-          <span key={index} className="ff-highlight-bg">
+          <span key={`highlight-${index}-${part}`} className="ff-highlight-bg">
             {part}
           </span>
         ) : (
-          part
+          <Fragment key={`normal-${index}-${part}`}>{part}</Fragment>
         )
       )}
     </>

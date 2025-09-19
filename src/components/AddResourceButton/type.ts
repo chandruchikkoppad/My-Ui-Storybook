@@ -16,6 +16,17 @@ export interface DirectionalArrow {
     value: string | string[];
     icon?: string;
     disable?: boolean;
+    tooltipForOption?: string;
+    tooltipPlacementForOption?:
+      | 'top'
+      | 'left'
+      | 'right'
+      | 'bottom'
+      | 'top-start'
+      | 'top-end'
+      | 'bottom-start'
+      | 'bottom-end'
+      | undefined;
   }[];
 }
 
@@ -40,6 +51,17 @@ export interface AddResourceButtonProps {
       value: string | string[];
       icon?: string;
       disable?: boolean;
+      tooltipForOption?: string;
+      tooltipPlacementForOption?:
+        | 'top'
+        | 'left'
+        | 'right'
+        | 'bottom'
+        | 'top-start'
+        | 'top-end'
+        | 'bottom-start'
+        | 'bottom-end'
+        | undefined;
     }[];
   }[];
   zIndex?: number;
@@ -67,6 +89,17 @@ export interface DirectionalArrowButtonProps {
     value: string | string[];
     icon?: string;
     disable?: boolean;
+    tooltipForOption?: string;
+    tooltipPlacementForOption?:
+      | 'top'
+      | 'left'
+      | 'right'
+      | 'bottom'
+      | 'top-start'
+      | 'top-end'
+      | 'bottom-start'
+      | 'bottom-end'
+      | undefined;
   }[];
   onArrowClick: () => void;
   onMenuOptionClick?: (option: {
@@ -97,6 +130,8 @@ export const validateArrows = (
             value: 'sub_module',
             icon: '',
             disable: false,
+            tooltipForOption: '',
+            tooltipPlacementForOption: undefined,
           },
         ],
       },

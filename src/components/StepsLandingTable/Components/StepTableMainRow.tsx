@@ -90,7 +90,7 @@ const StepTableMainRow: FC<TableMainRowProp> = ({
         (tableType && selectedRows[tableType]?.has(row.stepId)) ||
         stepPartialSelect?.has(row.stepId)
           ? ''
-          : 'ff-table-checkbox'
+          : 'ff-table-checkbox-step'
       }
     >
       <Checkbox

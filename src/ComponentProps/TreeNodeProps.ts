@@ -7,6 +7,7 @@ export type TreeNodeProps = {
   reRun?: boolean;
   reRunFailed?: boolean;
   results?: boolean;
+  reports?: boolean;
   createdBy?: string;
   modifiedBy?: string;
   createdByUname?: string;
@@ -72,4 +73,7 @@ export type TreeNodeProps = {
   stepId?: string;
   conditionId?: string;
   machInstanceId?: string;
+  duration?: string;
+  headless?: boolean;
+  recordedVideoUrlId?: string;
 };

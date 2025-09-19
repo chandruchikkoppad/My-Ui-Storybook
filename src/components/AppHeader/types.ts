@@ -4,7 +4,7 @@ export interface AppHeaderProps {
   scriptId?: string | undefined | null;
   width?: string;
   borderRadius?: string;
-  logoIconName: string;
+  logo: ReactNode;
   leftContent?: ReactNode;
   rightContent?: ReactNode;
   projectsList?: optionsType[];
@@ -23,6 +23,15 @@ export interface AppHeaderProps {
   disabled?: boolean;
   isClient?: boolean;
   hideNavbar?: boolean;
+  centerInfoItems?: { iconName: string; label: string }[];
+  rightButtons?: {
+    label: string;
+    iconName?: string;
+    color?: string;
+    backgroundColor?: string;
+    onClick?: () => void;
+  }[];
+  profileContent?: ReactNode;
 }
 export interface appHeaderMenuItemProps {
   iconName?: string;
@@ -32,7 +41,7 @@ export interface appHeaderMenuItemProps {
   disableText?: string;
   hide?: boolean;
   access?: string;
-  isReviewer?:  boolean;
+  isReviewer?: boolean;
   entityPendingCounts?: { [key: string]: number };
   subMenuItems?: appHeaderSubMenuItemProps[];
 }
@@ -60,6 +69,6 @@ export interface appHeaderHiddenMenuItemProps {
   disable?: boolean;
   disableText?: string;
   hide?: boolean;
-  path?:string;
+  path?: string;
   iconName?: string;
 }

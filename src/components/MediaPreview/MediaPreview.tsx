@@ -42,21 +42,6 @@ const MediaPreview: React.FC<MediaPreviewProps> = ({
     }
   }, [previewOnly]);
 
-  useEffect(() => {
-    if (isModalOpen) {
-      setTimeout(() => {
-        if (videoRef.current) {
-          const playPromise = videoRef.current.play();
-          if (playPromise !== undefined) {
-            playPromise.catch((error) => {
-              console.error('Autoplay failed:', error);
-            });
-          }
-        }
-      }, 300);
-    }
-  }, [isModalOpen]);
-
   return (
     <div>
       {!previewOnly &&
@@ -128,6 +113,16 @@ const MediaPreview: React.FC<MediaPreviewProps> = ({
                 controlsList="nodownload"
                 className="ff-video-preview"
                 ref={videoRef}
+                onCanPlay={() => {
+                  if (videoRef.current) {
+                    const playPromise = videoRef.current.play();
+                    if (playPromise !== undefined) {
+                      playPromise.catch((error) => {
+                        console.error('Autoplay failed:', error);
+                      });
+                    }
+                  }
+                }}
               />
             )}
           </div>

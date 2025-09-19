@@ -107,6 +107,12 @@ import BinFileType from '../../assets/icons/bin_file_type.svg?react';
 import M4vFileType from '../../assets/icons/m4v_file_type.svg?react';
 import MovFileType from '../../assets/icons/mov_file_type.svg?react';
 import PfxFileType from '../../assets/icons/pfx_file_type.svg?react';
+import PropertiesFileType from '../../assets/icons/properties_file_type.svg?react';
+import PyFileType from '../../assets/icons/py_file_type.svg?react';
+import ZipFileType from '../../assets/icons/zip_file_type.svg?react';
+import YamlFileType from '../../assets/icons/yaml_file_type.svg?react';
+import TarFileType from '../../assets/icons/tar_file_type.svg?react';
+import CrxFileType from '../../assets/icons/crx_file_type.svg?react';
 
 import InfoIcon from '../../assets/icons/info_icon.svg?react';
 import CalendarIcon from '../../assets/icons/calendar_icon.svg?react';
@@ -136,6 +142,7 @@ import WebIcon from '../../assets/icons/web_icon.svg?react';
 import WebMobileIcon from '../../assets/icons/web&mobile_icon.svg?react';
 import MobileIcon from '../../assets/icons/mobile_icon.svg?react';
 import SalesForceIcon from '../../assets/icons/sales_force.svg?react';
+import SalesForceProductType from '../../assets/icons/salesforce_product.svg?react';
 import MSDynamicIcon from '../../assets/icons/ms_dynamic.svg?react';
 import AllProjectsIcon from '../../assets/icons/all_projects.svg?react';
 import AndroidIcon from '../../assets/icons/android_icon.svg?react';
@@ -150,6 +157,7 @@ import IosIcon from '../../assets/icons/ios_icon.svg?react';
 import HelpIcon from '../../assets/icons/help_icon.svg?react';
 import SwitchLicenseIcon from '../../assets/icons/switch_license_icon.svg?react';
 import FireflinkLogo from '../../assets/icons/fireflink_logo.svg?react';
+import FireflinkProductLogo from '../../assets/icons/fireflink_platform_product.svg?react';
 import WSWBDeleteIcon from '../../assets/icons/wswb_delete_icon.svg?react';
 import WSWBPlusIcon from '../../assets/icons/wswb_plus_icon.svg?react';
 import LabelPlusIcon from '../../assets/icons/label_plus.svg?react';
@@ -350,6 +358,10 @@ import CreateIssue from '../../assets/icons/create_issue.svg?react';
 import ShowScripts from '../../assets/icons/show_scripts.svg?react';
 import HideScripts from '../../assets/icons/hide_scripts.svg?react';
 import FiaIcon from '../../assets/icons/fia_icon.svg?react';
+import FiaAiIcon from '../../assets/icons/fia_ai_icon.svg?react';
+import FiaQueryIcon from '../../assets/icons/fia_queries.svg?react';
+import FiaMagicIcon from '../../assets/icons/fia_magic.svg?react';
+import FiaClearIcon from '../../assets/icons/fia_clear.svg?react';
 import ArrowLeft from '../../assets/icons/arrow_left.svg?react';
 import AccordionBack from '../../assets/icons/accordion_back.svg?react';
 import LinkIcon from '../../assets/icons/link.svg?react';
@@ -462,9 +474,62 @@ import HuaweiIcon from '../../assets/icons/huawei_icon.svg?react';
 import AmazonIcon from '../../assets/icons/amazon_icon.svg?react';
 import ScriptsIcon from '../../assets/icons/scripts.svg?react';
 import DialogInfoIcon from '../../assets/icons/dialog_info.svg?react';
-import RecordPauseIcon from '../../assets/icons/record_pause_icon.svg?react'
-import RecordStopIcon from '../../assets/icons/record_stop_icon.svg?react'
-import AddSettings from '../../assets/icons/add_setting.svg?react'
+import RecordPauseIcon from '../../assets/icons/record_pause_icon.svg?react';
+import RecordStopIcon from '../../assets/icons/record_stop_icon.svg?react';
+import AddSettings from '../../assets/icons/add_setting.svg?react';
+import ADB_Shell from '../../assets/icons/ADB_Shell.svg?react';
+import UI_Inspector from '../../assets/icons/UI_Inspector.svg?react';
+import TimerIcon from '../../assets/icons/timer_icon.svg?react';
+import MaximizeLivetesting from '../../assets/icons/maximize_livetesting.svg?react';
+import MacWhiteIcon from '../../assets/icons/mac_white_icon.svg?react';
+import AzureIcon from '../../assets/icons/azure_icon.svg?react'; 
+import OktaIcon from '../../assets/icons/okta_icon.svg?react';
+import GenerateCommand from '../../assets/icons/generate_command.svg?react'; 
+import WIndowsBlueIcon from '../../assets/icons/windows_blue_icon.svg?react';
+import CopyIconFilled from '../../assets/icons/copy_icon_filled.svg?react'; // Newly Added icon
+import GenerateCommandLogo from '../../assets/icons/generate_command_logo.svg?react'; // Newly Added icon
+import Generate_Ai_TestCase from '../../assets/icons/generate_testcase.svg?react'; 
+import Regenerate_ai_result from '../../assets/icons/regenerate_ai_result.svg?react'; 
+import PromptSlider from '../../assets/icons/prompt_slider.svg?react'; 
+import SendPrompt from '../../assets/icons/send_prompt.svg?react'; 
+import Access_Key from '../../assets/icons/access_key.svg?react'; //Newly Added icon
+import List_icon from '../../assets/icons/list_icon.svg?react';
+import JSON_icon from '../../assets/icons/jSON_code_icon.svg?react';
+import Honor_icon from '../../assets/icons/honor_icon.svg?react'; //Newly Added icon
+import IQOO_icon from '../../assets/icons/iqoo_icon.svg?react'; //Newly Added icon
+import MOTOROLA_icon from '../../assets/icons/motorola_icon.svg?react'; //Newly Added icon
+import OPPO_icon from '../../assets/icons/oppo_icon.svg?react'; //Newly Added icon
+import REALME_icon from '../../assets/icons/realme_icon.svg?react'; //Newly Added icon
+import VIVO_icon from '../../assets/icons/vivo_icon.svg?react'; //Newly Added icon
+import Minimize_tree from '../../assets/icons/minimize_tree.svg?react';
+import Record from '../../assets/icons/record.svg?react';
+import AddElement from '../../assets/icons/add_element.svg?react';
+import ElementSlider from '../../assets/icons/element_slider.svg?react';
+import Anthropic from '../../assets/icons/anthropic.svg?react'; 
+import Google_Gemini from '../../assets/icons/google_gemini.svg?react';
+import Groq from '../../assets/icons/groq.svg?react';
+import Meta from '../../assets/icons/meta.svg?react';
+import Open_Ai from '../../assets/icons/open_ai.svg?react'; 
+import Re_Processing from '../../assets/icons/re_processing.svg?react'; 
+
+import Analytics from '../../assets/icons/analytics.svg?react';
+import BugTrack from '../../assets/icons/bugtrack.svg?react';
+import DB_Connect from '../../assets/icons/DB_connect.svg?react';
+import FitGrid from '../../assets/icons/fitgrid.svg?react';
+import Folder_Icon from '../../assets/icons/folder.svg?react';
+import Mail_Icon from '../../assets/icons/mail.svg?react';
+import BookStack from '../../assets/icons/book_stack.svg?react';
+import LinkUp_Icon from '../../assets/icons/linkup.svg?react';
+import New_Note_Icon from '../../assets/icons/new_note.svg?react';
+import PinDropIcon from '../../assets/icons/pindrop.svg?react';
+import RocketLaunchIcon from '../../assets/icons/rocket_launch.svg?react';
+import ScheduledReporting from '../../assets/icons/scheduled_report.svg?react';
+import StartExecution from '../../assets/icons/start_execution.svg?react';
+import Timer_Clock from '../../assets/icons/timer.svg?react';
+import TwinCogs_Icon from '../../assets/icons/twin_cogs.svg?react';
+import User from '../../assets/icons/user.svg?react';
+import WorkDesk from '../../assets/icons/work_desk.svg?react';
+import Clock_Face from '../../assets/icons/clock_face.svg?react';
 
 Components['success'] = ToastSuccessIcon;
 Components['setting_icon'] = SettingIcon;
@@ -571,6 +636,12 @@ Components['bin_file_type'] = BinFileType;
 Components['m4v_file_type'] = M4vFileType;
 Components['mov_file_type'] = MovFileType;
 Components['pfx_file_type'] = PfxFileType;
+Components['properties_file_type'] = PropertiesFileType;
+Components['py_file_type'] = PyFileType;
+Components['zip_file_type'] = ZipFileType;
+Components['yaml_file_type'] = YamlFileType;
+Components['tar_file_type'] = TarFileType;
+Components['crx_file_type'] = CrxFileType;
 
 Components['import'] = Import;
 Components['info'] = InfoIcon;
@@ -590,6 +661,7 @@ Components['web_icon'] = WebIcon;
 Components['web&mobile_icon'] = WebMobileIcon;
 Components['mobile_icon'] = MobileIcon;
 Components['sales_force'] = SalesForceIcon;
+Components['salesforce_product'] = SalesForceProductType;
 Components['ms_dynamic'] = MSDynamicIcon;
 Components['all_projects'] = AllProjectsIcon;
 Components['android_icon'] = AndroidIcon;
@@ -600,6 +672,7 @@ Components['ios_icon'] = IosIcon;
 Components['help_icon'] = HelpIcon;
 Components['select_license'] = SwitchLicenseIcon;
 Components['fireflink-logo'] = FireflinkLogo;
+Components['fireflink_product_logo'] = FireflinkProductLogo;
 Components['wswb_delete_icon'] = WSWBDeleteIcon;
 Components['wswb_plus_icon'] = WSWBPlusIcon;
 Components['local_variable_icon'] = LocalVariableIcon;
@@ -808,9 +881,13 @@ Components['link'] = LinkIcon;
 Components['arrow_left'] = ArrowLeft;
 Components['accordion_back'] = AccordionBack;
 Components['fia_icon'] = FiaIcon;
-Components['record_pause_icon'] = RecordPauseIcon
-Components['record_stop_icon'] = RecordStopIcon
-Components['add_setting'] = AddSettings
+Components['fia_ai_icon'] = FiaAiIcon;
+Components['fia_queries'] = FiaQueryIcon;
+Components['fia_magic'] = FiaMagicIcon;
+Components['fia_clear'] = FiaClearIcon;
+Components['record_pause_icon'] = RecordPauseIcon;
+Components['record_stop_icon'] = RecordStopIcon;
+Components['add_setting'] = AddSettings;
 
 Components['arrow_left_accordian'] = ArrowLeftAccordian;
 Components['arrow_right_icon'] = ArrowRightIcon;
@@ -930,5 +1007,59 @@ Components['huawei_icon'] = HuaweiIcon;
 Components['amazon_icon'] = AmazonIcon;
 Components['scripts'] = ScriptsIcon;
 Components['dialog_info'] = DialogInfoIcon;
+Components['timer_icon'] = TimerIcon;
+Components['maximize_livetesting'] = MaximizeLivetesting;
+Components['mac_white_icon'] = MacWhiteIcon;
+
+Components['ADB_Shell'] = ADB_Shell; // Newly Added icon
+Components['UI_Inspector'] = UI_Inspector; 
+Components['azure_icon'] = AzureIcon; 
+Components['okta_icon'] = OktaIcon; 
+Components['generate_command_icon'] = GenerateCommand; 
+Components['generate_testcase'] = Generate_Ai_TestCase; 
+Components['regenerate_ai_result'] = Regenerate_ai_result; 
+Components['prompt_slider'] = PromptSlider; 
+Components['send_prompt'] = SendPrompt; 
+Components['copy_icon_filled'] = CopyIconFilled; // Newly Added icon
+Components['generate_command_logo'] = GenerateCommandLogo; // Newly Added icon
+Components[`access_key`] = Access_Key; // Newly Added icon
+Components['list_icon'] = List_icon;
+Components['json_icon'] = JSON_icon;
+Components['honor_icon'] = Honor_icon; // Newly Added icon
+Components['iqoo_icon'] = IQOO_icon; // Newly Added icon
+Components['motorola_icon'] = MOTOROLA_icon; // Newly Added icon
+Components['oppo_icon'] = OPPO_icon; // Newly Added icon
+Components['realme_icon'] = REALME_icon; // Newly Added icon
+Components['vivo_icon'] = VIVO_icon; // Newly Added icon
+Components['windows_blue_icon'] = WIndowsBlueIcon;
+Components['minimize_tree'] = Minimize_tree;
+Components['record'] = Record;
+Components['add_element'] = AddElement;
+Components['element_slider'] = ElementSlider;
+Components['anthropic'] = Anthropic; 
+Components['google_gemini'] = Google_Gemini; 
+Components['groq'] = Groq; 
+Components['meta'] = Meta; 
+Components['open_ai'] = Open_Ai; 
+Components['re_processing'] = Re_Processing; 
+
+Components['analytics'] = Analytics;
+Components['bugtrack'] = BugTrack;
+Components['db_connect'] = DB_Connect;
+Components['fitgrid'] = FitGrid;
+Components['folder_icon'] = Folder_Icon;
+Components['mail_icon'] = Mail_Icon;
+Components['bookstack'] = BookStack;
+Components['linkup_icon'] = LinkUp_Icon;
+Components['new_note_icon'] = New_Note_Icon;
+Components['pindrop'] = PinDropIcon;
+Components['rocket_launch_icon'] = RocketLaunchIcon;
+Components['scheduled_report'] = ScheduledReporting;
+Components['start_execution'] = StartExecution;
+Components['timer_clock'] = Timer_Clock;
+Components['twin_cogs_icon'] = TwinCogs_Icon;
+Components['user_icon'] = User;
+Components['workdesk'] = WorkDesk;
+Components['clock_face'] = Clock_Face;
 
 export default Components;

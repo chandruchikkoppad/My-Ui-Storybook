@@ -23,7 +23,7 @@ const useFileDropzone = (options: DropzoneOptions): DropzoneState => {
     validateMIMEType = false,
     selectedFile,
     setSelectedFile,
-    handleReplaceFile,
+    handleReplaceFile = () => {},
   } = options;
 
   const file = !selectedFile ? [] : [selectedFile as File];
@@ -83,7 +83,9 @@ const useFileDropzone = (options: DropzoneOptions): DropzoneState => {
       const fileExists = files.accepted.some(
         (existingFile) =>
           existingFile.name === file.name &&
-          getExtensionWithPeriod(existingFile) === getExtensionWithPeriod(file)
+          getExtensionWithPeriod(existingFile) ===
+            getExtensionWithPeriod(file) &&
+          existingFile?.lastModified === file?.lastModified
       );
 
       if (fileExists) {
@@ -108,39 +110,82 @@ const useFileDropzone = (options: DropzoneOptions): DropzoneState => {
 
   const replaceFile = useCallback(
     (fileToReplace: File, newFile: File) => {
-      if (
-        fileToReplace.name === newFile.name &&
-        fileToReplace.size === newFile.size
-      ) {
-        handleReplaceFile && handleReplaceFile(newFile);
-        return;
-      }
-      if (handleReplaceFile) handleReplaceFile();
+      if (handleReplaceFile) handleReplaceFile(newFile);
       const errors = validateFile(newFile);
       const isValid = checkEmpty(errors);
 
       setFiles((prevFiles) => {
-        const updatedAccepted = prevFiles.accepted.filter(
-          (file) =>
-            file.name !== fileToReplace.name || file.size !== fileToReplace.size
+        const fileNameMatch = (file: File) =>
+          file.name === fileToReplace.name &&
+          file.lastModified === fileToReplace.lastModified;
+
+        // === Handle Accepted Files ===
+        const hasSameNameInAccepted = prevFiles.accepted.some(fileNameMatch);
+
+        let updatedAccepted: File[];
+
+        if (isValid) {
+          if (hasSameNameInAccepted) {
+            // Replace file with same name
+            updatedAccepted = prevFiles.accepted.map((file) =>
+              file.name === fileToReplace.name ? newFile : file
+            );
+          } else {
+            // Remove old file (by name) and add new one
+            updatedAccepted = [
+              ...prevFiles.accepted.filter(
+                (file) => file.name !== fileToReplace.name
+              ),
+              newFile,
+            ];
+          }
+        } else {
+          // Keep accepted unchanged if invalid
+          updatedAccepted = prevFiles.accepted;
+        }
+
+        // === Handle Rejected Files ===
+        const hasSameNameInRejected = prevFiles.rejected.some(
+          (rejection) => rejection.file.name === fileToReplace.name
         );
 
-        const updatedRejected = prevFiles.rejected.filter(
-          (rejection) =>
-            rejection.file.name !== fileToReplace.name ||
-            rejection.file.size !== fileToReplace.size
-        );
+        let updatedRejected;
 
-        // If valid, update selectedFile too
+        if (!isValid) {
+          if (hasSameNameInRejected) {
+            // Replace the rejected file with same name
+            updatedRejected = prevFiles.rejected.map((rejection) =>
+              rejection.file.name === fileToReplace.name
+                ? { file: newFile, errors }
+                : rejection
+            );
+          } else {
+            // Remove the old one (by name) and add new rejected
+            updatedRejected = [
+              ...prevFiles.rejected.filter(
+                (rejection) => rejection.file.name !== fileToReplace.name
+              ),
+              { file: newFile, errors },
+            ];
+          }
+        } else {
+          // Clean up the rejected list if file is now valid
+          updatedRejected = prevFiles.rejected.filter(
+            (rejection) =>
+              rejection.file.name !== fileToReplace.name ||
+              rejection.file.size !== fileToReplace.size ||
+              rejection.file.lastModified !== fileToReplace.lastModified
+          );
+        }
+
+        // Update selectedFile if valid
         if (isValid && setSelectedFile) {
-          setSelectedFile([...updatedAccepted, newFile]);
+          setSelectedFile(updatedAccepted);
         }
 
         return {
-          accepted: isValid ? [...updatedAccepted, newFile] : updatedAccepted,
-          rejected: isValid
-            ? updatedRejected
-            : [...updatedRejected, { file: newFile, errors }],
+          accepted: updatedAccepted,
+          rejected: updatedRejected,
         };
       });
     },
@@ -226,7 +271,8 @@ const useFileDropzone = (options: DropzoneOptions): DropzoneState => {
                 (file) =>
                   file.name === newFile.name &&
                   getExtensionWithPeriod(file) ===
-                    getExtensionWithPeriod(newFile)
+                    getExtensionWithPeriod(newFile) &&
+                  file.lastModified === newFile.lastModified
               )
           ),
         ],

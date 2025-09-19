@@ -25,6 +25,10 @@ const meta: Meta<EditorProps> = {
         type: 'boolean',
       },
     },
+    customOptions: {
+      control: 'object',
+      description: 'Custom Monaco Editor options',
+    },
   },
 };
 
@@ -59,5 +63,43 @@ export const Default: Story = {
     height: '90vh',
     readOnly: false,
     variableOptionsList: variableList,
+  },
+};
+
+export const WithCustomUnicode: Story = {
+  render: (args) => {
+    const [value, setValue] = useState('// Start typing your code here');
+
+    const handleChange = (newValue: string | undefined): void => {
+      setValue(newValue || '');
+    };
+    const handlePaste = (value: string) => {
+      console.warn('User Pasted some content :', value);
+    };
+
+    return (
+      <Editor
+        {...args}
+        value={value}
+        setValue={setValue}
+        handleChange={handleChange}
+        onPaste={(pastedText) => handlePaste(pastedText)}
+      />
+    );
+  },
+  args: {
+    language: 'javascript',
+    width: '100%',
+    height: '90vh',
+    readOnly: false,
+    variableOptionsList: variableList,
+    customOptions: {
+      unicodeHighlight: {
+        invisibleCharacters: false,
+        ambiguousCharacters: false,
+        nonBasicASCII: false,
+      },
+      unusualLineTerminators: 'off',
+    },
   },
 };

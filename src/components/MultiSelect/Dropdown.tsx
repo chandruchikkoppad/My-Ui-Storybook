@@ -83,10 +83,9 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
           setValidationError(null);
       }
     }, [searchedKeyword, variant, maxSearchCharacterLength]);
-
     useEffect(() => {
       const hasChecked = filteredOptions.some(
-        (option) => option.isChecked === true
+        (option) => option.isChecked === true && !option.isDisabled
       );
       setSelectDisable(!hasChecked);
     }, [filteredOptions]);
@@ -171,6 +170,8 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
               filteredOptions[focusedIndex] as Option[],
               !filteredOptions[focusedIndex]?.isChecked
             );
+          } else {
+            withSelectButton && !selectDisable && handleOptionChange({}, false);
           }
         },
       },
@@ -299,9 +300,10 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
           <div className="select-button-container">
             <Button
               label="Select"
-              variant="tertiary"
+              variant="primary"
               onClick={onSelectClick}
               disabled={selectDisable}
+              buttonWidth="100%"
             />
           </div>
         )}

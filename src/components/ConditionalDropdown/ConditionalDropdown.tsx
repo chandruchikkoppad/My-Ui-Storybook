@@ -25,6 +25,7 @@ const ConditionalDropdown = forwardRef<
       hashInputValue = '',
       setHashInputValue,
       variableList = [],
+      addForloopPrefix = false,
       placeholder = 'Enter text',
       onChange,
       onCreateVariableClick,
@@ -44,6 +45,9 @@ const ConditionalDropdown = forwardRef<
       onFocus,
       onBlur,
       readOnly = false,
+      height = '160px',
+      truncateTextValue = 34,
+      isTruncateText = false,
       ...props
     },
     ref
@@ -225,9 +229,15 @@ const ConditionalDropdown = forwardRef<
         }
 
         if (searchString) {
-          const isInVariableList = variableList.some((file) =>
-            file.name.toLowerCase().includes(searchString.toLowerCase())
-          );
+          const isInVariableList = variableList.some((file) => {
+            const searchableName =
+              file.type === '_startforloop' && addForloopPrefix
+                ? `FLV_for:${file.name}`
+                : file.name;
+            return searchableName
+              .toLowerCase()
+              .includes(searchString.toLowerCase());
+          });
           if (!isInVariableList) {
             showDropdown = false;
             searchString = '';
@@ -303,7 +313,7 @@ const ConditionalDropdown = forwardRef<
               <Typography as="span" className="ff-password-icon">
                 <Icon
                   onClick={togglePasswordVisibility}
-                  name={showPassword ? 'view_icon' : 'hide_icon'}
+                  name={!showPassword ? 'view_access_icon' : 'hide_access_icon'}
                   width={16}
                   height={16}
                   hoverEffect
@@ -330,11 +340,17 @@ const ConditionalDropdown = forwardRef<
           <VariableDropdown
             position="absolute"
             width={dropdownWidth}
-            optionsList={variableList.filter((file) =>
-              file.name.toLowerCase().includes(result?.searchString)
-            )}
+            optionsList={variableList.filter((file) => {
+              const searchableName =
+                file.type === '_startforloop' && addForloopPrefix
+                  ? `FLV_for:${file.name}`
+                  : file.name;
+              return searchableName
+                .toLowerCase()
+                .includes(result?.searchString.toLowerCase());
+            })}
             onSelectVariable={handleDropdownClick}
-            height="230px"
+            height={height}
           />
         )}
         {showDropdown && (isHash || onlyDropdown) && (
@@ -344,6 +360,9 @@ const ConditionalDropdown = forwardRef<
             filteredOptions={filteredOptions}
             zIndex={2000}
             onSelectVariable={handleDropdownClick}
+            height={height}
+            isTruncateText={isTruncateText}
+            truncateTextValue={truncateTextValue}
           />
         )}
       </div>

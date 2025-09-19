@@ -57,6 +57,7 @@ export const ControlledPopUp: Story = {
           isOpen={isOpen}
           onClose={() => setIsOpen(false)}
           onContinue={handleContinue}
+          popupHeight='162'
           footerContent={<Typography children='How do you want to proceed?' fontSize={16}/>}
         />
       </>

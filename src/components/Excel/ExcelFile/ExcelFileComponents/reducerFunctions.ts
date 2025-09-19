@@ -194,66 +194,136 @@ export function applyBorderToCells(
   }
 
   let updatedData = currentData;
-
   const { start, end } = selectedRange;
+
+  const getCell = (row: number, col: number) =>
+    Matrix.get({ row, column: col }, updatedData);
+
+  const setCell = (row: number, col: number, cell: Types.CellBase<any>) => {
+    updatedData = Matrix.set({ row, column: col }, cell, updatedData);
+  };
 
   for (let row = start.row; row <= end.row; row++) {
     for (let col = start.column; col <= end.column; col++) {
-      const currentCell = Matrix.get({ row, column: col }, updatedData);
+      const currentCell = getCell(row, col);
+      if (!currentCell || !editable || currentCell.readOnly) continue;
 
-      if (!currentCell || !editable) continue;
-      if (currentCell.readOnly) continue;
-      let updatedCell = { ...currentCell };
+      const updatedCell = { ...currentCell, style: { ...currentCell.style } };
+
+      const aboveCell = getCell(row - 1, col);
+      const belowCell = getCell(row + 1, col);
+      const leftCell = getCell(row, col - 1);
+      const rightCell = getCell(row, col + 1);
+
+      const borderStyle = `2px solid ${color}`;
+      const defaultBorder = `1px solid var(--excel-header-border)`;
+
+      const applyBorder = (side: keyof typeof updatedCell.style) => {
+        switch (side) {
+          case 'borderTop':
+            if (!aboveCell || aboveCell.style?.borderBottom !== borderStyle) {
+              updatedCell.style.borderTop = borderStyle;
+            } else {
+              updatedCell.style.borderTop = 'none';
+            }
+            break;
+          case 'borderBottom':
+            if (!belowCell || belowCell.style?.borderTop !== borderStyle) {
+              updatedCell.style.borderBottom = borderStyle;
+            } else {
+              updatedCell.style.borderBottom = 'none';
+            }
+            break;
+          case 'borderLeft':
+            if (!leftCell || leftCell.style?.borderRight !== borderStyle) {
+              updatedCell.style.borderLeft = borderStyle;
+            } else {
+              updatedCell.style.borderLeft = 'none';
+            }
+            break;
+          case 'borderRight':
+            if (!rightCell || rightCell.style?.borderLeft !== borderStyle) {
+              updatedCell.style.borderRight = borderStyle;
+            } else {
+              updatedCell.style.borderRight = 'none';
+            }
+            break;
+        }
+      };
 
       switch (value) {
         case 'border-all-sides':
-          updatedCell.style = {
-            ...currentCell.style,
-            borderRight: `2px solid ${color}`,
-            borderLeft: `2px solid ${color}`,
-            borderTop: `2px solid ${color}`,
-            borderBottom: `2px solid ${color}`,
-          };
+          applyBorder('borderTop');
+          applyBorder('borderBottom');
+          applyBorder('borderLeft');
+          applyBorder('borderRight');
           break;
+
         case 'border-none':
           updatedCell.style = {
-            ...currentCell.style,
-            borderRight: `1px solid var(--excel-header-border)`,
-            borderLeft: `1px solid var(--excel-header-border)`,
-            borderTop: `1px solid var(--excel-header-border)`,
-            borderBottom: `1px solid var(--excel-header-border)`,
+            ...updatedCell.style,
+            borderRight: defaultBorder,
+            borderLeft: defaultBorder,
+            borderTop: defaultBorder,
+            borderBottom: defaultBorder,
           };
+          if (aboveCell) {
+            const updatedAbove = {
+              ...aboveCell,
+              style: { ...aboveCell.style },
+            };
+            if (updatedAbove.style.borderBottom === 'none') {
+              updatedAbove.style.borderBottom = borderStyle;
+              setCell(row - 1, col, updatedAbove);
+            }
+          }
+          if (belowCell) {
+            const updatedBelow = {
+              ...belowCell,
+              style: { ...belowCell.style },
+            };
+            if (updatedBelow.style.borderTop === 'none') {
+              updatedBelow.style.borderTop = borderStyle;
+              setCell(row + 1, col, updatedBelow);
+            }
+          }
+          if (leftCell) {
+            const updatedLeft = { ...leftCell, style: { ...leftCell.style } };
+            if (updatedLeft.style.borderRight === 'none') {
+              updatedLeft.style.borderRight = borderStyle;
+              setCell(row, col - 1, updatedLeft);
+            }
+          }
+          if (rightCell) {
+            const updatedRight = {
+              ...rightCell,
+              style: { ...rightCell.style },
+            };
+            if (updatedRight.style.borderLeft === 'none') {
+              updatedRight.style.borderLeft = borderStyle;
+              setCell(row, col + 1, updatedRight);
+            }
+          }
           break;
+
         case 'border-right':
-          updatedCell.style = {
-            ...currentCell.style,
-            borderRight: `2px solid ${color}`,
-          };
+          applyBorder('borderRight');
           break;
 
         case 'border-left':
-          updatedCell.style = {
-            ...currentCell.style,
-            borderLeft: `2px solid ${color}`,
-          };
+          applyBorder('borderLeft');
           break;
+
         case 'border-top':
-          updatedCell.style = {
-            ...currentCell.style,
-            borderTop: `2px solid ${color}`,
-          };
+          applyBorder('borderTop');
           break;
+
         case 'border-bottom':
-          updatedCell.style = {
-            ...currentCell.style,
-            borderBottom: `2px solid ${color}`,
-          };
-          break;
-        default:
+          applyBorder('borderBottom');
           break;
       }
 
-      updatedData = Matrix.set({ row, column: col }, updatedCell, updatedData);
+      setCell(row, col, updatedCell);
     }
   }
 
@@ -513,7 +583,8 @@ export function dragEndAutoFill(
   currentData: Matrix.Matrix<Types.CellBase<any>>,
   selectedRange: PointRange | null,
   cellValue: Types.CellBase,
-  activeCell: Point.Point | null
+  activeCell: Point.Point | null,
+  control: boolean
 ): Matrix.Matrix<Types.CellBase<any>> {
   if (!selectedRange) {
     return currentData;
@@ -524,15 +595,31 @@ export function dragEndAutoFill(
   let startPoint = { row: 0, column: 0 };
   let endPoint = { row: 0, column: 0 };
 
-  if (rowCount > columnCount) {
-    startPoint = { row: activeCell?.row ?? 0, column: start.column };
-    endPoint = { row: activeCell?.row ?? 0, column: end.column };
+  if (Math.abs(rowCount) > Math.abs(columnCount)) {
+    // vertical drag
+    startPoint = {
+      row: Math.min(start.row, end.row),
+      column: activeCell?.column ?? start.column,
+    };
+    endPoint = {
+      row: Math.max(start.row, end.row),
+      column: activeCell?.column ?? start.column,
+    };
   } else {
-    startPoint = { row: start.row, column: activeCell?.column ?? 0 };
-    endPoint = { row: end.row, column: activeCell?.column ?? 0 };
+    // horizontal drag
+    startPoint = {
+      row: activeCell?.row ?? start.row,
+      column: Math.min(start.column, end.column),
+    };
+    endPoint = {
+      row: activeCell?.row ?? start.row,
+      column: Math.max(start.column, end.column),
+    };
   }
 
   let updatedData = currentData;
+  const baseValue = String(cellValue.value ?? '');
+  const matches: RegExpMatchArray[] = [...baseValue.matchAll(/(-?\d+)/g)];
 
   for (let row = startPoint.row; row <= endPoint.row; row++) {
     for (let col = startPoint.column; col <= endPoint.column; col++) {
@@ -541,15 +628,32 @@ export function dragEndAutoFill(
       if (
         !currentCell ||
         currentCell.readOnly ||
-        ['file', 'dropDown'].includes(currentCell?.inputType?.type || '')
+        ['file'].includes(currentCell?.inputType?.type || '')
       ) {
         continue;
+      }
+      let newValue = baseValue;
+      if (!control && matches.length > 0) {
+        let step = 0;
+        if (Math.abs(rowCount) > Math.abs(columnCount)) {
+          step = row - (activeCell?.row ?? startPoint.row);
+        } else {
+          step = col - (activeCell?.column ?? startPoint.column);
+        }
+
+        let index = 0;
+        newValue = newValue.replace(/(-?\d+)/g, () => {
+          const match = matches[index++];
+          if (!match) return '';
+          const originalNum = parseInt(match?.[1] ?? '', 10);
+          return (originalNum + step).toString();
+        });
       }
 
       const updatedCell = {
         ...currentCell,
         style: cellValue.style,
-        value: cellValue.value,
+        value: newValue,
         inputType: cellValue.inputType,
       };
 

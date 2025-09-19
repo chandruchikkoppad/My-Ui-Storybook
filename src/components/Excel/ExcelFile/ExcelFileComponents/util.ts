@@ -75,46 +75,213 @@ export function readTextFromClipboard(event: ClipboardEvent): string {
   return '';
 }
 
+function getSortedNumericKeys(dataObject: object) {
+  return Object.keys(dataObject)
+    .map((keyString) => Number(keyString))
+    .sort((firstKey, secondKey) => firstKey - secondKey);
+}
+
+export function insertColumnDimension(
+  columns: Types.columnDimensions,
+  insertIndex: number,
+  newWidth: number
+): Types.columnDimensions {
+  const updated: Types.columnDimensions = {};
+  const keys = getSortedNumericKeys(columns);
+
+  let shiftWidth = 0;
+  let inserted = false;
+
+  for (let i = 0; i < keys.length; i++) {
+    // Insert before current index
+    if (i === insertIndex) {
+      const prev = updated[i - 1];
+      const newLeft = prev ? prev.left + prev.width : 0;
+      updated[i] = { left: newLeft, width: newWidth };
+      shiftWidth = newWidth;
+      inserted = true;
+    }
+
+    const oldKey = keys[i];
+    if (oldKey === undefined) continue;
+    const col = columns[oldKey];
+    if (!col) continue;
+
+    const newKey = inserted ? i + 1 : i;
+    const newLeft = inserted ? col.left + shiftWidth : col.left;
+
+    updated[newKey] = { ...col, left: newLeft };
+  }
+
+  // If inserting at the end
+  if (!inserted) {
+    const lastKey = keys.length > 0 ? keys[keys.length - 1] : undefined;
+    const last = lastKey !== undefined ? updated[lastKey] : undefined;
+    const newLeft = last ? last.left + last.width : 0;
+    updated[insertIndex] = { left: newLeft, width: newWidth };
+  }
+
+  return updated;
+}
+
+export function insertRowDimension(
+  rows: Types.rowDimensions,
+  insertIndex: number,
+  newHeight: number
+): Types.rowDimensions {
+  const updated: Types.rowDimensions = {};
+  const keys = getSortedNumericKeys(rows);
+
+  let shiftHeight = 0;
+  let inserted = false;
+
+  for (let i = 0; i < keys.length; i++) {
+    // Insert before current index
+    if (i === insertIndex) {
+      const prev = updated[i - 1];
+      const newTop = prev ? prev.top + prev.height : 0;
+      updated[i] = { top: newTop, height: newHeight };
+      shiftHeight = newHeight;
+      inserted = true;
+    }
+
+    const oldKey = keys[i];
+    if (oldKey === undefined) continue;
+    const row = rows[oldKey];
+    if (!row) continue;
+
+    const newKey = inserted ? i + 1 : i;
+    const newTop = inserted ? row.top + shiftHeight : row.top;
+
+    updated[newKey] = { ...row, top: newTop };
+  }
+
+  // If inserting at the end
+  if (!inserted) {
+    const lastKey = keys.length > 0 ? keys[keys.length - 1] : undefined;
+    const last = lastKey !== undefined ? updated[lastKey] : undefined;
+    const newTop = last ? last.top + last.height : 0;
+    updated[insertIndex] = { top: newTop, height: newHeight };
+  }
+
+  return updated;
+}
+
+export function deleteRowDimension(
+  rows: Types.rowDimensions,
+  deleteIndex: number
+): Types.rowDimensions {
+  const updated: Types.rowDimensions = {};
+  const keys = getSortedNumericKeys(rows);
+
+  let currentTop = 0;
+
+  for (let i = 0, newIndex = 0; i < keys.length; i++) {
+    if (keys[i] === deleteIndex) {
+      continue;
+    }
+
+    const key = keys[i];
+    if (key === undefined) continue;
+    const row = rows[key];
+    if (!row) continue;
+    updated[newIndex] = {
+      top: currentTop === 0 ? row.top : currentTop,
+      height: row.height,
+    };
+
+    if (typeof updated[newIndex]?.top === 'number') {
+      currentTop = (updated[newIndex]?.top ?? 0) + row.height;
+    }
+    newIndex++;
+  }
+
+  return updated;
+}
+
+export function deleteColumnDimension(
+  columns: Types.columnDimensions,
+  deleteIndex: number
+): Types.columnDimensions {
+  const updated: Types.columnDimensions = {};
+  const keys = getSortedNumericKeys(columns);
+
+  let currentLeft = 0;
+
+  for (let i = 0, newIndex = 0; i < keys.length; i++) {
+    if (keys[i] === deleteIndex) {
+      continue;
+    }
+
+    const key = keys[i];
+    if (key === undefined) continue;
+    const col = columns[key];
+    if (!col) continue;
+    updated[newIndex] = {
+      left: currentLeft === 0 ? col.left : currentLeft,
+      width: col.width,
+    };
+
+    if (typeof updated[newIndex]?.left === 'number') {
+      currentLeft = (updated[newIndex]?.left ?? 0) + col.width;
+    }
+    newIndex++;
+  }
+
+  return updated;
+}
+
+
+
 /** Get the dimensions of cell at point from state */
 export function getCellDimensions(
   point: Point.Point,
   rowDimensions: Types.StoreState['rowDimensions'] | undefined,
-  columnDimensions: Types.StoreState['columnDimensions'] | undefined
+  columnDimensions: Types.StoreState['columnDimensions'] | undefined,
 ): Types.Dimensions | undefined {
-  const cellRowDimensions = rowDimensions && rowDimensions[point.row];
-  const cellColumnDimensions =
-    columnDimensions && columnDimensions[point.column];
-  return (
-    cellRowDimensions &&
-    cellColumnDimensions && {
-      ...cellRowDimensions,
-      ...cellColumnDimensions,
-    }
-  );
-}
+  const DEFAULT_ROW_HEIGHT = 32;
+  const DEFAULT_COLUMN_WIDTH = 100; // Use your minimumColumnWidth or a default value; adjust based on props if needed
+  const HEADER_HEIGHT = 32; // Adjust based on your header row height (e.g., from CSS or measured)
+  const ROW_INDICATOR_WIDTH = 60; // From your RowIndicator minWidth style
 
+  let top = HEADER_HEIGHT;
+  for (let r = 0; r < point.row; r++) {
+    top += (rowDimensions?.[r] ? rowDimensions?.[r]?.height : DEFAULT_ROW_HEIGHT) || DEFAULT_ROW_HEIGHT;
+  }
+  const height = (rowDimensions?.[point.row] ? rowDimensions?.[point.row]?.height : DEFAULT_ROW_HEIGHT) || DEFAULT_ROW_HEIGHT;
+
+  let left = ROW_INDICATOR_WIDTH;
+  for (let c = 0; c < point.column; c++) {
+    left += (columnDimensions?.[c] ? columnDimensions?.[c]?.width : DEFAULT_COLUMN_WIDTH) || DEFAULT_COLUMN_WIDTH;
+  }
+  const width = (columnDimensions?.[point.column] ? columnDimensions?.[point.column]?.width : DEFAULT_COLUMN_WIDTH) || DEFAULT_COLUMN_WIDTH;
+
+  return { top, height, left, width };
+}
 /** Get the dimensions of customized cell at point from state */
 export function getScrollCellDimensions(
   point: Point.Point,
   rowDimensions: Types.StoreState['rowDimensions'] | undefined,
-  columnDimensions: Types.StoreState['columnDimensions'] | undefined
+  columnDimensions: Types.StoreState['columnDimensions'] | undefined,
 ): Types.Dimensions | undefined {
-  let cellRowDimensions = rowDimensions && rowDimensions[point.row];
-  let initialDimensions = rowDimensions && rowDimensions[0];
+  const DEFAULT_ROW_HEIGHT = 32;
+  const DEFAULT_COLUMN_WIDTH = 100; // Use your minimumColumnWidth or a default value
+  const HEADER_HEIGHT = 32; // Adjust as needed
+  const ROW_INDICATOR_WIDTH = 60;
 
-  if (rowDimensions && initialDimensions) {
-    cellRowDimensions = { top: 4000, height: initialDimensions?.height }; //fixed height
+  let top = HEADER_HEIGHT + 4000; // Preserve your fixed top for scrolling, but add header offset
+  for (let r = 0; r < point.row; r++) {
+    top += (rowDimensions?.[r] ? rowDimensions?.[r]?.height : DEFAULT_ROW_HEIGHT) || DEFAULT_ROW_HEIGHT;
   }
-  const cellColumnDimensions =
-    columnDimensions && columnDimensions[point.column];
+  const height = (rowDimensions?.[point.row] ? rowDimensions?.[point.row]?.height : DEFAULT_ROW_HEIGHT) || DEFAULT_ROW_HEIGHT;
 
-  return (
-    cellRowDimensions &&
-    cellColumnDimensions && {
-      ...cellRowDimensions,
-      ...cellColumnDimensions,
-    }
-  );
+  let left = ROW_INDICATOR_WIDTH;
+  for (let c = 0; c < point.column; c++) {
+    left += (columnDimensions?.[c] ? columnDimensions?.[c]?.width : DEFAULT_COLUMN_WIDTH) || DEFAULT_COLUMN_WIDTH;
+  }
+  const width = (columnDimensions?.[point.column] ? columnDimensions?.[point.column]?.width : DEFAULT_COLUMN_WIDTH) || DEFAULT_COLUMN_WIDTH;
+
+  return { top, height, left, width };
 }
 
 /** Get the dimensions of a range of cells */
@@ -253,7 +420,7 @@ export const EmptyCell: Types.CellBase = {
 export const fontFamilyList = [
   {
     label: 'Times New Roman',
-    value: '"Times New Roman"',
+    value: 'Times New Roman',
   },
   {
     label: 'Arial',
@@ -285,11 +452,11 @@ export const fontFamilyList = [
   },
   {
     label: 'Trebuchet MS',
-    value: '"Trebuchet MS"',
+    value: 'Trebuchet MS',
   },
   {
     label: 'Comic Sans MS',
-    value: '"Comic Sans MS"',
+    value: 'Comic Sans MS',
   },
   {
     label: 'Impact',
@@ -297,15 +464,15 @@ export const fontFamilyList = [
   },
   {
     label: 'Arial Black',
-    value: '"Arial Black"',
+    value: 'Arial Black',
   },
   {
     label: 'Lucida Console',
-    value: '"Lucida Console"',
+    value: 'Lucida Console',
   },
   {
     label: 'Lucida Sans Unicode',
-    value: '"Lucida Sans Unicode"',
+    value: 'Lucida Sans Unicode',
   },
   {
     label: 'Courier',
@@ -313,7 +480,7 @@ export const fontFamilyList = [
   },
   {
     label: 'Arial Rounded MT Bold',
-    value: '"Arial Rounded MT Bold"',
+    value: 'Arial Rounded MT Bold',
   },
   {
     label: 'Georgia',
@@ -339,5 +506,53 @@ export const fontSizeList = [
 
 export const isPasteAllowed = (currentCell: Types.CellBase | null): boolean => {
   const inputType = currentCell?.inputType?.type ?? 'text';
-  return !['dropDown', 'file'].includes(inputType) && !currentCell?.readOnly;
+  return ['dropDown', 'text'].includes(inputType) && !currentCell?.readOnly;
 };
+
+export function getMatrixDimensions(matrixData: [[]]) {
+  const rowCount = matrixData?.length ?? 0;
+  const columnCount = matrixData?.[0]?.length ?? 0;
+  return { rowCount, columnCount };
+}
+
+
+
+export function getVisibleRangeDimensions(
+  fullRange: Types.FullRange | null,
+  visibleRange: Types.VisibleRange,
+  rowDimensions: Types.StoreState['rowDimensions'],
+  columnDimensions: Types.StoreState['columnDimensions']
+): Types.Dimensions | undefined {
+  const DEFAULT_ROW_HEIGHT = 32;
+  const DEFAULT_COLUMN_WIDTH = 100;
+  if (!fullRange) return undefined;
+
+  const clippedStartRow = Math.max(fullRange?.start?.row, visibleRange?.start);
+  const clippedEndRow = Math.min(fullRange?.end?.row, visibleRange?.end - 1);
+
+  if (clippedStartRow > clippedEndRow) {
+    return undefined;
+  }
+
+  let top = 0;
+  for (let row = visibleRange?.start; row < clippedStartRow; row++) {
+    top += rowDimensions?.[row]?.height || DEFAULT_ROW_HEIGHT;
+  }
+
+  let height = 0;
+  for (let row = clippedStartRow; row <= clippedEndRow; row++) {
+    height += rowDimensions?.[row]?.height || DEFAULT_ROW_HEIGHT;
+  }
+
+  let left = 0;
+  for (let col = 0; col < fullRange?.start?.column; col++) {
+    left += columnDimensions?.[col]?.width || DEFAULT_COLUMN_WIDTH;
+  }
+
+  let width = 0;
+  for (let col = fullRange?.start?.column; col <= fullRange?.end?.column; col++) {
+    width += columnDimensions?.[col]?.width || DEFAULT_COLUMN_WIDTH;
+  }
+
+  return { top, left, width, height };
+}

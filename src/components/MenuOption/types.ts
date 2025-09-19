@@ -118,6 +118,7 @@ interface OptionCardProps {
   variant?: 'primary' | 'default';
   isAddResourceButton?: boolean;
   alignOption: 'left' | 'right' | 'center';
+  ownerId?: string;
 }
 
 interface MenuOptionProps {
@@ -241,6 +242,8 @@ interface MenuOptionProps {
   alignOption?: 'left' | 'right' | 'center';
 
   displayCard?: boolean;
+  didMouseEntered?: () => void;
+  tableMenu?: boolean;
 }
 
 interface OptionProps {

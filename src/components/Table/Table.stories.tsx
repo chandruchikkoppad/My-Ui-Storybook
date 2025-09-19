@@ -565,6 +565,7 @@ export const EditComponentTable: Story = {
           headerType="secondary"
           noDataContent={'No data found'}
           headerIconName={'expand_icon'}
+          headerIconTooltipTitle={'Expand'}
           headerIconOnClick={handleIconClick}
           editMode={editMode}
           editComponent={

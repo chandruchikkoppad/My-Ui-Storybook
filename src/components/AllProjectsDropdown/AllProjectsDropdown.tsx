@@ -1,7 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import Icon from '../Icon';
 import Typography from '../Typography';
-import { isTextTruncated, truncateText } from '../../utils/truncateText/truncateText';
+import {
+  isTextTruncated,
+  truncateText,
+} from '../../utils/truncateText/truncateText';
 import './AllProjectsDropdown.scss';
 import classNames from 'classnames';
 import { AllProjectsDropdownProps, optionsType } from './types';
@@ -24,23 +27,58 @@ const AllProjectsDropdown = ({
   disabled = false,
 }: AllProjectsDropdownProps) => {
   const [showOptions, setShowOptions] = useState(false);
+  const [showClicked, setShowClicked] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState(selectedOption);
   const optionsRef = useRef<HTMLDivElement>(null);
   const [optionsList, setOptionsList] = useState<optionsType[]>(options);
   const [closeTimeout, setCloseTimeout] = useState<number | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [searchValue, setSearchValue] = useState('');
+  const [isSecondClickFromOtherTab, setIsSecondClickFromOtherTab] =
+    useState(selected);
+
+  useEffect(() => {
+    if (optionsList !== options) {
+      setOptionsList(options);
+    }
+  }, [options]);
+  useEffect(() => {
+    if (!selected) {
+      setIsSecondClickFromOtherTab(false);
+    }
+  }, [selected]);
   useEffect(() => {
     if (selectedOption) {
       setSelectedOptions(selectedOption);
     }
   }, [selectedOption]);
   const closeOptions = () => {
-    setShowOptions(false);
-    setSearchValue('');
-    setOptionsList(options);
+    if (showOptions) {
+      setShowOptions(false);
+    }
   };
 
   const handleMouseEnter = () => {
-    if (!disabled) setShowOptions(true);
+    if (!disabled) {
+      setShowOptions(true);
+    }
+    if (!disabled && !selected) {
+      setShowOptions(true);
+    }
+  };
+  const handleClick = () => {
+    if (!disabled) {
+      if (showOptions) {
+        setShowOptions(false);
+      }
+      if (!isSecondClickFromOtherTab) {
+        setIsSecondClickFromOtherTab(true);
+      } else {
+        setShowClicked(!showClicked);
+      }
+    }
+    setSearchValue('');
+    setOptionsList(options);
   };
 
   const handleMouseLeave = () => {
@@ -67,9 +105,10 @@ const AllProjectsDropdown = ({
       setSearchValue('');
       setOptionsList(options);
     }
+    setShowClicked(false);
+    setShowOptions(false);
   };
 
-  const [searchValue, setSearchValue] = useState('');
   const handleSearch = (query: string) => {
     if (!disabled) {
       setSearchValue(query);
@@ -88,13 +127,15 @@ const AllProjectsDropdown = ({
     }
   };
 
-  useClickOutside(optionsRef, closeOptions);
+  useClickOutside(optionsRef, () => setShowClicked(false), [containerRef]);
 
   return (
     <div
       className={classNames('ff-all-project', {
         'ff-all-project--disabled': disabled,
       })}
+      ref={containerRef}
+      onClick={handleClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
@@ -118,8 +159,15 @@ const AllProjectsDropdown = ({
               : truncateText(selectedOptions?.label, 12)}
           </Typography>
           <div className={classNames('label-icon')}>
+            <div
+              className="icon-click-layer"
+            />
             <Icon
-              name={showOptions ? 'arrows_top_icon' : 'arrows_down_icon'}
+              name={
+                showOptions || showClicked
+                  ? 'arrows_top_icon'
+                  : 'arrows_down_icon'
+              }
               color={
                 disabled
                   ? 'var(--disabled-icon-color)'
@@ -132,13 +180,16 @@ const AllProjectsDropdown = ({
           </div>
         </div>
       </div>
-      {showOptions && !disabled && (
+      {(showOptions || showClicked) && !disabled && (
         <div
           className={classNames('ff-projects-dropdown')}
           ref={optionsRef}
           onMouseEnter={dropDownMouseEnter}
         >
-          <div className="ff-dropdown-search-container">
+          <div
+            className="ff-dropdown-search-container"
+            onClick={(e) => e.stopPropagation()}
+          >
             <Search
               onSearch={handleSearch}
               value={searchValue}
@@ -157,7 +208,10 @@ const AllProjectsDropdown = ({
                 index === 0 && (
                   <div
                     key={index}
-                    onClick={() => handleSelectOption(option)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleSelectOption(option);
+                    }}
                     className={classNames('ff-projects-options', {
                       ['ff-selected-option']:
                         selectedOption.label === option.label,
@@ -195,7 +249,10 @@ const AllProjectsDropdown = ({
                 index > 0 && (
                   <div
                     key={index}
-                    onClick={() => handleSelectOption(option)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleSelectOption(option);
+                    }}
                     className={classNames('ff-projects-options', {
                       ['ff-selected-option']:
                         selectedOption.label === option.label,

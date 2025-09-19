@@ -324,7 +324,7 @@
   border: 1px solid #f1f1f1;
   padding: 15px;
   border-radius: 2px;
-  z-index: 100;
+  z-index: 2002;
   background: white;
   box-shadow: 3px 3px 5px #bfbdbd;
 }
@@ -404,7 +404,7 @@
   border: 1px solid #f1f1f1;
   padding: 15px;
   border-radius: 2px;
-  z-index: 1501;
+  z-index: 100005;
   background: white;
   box-shadow: 3px 3px 5px #bfbdbd;
 }
@@ -586,7 +586,7 @@
   border: 1px solid #f1f1f1;
   padding: 15px;
   border-radius: 2px;
-  z-index: 100;
+  z-index: 2002;
   background: white;
   box-shadow: 3px 3px 5px #bfbdbd;
 }
@@ -666,7 +666,7 @@
   border: 1px solid #f1f1f1;
   padding: 15px;
   border-radius: 2px;
-  z-index: 100;
+  z-index: 10006;
   background: white;
   box-shadow: 3px 3px 5px #bfbdbd;
 }
@@ -1046,10 +1046,10 @@
   padding: 0;
 }
 .public-DraftStyleDefault-depth0.public-DraftStyleDefault-listLTR {
-  margin-left: 1.5em;
+  margin-left: 2.5em;
 }
 .public-DraftStyleDefault-depth0.public-DraftStyleDefault-listRTL {
-  margin-right: 1.5em;
+  margin-right: 2.5em;
 }
 .public-DraftStyleDefault-depth1.public-DraftStyleDefault-listLTR {
   margin-left: 3em;
@@ -1093,7 +1093,7 @@
   left: -36px;
   position: absolute;
   text-align: right;
-  width: 30px;
+  width: 38px;
 }
 .public-DraftStyleDefault-orderedListItem.public-DraftStyleDefault-listRTL:before {
   position: absolute;
@@ -1144,11 +1144,18 @@
   flex-direction: column;
   gap: 4px;
 
+  .ff-title-button {
+    @include mixins.space-inBetween();
+  }
+
   .ff-textEditor-label-asterisk-container {
     @include mixins.center-vertical();
     gap: 2px;
   }
-
+  .ff-textEditor-buttons {
+    display: flex;
+    gap: 8px;
+  }
   .ff-textEditor-error-msg {
     color: var(--input-error-text-color);
   }

@@ -175,7 +175,8 @@ const ELEMENTS_WHITE_SPACE_REGEX = /.*\S.*/;
 const PARAMETER_ALPHANUMERIC_REGEX =
   /^[-_A-Za-z0-9 ]*$|^[-_A-Za-z0-9 ][A-Za-z0-9 ]*[-_A-Za-z-_]$/;
 
-const ALPHANUMERIC_PARENTHESIS_REGEX = /^[-_A-Za-z0-9 ()]*$|^[-_A-Za-z0-9 ()][A-Za-z0-9 ()]*[-_A-Za-z-()]$/;
+const ALPHANUMERIC_PARENTHESIS_REGEX =
+  /^[-_A-Za-z0-9 ()]*$|^[-_A-Za-z0-9 ()][A-Za-z0-9 ()]*[-_A-Za-z-()]$/;
 
 const UPPERCASE_REGEX = /[A-Z]/;
 
@@ -255,13 +256,16 @@ const DETECT_AT_CHAR_AT_START = /(?:^|\s)@[^@\s]*$/;
 const CHECK_AT_FOLLOWED_BY_WORD = /@(\S*)$/;
 //To detect word starting with "@"
 const DETECT_WORD_START_WITH_AT = /(\@\w+)/;
-//To check email validations 
-const EMAIL_VALIDATION_REGEX = /^[a-zA-Z0-9](?!.*[._-]{2})[a-zA-Z0-9._-]*[a-zA-Z0-9]@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+//To check email validations
+const EMAIL_VALIDATION_REGEX =
+  /^[a-zA-Z0-9](?!.*[._-]{2})[a-zA-Z0-9._-]*[a-zA-Z0-9]@[a-zA-Z0-9._-]+\.[a-zA-Z]{2,}$/;
+
 //To Validate all sorts of URls for Link Component in ManualTestCase (inclusive of optional params)
-const LINK_VALIDATION_REGEX = /^(https?:\/\/)?((?!.*\.\.)[\da-z.-]+)\.([\da-z.-]+)(\/[\/\w\-.~:?#[\]@!$&'()*+,;=]*)*$/i;
+const LINK_VALIDATION_REGEX =
+  /^(https?:\/\/)?((?!.*\.\.)[\da-z.-]+)\.([\da-z.-]+)(\/[\/\w\-.~:?#[\]@!$&'()*+,;=]*)*$/i;
 
 // Alphanumeric Validation with specific Order including special characters (- , _ , ( , ) )
-const ALPHA_NUM_EXTENDED_REGEX  = /^[a-zA-Z0-9 _\-()]+$/;
+const ALPHA_NUM_EXTENDED_REGEX = /^[a-zA-Z0-9 _\-()]+$/;
 
 // Alphanumeric string allowing only dot(.) as special character
 const ALPHANUMERIC_WITH_DOT_REGEX = /^[A-Za-z0-9. ]+$/;
@@ -270,7 +274,7 @@ const ALPHANUMERIC_WITH_DOT_REGEX = /^[A-Za-z0-9. ]+$/;
 const EXCEL_SPACING_REGEX = /[\n\t"]/;
 
 //Alphabet validation along with spaces
-const ALPHABET_WITH_SPACES_ONLY_REGEX=/^[a-zA-Z ]*$/;
+const ALPHABET_WITH_SPACES_ONLY_REGEX = /^[a-zA-Z ]*$/;
 
 export {
   DYNAMIC_VALUE__PLACEHOLDER_REGEX,
@@ -365,5 +369,5 @@ export {
   ALPHA_NUM_EXTENDED_REGEX,
   ALPHANUMERIC_WITH_DOT_REGEX,
   EXCEL_SPACING_REGEX,
-  ALPHABET_WITH_SPACES_ONLY_REGEX
+  ALPHABET_WITH_SPACES_ONLY_REGEX,
 };

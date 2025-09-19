@@ -94,6 +94,8 @@ export const Controlled: Story = {
           getAcceptedFiles={getAcceptedFiles}
           getRejectedFiles={getRejectedFiles}
           isApiResponseError
+          isReplaceDisabled={false}
+          isRemoveDisabled={false}
         />
         {showToaster && (
           <Toaster

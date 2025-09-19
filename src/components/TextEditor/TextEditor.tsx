@@ -1,5 +1,4 @@
-import { FC, useEffect, useState, ComponentType } from 'react';
-
+import { FC, useEffect, useState, ComponentType, useRef } from 'react';
 import {
   EditorState,
   ContentState,
@@ -11,6 +10,9 @@ import './TextEditor.scss';
 import RichTextEditorProps from './types';
 import { checkEmpty } from '../../utils/checkEmpty/checkEmpty';
 import Typography from '../Typography';
+import Tooltip from '../Tooltip';
+import Icon from '../Icon';
+import useClickOutside from '../../hooks/useClickOutside';
 
 const TextEditor: FC<RichTextEditorProps> = ({
   convertedContent,
@@ -24,10 +26,20 @@ const TextEditor: FC<RichTextEditorProps> = ({
   mode,
   helperText,
   analyticsClasses = false,
+  error,
+  editableTextEditor = false,
+  onSubmit,
 }) => {
   const [editorState, setEditorState] = useState<any>(null);
   const [focusState, setFocusState] = useState<boolean>(false);
-  const [error, setError] = useState<boolean>(false);
+  const [errorMsg, setErrorMsg] = useState<boolean>(false);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [initialContent, setInitialContent] = useState<string | undefined>(
+    convertedContent
+  );
+  const editorRef = useRef<HTMLDivElement>(null);
+  const buttonsRef = useRef<HTMLDivElement>(null);
+
   const defaultToolBarOptions = [
     'inline',
     'blockType',
@@ -65,7 +77,7 @@ const TextEditor: FC<RichTextEditorProps> = ({
         newEditorState = EditorState.createWithContent(convertFromRaw(content));
       } else {
         newEditorState =
-          mode === 'view'
+          mode === 'view' || (editableTextEditor && !isEditing)
             ? EditorState.createWithContent(ContentState.createFromText('---'))
             : EditorState.createEmpty();
       }
@@ -77,12 +89,13 @@ const TextEditor: FC<RichTextEditorProps> = ({
     }
 
     setEditorState(newEditorState);
-  }, [convertedContent, mode]);
+    setInitialContent(convertedContent);
+  }, [convertedContent, mode, isEditing, editableTextEditor]);
 
   useEffect(() => {
     let editorState = null;
-    if (convertedContent.length === 0) {
-      if (mode === 'view') {
+    if (convertedContent?.length === 0) {
+      if (mode === 'view' || (editableTextEditor && !isEditing)) {
         const content = ContentState.createFromText('---');
         editorState = EditorState.createWithContent(content);
       } else {
@@ -90,21 +103,39 @@ const TextEditor: FC<RichTextEditorProps> = ({
       }
       setEditorState(editorState);
     }
-  }, [convertedContent]);
+  }, [convertedContent, mode, isEditing, editableTextEditor]);
 
   const handleEditorChange = (state: any) => {
     setEditorState(state);
     const currentContentAsRaw = convertToRaw(state.getCurrentContent());
-    if (currentContentAsRaw?.blocks[0]?.text !== '') {
-      setError(false);
+    if (isEditing && currentContentAsRaw?.blocks[0]?.text === '' && required) {
+      setErrorMsg(true);
+    } else if (currentContentAsRaw?.blocks[0]?.text !== '') {
+      setErrorMsg(false);
     }
   };
-  const handleEditorBlur = (event: React.FocusEvent<HTMLInputElement>) => {
-    const currentContentAsRaw = convertToRaw(editorState.getCurrentContent());
-    setConvertedContent(JSON.stringify(currentContentAsRaw));
 
-    if (currentContentAsRaw?.blocks[0]?.text === '') {
-      setError(true);
+  const handleClickOutside = () => {
+    if (editableTextEditor && isEditing && !errorMsg) {
+      setIsEditing(false);
+      setConvertedContent(initialContent || '');
+      const content = parseContent(initialContent);
+      const newEditorState = content
+        ? EditorState.createWithContent(convertFromRaw(content))
+        : EditorState.createWithContent(ContentState.createFromText('---'));
+      setEditorState(newEditorState);
+    }
+  };
+
+  useClickOutside(editorRef, handleClickOutside, [buttonsRef]);
+
+  const handleEditorBlur = (event: React.FocusEvent<HTMLInputElement>) => {
+    if (!editableTextEditor) {
+      const currentContentAsRaw = convertToRaw(editorState.getCurrentContent());
+      setConvertedContent(JSON.stringify(currentContentAsRaw));
+      if (currentContentAsRaw?.blocks[0]?.text === '') {
+        setErrorMsg(true);
+      }
     }
 
     if (onBlur) {
@@ -112,66 +143,143 @@ const TextEditor: FC<RichTextEditorProps> = ({
     }
   };
 
+  const handleDoubleClick = () => {
+    if (editableTextEditor && !isEditing) {
+      setIsEditing(true);
+      setInitialContent(convertedContent);
+      const content = parseContent(convertedContent);
+      const isDashContent = content?.blocks[0]?.text === '---';
+      const newEditorState = isDashContent
+        ? EditorState.createEmpty()
+        : content
+        ? EditorState.createWithContent(convertFromRaw(content))
+        : EditorState.createEmpty();
+      setEditorState(newEditorState);
+    }
+  };
+
+  const handleSubmit = () => {
+    if (errorMsg) {
+      return;
+    }
+    const currentContentAsRaw = convertToRaw(editorState.getCurrentContent());
+    let contentString = JSON.stringify(currentContentAsRaw);
+    if (currentContentAsRaw?.blocks[0]?.text === '') {
+      contentString = JSON.stringify(
+        convertToRaw(ContentState.createFromText('---'))
+      );
+    }
+    setConvertedContent(contentString);
+    if (onSubmit) {
+      onSubmit(contentString);
+    }
+    setInitialContent(contentString);
+    setIsEditing(false);
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    setConvertedContent(initialContent || '');
+    const content = parseContent(initialContent);
+    const newEditorState = content
+      ? EditorState.createWithContent(convertFromRaw(content))
+      : EditorState.createWithContent(ContentState.createFromText('---'));
+    setEditorState(newEditorState);
+    setErrorMsg(false);
+  };
+
   const EditorComponent = DraftEditor as unknown as ComponentType<EditorProps>;
+
   return (
     <div className="ff-textEditor-container">
-      <div className="ff-textEditor-label-asterisk-container">
-        {required && <Typography className="required-asterisk">* </Typography>}
-        {label && (
-          <Typography lineHeight="10px" fontWeight="medium" fontSize="12px">
-            {label}
-          </Typography>
+      <div className="ff-title-button">
+        <div className="ff-textEditor-label-asterisk-container">
+          {required && (
+            <Typography className="required-asterisk">* </Typography>
+          )}
+          {label && (
+            <Typography lineHeight="10px" fontWeight="medium" fontSize="12px">
+              {label}
+            </Typography>
+          )}
+        </div>
+        {editableTextEditor && isEditing && (
+          <div ref={buttonsRef} className="ff-textEditor-buttons">
+            <Tooltip title="Update" placement="bottom">
+              <Icon
+                name="update_icon"
+                color="var(--label-edit-confirm-icon)"
+                height={20}
+                width={20}
+                hoverEffect
+                onClick={handleSubmit}
+              />
+            </Tooltip>
+            <Tooltip title="Cancel" placement="bottom">
+              <Icon
+                name="close"
+                color="var(--label-edit-cancel-icon)"
+                height={20}
+                width={20}
+                onClick={handleCancel}
+                hoverEffect
+              />
+            </Tooltip>
+          </div>
         )}
       </div>
-      <EditorComponent
-        editorState={editorState}
-        onEditorStateChange={handleEditorChange}
-        wrapperClassName="wrapperClass"
-        editorClassName={`ff-heading-TextEditor-style ${
-          analyticsClasses ? 'fontSm' : 'fontMd'
-        }`}
-        editorStyle={
-          mode !== 'view'
-            ? !focusState
-              ? {
-                  border:
-                    '1px solid var(--text-editor-out-focus-border-color) ',
-                  borderRadius: '5px',
-                }
-              : {
-                  border: '1px solid var(--text-editor-in-focus-border-color)',
-                  borderRadius: '5px',
-                }
-            : { border: 'none' }
-        }
-        onFocus={() => {
-          setFocusState(true);
-        }}
-        onBlur={handleEditorBlur}
-        readOnly={readOnly}
-        toolbarHidden={toolbarHidden}
-        toolbarClassName="ff-toolbarClass"
-        handlePastedText={() => false}
-        toolbar={{
-          options:
-            Array.isArray(toolbarOptions) && toolbarOptions?.length > 0
-              ? toolbarOptions
-              : defaultToolBarOptions,
-          fontFamily: {
-            options: [
-              'Arial',
-              'Georgia',
-              'Impact',
-              'OpenSans-Regular',
-              'Tahoma',
-              'Times New Roman',
-              'Verdana',
-              'poppins',
-            ],
-          },
-        }}
-      />
-      {required && error && (
+      <div ref={editorRef} onDoubleClick={handleDoubleClick}>
+        <EditorComponent
+          editorState={editorState}
+          onEditorStateChange={handleEditorChange}
+          wrapperClassName="wrapperClass"
+          editorClassName={`ff-heading-TextEditor-style ${
+            analyticsClasses ? 'fontSm' : 'fontMd'
+          }`}
+          editorStyle={
+            mode !== 'view' && (!editableTextEditor || isEditing)
+              ? !focusState
+                ? {
+                    border:
+                      '1px solid var(--text-editor-out-focus-border-color) ',
+                    borderRadius: '4px',
+                  }
+                : {
+                    border:
+                      '1px solid var(--text-editor-in-focus-border-color)',
+                    borderRadius: '4px',
+                  }
+              : { border: 'none' }
+          }
+          onFocus={() => {
+            setFocusState(true);
+          }}
+          onBlur={handleEditorBlur}
+          readOnly={editableTextEditor ? !isEditing : readOnly}
+          toolbarHidden={editableTextEditor ? !isEditing : toolbarHidden}
+          toolbarClassName="ff-toolbarClass"
+          handlePastedText={() => false}
+          toolbar={{
+            options:
+              Array.isArray(toolbarOptions) && toolbarOptions?.length > 0
+                ? toolbarOptions
+                : defaultToolBarOptions,
+            fontFamily: {
+              options: [
+                'Arial',
+                'Georgia',
+                'Impact',
+                'OpenSans-Regular',
+                'Tahoma',
+                'Times New Roman',
+                'Verdana',
+                'poppins',
+              ],
+            },
+          }}
+        />
+      </div>
+      {(required && errorMsg) || (helperText && error) ? (
         <Typography
           fontSize={10}
           className={'ff-textEditor-error-msg'}
@@ -179,8 +287,9 @@ const TextEditor: FC<RichTextEditorProps> = ({
         >
           {helperText}
         </Typography>
-      )}
+      ) : null}
     </div>
   );
 };
+
 export default TextEditor;

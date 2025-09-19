@@ -76,7 +76,7 @@ const DraggableTableRow: FC<TableMainRow> = ({
                 className="ff-data-checkbox-container"
               >
                 {firstColumn && withCheckbox && (
-                  <span className="ff-table-checkbox">
+                  <span className="ff-table-pre-post-checkbox">
                     <Checkbox
                       onChange={(e) => onSelectClick(e, row)}
                       checked={row.checked}

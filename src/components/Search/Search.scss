@@ -29,10 +29,6 @@
       cursor: pointer;
       border-radius: 4px;
 
-      &:hover {
-        background-color: var(--ff-search-field-hover-color);
-      }
-
       .ff-icon-container {
         svg {
           path {
@@ -126,8 +122,8 @@
         display: grid;
         place-items: center;
         width: 22px;
-        padding-top: 1px;
-        padding-left: 5px;
+        padding-top: 2px;
+        margin: 0 3px;
 
         &.showClose {
           display: none;

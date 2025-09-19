@@ -37,7 +37,7 @@ const AttachmentButton: React.FC<AttachmentUploaderProps> = ({
   const [fileError, setFileError] = useState<string>('');
 
   const fileTypes: Record<string, string[]> = {
-    image: ['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml'],
+    image: ['image/jpeg', 'image/png', 'image/svg+xml'],
     video: ['video/mp4', 'video/mpeg', 'video/quicktime'],
     audio: ['audio/mpeg', 'audio/wav', 'audio/ogg'],
     document: [

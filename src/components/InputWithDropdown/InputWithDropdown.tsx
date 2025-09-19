@@ -1,4 +1,4 @@
-import { forwardRef } from 'react';
+import { forwardRef, KeyboardEvent } from 'react';
 import classNames from 'classnames';
 import './InputWithDropdown.scss';
 import { InputWithDropdownProps } from './types';
@@ -20,12 +20,12 @@ const InputWithDropdown = forwardRef<HTMLInputElement, InputWithDropdownProps>(
       optionsList,
       selectedOption = { label: '', value: '' },
       autoComplete = 'off',
-      onDropdownChangeHandler = () => {},
+      onDropdownChangeHandler = () => { },
       onInputChangeHandler,
       onInputBlurHandler,
       onClick,
       onKeyUp,
-      onKeyDown = () => {},
+      onKeyDown = () => { },
       onFocus,
       optionsRequired = true,
       dropdownPosition = 'right',
@@ -35,6 +35,7 @@ const InputWithDropdown = forwardRef<HTMLInputElement, InputWithDropdownProps>(
       pattern,
       inputMode,
       disableSelectHover = false,
+      inputRefWithDropdown,
     },
     ref
   ) => {
@@ -48,6 +49,20 @@ const InputWithDropdown = forwardRef<HTMLInputElement, InputWithDropdownProps>(
         input.blur();
         setTimeout(() => input.focus(), 0);
       }
+    };
+
+    const handleOnKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+      const { type, value } = e.currentTarget;
+      const parsedValue = parseInt(value);
+      if (type === 'number') {
+        if (
+          ['Subtract', '-'].includes(e.key) ||
+          (e.key === 'ArrowDown' && (parsedValue <= 0 || isNaN(parsedValue)))
+        ) {
+          e.preventDefault();
+        }
+      }
+      onKeyDown?.(e);
     };
 
     return (
@@ -84,6 +99,7 @@ const InputWithDropdown = forwardRef<HTMLInputElement, InputWithDropdownProps>(
                 })}
                 width={94}
                 height={30}
+                dropDownRef={inputRefWithDropdown} // Pass the dropDownRef here
               />
               <div className="seperatorline" />
             </>
@@ -115,7 +131,7 @@ const InputWithDropdown = forwardRef<HTMLInputElement, InputWithDropdownProps>(
               disabled={disabled}
               onClick={onClick}
               onKeyUp={onKeyUp}
-              onKeyDown={onKeyDown}
+              onKeyDown={handleOnKeyDown}
               onWheel={handleWheel}
               onFocus={onFocus}
               className={classNames('ff-floating-input', {
@@ -145,11 +161,12 @@ const InputWithDropdown = forwardRef<HTMLInputElement, InputWithDropdownProps>(
               })}
               width={120}
               height={30}
+              dropDownRef={inputRefWithDropdown}
             />
           )}
         </fieldset>
         {error && helperText && (
-          <span className="ff-helper-text">{helperText}</span>
+          <span className={classNames("ff-helper-text", { 'ff-helper-text-left': dropdownPosition === "left" })}>{helperText}</span>
         )}
       </div>
     );

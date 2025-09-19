@@ -134,7 +134,7 @@
 
 .tree-table-wrap {
   width: 100%;
-  padding-left: 4px; // padding size need to check
+  padding-left: 0px; 
   overflow: hidden;
   overflow-x: auto;
   box-sizing: border-box;
@@ -198,7 +198,8 @@
   }
 
   .ff-table-tree-row:hover,
-  .ff-table-tree-row.hover {
+  .ff-table-tree-row.hover-selected,
+  .ff-table-tree-row.menu-hover-active {
     background-color: var(--hover-color);
 
     .ff-table-tree-td {

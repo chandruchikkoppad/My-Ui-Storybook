@@ -142,6 +142,15 @@ export interface FileDropzoneProps {
    **/
   fileInputRef?: RefObject<HTMLInputElement>;
   handleReplaceFile?: (file?: File | DynamicObj | null) => void;
+
+  /**
+   *  To Disable Remove Button.
+   **/
+  isRemoveDisabled?: boolean;
+  /**
+   *  To Disable Replace Button.
+   **/
+  isReplaceDisabled?: boolean;
 }
 export interface FileState {
   accepted: File[];
@@ -219,6 +228,7 @@ export interface FilePreviewProps {
   onUploadFile?: VoidFunction;
   isUploadIcon?: boolean;
   isRemoveDisabled?: boolean;
+  isReplaceDisabled?: boolean;
   isError?: boolean;
   isIndependentPreview?: boolean;
 }

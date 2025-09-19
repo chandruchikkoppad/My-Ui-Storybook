@@ -20,10 +20,17 @@ const PromptContainer: React.FC<PromptContainerProps> = ({
   isEditAccess,
   versionsLength,
   count,
+  hiddenActions = [],
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showReadMore, setShowReadMore] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
+  const hiddenListIcons = Array.isArray(hiddenActions)
+    ? hiddenActions
+    : hiddenActions
+    ? [hiddenActions]
+    : [];
+
   const actions: Action[] = [
     {
       action: 'delete',
@@ -129,25 +136,31 @@ const PromptContainer: React.FC<PromptContainerProps> = ({
       </>
       <div className="ff-prompt-icons">
         <div className="ff-prompt-icons-leftside">
-          {actions.map((act) => {
-            const isDelete = act?.action === 'delete';
-            const isRegenerate = act?.action === 'regenerate';
-            const shouldDisableIcon =
-              (isEditAccess && isDelete) ||
-              (isRegenerate && (versionsLength ?? 0) >= 3) ||
-              disabled;
-            return (
-              <Tooltip title={act.title} placement="bottom">
-                <Icon
-                  disabled={shouldDisableIcon}
-                  name={act.action}
-                  color={act.color}
-                  hoverEffect={true}
-                  onClick={(e) => handleIconClick(e, act.action)}
-                />
-              </Tooltip>
-            );
-          })}
+          {actions
+            .filter((act) => !hiddenListIcons.includes(act.action))
+            .map((act, index) => {
+              const isDelete = act?.action === 'delete';
+              const isRegenerate = act?.action === 'regenerate';
+              const shouldDisableIcon =
+                (isEditAccess && isDelete) ||
+                (isRegenerate && (versionsLength ?? 0) >= 3) ||
+                disabled;
+              return (
+                <Tooltip
+                  title={act.title}
+                  placement="bottom"
+                  key={`${act?.title}-${index}`}
+                >
+                  <Icon
+                    disabled={shouldDisableIcon}
+                    name={act.action}
+                    color={act.color}
+                    hoverEffect={true}
+                    onClick={(e) => handleIconClick(e, act.action)}
+                  />
+                </Tooltip>
+              );
+            })}
         </div>
         <div className="ff-prompt-icons-rightside">
           <Icon

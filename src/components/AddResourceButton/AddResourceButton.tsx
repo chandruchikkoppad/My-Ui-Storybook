@@ -17,7 +17,14 @@ const AddResourceButton = ({
     {
       direction: 'right',
       menuOptions: [
-        { label: 'Sub Module', value: 'sub_module', icon: '', disable: false },
+        {
+          label: 'Sub Module',
+          value: 'sub_module',
+          icon: '',
+          disable: false,
+          tooltipForOption: '',
+          tooltipPlacementForOption: undefined,
+        },
       ],
     },
   ],

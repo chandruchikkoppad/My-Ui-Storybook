@@ -118,7 +118,7 @@ const RadialChart: React.FC<RadialChartProps> = ({
         } as React.CSSProperties
       }
     >
-      {statusValues.map((status) => {
+      {statusValues.map((status, index) => {
         const normalizedStatus = status.status.toLowerCase();
         const { endAngle, backgroundArcPath, foregroundArcPath, percentage } =
           calculateArcAngles(status.value, total, currentAngle, radius);
@@ -127,6 +127,7 @@ const RadialChart: React.FC<RadialChartProps> = ({
           <Tooltip
             title={`${status.status}: ${Math.round(percentage * 100)}%`}
             zIndex={1000}
+            key={`status.status-${index}`}
           >
             <svg
               key={status.status}

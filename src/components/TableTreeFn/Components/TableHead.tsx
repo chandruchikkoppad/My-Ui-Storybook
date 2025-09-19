@@ -23,13 +23,24 @@ const TableHead = React.memo(
     // );
     const rootNodeRowRef = useRef<HTMLTableRowElement | null>(null);
     const [isMounted, setIsMounted] = useState(false);
+    const [didMouseEntered, setDidMouseEntered] = useState(false);
+
+    const handleMouseEnter = (e: React.MouseEvent<HTMLElement>) => {
+      e.stopPropagation();
+      setDidMouseEntered(true);
+    }
+
+    const handleMouseLeave = (e: React.MouseEvent<HTMLElement>) => {
+      e.stopPropagation();
+      setDidMouseEntered(false);
+    }
 
     useEffect(() => {
       setIsMounted(true);
     }, []);
 
     return (
-      <thead className="ff-table-tree-head">
+      <thead className="ff-table-tree-head" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
         <tr className="ff-table-tree-row no-hover">
           {columnsData.map(({ name, width }) => (
             <th
@@ -49,11 +60,10 @@ const TableHead = React.memo(
         </tr>
         {rootNode && (
           <tr
-            className={`ff-table-tree-row show ${
-              selectedNode && selectedNode === rootNode?.node?.key
-                ? 'hover'
-                : ''
-            }`}
+            className={`ff-table-tree-row show ${selectedNode && selectedNode === rootNode?.node?.key
+              ? 'hover'
+              : ''
+              }`}
             ref={rootNodeRowRef}
           >
             {columnsData.map((col, index) => (
@@ -104,7 +114,7 @@ const TableHead = React.memo(
                       </span>
                     )}
                   </span>
-                  {rootNode.actions &&
+                  {didMouseEntered && rootNode.actions &&
                     index === 0 &&
                     isMounted &&
                     rootNodeRowRef.current && (

@@ -272,6 +272,7 @@ export const DatePickerWithTimeZone: Story = {
       { value: 'Europe/London', label: 'London (UTC+0)' },
       { value: 'Asia/Tokyo', label: 'Tokyo (UTC+9)' },
       { value: 'Australia/Sydney', label: 'Sydney (UTC+10)' },
+      { value: 'Pacific/Apia', label:'Somoa'}
     ];
     const [selectDate, setSelectDate] = useState<Date | undefined>();
 

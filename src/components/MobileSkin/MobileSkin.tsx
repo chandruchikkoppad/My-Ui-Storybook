@@ -20,24 +20,28 @@ const MobileSkin: React.FC<MobileSkinProps> = ({
   const containerWidth = isPortrait ? mobileWidth : mobileHeight;
   const hasTopNav = UtilityBar && navBarPosition === 'top';
   const hasBottomNav = UtilityBar && navBarPosition === 'bottom';
+  const hasSideNav = UtilityBar && navBarPosition === 'left';
 
   return (
     <div
-      className={`ff-mobileskin-wrapper ${
-        isPortrait ? 'portrait' : 'landscape'
-      } ${hasTopNav && 'navbar-top'}`}
+      className={[
+        'ff-mobileskin-wrapper',
+        isPortrait ? 'portrait' : 'landscape',
+        hasSideNav ? 'ff-side-nav-left' : '',
+        hasTopNav ? 'navbar-top' : '',
+        hasBottomNav ? 'navbar-bottom' : '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
     >
       {hasTopNav && (
         <div className="ff-nav-bar top-nav-bar">
           {navBarIcons.map(
             ({ title, name, className, ...iconProps }, index) => {
+              const key = tooltip?.[name] ?? index;
               const tooltipTitle = tooltip?.[name] || '';
               return (
-                <Tooltip
-                  key={tooltipTitle}
-                  title={tooltipTitle}
-                  placement="top"
-                >
+                <Tooltip key={key} title={tooltipTitle} placement="top">
                   <div
                     className={`ff-nav-bar-icon ${className || ''} ${
                       index === navBarIcons.length - 1 ? 'last-icon' : ''
@@ -92,6 +96,25 @@ const MobileSkin: React.FC<MobileSkinProps> = ({
                 }`}
               >
                 <Tooltip title={title}>
+                  <Icon {...iconProps} />
+                </Tooltip>
+              </div>
+            );
+          })}
+        </div>
+      )}
+      {UtilityBar && hasSideNav && (
+        <div className="ff-side-nav-bar">
+          {navBarIcons?.map((icon, index) => {
+            const { title, ...iconProps } = icon;
+            return (
+              <div
+                key={index}
+                className={`ff-sidebar ${icon?.className || ''} ${
+                  index === navBarIcons.length - 1 ? 'last-icon' : ''
+                }`}
+              >
+                <Tooltip title={title} placement="bottom">
                   <Icon {...iconProps} />
                 </Tooltip>
               </div>

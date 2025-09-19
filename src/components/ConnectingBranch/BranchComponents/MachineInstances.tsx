@@ -44,7 +44,7 @@ const MachineInstances: React.FC<MachineInstancesProps> = ({
           (childNodeData: MachineData, childNodeIndex: indexType) => {
             const isFirstLine = childNodeIndex === 0;
             return (
-              <div className="ff-machine-instance-row">
+              <div className="ff-machine-instance-row" key={childNodeIndex}>
                 <div
                   className={`ff-selectedMachines-connecting-line ${
                     !isFirstLine ? 'ff-second-line' : ''
@@ -104,16 +104,24 @@ const MachineInstances: React.FC<MachineInstancesProps> = ({
                               <div
                                 className={`ff-curve-right-icon ff-curve-right-icon-${runLevelExecutionDataSetIndex}`}
                               ></div>
-                              {childNodeData?.runScriptCount && (
+                              {Number(childNodeData?.runScriptCount) ? (
                                 <div className="ff-selectedMachines-connecting-line-text">
                                   <Typography fontSize={8} fontWeight="regular">
-                                    {`${childNodeData.runScriptCount} Script${
+                                    {`${
+                                      ![0, '0', null].includes(
+                                        childNodeData.runScriptCount
+                                      )
+                                        ? childNodeData.runScriptCount
+                                        : ''
+                                    } Script${
                                       childNodeData.runScriptCount !== 1
                                         ? 's'
                                         : ''
                                     }`}
                                   </Typography>
                                 </div>
+                              ) : (
+                                <></>
                               )}
                             </div>
                           </div>

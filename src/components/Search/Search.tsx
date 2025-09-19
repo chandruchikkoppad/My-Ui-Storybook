@@ -164,6 +164,7 @@ const Search = ({
               height={isExpand ? 14 : 16}
               width={isExpand ? 14 : 16}
               disabled={disabled}
+              hoverEffect={!isExpand}
             />
           </Tooltip>
         </div>
@@ -235,6 +236,8 @@ const Search = ({
                   onClick={() => {
                     handleSearchClearAndClose('Close');
                   }}
+                  height={12}
+                  width={12}
                 />
               </div>
             </Tooltip>

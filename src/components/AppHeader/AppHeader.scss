@@ -7,11 +7,11 @@
     flex-basis: 100%;
     justify-content: space-between;
     background-color: var(--brand-color);
-    padding-left: 8px;
     height: 40px;
     pointer-events: initial;
     position: relative;
     min-height: 40px;
+
     &--disabled {
       pointer-events: none;
       opacity: 0.5;
@@ -19,12 +19,17 @@
 
     .ff-app-header-left-container {
       display: flex;
-
+      justify-content: center;
+      align-items: center;
       .ff-app-header-logo-icon {
+        display: flex;
+        min-width: 54px;
+        align-items: center;
+        justify-content: center;
         padding: 4px;
-        height: 24px;
       }
     }
+
     .ff-app-header-nav-bar-skeleton,
     .ff-app-header-nav-bar {
       display: flex;
@@ -36,7 +41,14 @@
       padding: 4px;
       padding-bottom: 16px;
       height: 40px;
+
+      &.ff-app-header-nav-bar--with-center-info {
+        justify-content: space-between;
+        padding-bottom: 0;
+        transform: translateY(6px);
+      }
     }
+
     .ff-app-header-nav-bar-skeleton {
       position: absolute;
       top: 0;
@@ -44,6 +56,7 @@
       z-index: 2;
       pointer-events: none;
     }
+
     .ff-app-header-nav-bar {
       .ff-app-header-nav-bar-items {
         display: flex;
@@ -64,6 +77,7 @@
 
           &:not(.ff-app-header-nav-bar-item--selected):hover {
             transform: scale(1.1);
+
             &::after {
               animation: oscillate-border-width 0.5s ease-in-out forwards;
             }
@@ -100,11 +114,9 @@
 
             .ff-app-header-nav-bar-item-label {
               box-shadow: 0px 4px 4px 0px var(--toggle-strip-shadow) inset;
-              background: linear-gradient(
-                90deg,
-                var(--brand-color) 0%,
-                var(--button-background-gradient-color) 100%
-              );
+              background: linear-gradient(90deg,
+                  var(--brand-color) 0%,
+                  var(--button-background-gradient-color) 100%);
               border-radius: 20px;
               padding: 4px 8px;
             }
@@ -137,9 +149,7 @@
                 color: var(--ff-header-submenu-highlight-text-color);
               }
 
-              &:not(
-                  .ff-app-header-nav-bar-submenu-item--selected
-                ):hover::after {
+              &:not(.ff-app-header-nav-bar-submenu-item--selected):hover::after {
                 animation: oscillate-border-width 0.5s ease-in-out forwards;
               }
 
@@ -168,8 +178,7 @@
                   width: 70%;
                   height: 2px;
                   border-radius: 4px;
-                  box-shadow: 0px 1px 0.2px 0px
-                    var(--ff-app-header-item-shadow-color);
+                  box-shadow: 0px 1px 0.2px 0px var(--ff-app-header-item-shadow-color);
                   background: var(--ff-app-header-submenu-border-bottom-color);
                 }
               }
@@ -177,7 +186,12 @@
               &--disabled {
                 cursor: not-allowed;
                 opacity: 0.5;
-                pointer-events: none;
+
+                &:hover {
+                  &::after {
+                    content: none;
+                  }
+                }
               }
             }
 
@@ -236,6 +250,7 @@
               path {
                 fill: var(--primary-icon-color);
               }
+
               cursor: pointer;
             }
           }
@@ -254,11 +269,26 @@
         }
       }
     }
+
     .ff-app-header-left-content,
     .ff-app-header-right-content {
-      height: 24px;
-      padding: 8px;
       align-content: center;
+      padding-right: 8px;
+      &--disabled {
+        opacity: 0.5;
+        pointer-events: none;
+      }
+    }
+    .ff-app-header-left-content{
+      padding-left: 8px;
+    }
+
+    .ff-app-header-profile-content {
+      width: 6%;
+      display: flex;
+      align-items: center;
+      padding-right: 8px;
+      justify-content: end;
 
       &--disabled {
         opacity: 0.5;
@@ -273,10 +303,12 @@
     width: 50%;
     left: 25%;
   }
+
   50% {
     width: 70%;
     left: 15%;
   }
+
   100% {
     width: 50%;
     left: 25%;
@@ -288,6 +320,7 @@
     max-height: 0;
     opacity: 0;
   }
+
   to {
     max-height: 500px;
     opacity: 1;
@@ -299,8 +332,61 @@
     max-height: 500px;
     opacity: 1;
   }
+
   to {
     max-height: 0;
     opacity: 0;
+  }
+}
+
+//live testing AppHeader
+.ff-app-header-center-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 6px 144px 16px 370px;
+
+    &--no-right {
+    padding: 0;
+  }
+
+  .ff-app-header-center-info-item {
+    display: flex;
+    align-items: center;
+
+    span {
+      margin-left: 4px;
+      color: var(--ff-header-text-color);
+    }
+  }
+}
+
+.ff-app-header-right-buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-right: 24px;
+  padding-bottom: 16px;
+  padding-top: 6px;
+
+  .ff-app-header-right-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 12px;
+    height: 24px;
+    border-radius: 4px;
+    border: 1px solid var(--brand-color);
+    cursor: pointer;
+    font: inherit;
+
+    .ff-icon {
+      margin-right: 4px;
+    }
+
+    &:hover {
+      opacity: 0.9;
+    }
   }
 }

@@ -13,24 +13,48 @@
   &.relative {
     position: relative;
   }
+
+  /* Virtuoso container styling */
+  .virtuoso-scroller {
+    overflow-x: hidden !important;
+  }
 }
-.ff-variable-option {
+
+.ff-variable-option ,
+.ff-variable-option-no-data {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 10px;
   cursor: pointer;
+  height: 40px; /* Fixed height for virtualization */
+  box-sizing: border-box;
+
   &:hover {
     background-color: var(--hover-color);
   }
 }
-.ff-truncated_text {
-    max-width: 100%;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: block;
+
+.ff-variable-option-no-data {
+  cursor: no-drop;
 }
+
 .ff-variable-data {
   padding: 6px;
+  height: 32px; /* Fixed height for virtualization */
+  box-sizing: border-box;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  &:hover {
+    background-color: var(--hover-color);
+  }
+}
+
+.ff-truncated_text {
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
 }

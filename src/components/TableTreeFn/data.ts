@@ -18,6 +18,7 @@ const data = [
     resourceCount: 0,
     totalSubContainerCount: 4,
     totalResourceCount: 30,
+    lastResource: true,
     container: true,
     expandable: true,
     expanded: true,
@@ -207,7 +208,7 @@ const data = [
     isRecorded: 'N',
     isShared: 'N',
     unselectable: false,
-    machine: 're'
+    machine: 're',
   },
   {
     key: 'ELE50d07e43-00d3-48cb-9c7a-272027e95b20',
@@ -235,7 +236,7 @@ const data = [
     isRecorded: 'N',
     isShared: 'N',
     mdDisable: false,
-    machine: 're'
+    machine: 're',
   },
   {
     key: 'ELE9dc8e896-0a75-4bb6-bb61-5c5b0c9bcb84',

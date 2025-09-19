@@ -7,6 +7,7 @@ import * as Matrix from './matrix';
 import useDispatch from './use-dispatch';
 import useSelector from './use-selector';
 import Typography from '../../../Typography';
+import { getMatrixDimensions } from './util';
 
 const RowIndicator: Types.RowIndicatorComponent = ({
   row,
@@ -20,11 +21,33 @@ const RowIndicator: Types.RowIndicatorComponent = ({
   rowContextEnable,
   selectedRow,
   cell,
+  maxRowLimit,
+  disableDeleteOption,
+  contextMenu,
+  setVisibleRange,
+  scrollToRow,
 }) => {
   const dispatch = useDispatch();
   const rowHeight = useSelector(
     (state) => state.rowDimensions[row]?.height || 32
   );
+
+  const matrixData = useSelector((state) => state.model.data);
+
+  const { rowCount } = getMatrixDimensions(matrixData as [[]]);
+
+  const updateVisibleRangeEnd = (action: 'increment' | 'decrement') => {
+    setVisibleRange((prev) => {
+      const value = {
+        ...prev,
+        end: action === 'increment' ? prev.end + 1 : prev.end - 1,
+      };
+      if (selectedRow === rowCount - 1) {
+        scrollToRow(selectedRow, value);
+      }
+      return value;
+    });
+  };
 
   const options = React.useMemo(() => {
     return [
@@ -32,25 +55,44 @@ const RowIndicator: Types.RowIndicatorComponent = ({
         label: 'Add Row Top',
         value: 'Add Row Top',
         iconName: 'plus_icon',
-        action: addRowTop,
-        disable: cell?.contextDisable?.['Add Row Top'] ?? false,
+        action: () => {
+          updateVisibleRangeEnd('increment');
+          addRowTop();
+        },
+        disableTooltip: 'Row limit reached',
+        visible: cell?.contextDisable?.['Add Row Top'] ?? false,
+        disable: rowCount >= maxRowLimit,
       },
       {
         label: 'Add Row Bottom',
         value: 'Add Row Bottom',
         iconName: 'plus_icon',
-        action: addRowBottom,
-        disable: cell?.contextDisable?.['Add Row Bottom'] ?? false,
+        action: () => {
+          updateVisibleRangeEnd('increment');
+          addRowBottom();
+        },
+        disableTooltip: 'Row limit reached',
+        visible: cell?.contextDisable?.['Add Row Bottom'] ?? false,
+        disable: rowCount >= maxRowLimit,
       },
-      {
-        label: 'Delete Row',
-        value: 'Delete Row',
-        iconName: 'delete',
-        action: deleteRow,
-        disable: cell?.contextDisable?.['Delete Row'] ?? false,
-      },
+      ...(!disableDeleteOption
+        ? [
+            {
+              label: 'Delete Row',
+              value: 'Delete Row',
+              iconName: 'delete',
+              action: () => {
+                updateVisibleRangeEnd('decrement');
+                deleteRow();
+              },
+              disableTooltip: '',
+              visible: cell?.contextDisable?.['Delete Row'] ?? false,
+              disable: false,
+            },
+          ]
+        : []),
     ];
-  }, [selectedRow]);
+  }, [selectedRow, row]);
 
   const handleMouseDrag = React.useCallback(
     (event: React.MouseEvent, isUp: boolean) => {
@@ -99,6 +141,7 @@ const RowIndicator: Types.RowIndicatorComponent = ({
       onSelect(row, event.shiftKey);
       setContextMenu({
         open: rowContextEnable,
+        contextType: 'row',
         options,
       });
     },
@@ -109,10 +152,17 @@ const RowIndicator: Types.RowIndicatorComponent = ({
     if (selectedRow !== undefined) {
       setContextMenu((prev) => ({
         open: prev.open,
+        contextType: 'row',
         options,
       }));
     }
-  }, [row, rowContextEnable, options, selectedRow]);
+  }, [
+    row,
+    rowContextEnable,
+    options,
+    selectedRow,
+    contextMenu?.contextType === 'row',
+  ]);
 
   return (
     <th
@@ -171,6 +221,7 @@ export const enhance = (
         cell={cell}
         selectedRow={selectedRow}
         onSelect={selectEntireRow}
+        scrollToRow={props.scrollToRow}
       />
     );
   };

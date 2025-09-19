@@ -165,6 +165,8 @@ export interface VariableSuggestionInputDropDownProps {
    * inputTitle for the field
    */
   inputTitle?: string;
+
+  helperTextWidth?:number | string
 }
 
 export interface OptionsDropdownProps {

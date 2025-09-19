@@ -4,6 +4,7 @@ import { MediaViewerModalProps } from './type';
 import Icon from '../Icon';
 import OverviewModal from '../OverviewModal';
 import Typography from '../Typography';
+import Tooltip from '../Tooltip';
 
 const MediaViewerModal: React.FC<MediaViewerModalProps> = ({
   isOpen,
@@ -23,11 +24,12 @@ const MediaViewerModal: React.FC<MediaViewerModalProps> = ({
   showControls = true,
   customStyle,
   overlay = true,
-  children, 
+  children,
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [isFullscreen] = useState(false);
 
   useEffect(() => {
     if (mediaType === 'video' && videoRef.current && !children) {
@@ -99,7 +101,11 @@ const MediaViewerModal: React.FC<MediaViewerModalProps> = ({
           </Typography>
         </div>
       }
-      icons={<Icon width={33} height={33} name="close" onClick={onClose} />}
+      icons={
+        <Tooltip title="close">
+          <Icon name="close" onClick={onClose} />
+        </Tooltip>
+      }
       width={width}
       height={height}
       zIndex={999}
@@ -121,22 +127,18 @@ const MediaViewerModal: React.FC<MediaViewerModalProps> = ({
         )}
         <div className="ff-top-right-icons">
           {showDownload && (
-            <Icon
-              width={20}
-              height={23}
-              name="download_file"
-              color="white"
-              onClick={onDownload}
-            />
+            <Tooltip title="Download">
+              <Icon name="download_file" color="white" onClick={onDownload} />
+            </Tooltip>
           )}
           {showExpand && (
-            <Icon
-              width={20}
-              height={23}
-              name="expand_icon"
-              color="white"
-              onClick={onExpand}
-            />
+            <Tooltip title={isFullscreen ? 'Minimize' : 'Maximize'}>
+              <Icon
+                name={isFullscreen ? 'collapse_icon' : 'expand_icon'}
+                color="white"
+                onClick={onExpand}
+              />
+            </Tooltip>
           )}
         </div>
 

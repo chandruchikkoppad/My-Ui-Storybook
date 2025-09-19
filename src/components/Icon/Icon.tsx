@@ -21,6 +21,7 @@ const Icon = forwardRef<HTMLSpanElement, IconProps>(
       y,
       chartIcon = false,
       tabIndex = -1,
+      cursorType,
       ...props
     },
     ref
@@ -49,13 +50,27 @@ const Icon = forwardRef<HTMLSpanElement, IconProps>(
     const iconColor =
       variant === 'dark' ? 'var(--ff-icon-color-dark-variant)' : color;
 
+    const getCursor = () => {
+      if (disabled) {
+        return 'not-allowed';
+      } else if (hoverEffect && cursorType) {
+        return cursorType;
+      } else if (hoverEffect) {
+        return 'pointer';
+      } else if (cursorType) {
+        return cursorType;
+      } else {
+        return 'default';
+      }
+    };
+
     const baseProps = {
       ref: iconRef,
       onClick: disabled ? () => {} : onClick,
       style: {
         height: `${iconHeight}px`,
         width: `${iconWidth}px`,
-        cursor: disabled ? 'not-allowed' : 'pointer',
+        cursor: getCursor(),
       },
       className: classNames('ff-icon-container', {
         'ff-icon-click': hoverEffect,

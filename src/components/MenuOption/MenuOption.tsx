@@ -1,4 +1,4 @@
-import { useState, useRef, useContext, useEffect } from 'react';
+import { useState, useRef, useContext, useEffect, useCallback } from 'react';
 import './MenuOption.scss';
 import Icon from '../Icon';
 import classNames from 'classnames';
@@ -51,7 +51,8 @@ const calculatePosition = (
   menuPosition: { top: any; left: any; height: any; width: any },
   dropdownPlacement: string | undefined,
   optionCardHeight: number,
-  optionCardWidth?: number
+  optionCardWidth?: number,
+  isAddResourceButton?: boolean
 ) => {
   const { top, left, height, width } = menuPosition;
   const availableSpace = {
@@ -61,6 +62,7 @@ const calculatePosition = (
     right: window.innerWidth - (left + width),
   };
   const gap = 2;
+  const minGap = 8;
 
   let newTop = top;
   let newLeft = left;
@@ -77,6 +79,11 @@ const calculatePosition = (
         availableSpace.bottom > optionCardHeight + gap
           ? top + height + gap
           : top - optionCardHeight - gap;
+      if (isAddResourceButton) {
+        if (!(availableSpace?.bottom > optionCardHeight + gap)) {
+          newLeft = left + 50;
+        }
+      }
       break;
     case 'left':
       newLeft =
@@ -105,7 +112,7 @@ const calculatePosition = (
   }
 
   // Ensure menu stays within viewport
-  newTop = Math.max(0, Math.min(newTop, window.innerHeight - optionCardHeight));
+  newTop = Math.max(0, Math.min(newTop, window.innerHeight - optionCardHeight-minGap));
   newLeft = Math.max(0, Math.min(newLeft, window.innerWidth - width));
 
   return { top: newTop, left: newLeft };
@@ -122,6 +129,7 @@ const OptionCard = ({
   variant,
   isAddResourceButton,
   alignOption,
+  ownerId,
 }: OptionCardProps) => {
   const themeContext = useContext(ThemeContext);
   const currentTheme = themeContext?.currentTheme;
@@ -139,7 +147,8 @@ const OptionCard = ({
     menuPosition,
     dropdownPlacement,
     optionCardHeight,
-    optionCardWidth
+    optionCardWidth,
+    isAddResourceButton
   );
   return createPortal(
     <div
@@ -149,6 +158,7 @@ const OptionCard = ({
         { 'ff-option-card--default': variant === 'default' },
         currentTheme
       )}
+      data-owner-id={ownerId}
       style={{ ...style, zIndex, margin: isAddResourceButton ? '0px' : '4px' }}
       ref={optionCardRef}
     >
@@ -195,8 +205,11 @@ const MenuOption = ({
   disabled,
   alignOption = 'left',
   displayCard = true,
+  didMouseEntered,
+  tableMenu = false,
 }: MenuOptionProps) => {
   const [isClicked, setIsClicked] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const menuIconRef = useRef<HTMLDivElement>(null);
   const [menuPosition, setMenuPosition] = useState({
@@ -206,19 +219,23 @@ const MenuOption = ({
     right: 0,
     width: 0,
   });
+  const getTargetElement = useCallback(() => {
+    if (!targetRef) return null;
+    return typeof targetRef === 'string'
+      ? document.getElementById(targetRef)
+      : getAnchorElement(targetRef);
+  }, [targetRef]);
+
   const closeDropDown = () => setIsClicked(false);
   useEffect(() => {
-    if (targetRef && !checkEmpty(options)) {
-      const parentDom = getAnchorElement(targetRef);
-      parentDom?.classList.toggle('hover', isClicked);
-    }
+    const targetElement = getTargetElement();
+    if (!targetElement || checkEmpty(options)) return;
+
+    targetElement.classList.toggle('menu-hover-active', isHovered || isClicked);
     return () => {
-      if (targetRef) {
-        const parentDom = getAnchorElement(targetRef);
-        parentDom?.classList.remove('hover');
-      }
+      targetElement.classList.remove('menu-hover-active');
     };
-  }, [isClicked, targetRef, options]);
+  }, [isHovered, isClicked, targetRef, options, getTargetElement]);
   const getScrollableParent = (
     element: HTMLElement | null
   ): HTMLElement | null => {
@@ -270,6 +287,9 @@ const MenuOption = ({
 
   const onIconClickHandler = () => {
     if (disabled) return;
+    if (didMouseEntered) {
+      didMouseEntered();
+    }
     onClick();
     calculateDims();
     setIsClicked((prev) => !prev);
@@ -306,6 +326,8 @@ const MenuOption = ({
             })}
             ref={menuIconRef}
             onClick={onIconClickHandler}
+            onMouseEnter={() => tableMenu && !disabled && setIsHovered(true)}
+            onMouseLeave={() => tableMenu && setIsHovered(false)}
             style={{
               width: `${iconButtonSize}px`,
               height: `${iconButtonSize}px`,
@@ -341,6 +363,10 @@ const MenuOption = ({
           variant={optionCardVariant}
           isAddResourceButton={isAddResourceButton}
           alignOption={alignOption}
+          ownerId={
+            (typeof targetRef !== 'string' && targetRef?.current?.id) ||
+            treeRowRef?.current?.id
+          }
         />
       )}
     </div>

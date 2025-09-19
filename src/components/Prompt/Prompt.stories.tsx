@@ -38,6 +38,9 @@ export const DefaultPrompt: Story = {
           value={promptValue}
           onPromptChange={handlePromptChange}
           submitPrompt={() => alert('enter button clicked')}
+          disableInput = {false}
+          isAdditionalIcon = {true}
+          additionalIconName= 'mic'
         />
       </div>
     );

@@ -1,7 +1,6 @@
 .ff-fixed-header-steps-table {
   scrollbar-width: none;
 
-
   .ff-table-steps {
     width: 100%;
 
@@ -14,9 +13,9 @@
     }
 
     .ff-steps-tbody {
-
       tr:hover,
-      tr.hover {
+      tr.hover,
+      tr.menu-hover-active {
         background-color: var(--hover-color);
 
         .icon-container {
@@ -26,21 +25,19 @@
 
         .ff-table-drag,
         .ff-table-drag-icon,
-        .ff-table-checkbox {
+        .ff-table-checkbox-step {
           opacity: 1 !important;
         }
       }
 
       .steps-edit-row {
-
-        &>td {
+        & > td {
           padding: 0px;
         }
 
         &:hover {
           background-color: transparent;
         }
-
       }
 
       tr {
@@ -62,7 +59,7 @@
           align-items: center;
           overflow: hidden;
 
-          .ff-table-checkbox {
+          .ff-table-checkbox-step {
             opacity: 0;
           }
 
@@ -93,7 +90,6 @@
           &.clickable-cell {
             cursor: pointer;
           }
-
         }
 
         .step-detail-cell {
@@ -120,13 +116,12 @@
     align-items: center;
   }
 
-
   .ff-accordion-arrow {
     margin-left: 4px;
     transition: transform 0.25s ease-in-out;
     cursor: pointer;
 
-    .steps-arrow-svg>svg:hover {
+    .steps-arrow-svg > svg:hover {
       color: var(--text-color) !important;
     }
   }
@@ -136,14 +131,8 @@
   }
 }
 
-.step-result-stats {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding-top: 2px;
+.ff-stepResultStats {
   margin-left: 4px;
-  white-space: nowrap;
-  gap: 4px;  
 }
 
 .drag-icon {
@@ -156,6 +145,5 @@
   &-disabled {
     cursor: default !important;
     opacity: 0;
-    ;
   }
 }

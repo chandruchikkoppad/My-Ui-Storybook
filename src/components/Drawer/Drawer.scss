@@ -20,6 +20,8 @@
     transform: translateX(100%);
     opacity: 0;
     border-radius: 4px;
+    display: flex;
+    flex-direction: column;
 
     &--open {
       transform: translateX(0);
@@ -83,7 +85,6 @@
 
           .ff-expand-collapse-button {
             cursor: pointer;
-            background-color: var(--button-bg-color);
             outline: none;
             border: none;
             margin: 0;
@@ -104,22 +105,24 @@
       background-color: var(--drawer-footer-bg);
       width: 100%;
       padding: 0;
-      border-radius: 4px;
+      border-radius: 4px 4px 0 0;
     }
 
     .ff-drawer-body {
       background-color: var(--drawer-footer-bg);
+      flex: 1;
     }
     .ff-drawer-body-with-scroll {
       background-color: var(--drawer-footer-bg);
       overflow-y: auto;
+      flex: 1;
     }
 
     .ff-drawer-footer {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
+      // position: fixed;
+      // bottom: 0;
+      // left: 0;
+      // right: 0;
       padding: 0px 8px;
       display: flex;
       justify-content: space-between;

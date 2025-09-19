@@ -25,8 +25,7 @@
     width: 100%;
     height: 100%;
     background-color: inherit;
-    box-shadow: 
-      -1px 0 1px var(--ff-chips-shadow-color-two),
+    box-shadow: -1px 0 1px var(--ff-chips-shadow-color-two),
       0.5px 0 0.5px var(--ff-chips-shadow-color-two) inset;
   }
 
@@ -91,7 +90,7 @@
     &::after {
       content: '';
       position: absolute;
-      bottom: -9px;
+      bottom: 0;
       left: 0;
       width: 100%;
       height: 2px;

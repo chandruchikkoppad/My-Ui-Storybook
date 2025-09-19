@@ -99,17 +99,17 @@ const headerMenuItems = [
       {
         label: 'Elements',
         path: '/repository/elements',
-        
+        disable: true,
+        disableText: 'Enable from extensions to test disable sub-menu item',
       },
       {
         label: 'Program Elements',
         path: '/repository/program-elements',
-        
       },
       {
         label: 'Step Groups',
         path: '/repository/step-group',
-        
+
         quickMenuItems: [
           { label: 'Elements', path: '#elements', iconName: 'element' },
           {
@@ -145,7 +145,7 @@ const headerMenuItems = [
       {
         label: 'Scripts',
         path: '/test-dev/scripts',
-        
+
         quickMenuItems: [
           { label: 'Elements', path: '#elements', iconName: 'element' },
           {
@@ -196,7 +196,7 @@ const headerMenuItems = [
       {
         label: 'Suites',
         path: '/suites/suites',
-        
+
         quickMenuItems: [
           {
             label: 'Test Data Set',
@@ -255,22 +255,18 @@ const headerMenuItems = [
       {
         label: 'Environment Config.',
         path: '',
-        
       },
       {
         label: 'Execution Config.',
         path: '',
-        
       },
       {
         label: 'User Management',
         path: '',
-        
       },
       {
         label: 'Templates',
         path: '',
-        
       },
     ],
   },
@@ -281,7 +277,7 @@ const headerMenuItems = [
       {
         label: 'Scripts',
         path: '',
-        
+
         quickMenuItems: [
           { label: 'Variables', path: '#variable', iconName: 'variable' },
           {
@@ -304,12 +300,11 @@ const headerMenuItems = [
       {
         label: 'Elements',
         path: '',
-        
       },
       {
         label: 'Step Groups',
         path: '',
-        
+
         quickMenuItems: [
           { label: 'Parameters', path: '#parameters', iconName: 'parameters' },
           { label: 'Variables', path: '#variable', iconName: 'variable' },
@@ -328,7 +323,6 @@ const headerMenuItems = [
       {
         label: 'Variables',
         path: '',
-        
       },
     ],
   },
@@ -340,18 +334,18 @@ const headerRightSideContent = (
   </div>
 );
 
-export const SampleAppHeader: Story = {
-  args: {
-    ...defaultArgs,
-    rightContent: (
-      <div>
-        <Icon name="logo" />
-      </div>
-    ),
-    appHeaderMenuItems: headerMenuItems,
-    selectedMenu: 'Repo',
-  },
-};
+// export const SampleAppHeader: Story = {
+//   args: {
+//     ...defaultArgs,
+//     rightContent: (
+//       <div>
+//         <Icon name="logo" />
+//       </div>
+//     ),
+//     appHeaderMenuItems: headerMenuItems,
+//     selectedMenu: 'Repo',
+//   },
+// };
 export const Controlled: Story = {
   render: () => {
     const [selectedMenuItem, setSelectedMenuItem] = useState('All Projects');
@@ -401,9 +395,9 @@ export const Controlled: Story = {
       <>
         <div>
           <AppHeader
-            width='1120px'
-            borderRadius='8px'
-            logoIconName="fireflink_icon"
+            width="1120px"
+            borderRadius="8px"
+            logo={<Icon name="fireflink_icon" height={24} width={21} />}
             leftContent={headerRightSideContent}
             rightContent={headerRightSideContent}
             appHeaderMenuItems={headerMenuItems}
@@ -423,6 +417,26 @@ export const Controlled: Story = {
         </div>
       </>
     );
+  },
+};
+
+
+export const SampleAppHeader: Story = {
+  args: {
+    ...defaultArgs,
+    appHeaderMenuItems:[],
+    selectedMenu: 'Repo',
+    centerInfoItems: [
+      { iconName: "chrome_icon", label: "Chrome" },
+      { iconName: "mac_white_icon", label: "Mac OS Sequoia" },
+      { iconName: "maximize_livetesting", label: "1440x900" },
+    ],
+    rightButtons: [
+  { iconName: "timer_icon", label: "03:32", color: "var(--primary-button-text-color)", backgroundColor:"var(--status-rejected-text-color)",  onClick: () => alert("Timer clicked!"), },
+  { label: "Upgrade", color: "var(--click-able-text-color)", backgroundColor: "white",onClick: () => alert("Upgrade clicked"),},
+  { label: "End Session", color: "var(--primary-button-text-color)", backgroundColor: "var(--status-rejected-text-color)",onClick: () => alert("End Session clicked"), },
+],
+    rightContent:(<></>)
   },
 };
 

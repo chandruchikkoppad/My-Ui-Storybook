@@ -8,6 +8,10 @@ import '../../../index.scss';
 import Typography from '../Typography';
 import { ColumnProps, TableProps } from './types';
 import HighlightText from '../HighlightText';
+import {
+  isTextTruncated,
+  truncateText,
+} from '../../utils/truncateText/truncateText';
 
 const TableWithAccordion = ({
   highlightText = '',
@@ -134,15 +138,31 @@ const TableWithAccordion = ({
             className="column-table-accordion"
           >
             <div className="ff-display-flex">
-              <Tooltip title={row.disable? row?.disableInfoMessage :''} placement='bottom-start'>
+              <Tooltip
+                title={
+                  row.disable
+                    ? row?.disableInfoMessage
+                    : typeof row.title === 'string' &&
+                      isTextTruncated(row.title, tableMeta[0]?.width, 'pixel')
+                    ? row.title
+                    : ''
+                }
+                placement="bottom-start"
+              >
                 <div
-                  className={`accordion-header ${row.disable && 'accordion-header--disabled'}`}
+                  className={`accordion-header ${
+                    row.disable && 'accordion-header--disabled'
+                  }`}
                 >
                   <div className="header-title">
                     <span>
                       <Typography>
                         <HighlightText
-                          text={row.title}
+                          text={truncateText(
+                            row.title,
+                            tableMeta[0]?.width,
+                            'pixel'
+                          )}
                           highlight={highlightText}
                         />
                       </Typography>

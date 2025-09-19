@@ -10,6 +10,7 @@ import './PrePostTable.scss';
 import Checkbox from '../Checkbox';
 import Typography from '../Typography';
 import { closestCorners, DndContext, DragEndEvent } from '@dnd-kit/core';
+import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import {
   SortableContext,
   verticalListSortingStrategy,
@@ -191,6 +192,7 @@ const PrePostTable = forwardRef<any, PrePostTableProps>(
           expandStepGroup.clear();
         }}
         onDragEnd={handleDragEnd}
+        modifiers={[restrictToVerticalAxis]}
       >
         <SortableContext
           disabled={!draggable}
@@ -232,7 +234,7 @@ const PrePostTable = forwardRef<any, PrePostTableProps>(
                         color="var(--drawer-title-color)"
                       >
                         {index === 0 && withCheckbox && (
-                          <span className="ff-table-checkbox">
+                          <span className="ff-table-pre-post-checkbox">
                             <Checkbox
                               onChange={(e) => {
                                 onSelectClick(e, {

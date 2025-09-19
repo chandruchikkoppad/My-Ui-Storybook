@@ -46,6 +46,12 @@ export const DynamicWidthTooltip = ({ option }: DynamicWidthTooltipProps) => {
     if (option.type === 'DATAPROVIDER') return 'data_provider_variable';
     return VARIABLE_ICON_MAP[option.type || ''] || '';
   };
+  const getDisplayText = (option: dynamicObject) => {
+    if (option?.type === '_startforloop') return `FLV_for:${option?.name}`;
+    if (option?.type === 'DATAPROVIDER')
+      return `${option?.dpName}:${option?.varname}`;
+    return option?.name;
+  };
 
   return (
     <div
@@ -55,13 +61,13 @@ export const DynamicWidthTooltip = ({ option }: DynamicWidthTooltipProps) => {
       className="ff-variable-option ff-variable-data"
     >
       <Tooltip
-        title={isTruncated ? option.name : ''}
+        title={isTruncated ? getDisplayText(option) : ''}
         style={{
           width: 'calc(100% - 32px)',
         }}
       >
         <span ref={textRef} className="ff-truncated_text">
-          {option.name}
+          {getDisplayText(option)}
         </span>
       </Tooltip>
       <Icon name={getVariableIcon(option)} height={16} width={16} hoverEffect />

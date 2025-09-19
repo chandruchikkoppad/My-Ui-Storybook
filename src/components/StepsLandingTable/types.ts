@@ -109,3 +109,4 @@ export interface TableProps {
 
   isClientSide?: boolean;
 }
+export type TitleAccordionAction = "toggle" | "open";

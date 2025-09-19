@@ -11,11 +11,18 @@ import { checkEmpty } from '../../utils/checkEmpty/checkEmpty';
 import AllProjectsDropdown from '../AllProjectsDropdown';
 import MenuOption from '../MenuOption';
 import Tooltip from '../Tooltip';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  Fragment,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { getStoreValue } from '../../utils/indexDBStore/indexDB';
 
 const AppHeader: React.FC<AppHeaderProps> = ({
-  logoIconName = 'fireflink_icon',
+  logo,
+  profileContent,
   width,
   borderRadius,
   leftContent,
@@ -36,6 +43,8 @@ const AppHeader: React.FC<AppHeaderProps> = ({
   isClient = false,
   hideNavbar = false,
   scriptId,
+  centerInfoItems = [],
+  rightButtons = [],
 }) => {
   const hiddenMenuRef = useRef<HTMLDivElement>(null);
   const hiddenQuickMenuRef = useRef<HTMLDivElement>(null);
@@ -251,15 +260,16 @@ const AppHeader: React.FC<AppHeaderProps> = ({
         }}
       >
         <div className="ff-app-header-left-container">
-          <div className="ff-app-header-logo-icon">
-            <Icon color="" name={logoIconName} height={24} width={21} />
-          </div>
+          {logo && <div className="ff-app-header-logo-icon">{logo}</div>}
           {leftContent && (
             <div className="ff-app-header-left-content">{leftContent}</div>
           )}
         </div>
         <div
-          className="ff-app-header-nav-bar"
+          className={classNames('ff-app-header-nav-bar', {
+            'ff-app-header-nav-bar--with-center-info':
+              !checkEmpty(centerInfoItems) && !checkEmpty(rightButtons),
+          })}
           style={{
             width: width,
             visibility:
@@ -273,6 +283,40 @@ const AppHeader: React.FC<AppHeaderProps> = ({
           }}
           ref={menuContainerRef}
         >
+          <div
+            className={classNames('ff-app-header-center-info', {
+              'ff-app-header-center-info--no-right': checkEmpty(rightButtons),
+            })}
+          >
+            {centerInfoItems.map((item, idx) => (
+              <div key={idx} className="ff-app-header-center-info-item">
+                <Icon name={item.iconName} />
+                <Typography>{item.label}</Typography>
+              </div>
+            ))}
+          </div>
+
+          {!checkEmpty(rightButtons) && (
+            <div className="ff-app-header-right-buttons">
+              {rightButtons.map((btn, index) => (
+                <button
+                  key={index}
+                  className="ff-app-header-right-button"
+                  style={{
+                    color: btn.color,
+                    backgroundColor: btn.backgroundColor,
+                  }}
+                  onClick={btn.onClick}
+                >
+                  {btn.iconName && <Icon name={btn.iconName} />}
+                  <Typography fontSize={10} fontWeight="semi-bold">
+                    {btn.label}
+                  </Typography>
+                </button>
+              ))}
+            </div>
+          )}
+
           {projectArrayList && !checkEmpty(projectArrayList) && (
             <div>
               {
@@ -322,45 +366,53 @@ const AppHeader: React.FC<AppHeaderProps> = ({
                         <>
                           {menuItem?.subMenuItems?.map((subMenuItem, index) => {
                             return (
-                              <>
+                              <Fragment key={`subMenuItem.label-${index}`}>
                                 {!subMenuItem.hide && (
                                   <div
-                                    key={subMenuItem.label}
                                     className="ff-app-header-submenu-container"
                                     ref={(element) =>
                                       (subMenuItemsRef.current[index] = element)
                                     }
                                   >
-                                    <Typography
-                                      as="div"
-                                      className={classNames(
-                                        'ff-app-header-nav-bar-submenu-item',
-                                        {
-                                          ['ff-app-header-nav-bar-submenu-item--selected']:
-                                            subMenuItem.label ===
-                                            selectedSubMenu,
-                                          'ff-app-header-nav-bar-submenu-item--disabled':
-                                            disabled,
-                                        }
-                                      )}
-                                      lineHeight="18px"
-                                      onClick={() =>
-                                        handleSubMenuClick(subMenuItem)
+                                    <Tooltip
+                                      title={
+                                        subMenuItem.disable
+                                          ? subMenuItem.disableText
+                                          : ''
                                       }
+                                      placement="bottom"
                                     >
-                                      {subMenuItem.label}
-                                    </Typography>
+                                      <Typography
+                                        as="div"
+                                        className={classNames(
+                                          'ff-app-header-nav-bar-submenu-item',
+                                          {
+                                            ['ff-app-header-nav-bar-submenu-item--selected']:
+                                              subMenuItem.label ===
+                                              selectedSubMenu,
+                                            'ff-app-header-nav-bar-submenu-item--disabled':
+                                              disabled || subMenuItem.disable,
+                                          }
+                                        )}
+                                        lineHeight="18px"
+                                        onClick={() =>
+                                          !subMenuItem.disable &&
+                                          handleSubMenuClick(subMenuItem)
+                                        }
+                                      >
+                                        {subMenuItem.label}
+                                      </Typography>
+                                    </Tooltip>
                                   </div>
                                 )}
-                              </>
+                              </Fragment>
                             );
                           })}
                           {menuItem?.subMenuItems?.map((subMenuItem, index) => {
                             return (
-                              <>
+                              <Fragment key={subMenuItem.label}>
                                 {!subMenuItem.hide && (
                                   <div
-                                    key={subMenuItem.label}
                                     className="ff-app-header-submenu-container"
                                     ref={(element) =>
                                       (quickMenuItemsRef.current[index] =
@@ -408,12 +460,11 @@ const AppHeader: React.FC<AppHeaderProps> = ({
                                             {quickMenuItemsArray?.map(
                                               (quickMenuItem) => {
                                                 return (
-                                                  <>
+                                                  <Fragment
+                                                    key={quickMenuItem.label}
+                                                  >
                                                     {!quickMenuItem.hide && (
                                                       <div
-                                                        key={
-                                                          quickMenuItem.iconName
-                                                        }
                                                         onClick={() =>
                                                           handleQuickMenuClick(
                                                             quickMenuItem
@@ -445,7 +496,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({
                                                         </Tooltip>
                                                       </div>
                                                     )}
-                                                  </>
+                                                  </Fragment>
                                                 );
                                               }
                                             )}
@@ -477,7 +528,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({
                                       })()}
                                   </div>
                                 )}
-                              </>
+                              </Fragment>
                             );
                           })}
                         </>
@@ -507,6 +558,9 @@ const AppHeader: React.FC<AppHeaderProps> = ({
         </div>
         {rightContent && (
           <div className="ff-app-header-right-content">{rightContent}</div>
+        )}
+        {profileContent && (
+          <div className="ff-app-header-profile-content">{profileContent}</div>
         )}
       </div>
     </div>

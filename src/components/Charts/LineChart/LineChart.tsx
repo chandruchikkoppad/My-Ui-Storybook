@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { LineChartProps } from './types';
 import './LineChart.scss';
 import Typography from '../../Typography';
@@ -37,6 +37,27 @@ const LineChart: React.FC<LineChartProps> = ({
   const margin = 40;
   const xMax = width - margin * 2;
   const yMax = height - margin * 2;
+  const [tooltipVisible, setTooltipVisible] = useState(false);
+  const [hoverState, setHoverState] = useState<HoverState>({
+    cursorX: null,
+    hoverValues: {},
+    dotPositions: {},
+    tooltip: { visible: false, left: 0, top: 0 },
+    currentXValue: null,
+  });
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setTooltipVisible(false);
+      setHoverState((prev) => ({
+        ...prev,
+        tooltip: { ...prev.tooltip, visible: false },
+      }));
+    };
+
+    window.addEventListener('scroll', handleScroll, true);
+    return () => window.removeEventListener('scroll', handleScroll, true);
+  }, []);
 
   const hasData =
     data &&
@@ -102,7 +123,11 @@ const LineChart: React.FC<LineChartProps> = ({
                     x={i * tickSpacing}
                     y={yMax + 15}
                     textAnchor={
-                      i === 0 ? 'start' : i === numberOfXTicks - 1 ? 'end' : 'middle'
+                      i === 0
+                        ? 'start'
+                        : i === numberOfXTicks - 1
+                        ? 'end'
+                        : 'middle'
                     }
                     fill={yAxisColor}
                     className="ff--line-chart-x-line-data"
@@ -265,7 +290,7 @@ const LineChart: React.FC<LineChartProps> = ({
         </text>
       );
     } else if (dataPoints.length < 7) {
-      return dataPoints.map((point: { [x: string]: any; }) => (
+      return dataPoints.map((point: { [x: string]: any }) => (
         <text
           key={String(point[xKey])}
           x={xScale(point[xKey])}
@@ -345,17 +370,21 @@ const LineChart: React.FC<LineChartProps> = ({
     }
   };
 
-  const [hoverState, setHoverState] = useState<HoverState>({
-    cursorX: null,
-    hoverValues: {},
-    dotPositions: {},
-    tooltip: { visible: false, left: 0, top: 0 },
-    currentXValue: null,
-  });
-
   const handleMouseMove = (e: React.MouseEvent<SVGSVGElement>) => {
     const svgRect = e.currentTarget.getBoundingClientRect();
     const mouseX = e.clientX - svgRect.left - margin;
+    const mouseY = e.clientY - svgRect.top - margin;
+    if (mouseY > yMax) {
+      setTooltipVisible(false);
+      setHoverState({
+        cursorX: null,
+        hoverValues: {},
+        dotPositions: {},
+        tooltip: { visible: false, left: 0, top: 0 },
+        currentXValue: null,
+      });
+      return;
+    }
 
     let nearestValues = {
       hoverValues: {} as HoverState['hoverValues'],
@@ -382,6 +411,7 @@ const LineChart: React.FC<LineChartProps> = ({
       }
     });
 
+    setTooltipVisible(true);
     setHoverState({
       cursorX: mouseX,
       hoverValues: nearestValues.hoverValues,
@@ -495,7 +525,7 @@ const LineChart: React.FC<LineChartProps> = ({
             {renderYAxisLabels()}
           </g>
         </svg>
-        {hoverState.tooltip.visible && (
+        {tooltipVisible && hoverState.tooltip.visible && (
           <div
             className="ff-line-chart-tooltip"
             style={{

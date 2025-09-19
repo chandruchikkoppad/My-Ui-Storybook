@@ -1,4 +1,4 @@
-export type variableType = 'LOCAL' | 'GLOBAL' | 'GROUP' | 'PROJECT_ENVIRONMENT';
+export type variableType = "LOCAL" | "GLOBAL" | "GROUP" | "PROJECT_ENVIRONMENT";
 
 export type DynamicObj = {
   [key: string]: any;
@@ -59,7 +59,7 @@ export interface CreateVariableProps {
   /**
    * verify which drawer is open, create or edit
    */
-  mode?: 'create' | 'edit';
+  mode?: "create" | "edit";
   /**
    * Disable the checkbox
    */
@@ -80,4 +80,5 @@ export interface CreateVariableProps {
    * Show placeholder text
    */
   placeholder?: string;
+  truncateTextValue?: number;
 }

@@ -4,66 +4,87 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  max-width: 100%;
 
   svg {
     display: block;
   }
+}
 
-  .ff-legend-container {
-    width: 100%;
+.ff-bar-chart-wrapper {
+  display: flex;
+  width: 100%;
+}
+
+.ff-y-axis {
+  position: sticky;
+  left: 0;
+  z-index: 10;
+  background: var(--background-color);
+  svg {
+    display: block;
+  }
+}
+
+.ff-chart-scrollable {
+  overflow-x: auto;
+  overflow-y: hidden;
+  flex: 1;
+  svg {
+    display: block;
+  }
+}
+
+.ff-legend-container {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 10px;
+  .ff-bar-chart-legend {
+    width: 290px;
     display: flex;
     justify-content: flex-end;
-    padding-right: 10px;
-    .ff-bar-chart-legend {
-      width: 290px;
-      margin-top: 10px;
+    flex-wrap: wrap;
+
+    .ff-bar-chart-legend-item {
       display: flex;
-      justify-content: flex-end;
+      align-items: center;
 
-      .ff-bar-chart-legend-item {
-        display: flex;
-        align-items: center;
-
-        .ff-bar-chart-legend-item-circle {
-          display: inline-block;
-          width: 12px;
-          height: 12px;
-          margin-right: 5px;
-          border-radius: 50%;
-        }
-      }
-
-      .ff-legend-label {
-        margin-left: 5px;
+      .ff-bar-chart-legend-item-circle {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        margin-right: 5px;
+        border-radius: 50%;
       }
     }
-  }
-  .ff-bar-chart-icon {
-    position: absolute;
-    pointer-events: none;
-    width: 24px;
-    height: 24px;
-  }
 
-  .ff-bar-chart-icon-wrapper {
-    position: absolute;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    .ff-legend-label {
+      margin-left: 5px;
+    }
   }
-  .ff-bar-chart-labels {
-    @extend .fontSm;
-    color: var(--text-color);
-  }
-  .ff-bar-chart-tooltip {
-    display: none;
-    position: absolute;
-    padding: 5px 10px;
-    background-color: var(--tooltip-bg-color);
-    color: var(--primary-icon-color);
-    border-radius: 4px;
-    pointer-events: none;
-    @extend .fontSm;
-    font-weight: 600;
-  }
+}
+.ff-bar-chart-labels {
+  @extend .fontSm;
+  color: var(--text-color);
+}
+.ff-bar-chart-x-axis-label {
+  position: absolute;
+  bottom: 15px;
+  width: 100%;
+  text-align: center;
+  @extend .fontSm;
+}
+
+.ff-bar-chart-tooltip {
+  display: none;
+  position: absolute;
+  padding: 5px 10px;
+  background-color: var(--tooltip-bg-color);
+  color: var(--primary-icon-color);
+  border-radius: 4px;
+  pointer-events: none;
+  @extend .fontSm;
+  font-weight: 600;
+  z-index: 20;
 }

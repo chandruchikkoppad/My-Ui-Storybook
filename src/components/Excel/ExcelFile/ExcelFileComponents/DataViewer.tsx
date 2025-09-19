@@ -4,6 +4,7 @@ import * as Types from './types';
 import { hasLineBreaker } from './util';
 import Icon from '../../../Icon';
 import { checkEmpty } from '../../../../utils/checkEmpty/checkEmpty';
+import TruncatedTooltip from '../../../TruncatedTooltip';
 
 export const TRUE_TEXT = 'TRUE';
 export const FALSE_TEXT = 'FALSE';
@@ -16,20 +17,22 @@ const DataViewer = <Cell extends Types.CellBase<Value>, Value>({
 }: Types.DataViewerProps<Cell>): React.ReactElement => {
   const value = getValue(cell, evaluatedCell);
 
-  const getFileList = (value: string) => {
-  if (checkEmpty(value)) {
-    return <></>;
-  }
-  const fileList = JSON.parse(value);
-
-  return fileList.map((file: { name: string }) => {
-    return (
-      <div key={file.name} className="ff-spreadsheet-data-viewer--fileType">
-        {file.name.split('*')[0]}
-      </div>
-    );
-  });
-};
+ const getFileList = (value: string) => {
+    if (checkEmpty(value)) {
+      return <></>;
+    }
+    const fileList = JSON.parse(value);
+    return fileList.map((file: { name: string }) => {
+      return (
+        <div key={file.name} className="ff-spreadsheet-data-viewer--fileType">
+          <TruncatedTooltip
+            width={(cell?.style?.width as number) ?? 100}
+            title={file?.name?.split('*')?.[0] ?? ''}
+          />
+        </div>
+      );
+    });
+  };
 
   return typeof value === 'boolean' ? (
     <span className="ff-spreadsheet-data-viewer ff-spreadsheet-data-viewer--boolean">

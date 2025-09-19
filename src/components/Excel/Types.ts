@@ -121,6 +121,7 @@ interface ColorContainer {
 
 interface ContextMenuState {
   open: boolean;
+  contextType: 'sheet' | 'column' | 'row' | 'cell' | null;
   options: optionsType[];
 }
 
@@ -129,6 +130,8 @@ interface optionsType {
   value: string;
   iconName: string;
   action: () => void;
+  disableTooltip: string;
+  visible: boolean;
   disable: boolean;
 }
 

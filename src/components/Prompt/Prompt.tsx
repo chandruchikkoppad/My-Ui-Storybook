@@ -10,24 +10,32 @@ import classNames from 'classnames';
 import { checkEmpty } from '../../utils/checkEmpty/checkEmpty';
 
 const Prompt = forwardRef<HTMLInputElement, promptProp>(
-  ({
-    width = 300,
-    height = 40,
-    iconHeight = 16,
-    iconWidth = 16,
-    placeholder = 'Enter text',
-    iconName = 'right_arrow_filled_icon',
-    iconPosition = 'left',
-    borderRadius = 4,
-    autoFocus = false,
-    value = '',
-    iconColor = 'var(--brand-color)',
-    tooltipTitle = 'send',
-    submitPrompt,
-    onPromptChange,
-    onBlur,
-    onFocus,
-  }) => {
+  (
+    {
+      width = 300,
+      height = 40,
+      iconHeight = 16,
+      iconWidth = 16,
+      placeholder = 'Enter text',
+      iconName = 'right_arrow_filled_icon',
+      iconPosition = 'left',
+      borderRadius = 4,
+      autoFocus = false,
+      value = '',
+      iconColor = 'var(--brand-color)',
+      tooltipTitle = 'send',
+      submitPrompt,
+      onPromptChange,
+      onBlur,
+      onFocus,
+      disableInput,
+      isAdditionalIcon = false,
+      additionalIconName,
+      additionIconToolTip,
+      onAdditionalIconClick,
+    },
+    ref
+  ) => {
     const containerRef = useRef<HTMLDivElement | null>(null);
 
     useKeyboardActions(
@@ -70,6 +78,7 @@ const Prompt = forwardRef<HTMLInputElement, promptProp>(
           />
         </Tooltip>
         <input
+          ref={ref}
           className="ff-prompt-input"
           type="text"
           placeholder={placeholder}
@@ -78,7 +87,19 @@ const Prompt = forwardRef<HTMLInputElement, promptProp>(
           onFocus={onFocus}
           onBlur={onBlur}
           value={value}
+          readOnly={disableInput}
         />
+        {isAdditionalIcon && additionalIconName && (
+          <Tooltip placement="top" title={additionIconToolTip}>
+            <Icon
+              name={additionalIconName}
+              className="ff-prompt-icon additional-icon"
+              height={iconHeight}
+              width={iconWidth}
+              onClick={onAdditionalIconClick}
+            />
+          </Tooltip>
+        )}
       </div>
     );
   }

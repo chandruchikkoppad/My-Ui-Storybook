@@ -6,7 +6,8 @@ export const handleTreeExpandAllCollapseAll = (
   key: string,
   rootNode: TreeNodeProps | null,
   isExpanded: boolean,
-  treeAction: 'expandAll' | 'collapseAll' | undefined = undefined
+  treeAction: 'expandAll' | 'collapseAll' | undefined = undefined,
+  hidePrePostScript: boolean = false
 ): { data: TreeNodeProps[]; rootNode?: TreeNodeProps } => {
   if (!key && !treeAction) {
     throw new Error(
@@ -43,6 +44,7 @@ export const handleTreeExpandAllCollapseAll = (
     const children = childMap.get(nodeKey) || [];
     children.forEach((child) => {
       child.expanded = expanded;
+      child.expandedAll = expanded;
       child.hide = !expanded;
       updateDescendants(child.key, expanded);
     });
@@ -56,6 +58,7 @@ export const handleTreeExpandAllCollapseAll = (
     if (targetNode) {
       const expanded = treeAction === 'expandAll';
       targetNode.expanded = expanded;
+      targetNode.expandedAll = expanded;
       targetNode.hide = false;
       updateDescendants(key, expanded);
     }
@@ -69,6 +72,7 @@ export const handleTreeExpandAllCollapseAll = (
     const expanded = treeAction === 'expandAll';
     list.forEach((node) => {
       node.expanded = expanded;
+      node.expandedAll = expanded;
       node.hide = !expanded;
     });
   }
@@ -78,13 +82,16 @@ export const handleTreeExpandAllCollapseAll = (
     const targetNode = nodesMap.get(key);
     if (targetNode) {
       targetNode.expanded = isExpanded;
+      targetNode.expandedAll = isExpanded;
       targetNode.hide = false;
 
       if (!isExpanded) {
         updateDescendants(key, false); // collapse: hide children
       } else {
         const children = childMap.get(key) || [];
-        children.forEach((child) => (child.hide = false)); // show direct children only
+        children.forEach(
+          (child) => (child.hide = hidePrePostScript ? true : false)
+        ); // show direct children only
       }
     }
   }

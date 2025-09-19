@@ -2,375 +2,376 @@
   --table-height: calc(100vh - 134px);
   --frozen-column-width: 0px;
 }
-
-.tree-table-space-block {
-  display: inline-block;
-  width: 20px;
-  height: 16px;
-  text-align: center;
-  line-height: 16px;
-  vertical-align: top;
-  font-size: 19px;
-  position: relative;
-  box-sizing: border-box;
-  border-radius: 50%;
-
-  &.tree-table-space-block-0 {
-    width: 30px;
-  }
-
-  &.btn-toggle {
+.tree-table-wrapper-container {
+  .tree-table-space-block {
+    display: inline-block;
+    width: 20px;
+    height: 16px;
+    text-align: center;
+    line-height: 16px;
+    vertical-align: top;
+    font-size: 19px;
     position: relative;
-    cursor: pointer;
-    width: 22px;
-    height: 18px;
-    z-index: 12;
+    box-sizing: border-box;
+    border-radius: 50%;
 
-    &::before {
-      display: none;
+    &.tree-table-space-block-0 {
+      width: 30px;
     }
-  }
 
-  &.last-block::after,
-  &.no-folder::after {
-    position: absolute;
-    content: '';
-    height: 1px;
-    background: var(--tree-connecting-lines-color);
-    top: 50%;
-    margin-top: -1px;
-  }
+    &.btn-toggle {
+      position: relative;
+      cursor: pointer;
+      width: 22px;
+      height: 18px;
+      z-index: 12;
 
-  &.last-block::after {
-    width: 12px;
-    left: -10px;
-  }
+      &::before {
+        display: none;
+      }
+    }
 
-  &.no-folder {
-    width: 8px;
+    &.last-block::after,
+    &.no-folder::after {
+      position: absolute;
+      content: '';
+      height: 1px;
+      background: var(--tree-connecting-lines-color);
+      top: 50%;
+      margin-top: -1px;
+    }
 
-    &::after {
-      width: 26px;
+    &.last-block::after {
+      width: 12px;
       left: -10px;
     }
-  }
 
-  &:not(.last-block, .no-lines, .last-node)::before {
-    position: absolute;
-    content: '';
-    width: 1px;
-    height: 32px;
-    background: var(--tree-connecting-lines-color);
-    left: 50%;
-    top: -14px !important;
-    z-index: 99;
-  }
+    &.no-folder {
+      width: 8px;
 
-  &.last-node::before {
-    position: absolute;
-    content: '';
-    width: 1px;
-    height: 22px;
-    background: var(--tree-connecting-lines-color);
-    left: 50%;
-    top: -14px;
-    z-index: -1;
-  }
-
-  // &.folder {
-  //   &.last-node::before {
-  //     height: 13px;
-  //   }
-  // }
-
-  //Todo uncomment the following code when we are highlighting the tree table nodes on hover
-  /* Hover background for all elements of the same level */
-  // &.tree-table-hovered::before,
-  // &.tree-table-hovered::after {
-  //   background-color: var(--brand-color);
-  // }
-}
-
-.tree-title-container {
-  .tree-table-space-block {
-    width: 20px !important;
-
-    &.tree-table-space-block-1 {
       &::after {
-        width: 14px;
-        left: -14px;
-      }
-
-      &.no-folder::after {
         width: 26px;
-      }
-    }
-  }
-}
-
-.hidden {
-  display: none;
-}
-
-.show {
-  display: table-row;
-  visibility: visible;
-}
-
-.btn-toggle {
-  cursor: pointer;
-
-  &.is-close {
-    background: #f1f1f1;
-    border: 1px solid transparent;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-  }
-
-  &::before,
-  &::after {
-    display: none;
-  }
-}
-
-.tree-table-wrap {
-  width: 100%;
-  padding-left: 4px; // padding size need to check
-  overflow: hidden;
-  overflow-x: auto;
-  box-sizing: border-box;
-}
-
-.table-scrollable {
-  height: calc(var(--table-height) + 0px);
-  /* Adjust height as needed */
-  overflow-y: auto;
-  position: relative;
-  scrollbar-width: 1px;
-  &::-webkit-scrollbar {
-    width: 5px; /* Vertical scrollbar width */
-    height: 5px; /* Horizontal scrollbar height */
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background-color: var(--description-text); /* Scrollbar color */
-    border-radius: 4px;
-  }
-
-  &::-webkit-scrollbar-track {
-    margin-left: var(--frozen-column-width);
-  }
-
-  &.table-empty {
-    scrollbar-width: none;
-  }
-
-  &.table-empty::-webkit-scrollbar {
-    display: none;
-  }
-}
-
-.ff-table-tree-body {
-  overflow: scroll;
-}
-
-.tree-table {
-  // border: 1px solid #f1f1f1;
-  table-layout: fixed;
-  width: 100%;
-  border-collapse: collapse;
-  overflow: scroll;
-
-  .ff-table-tree-head {
-    position: sticky;
-    top: 0;
-    z-index: 99;
-
-    .tree-table-td-content-text {
-      display: inline-flex;
-      align-items: center;
-      margin: 0;
-      // margin-left: 4px;
-
-      .table-tree-root-cell {
-        padding-left: 5px;
-      }
-    }
-  }
-
-  .ff-table-tree-row:hover,
-  .ff-table-tree-row.hover {
-    background-color: var(--hover-color);
-
-    .ff-table-tree-td {
-      &:first-child {
-        background-color: var(--hover-color);
+        left: -10px;
       }
     }
 
-    .table-tree-row-action {
-      display: inline-flex;
-      align-items: center;
-
-      svg {
-        height: 16px;
-        width: 16px;
-      }
-    }
-  }
-  .ff-table-tree-row.no-hover:hover,
-  .ff-table-tree-row.no-hover.hover {
-    background-color: transparent;
-  }
-
-  .ff-table-tree-row {
-    background-color: var(--base-bg-color);
-
-    .table-tree-row-action {
-      display: none;
-      padding-left: 12px;
-
-      .ff-icon-container {
-        height: 24px !important;
-        width: 24px !important;
-        padding: 2px 4px;
-      }
-
-      .ff-add-button-container {
-        height: 24px;
-        width: 24px;
-      }
-    }
-
-    .table-row-add-button {
-      display: inline-flex;
-      z-index: 9999;
-      align-items: center;
-
-      svg {
-        height: 16px;
-        width: 16px;
-      }
-
-      // .ff-hovered-add-button--primary {
-      //   margin-right: 20px;
-      // }
-    }
-
-    &::after {
+    &:not(.last-block, .no-lines, .last-node)::before {
+      position: absolute;
       content: '';
-      display: block;
-      visibility: hidden;
-      clear: both;
+      width: 1px;
+      height: 32px;
+      background: var(--tree-connecting-lines-color);
+      left: 50%;
+      top: -14px !important;
+      z-index: 99;
+    }
+
+    &.last-node::before {
+      position: absolute;
+      content: '';
+      width: 1px;
+      height: 22px;
+      background: var(--tree-connecting-lines-color);
+      left: 50%;
+      top: -14px;
+      z-index: -1;
+    }
+
+    // &.folder {
+    //   &.last-node::before {
+    //     height: 13px;
+    //   }
+    // }
+
+    //Todo uncomment the following code when we are highlighting the tree table nodes on hover
+    /* Hover background for all elements of the same level */
+    // &.tree-table-hovered::before,
+    // &.tree-table-hovered::after {
+    //   background-color: var(--brand-color);
+    // }
+  }
+
+  .tree-title-container {
+    .tree-table-space-block {
+      width: 20px !important;
+
+      &.tree-table-space-block-1 {
+        &::after {
+          width: 14px;
+          left: -14px;
+        }
+
+        &.no-folder::after {
+          width: 26px;
+        }
+      }
     }
   }
 
-  .ff-table-tree-th,
-  .ff-table-tree-td {
-    text-align: left;
-    white-space: nowrap;
-    text-overflow: ellipsis;
+  .hidden {
+    display: none;
+  }
+
+  .show {
+    display: table-row;
+    visibility: visible;
+  }
+
+  .btn-toggle {
+    cursor: pointer;
+
+    &.is-close {
+      background: #f1f1f1;
+      border: 1px solid transparent;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    }
+
+    &::before,
+    &::after {
+      display: none;
+    }
+  }
+
+  .tree-table-wrap {
+    width: 100%;
     overflow: hidden;
+    overflow-x: auto;
+    box-sizing: border-box;
   }
 
-  .ff-table-tree-th {
-    color: var(--table-header-text-color);
-    background: var(--border-color);
-    font-size: 12px;
-    font-weight: 600;
-    width: 400px;
-    height: 32px;
-    box-sizing: border-box;
+  .table-scrollable {
+    height: calc(var(--table-height) + 0px);
+    /* Adjust height as needed */
+    overflow-y: auto;
+    position: relative;
+    scrollbar-width: 1px;
+    &::-webkit-scrollbar {
+      width: 5px; /* Vertical scrollbar width */
+      height: 5px; /* Horizontal scrollbar height */
+    }
 
-    &:first-child {
-      position: sticky;
-      left: 0;
-      padding-left: 8px;
+    &::-webkit-scrollbar-thumb {
+      background-color: var(--description-text); /* Scrollbar color */
+      border-radius: 4px;
+    }
+
+    &::-webkit-scrollbar-track {
+      margin-left: var(--frozen-column-width);
+    }
+
+    &.table-empty {
+      scrollbar-width: none;
+    }
+
+    &.table-empty::-webkit-scrollbar {
+      display: none;
     }
   }
 
-  .ff-table-tree-td {
-    font-size: 12px;
-    height: 32px !important;
-    box-sizing: border-box;
+  .ff-table-tree-body {
+    overflow: scroll;
+  }
 
-    &:first-child {
-      overflow: initial;
+  .tree-table {
+    // border: 1px solid #f1f1f1;
+    table-layout: fixed;
+    width: 100%;
+    border-collapse: collapse;
+    overflow: scroll;
+
+    .ff-table-tree-head {
       position: sticky;
-      left: 0;
-      width: 100%;
-      background-color: white;
-      display: inline-flex;
-      color: var(--brand-color) !important;
-      align-items: center;
-      z-index: 98;
+      top: 0;
+      z-index: 99;
 
-      // &:hover {
-      //   background-color: var(--hover-color);
-      // }
-
-      .tree-table-default-content {
-        margin-left: 8px;
-        font-weight: 700;
+      .tree-table-td-content-text {
         display: inline-flex;
         align-items: center;
+        margin: 0;
+        // margin-left: 4px;
+
+        .table-tree-root-cell {
+          padding-left: 5px;
+        }
+      }
+    }
+
+    .ff-table-tree-row:hover,
+    .ff-table-tree-row.hover-selected,
+    .ff-table-tree-row.menu-hover-active {
+      background-color: var(--hover-color);
+
+      .ff-table-tree-td {
+        &:first-child {
+          background-color: var(--hover-color);
+        }
       }
 
-      .tree-table-td-content {
-        // padding-left: 4px;
+      .table-tree-row-action {
+        display: inline-flex;
+        align-items: center;
 
-        .tree-table-td-content-select {
+        svg {
+          height: 16px;
+          width: 16px;
+        }
+      }
+    }
+    .ff-table-tree-row.no-hover:hover,
+    .ff-table-tree-row.no-hover.hover {
+      background-color: transparent;
+    }
+
+    .ff-table-tree-row {
+      background-color: var(--base-bg-color);
+
+      .table-tree-row-action {
+        display: none;
+        padding-left: 12px;
+
+        .ff-icon-container {
+          height: 24px !important;
+          width: 24px !important;
+          padding: 2px 4px;
+        }
+
+        .ff-add-button-container {
           height: 24px;
           width: 24px;
-          display: flex;
+        }
+      }
+
+      .table-row-add-button {
+        display: inline-flex;
+        z-index: 9999;
+        align-items: center;
+
+        svg {
+          height: 16px;
+          width: 16px;
+        }
+
+        // .ff-hovered-add-button--primary {
+        //   margin-right: 20px;
+        // }
+      }
+
+      &::after {
+        content: '';
+        display: block;
+        visibility: hidden;
+        clear: both;
+      }
+    }
+
+    .ff-table-tree-th,
+    .ff-table-tree-td {
+      text-align: left;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+
+    .ff-table-tree-th {
+      color: var(--table-header-text-color);
+      background: var(--border-color);
+      font-size: 12px;
+      font-weight: 600;
+      width: 400px;
+      height: 32px;
+      box-sizing: border-box;
+
+      &:first-child {
+        position: sticky;
+        left: 0;
+        padding-left: 8px;
+      }
+    }
+
+    .ff-table-tree-td {
+      font-size: 12px;
+      height: 32px !important;
+      box-sizing: border-box;
+
+      &:first-child {
+        overflow: initial;
+        position: sticky;
+        left: 0;
+        width: 100%;
+        background-color: white;
+        display: inline-flex;
+        color: var(--brand-color) !important;
+        align-items: center;
+        z-index: 98;
+
+        // &:hover {
+        //   background-color: var(--hover-color);
+        // }
+
+        .tree-table-default-content {
+          margin-left: 8px;
+          font-weight: 700;
+          display: inline-flex;
           align-items: center;
-          justify-content: center;
         }
 
-        .tree-table-td-content-text {
-          // margin-left: 4px;
+        .tree-table-td-content {
+          // padding-left: 4px;
+
+          .tree-table-td-content-select {
+            height: 24px;
+            width: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+
+          .tree-table-td-content-text {
+            // margin-left: 4px;
+          }
         }
       }
     }
   }
-}
 
-.tree-table-td-content {
-  display: inline-flex;
-  align-items: center;
-  font-size: 12px;
-  font-family: 'Poppins', sans-serif;
+  .tree-table-td-content {
+    display: inline-flex;
+    align-items: center;
+    font-size: 12px;
+    font-family: 'Poppins', sans-serif;
 
-  &.folder {
-    font-weight: 600;
+    &.folder {
+      font-weight: 600;
+    }
   }
-}
 
-.tree-row-expanded,
-.tree-row-collapsed {
-  span {
-    svg {
-      height: 12px;
-      width: 12px;
-      transition: transform 0.3s ease;
-      cursor: pointer;
-      path {
-        fill: var(--brand-color);
+  .tree-row-expanded,
+  .tree-row-collapsed {
+    span {
+      svg {
+        height: 12px;
+        width: 12px;
+        transition: transform 0.3s ease;
+        cursor: pointer;
+        path {
+          fill: var(--brand-color);
+        }
       }
     }
   }
-}
 
-.tree-row-collapsed svg {
-  transform: rotate(-90deg);
-  transition: transform 0.3s ease;
-}
+  .tree-row-collapsed svg {
+    transform: rotate(-90deg);
+    transition: transform 0.3s ease;
+  }
 
-.tree-table-space-container {
-  display: inline-flex;
-  // flex-direction: row-reverse;
-}
+  .tree-table-space-container {
+    display: inline-flex;
+    // flex-direction: row-reverse;
+  }
 
-.tree-title-container {
-  display: inline-flex;
-  align-items: center;
+  .tree-title-container {
+    display: inline-flex;
+    align-items: center;
+  }
 }

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Fragment } from 'react';
 import '../Comments.scss';
 import Icon from '../../Icon';
 import { CommentProps } from '../type';
@@ -343,7 +343,11 @@ const ChildComment = ({
                   {comment?.description
                     ?.split(DETECT_WORD_START_WITH_AT)
                     .map((part, index) =>
-                      part.startsWith('@') ? <b key={index}>{part}</b> : part
+                      part.startsWith('@') ? (
+                        <b key={`highlight-${index}`}>{part}</b>
+                      ) : (
+                        <Fragment key={`text-${index}`}>{part}</Fragment>
+                      )
                     )}
                 </Typography>
               )}
@@ -381,14 +385,7 @@ const ChildComment = ({
                   )}
 
                   <div className="edit-comment">
-                    <div
-                      className="reply"
-                      onClick={() => {
-                        onAddComment();
-                        setEditMode(false);
-                        setShowInput(false);
-                      }}
-                    >
+                    <div className="reply">
                       <Tooltip title={editMode ? 'Update' : 'Add'}>
                         <Icon
                           name="comment_reply"
@@ -398,6 +395,11 @@ const ChildComment = ({
                               input.length === previousInputLength) ||
                             input.trim().length === 0
                           }
+                          onClick={() => {
+                            onAddComment();
+                            setEditMode(false);
+                            setShowInput(false);
+                          }}
                         />
                       </Tooltip>
                     </div>

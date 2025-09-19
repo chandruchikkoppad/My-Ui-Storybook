@@ -11,6 +11,11 @@ export interface promptProp {
   iconColor?: string;
   tooltipTitle?: string;
   value: string;
+  disableInput? : boolean
+  isAdditionalIcon?: boolean;
+  additionalIconName?: string;
+  onAdditionalIconClick?: () => void;
+  additionIconToolTip? : string
 
   onPromptChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 

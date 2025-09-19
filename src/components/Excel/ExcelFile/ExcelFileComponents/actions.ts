@@ -263,50 +263,67 @@ export function formatePainter(data: Matrix<CellBase>): FormatePainterStyle {
   };
 }
 
-export type AddRowTop = BaseAction<typeof ADD_ROW_TOP>;
+type RowNum = {
+  row: number | undefined
+}
 
-export function addRowTop(): AddRowTop {
+type ColNum = {
+  columnWidth?: number | undefined
+  column: number | undefined
+}
+
+export type AddRowTop = BaseAction<typeof ADD_ROW_TOP> & RowNum;
+
+export function addRowTop(row?: number): AddRowTop {
   return {
     type: ADD_ROW_TOP,
+    row,
   };
 }
-export type AddRowBottom = BaseAction<typeof ADD_ROW_BOTTOM>;
+export type AddRowBottom = BaseAction<typeof ADD_ROW_BOTTOM> & RowNum;
 
-export function addRowBottom(): AddRowBottom {
+export function addRowBottom(row?: number): AddRowBottom {
   return {
     type: ADD_ROW_BOTTOM,
+    row,
   };
 }
 
-export type AddColumnLeft = BaseAction<typeof ADD_COLUMN_LEFT>
+export type AddColumnLeft = BaseAction<typeof ADD_COLUMN_LEFT> & ColNum;
 
-export function addColumnLeft(): AddColumnLeft {
+export function addColumnLeft(columnWidth?: number, column?: number): AddColumnLeft {
   return {
     type: ADD_COLUMN_LEFT,
+    columnWidth,
+    column,
   };
 }
 
-export type AddColumnRight = BaseAction<typeof ADD_COLUMN_RIGHT>
+export type AddColumnRight = BaseAction<typeof ADD_COLUMN_RIGHT> & ColNum;
 
-export function addColumnRight(): AddColumnRight {
+export function addColumnRight(columnWidth?: number, column?: number): AddColumnRight {
   return {
     type: ADD_COLUMN_RIGHT,
+    columnWidth,
+    column,
   };
 }
 
-export type DeleteRow = BaseAction<typeof DELETE_ROW>
+export type DeleteRow = BaseAction<typeof DELETE_ROW> & RowNum;
 
-export function deleteRow(): DeleteRow {
+export function deleteRow(row?: number): DeleteRow {
   return {
     type: DELETE_ROW,
+    row,
   };
 }
 
-export type DeleteColumn = BaseAction<typeof DELETE_COLUMN>
+export type DeleteColumn = BaseAction<typeof DELETE_COLUMN> & ColNum;
 
-export function deleteColumn(): DeleteColumn {
+export function deleteColumn(column?: number): DeleteColumn {
   return {
     type: DELETE_COLUMN,
+    column
   };
 }
 

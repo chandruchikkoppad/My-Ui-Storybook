@@ -7,7 +7,7 @@ import {
 
 const getTextAlignment = (
   alignment: string
-): 'left' | 'right' | 'center' | 'justify' => {
+): 'left' | 'right' | 'center' | 'justify' | 'end' | 'start' => {
   switch (alignment.toUpperCase()) {
     case 'LEFT':
       return 'left';
@@ -17,13 +17,17 @@ const getTextAlignment = (
       return 'center';
     case 'JUSTIFY':
       return 'justify';
+    case 'BOTTOM':
+      return 'end';
+    case 'TOP':
+      return 'start';
     default:
       return 'left';
   }
 };
 
 const getTextAlignmentBack = (
-  alignment: 'left' | 'right' | 'center' | 'justify'
+  alignment: 'left' | 'right' | 'center' | 'justify' | 'end' | 'start'
 ): string => {
   switch (alignment) {
     case 'left':
@@ -34,8 +38,12 @@ const getTextAlignmentBack = (
       return 'CENTER';
     case 'justify':
       return 'JUSTIFY';
+    case 'end':
+      return 'BOTTOM';
+    case 'start':
+      return 'TOP';
     default:
-      return 'LEFT';
+      return 'BOTTOM';
   }
 };
 
@@ -107,6 +115,7 @@ export function convertStyleToFrontend(
     borderBottom: borderBottom,
     borderLeft: borderLeft,
     textAlign: getTextAlignment(backendStyle.alignment.horizontal),
+    alignContent: getTextAlignment(backendStyle.alignment.vertical),
   };
 }
 
@@ -165,9 +174,23 @@ export const convertStyleToBackend = (
     },
     alignment: {
       horizontal: getTextAlignmentBack(
-        frontendStyle.textAlign as 'left' | 'right' | 'center' | 'justify'
+        frontendStyle.textAlign as
+          | 'left'
+          | 'right'
+          | 'center'
+          | 'justify'
+          | 'end'
+          | 'start'
       ),
-      vertical: 'BOTTOM',
+      vertical: getTextAlignmentBack(
+        frontendStyle.alignContent as
+          | 'left'
+          | 'right'
+          | 'center'
+          | 'justify'
+          | 'end'
+          | 'start'
+      ),
       wrapText: false,
     },
   };

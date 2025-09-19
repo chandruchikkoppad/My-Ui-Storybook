@@ -65,7 +65,7 @@ const DownloadClient: React.FC<DownloadClientProps> = ({
           className="ff-download-client-description-text"
           textAlign="center"
           fontWeight="medium"
-          lineHeight='26px'
+          lineHeight="26px"
         >
           Choose OS to Download
         </Typography>
@@ -73,6 +73,7 @@ const DownloadClient: React.FC<DownloadClientProps> = ({
         <div className="ff-download-client-os-wrapper">
           {osVersion.map((os) => (
             <div
+              key={os}
               className="ff-os-version-wrapper"
               onClick={() => {
                 onClick(os === 'mac_icon' ? 'mac' : os);

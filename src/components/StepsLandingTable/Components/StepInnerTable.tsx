@@ -16,6 +16,9 @@ import {
 } from './Types';
 import { closestCorners, DndContext, DragEndEvent } from '@dnd-kit/core';
 import {
+  restrictToVerticalAxis,
+} from '@dnd-kit/modifiers';
+import {
   SortableContext,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
@@ -134,6 +137,7 @@ const StepInnerTable = ({
       collisionDetection={closestCorners}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
+      modifiers={[restrictToVerticalAxis]}
     >
       <SortableContext
         disabled={!draggable}

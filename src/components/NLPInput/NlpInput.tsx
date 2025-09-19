@@ -1,4 +1,10 @@
-import { useReducer, useRef, useEffect, useState } from 'react';
+import {
+  useReducer,
+  useRef,
+  useEffect,
+  useState,
+  useLayoutEffect,
+} from 'react';
 import {
   NlpRenderOption,
   SelectAction,
@@ -221,7 +227,7 @@ const NlpInput = ({
     document.body.style.overflow = isEnabled ? '' : 'hidden';
   };
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (disabled) return;
     if (showOptions) {
       onSelectToggleScroll(!showOptions);
@@ -296,7 +302,7 @@ const NlpInput = ({
             })}
             style={{
               zIndex: optionZIndex,
-              paddingLeft: '10px',
+              paddingLeft: '32px',
             }}
             onFocus={() => handleSelectAction('FOCUS_INPUT')}
             onChange={onSelectInputChange}

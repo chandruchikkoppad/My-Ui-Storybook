@@ -118,6 +118,10 @@ export interface TableProps {
    */
   headerIconName?: string;
   /**
+   * tooltip title for the table header icon
+   */
+  headerIconTooltipTitle?: string;
+  /**
    * handle function for the table header icon
    */
   headerIconOnClick?: () => void;

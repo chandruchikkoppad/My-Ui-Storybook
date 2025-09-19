@@ -343,7 +343,8 @@ export const IconOptionSelection: Story = {
       {
         label: 'fire-flink-LIC4937',
         value: 'fire-flink-LIC4937',
-        iconName: 'mac_icon',
+        iconName: 'windows',
+        iconColor: 'var(--ff-windows-Icon-color)',
       },
       {
         label: 'fire-flink-LIC4999',

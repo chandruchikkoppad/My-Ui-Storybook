@@ -9,6 +9,7 @@ import Dropdown from './components/Dropdown';
 import { getValue } from '../../utils/getSelectOptionValue/getSelectOptionValue';
 import usePortalPosition from '../../hooks/usePortalPosition';
 import Tooltip from '../Tooltip';
+import { checkEmpty } from '../../utils/checkEmpty/checkEmpty';
 
 const Select: FC<SelectProps> = ({
   label = 'Default Label',
@@ -46,6 +47,9 @@ const Select: FC<SelectProps> = ({
   borderRadius = '0px',
   noResultsMessage,
   dropDownRef,
+  dropDownHeight = 160,
+  onSearchText,
+  isCustomButtonDisabled = false,
 }) => {
   const selectWidth = typeof width === 'number' ? `${width}px` : width;
   const memoizedOptionsList = useMemo(() => optionsList, [optionsList]);
@@ -55,8 +59,9 @@ const Select: FC<SelectProps> = ({
   const [searchedOption, setSearchedOption] = useState<any>({
     searchedText: '',
     searchedIcon: '',
+    searchedIconColor: '',
   });
-  const { searchedText, searchedIcon } = searchedOption;
+  const { searchedText, searchedIcon, searchedIconColor } = searchedOption;
   const [selectOptionList, setSelectOptionList] = useState<Option[] | []>([]);
   const [dropdownPosition, setDropdownPosition] = useState<DropdownPosition>({
     positionX: 0,
@@ -88,7 +93,7 @@ const Select: FC<SelectProps> = ({
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (disabled) return;
     const { value } = event.target;
-
+    onSearchText?.(value);
     const filteredOptions = optionsList.filter((option) => {
       const valueData = getValue(option, valueAccessor);
       return typeof valueData === 'string'
@@ -146,6 +151,7 @@ const Select: FC<SelectProps> = ({
       setSearchedOption({
         searchedText: getValue(selectedOption, valueAccessor) || '',
         searchedIcon: selectedOption.iconName || '',
+        searchedIconColor: selectedOption.iconColor,
       });
       setCustomRecurrence(false);
       onBlur();
@@ -159,6 +165,7 @@ const Select: FC<SelectProps> = ({
     setSearchedOption({
       searchedText: getValue(selectedOption, valueAccessor),
       searchedIcon: selectedOption.iconName,
+      searchedIconColor: selectedOption.iconColor,
     });
     if (onChange) {
       onChange(option);
@@ -185,10 +192,15 @@ const Select: FC<SelectProps> = ({
 
       const style = window.getComputedStyle(parent);
       const overflowY = style.overflowY;
+      const overflowX = style.overflowX;
 
       const isScrollable =
-        (overflowY === 'auto' || overflowY === 'scroll') &&
-        parent.scrollHeight > parent.clientHeight;
+        (overflowY === 'auto' ||
+          overflowY === 'scroll' ||
+          overflowX === 'auto' ||
+          overflowX === 'scroll') &&
+        (parent.scrollHeight > parent.clientHeight ||
+          parent.scrollWidth > parent.clientWidth);
 
       if (isScrollable) {
         return parent;
@@ -220,6 +232,7 @@ const Select: FC<SelectProps> = ({
     setSearchedOption({
       searchedText: getValue(selectedOption, valueAccessor),
       searchedIcon: selectedOption.iconName,
+      searchedIconColor: selectedOption.iconColor,
     });
   }, [
     selectedOption?.label,
@@ -236,6 +249,51 @@ const Select: FC<SelectProps> = ({
     placeHolder = '';
   }
 
+  const [isTruncated, setIsTruncated] = useState(false);
+
+  const isInputTruncated = (inputEl: HTMLInputElement | null): boolean => {
+    if (!inputEl) return false;
+    return inputEl.scrollWidth > inputEl.clientWidth;
+  };
+
+  useEffect(() => {
+    const checkTruncate = () => {
+      if (inputRef.current) {
+        setIsTruncated(isInputTruncated(inputRef.current));
+      }
+    };
+    checkTruncate();
+    window.addEventListener('resize', checkTruncate);
+    return () => {
+      window.removeEventListener('resize', checkTruncate);
+    };
+  }, [searchedText, width]);
+
+  const inputElement = (
+    <input
+      type="text"
+      ref={inputRef}
+      id="select-input-element"
+      className={classNames('ff-select-inputField', {
+        'ff-select-inputField__disabled': disabled,
+        'ff-select-inputField__readonly': disableInput,
+        'ff-select-inputField__icon': showIcon && !checkEmpty(searchedIcon),
+      })}
+      onFocus={handleFocus}
+      value={searchedText}
+      autoCorrect="off"
+      autoComplete="off"
+      spellCheck="false"
+      style={{
+        zIndex: optionZIndex,
+        color: selectedOptionColor,
+      }}
+      disabled={disabled}
+      onChange={handleChange}
+      readOnly={disableInput}
+      placeholder={placeHolder}
+    />
+  );
   return (
     <div
       className={`ff-select-wrapper ${className} ${
@@ -258,36 +316,22 @@ const Select: FC<SelectProps> = ({
           'ff-select__no_border': !showBorder,
         })}
       >
-        {showIcon && (
+        {showIcon && !checkEmpty(searchedIcon) && (
           <Tooltip placement="bottom" title={searchedText}>
-            <Icon name={searchedIcon} className="ff-select-input-icon" />
+            <Icon
+              name={searchedIcon}
+              color={searchedIconColor}
+              className="ff-select-input-icon"
+            />
           </Tooltip>
         )}
-        <Tooltip title={tooltip ? searchedText : ''} style={{ width: '100%' }}>
-          <input
-            type="text"
-            ref={inputRef}
-            id="select-input-element"
-            className={classNames('ff-select-inputField', {
-              'ff-select-inputField__disabled': disabled,
-              'ff-select-inputField__readonly': disableInput,
-              'ff-select-inputField__icon': showIcon,
-            })}
-            onFocus={handleFocus}
-            value={searchedText}
-            autoCorrect="off"
-            autoComplete="off"
-            spellCheck="false"
-            style={{
-              zIndex: optionZIndex,
-              color: selectedOptionColor,
-            }}
-            disabled={disabled}
-            onChange={handleChange}
-            readOnly={disableInput}
-            placeholder={placeHolder}
-          />
-        </Tooltip>
+        {tooltip && isTruncated ? (
+          <Tooltip title={searchedText} style={{ width: '100%' }}>
+            {inputElement}
+          </Tooltip>
+        ) : (
+          inputElement
+        )}
         {optionsRequired && (
           <div
             ref={selectArrowRef}
@@ -312,11 +356,11 @@ const Select: FC<SelectProps> = ({
           <Typography
             as="span"
             className={classNames('ff-select-labels', {
-              'ff-select-labels__icon': showIcon,
+              'ff-select-labels__icon': showIcon && !checkEmpty(searchedIcon),
               'ff-select-labels__active': searchedText,
             })}
             fontSize={searchedText || showDropdownOptions ? 10 : 12}
-            lineHeight={searchedText || showDropdownOptions ? '10px' : '12px'}
+            lineHeight={searchedText || showDropdownOptions ? '12px' : '16px'}
             required={required}
             style={{ maxWidth: `calc(${selectWidth} - 40px)` }}
           >
@@ -366,6 +410,9 @@ const Select: FC<SelectProps> = ({
                 showClearIcon={showClearIcon}
                 noResultsMessage={noResultsMessage}
                 ref={dropDownRef}
+                searchedIcon={searchedIcon}
+                dropDownHeight={dropDownHeight}
+                isCustomButtonDisabled={isCustomButtonDisabled}
               />,
               document.body
             )}

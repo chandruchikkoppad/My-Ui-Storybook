@@ -110,4 +110,32 @@ export const DarkVariantIcons: Story = {
   },
 };
 
+export const DynamicCursorType: Story = {
+  args: {
+    name: 'hamburger_menu',
+    color: 'var(--ff-icon-color-dark-variant)',
+    variant: 'dark',
+    hoverEffect: true,
+    cursorType: 'not-allowed',
+  },
+  render: (args) => {
+    const iconColor =
+      args.variant === 'dark'
+        ? 'var(--ff-icon-color-dark-variant)'
+        : 'var(--brand-color)';
+
+    return (
+      <div style={{
+                width: '30%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexDirection: 'column',
+              }}>
+        <Icon {...args} color={iconColor} height={16} width={16}/>
+      </div>
+    );
+  },
+};
+
 export default meta;

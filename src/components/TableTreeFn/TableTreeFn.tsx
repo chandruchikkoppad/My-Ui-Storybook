@@ -126,7 +126,6 @@ const TableTreeFn = forwardRef<HTMLDivElement, TreeTableProps>(
         !scrollDirection &&
         treeData[treeData.length - 1]?.lastResource !== true
       ) {
-        console.log('Loading more below');
         scrollDebounceRef.current = setTimeout(() => {
           loadMoreBelow();
         }, 150);
@@ -139,7 +138,6 @@ const TableTreeFn = forwardRef<HTMLDivElement, TreeTableProps>(
         !scrollDirection &&
         treeData[0]?.lastResource !== true
       ) {
-        console.log('Loading more above');
         scrollDebounceRef.current = setTimeout(() => {
           loadMoreAbove();
         }, 150);
@@ -189,12 +187,8 @@ const TableTreeFn = forwardRef<HTMLDivElement, TreeTableProps>(
           }
         };
 
-        console.log(
-          `HandleScrollScll: addedRows=${addedRowsCount}, retries=${retries}`
-        );
         requestAnimationFrame(tryRestoreScroll);
       }
-      console.log('handleScroll called');
     }, [
       loading,
       scrollDirection,
@@ -354,56 +348,110 @@ const TableTreeFn = forwardRef<HTMLDivElement, TreeTableProps>(
     if (freezeColumns) {
       frozenWidth = calculateFrozenWidth(columnsData, freezeColumns);
     }
+    // half visible, click on upward arrow functionality, page auto scrolling
+    useEffect(() => {
+      if (!newNode || !containerRef.current) return;
+      const container = containerRef.current;
+      if (
+        newNode.action === 'addAbove' &&
+        newNode.sourceId === treeData[0]?.key
+      ) {
+        container.scrollTo({ top: 0, behavior: 'smooth' });
+      } else if (
+        newNode.action === 'addAbove' &&
+        newNode.sourceId === newNode.firstNodeKey
+      ) {
+        const newScrollTop = container.scrollTop - 64;
+        container.scrollTo({ top: newScrollTop, behavior: 'smooth' });
+      }
+    }, [newNode]);
+
+    useLayoutEffect(() => {
+      if (!navigateTreeNode) return;
+
+      const container = containerRef.current;
+      if (!container) return;
+
+      let retryCount = 0;
+      const maxRetries = 30;
+
+      const scrollToNode = () => {
+        const element = document.getElementById(navigateTreeNode);
+
+        if (element) {
+          setTimeout(() => {
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            handleRemoveNavigateTreeNode();
+          }, 200);
+        } else {
+          if (retryCount === 0 && treeData?.length > 1) {
+            loadMoreAbove?.();
+          }
+
+          if (retryCount < maxRetries) {
+            retryCount++;
+            requestAnimationFrame(scrollToNode);
+          } else {
+            handleRemoveNavigateTreeNode();
+          }
+        }
+      };
+      scrollToNode();
+    }, [navigateTreeNode, loadMoreAbove, handleRemoveNavigateTreeNode]);
 
     return (
-      <div className="tree-table-wrap" ref={ref}>
-        <div
-          className={`table-scrollable ${treeData.length ? '' : 'table-empty'}`}
-          ref={containerRef}
-          style={
-            {
-              '--table-height': treeData.length ? height : 'auto',
-              '--frozen-column-width': freezeColumns
-                ? `${frozenWidth}px`
-                : '0px',
-              border: tableBorder,
-            } as React.CSSProperties
-          }
-        >
-          <table className="tree-table">
-            <TableHead
-              columnsData={columnsData}
-              rootNode={rootNode}
-              onCheckBoxChange={handleCheckBoxChange}
-              selected={selected}
-              selectedNode={selectedNode}
-              tableHeaderBgColor={tableHeaderBgColor}
-              hideOnDisable={hideOnDisable}
-              transparentHeader={transparentHeader}
-              scriptLengthTruncate={scriptLengthTruncate}
-            />
-            <TableBody
-              flattenedTreeData={addLastChild(treeData)}
-              rootNode={rootNode?.node}
-              columnsData={columnsData}
-              selected={selected}
-              select={select}
-              onRowClick={handleRowClick}
-              onToggleExpand={handleToggleExpand}
-              onCheckBoxChange={handleCheckBoxChange}
-              newNode={newNode}
-              onAddConfirm={onAddConfirm}
-              onAddCancel={onAddCancel}
-              handleEditFieldError={handleEditFieldError}
-              expanding={expanding}
-              selectedNode={selectedNode}
-              hideOnDisable={hideOnDisable}
-              scriptLengthTruncate={scriptLengthTruncate}
-              addModuleInputWidth={addModuleInputWidth}
-              addModuleSelectWidth={addModuleSelectWidth}
-              disableEditLabelConfirmIcon={disableEditLabelConfirmIcon}
-            />
-          </table>
+      <div className="tree-table-wrapper-container">
+        <div className="tree-table-wrap" ref={ref}>
+          <div
+            className={`table-scrollable ${
+              treeData.length ? '' : 'table-empty'
+            }`}
+            ref={containerRef}
+            style={
+              {
+                '--table-height': treeData.length ? height : 'auto',
+                '--frozen-column-width': freezeColumns
+                  ? `${frozenWidth}px`
+                  : '0px',
+                border: tableBorder,
+              } as React.CSSProperties
+            }
+          >
+            <table className="tree-table">
+              <TableHead
+                columnsData={columnsData}
+                rootNode={rootNode}
+                onCheckBoxChange={handleCheckBoxChange}
+                selected={selected}
+                selectedNode={selectedNode}
+                tableHeaderBgColor={tableHeaderBgColor}
+                hideOnDisable={hideOnDisable}
+                transparentHeader={transparentHeader}
+                scriptLengthTruncate={scriptLengthTruncate}
+              />
+              <TableBody
+                flattenedTreeData={addLastChild(treeData)}
+                rootNode={rootNode?.node}
+                columnsData={columnsData}
+                selected={selected}
+                select={select}
+                onRowClick={handleRowClick}
+                onToggleExpand={handleToggleExpand}
+                onCheckBoxChange={handleCheckBoxChange}
+                newNode={newNode}
+                onAddConfirm={onAddConfirm}
+                onAddCancel={onAddCancel}
+                handleEditFieldError={handleEditFieldError}
+                expanding={expanding}
+                selectedNode={selectedNode}
+                hideOnDisable={hideOnDisable}
+                scriptLengthTruncate={scriptLengthTruncate}
+                addModuleInputWidth={addModuleInputWidth}
+                addModuleSelectWidth={addModuleSelectWidth}
+                disableEditLabelConfirmIcon={disableEditLabelConfirmIcon}
+              />
+            </table>
+          </div>
         </div>
       </div>
     );

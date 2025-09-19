@@ -8,6 +8,7 @@ import useDispatch from './use-dispatch';
 import useSelector from './use-selector';
 import Typography from '../../../Typography';
 import { useMemo } from 'react';
+import { EmptyCell, getMatrixDimensions } from './util';
 
 const ColumnIndicator: Types.ColumnIndicatorComponent = ({
   column,
@@ -22,8 +23,16 @@ const ColumnIndicator: Types.ColumnIndicatorComponent = ({
   cell,
   selectedColumn,
   minimumColumnWidth,
+  maxColLimit,
+  disableDeleteOption,
+  contextMenu,
+  onAddColumn,
+  onDeleteColumn,
+  scrollToColumn,
 }) => {
   const dispatch = useDispatch();
+  const excelData = useSelector((state) => state.model.data);
+  const activeCell = useSelector((state) => state.active);
 
   const minColumnWidth = minimumColumnWidth;
 
@@ -31,31 +40,91 @@ const ColumnIndicator: Types.ColumnIndicatorComponent = ({
     (state) => state.columnDimensions[column]?.width || minColumnWidth
   );
 
+  const matrixData = useSelector((state) => state.model.data);
+  const { columnCount } = getMatrixDimensions(matrixData as [[]]);
+  const prevExcelDataRef = React.useRef(excelData);
+  const isCellDataChanged = React.useCallback(() => {
+    if (activeCell) {
+      if (
+        prevExcelDataRef.current?.[activeCell.row]?.[activeCell.column] ===
+          EmptyCell ||
+        prevExcelDataRef.current?.[0]?.length !== excelData?.[0]?.length
+      ) {
+        prevExcelDataRef.current = excelData;
+      }
+      const prevValue =
+        prevExcelDataRef.current?.[activeCell.row]?.[activeCell.column]?.value;
+      const newValue = excelData?.[activeCell.row]?.[activeCell.column]?.value;
+      return prevValue === newValue;
+    }
+    return false;
+  }, [activeCell, excelData, prevExcelDataRef, EmptyCell]);
   const options = useMemo(() => {
+    const checkVisible =
+      cell?.contextDisable?.['Delete Column'] && isCellDataChanged();
     return [
       {
         label: 'Add Column Left',
         value: 'Add Column Left',
         iconName: 'plus_icon',
-        action: addColumnLeft,
-        disable: cell?.contextDisable?.['Add Column Left'] ?? false,
+        action: () => {
+          addColumnLeft(minColumnWidth);
+          onAddColumn?.(selectedColumn ?? column, true);
+          if (selectedColumn === columnCount - 1) {
+            scrollToColumn(selectedColumn);
+          }
+        },
+        disableTooltip: 'Column limit reached',
+        visible: cell?.contextDisable?.['Add Column Left'] ?? false,
+        disable: columnCount >= maxColLimit,
       },
       {
         label: 'Add Column Right',
         value: 'Add Column Right',
         iconName: 'plus_icon',
-        action: addColumnRight,
-        disable: cell?.contextDisable?.['Add Column Right'] ?? false,
+        action: () => {
+          addColumnRight(minColumnWidth);
+          onAddColumn?.(selectedColumn ?? column, false);
+          if (selectedColumn === columnCount - 1) {
+            scrollToColumn(selectedColumn);
+          }
+        },
+        disableTooltip: 'Column limit reached',
+        visible: cell?.contextDisable?.['Add Column Right'] ?? false,
+        disable: columnCount >= maxColLimit,
       },
-      {
-        label: 'Delete Column',
-        value: 'Delete Column',
-        iconName: 'delete',
-        action: deleteColumn,
-        disable: cell?.contextDisable?.['Delete Column'] ?? false,
-      },
+      ...(!disableDeleteOption
+        ? [
+            {
+              label: 'Delete Column',
+              value: 'Delete Column',
+              iconName: 'delete',
+              action: () => {
+                deleteColumn();
+                onDeleteColumn?.(selectedColumn ?? column);
+              },
+              disableTooltip: '',
+              visible: checkVisible ? true : false,
+              disable: false,
+            },
+          ]
+        : []),
     ];
-  }, [selectedColumn, cell, addColumnLeft, addColumnRight, deleteColumn]);
+  }, [
+    selectedColumn,
+    cell,
+    addColumnLeft,
+    addColumnRight,
+    deleteColumn,
+    minColumnWidth,
+    columnCount,
+    maxColLimit,
+    disableDeleteOption,
+    onAddColumn,
+    onDeleteColumn,
+    column,
+    isCellDataChanged,
+  ]);
 
   const onMouseDrag = React.useCallback(
     (event: React.MouseEvent, isRight: boolean) => {
@@ -105,6 +174,7 @@ const ColumnIndicator: Types.ColumnIndicatorComponent = ({
       onSelect(column, event.shiftKey);
       setContextMenu({
         open: columnContextEnable,
+        contextType: 'column',
         options,
       });
     },
@@ -115,10 +185,17 @@ const ColumnIndicator: Types.ColumnIndicatorComponent = ({
     if (selectedColumn !== undefined) {
       setContextMenu((prev) => ({
         open: prev.open,
+        contextType: 'column',
         options,
       }));
     }
-  }, [column, selectedColumn, columnContextEnable, options]);
+  }, [
+    column,
+    selectedColumn,
+    columnContextEnable,
+    options,
+    contextMenu?.contextType === 'column',
+  ]);
 
   return (
     <th
@@ -181,6 +258,7 @@ export const enhance = (
         selected={selected}
         selectedColumn={selectedColumn}
         onSelect={selectEntireColumn}
+        scrollToColumn={props.scrollToColumn}
       />
     );
   };

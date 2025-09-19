@@ -24,7 +24,9 @@ import {
   cloneElement,
   ReactElement,
   isValidElement,
+  Fragment,
 } from 'react';
+import Tooltip from '../Tooltip';
 
 const getColumnLeftPosition = (
   index: number,
@@ -106,9 +108,9 @@ const SortableRow = ({
         ref={setNodeRef}
         style={style}
         key={key}
-        className={classNames(tableBodyRowClass, {
-          'disabled-row': row.disabled && isRowDisabled,
-          'display-card': displayCard,
+        className={classNames('ff-table-data-row ', tableBodyRowClass, {
+          'ff-table-disabled': row.disabled && isRowDisabled,
+          'ff-table-display-card': displayCard,
         })}
         id={key}
       >
@@ -121,7 +123,7 @@ const SortableRow = ({
                 left: isFrozen
                   ? getColumnLeftPosition(index, columns, freezeColumns)
                   : 'auto',
-                zIndex: isFrozen ? 99 : 'auto',
+                zIndex: isFrozen ? 120 : 'auto',
                 backgroundColor: isFrozen
                   ? 'var(--input-label-bg-color)'
                   : 'transparent',
@@ -133,17 +135,22 @@ const SortableRow = ({
               data-frozen={isFrozen || undefined} // Add this line
               key={column.accessor + index}
               onClick={() => handleOnclick(column, row)}
-              className={classNames(column.className, {
-                'clickable-cell': column.onClick,
-              })}
+              className={classNames(
+                'ff-table-data-cell ff-table-icon-container',
+                column.className,
+                {
+                  'ff-table-clickable-cell': column.onClick,
+                  'ff-table-sticky-column': isFrozen,
+                }
+              )}
             >
               <Typography
                 as="div"
                 color={tableDataTextColor}
-                className="ff-data-checkbox-container"
+                className="ff-table-data-container"
               >
                 {index === 0 && withCheckbox && (
-                  <span className="ff-table-checkbox">
+                  <span className="ff-table-checkbox-table">
                     <Checkbox
                       onChange={(e) => {
                         onSelectClick(e, row);
@@ -166,7 +173,7 @@ const SortableRow = ({
                       {...listeners}
                       {...attributes}
                     >
-                      <Icon name="drag" className="ff-table-drag-icon-active" />
+                      <Icon name="drag" className="ff-table-drag-active" />
                     </span>
                     <Typography color="var(--brand-color)">
                       {serialNumber && `${serialNumber}.`}
@@ -180,11 +187,9 @@ const SortableRow = ({
         })}
       </tr>
       {isAccordionOpen ? (
-        <tr className="accordion-row">
-          <td colSpan={columns.length}>
-            <div className="accordion-content">
-              {accordionContent ? accordionContent : null}
-            </div>
+        <tr>
+          <td className="ff-table-data-cell" colSpan={columns.length}>
+            <div>{accordionContent ? accordionContent : null}</div>
           </td>
         </tr>
       ) : null}
@@ -224,6 +229,7 @@ const Table = ({
   isRowDisabled = true,
   tableHeaderZindex = 99,
   freezeColumns,
+  headerIconTooltipTitle,
 }: TableProps) => {
   const observerRef = useRef<IntersectionObserver | null>(null);
 
@@ -234,7 +240,7 @@ const Table = ({
 
   useEffect(() => {
     const scrollContainer = document.getElementById(
-      'ff-sortable-table-scroll-container'
+      'ff-table-scroll-container'
     );
     const firstNode = document.getElementById('ff-table-first-node');
     const lastNode = document.getElementById('ff-table-last-node');
@@ -315,24 +321,27 @@ const Table = ({
                 : '0px',
             } as React.CSSProperties
           }
-          id="ff-sortable-table-scroll-container"
-          className={classNames(className, {
-            'ff-fixed-header-table': withFixedHeader,
-            'border-borderRadius': borderWithRadius,
-          })}
+          id="ff-table-scroll-container"
+          className={classNames(
+            'ff-table-scroll-container',
+            {
+              'ff-table-fixed-header': withFixedHeader,
+              'ff-table-container--border-radius': borderWithRadius,
+            },
+            className
+          )}
           ref={tableRef}
         >
-          <table className={classNames(`ff-table`)} cellSpacing={0}>
+          <table className="ff-table-container" cellSpacing={0}>
             <thead
               className={classNames(
+                'ff-table-header',
                 {
-                  'ff-fixed-header': withFixedHeader,
+                  'ff-table-fixed-header': withFixedHeader,
                 },
                 tableHeadClass
               )}
-              style={{
-                zIndex: tableHeaderZindex,
-              }}
+              style={{ zIndex: tableHeaderZindex }}
             >
               <tr>
                 {columns.map((column, index) => {
@@ -340,8 +349,11 @@ const Table = ({
                   return (
                     <th
                       className={classNames(
-                        `${headerType !== 'default' ? `${headerType}-bg` : ''}`,
-                        `${headerTextColor && `${headerTextColor}-color`}`
+                        'ff-table-header-cell',
+                        headerType !== 'default'
+                          ? `ff-table-${headerType}-bg`
+                          : '',
+                        headerTextColor && `ff-table-${headerTextColor}-color`
                       )}
                       key={column.header}
                       style={{
@@ -358,21 +370,27 @@ const Table = ({
                       }}
                     >
                       <div className="ff-table-icon">
-                        <Icon
-                          height={14}
-                          width={14}
-                          name={headerIconName}
-                          onClick={headerIconOnClick}
-                        />
+                        <Tooltip
+                          title={headerIconTooltipTitle || ''}
+                          placement="bottom"
+                        >
+                          <Icon
+                            height={14}
+                            width={14}
+                            name={headerIconName}
+                            onClick={headerIconOnClick}
+                            cursorType="pointer"
+                          />
+                        </Tooltip>
                       </div>
                       <Typography
                         style={column?.width && { width: column?.width }}
                         as="div"
                         fontWeight="semi-bold"
-                        className="ff-label-checkbox-container"
+                        className="ff-table-label-checkbox-container"
                       >
                         {index === 0 && withCheckbox && (
-                          <span className="ff-table-checkbox">
+                          <span className="ff-table-checkbox-table">
                             <Checkbox
                               onChange={(e) => {
                                 onSelectClick(e, {
@@ -395,7 +413,7 @@ const Table = ({
                 })}
               </tr>
             </thead>
-            <tbody className="ff-fixed-header-table">
+            <tbody>
               <tr id="ff-table-first-node" />
               {data?.length > 0 &&
                 data?.map((row: any, index) => {
@@ -403,15 +421,22 @@ const Table = ({
                     row?.id || row?._id || row?.scriptId
                   );
                   return (
-                    <>
+                    <Fragment key={row?._id || index}>
                       {editMode === row._id || editMode === row.id ? (
                         <tr
                           key={row?._id || index}
-                          className={classNames(tableBodyRowClass, 'edit-row', {
-                            'disabled-row': row.disabled && isRowDisabled,
-                          })}
+                          className={classNames(
+                            'ff-table-data-row',
+                            'ff-table-edit-row',
+                            tableBodyRowClass,
+                            {
+                              'ff-table-disabled':
+                                row.disabled && isRowDisabled,
+                            }
+                          )}
                         >
                           <td
+                            className="ff-table-data-cell"
                             colSpan={columns.length}
                             style={{ padding: '0px' }}
                           >
@@ -442,7 +467,7 @@ const Table = ({
                           frozenWidth={frozenWidth}
                         />
                       )}
-                    </>
+                    </Fragment>
                   );
                 })}
               <tr id="ff-table-last-node" />
@@ -450,7 +475,7 @@ const Table = ({
           </table>
           {data?.length <= 0 && (
             <div
-              className="no-data-content"
+              className="ff-no-data-content"
               style={{ height: `calc(${height} - 50px)` }}
             >
               {noDataContent}

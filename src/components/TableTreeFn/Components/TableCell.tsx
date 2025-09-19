@@ -14,10 +14,11 @@ const renderSpaces = (
   level: number,
   parentSiblings: boolean[] = [],
   isLast?: boolean | undefined,
+  nextSibling?: boolean | undefined,
   isContainer?: boolean | undefined
 ) => {
   let siblingsArray = parentSiblings;
-  let isLastNode = isLast;
+  let isLastNode = nextSibling !== undefined ? !nextSibling : isLast;
   if (checkEmpty(parentSiblings)) {
     if (!isNaN(level)) {
       siblingsArray = Array(level).fill(true);
@@ -118,6 +119,7 @@ const TableCell = React.memo(
             node.hierarchy,
             node.parentSiblings,
             node.lastChild,
+            node.nextSibling,
             node.container
           )}
         <div className="tree-title-container">
@@ -151,7 +153,9 @@ const TableCell = React.memo(
                       {node.selectedStatus === 'none' ? (
                         <Tooltip
                           title={
-                            !!node.machine
+                            node?.currentEnvId &&
+                            node?.envId &&
+                            node?.currentEnvId !== node?.envId
                               ? 'This script is assigned to another environment. Selecting it will reassign it to the current environment.'
                               : undefined
                           }

@@ -431,20 +431,26 @@ const MultiRadialChart: React.FC<MultiRadialChartProps> = ({
             >
               {tooltip.visible ? (
                 <>
-                  <tspan
-                    x="0"
-                    dy={`${lineWidth + gapBetweenArch - 5}`}
-                    className="ff-center-text-tooltip"
-                  >
-                    {textData(tooltip.content.split(':')[1]?.trim() || '', 5)}
+                  <tspan x="0" dy="0" className="ff-center-text-tooltip">
+                    {textData(tooltip.content.split(':')[1]?.trim() || '', 9)}
                   </tspan>
-                  <tspan
-                    x="0"
-                    dy={`${lineWidth + gapBetweenArch + 5}`}
-                    className="ff-center-text-tooltip"
-                  >
-                    {textData(tooltip.content.split(':')[0] ?? '', 8)}
-                  </tspan>
+                  {tooltip.content
+                    .split(':')[0]
+                    ?.split(' ')
+                    .map((word, i) => (
+                      <tspan
+                        key={i}
+                        x="0"
+                        dy={
+                          i === 0
+                            ? `${lineWidth + gapBetweenArch + 5}`
+                            : DEFAULT_LINE_HEIGHT
+                        }
+                        className="ff-center-text-tooltip"
+                      >
+                        {word}
+                      </tspan>
+                    ))}
                 </>
               ) : (
                 <>

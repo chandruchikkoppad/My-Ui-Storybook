@@ -1,5 +1,5 @@
 import type { FC, ReactNode } from 'react';
-import { VariableDropdownProps, DyanamicObj, VariableOption } from './types';
+import { VariableDropdownProps, VariableOption } from './types';
 import Icon from '../Icon';
 import './VariableDropdown.scss';
 import Typography from '../Typography';
@@ -9,6 +9,7 @@ import { isTextTruncated } from '../../utils/truncateText/truncateText';
 import { dynamicObject } from '../variableSuggestionInputDropDown/types';
 import Tooltip from '../Tooltip';
 import { DynamicWidthTooltip } from './DynamicWidthToolTip';
+import { Virtuoso } from 'react-virtuoso';
 
 const VariableDropdown: FC<VariableDropdownProps> = ({
   optionsList = [],
@@ -16,7 +17,7 @@ const VariableDropdown: FC<VariableDropdownProps> = ({
   dropdownPosition,
   position = 'relative',
   width,
-  height = '100px',
+  height = '160px',
   zIndex = 9999,
 }): ReactNode => {
   const VARIABLE_ICON_MAP: Record<string, string> = {
@@ -31,7 +32,10 @@ const VariableDropdown: FC<VariableDropdownProps> = ({
     const variableId = option._id || option.id;
 
     if (variableId?.startsWith('PARAMETER')) return 'step_group_parameter';
-    if (option.type === 'LOCAL' && option?.parentVariableType === 'STEPGROUP')
+    if (
+      option?.parentVariableType === 'STEPGROUP' &&
+      (option.type === 'LOCAL' || option?.type === 'STEPGROUP')
+    )
       return 'step_group_variable';
 
     if (option.type === '_startforloop') return 'for_loop_variable';
@@ -54,6 +58,53 @@ const VariableDropdown: FC<VariableDropdownProps> = ({
     return 212;
   }
 
+  // Calculate item height based on width type
+  const itemHeight = 32;
+
+  const renderItem = (index: number) => {
+    const option = optionsList[index];
+    if (!option) return null;
+
+    return (
+      <div
+        className={'ff-variable-data'}
+        onMouseDown={() => onSelectVariable(option)}
+        key={`${option.id}-${index}`}
+      >
+        {width.endsWith('px') ? (
+          <>
+            <Tooltip
+              title={
+                isTextTruncated(
+                  getDisplayText(option),
+                  getNumericValue(width),
+                  'pixel'
+                )
+                  ? getDisplayText(option)
+                  : ''
+              }
+              style={{
+                width: `${getNumericValue(width)}px`,
+              }}
+            >
+              <Typography as="span" fontSize={12} className="ff-truncated_text">
+                {getDisplayText(option)}
+              </Typography>
+            </Tooltip>
+            <Icon
+              name={getVariableIcon(option)}
+              height={24}
+              width={24}
+              hoverEffect
+            />
+          </>
+        ) : (
+          <DynamicWidthTooltip option={option} />
+        )}
+      </div>
+    );
+  };
+
   return (
     <div
       className={cx('ff-variable-dropdown', position)}
@@ -70,57 +121,16 @@ const VariableDropdown: FC<VariableDropdownProps> = ({
       }
     >
       {!checkEmpty(optionsList) ? (
-        optionsList?.map((option: DyanamicObj): ReactNode => {
-          return (
-            <div
-              className={
-                width.endsWith('px')
-                  ? 'ff-variable-option'
-                  : '  ff-variable-data'
-              }
-              onMouseDown={() => onSelectVariable(option)}
-              key={option?.id}
-            >
-              {width.endsWith('px') ? (
-                <>
-                  <Tooltip
-                    title={
-                      isTextTruncated(
-                        getDisplayText(option),
-                        getNumericValue(width),
-                        'pixel'
-                      )
-                        ? getDisplayText(option)
-                        : ''
-                    }
-                    style={{
-                      width: `${getNumericValue(width)}px`,
-                    }}
-                  >
-                    <Typography
-                      as="span"
-                      fontSize={14}
-                      className="ff-truncated_text"
-                    >
-                      {getDisplayText(option)}
-                    </Typography>
-                  </Tooltip>
-                  <Icon
-                    name={getVariableIcon(option)}
-                    height={16}
-                    width={16}
-                    hoverEffect
-                  />
-                </>
-              ) : (
-                <DynamicWidthTooltip option={option} />
-              )}
-            </div>
-          );
-        })
+        <Virtuoso
+          totalCount={optionsList.length}
+          itemContent={renderItem}
+          style={{ height, fontSize: '12px' }}
+          overscan={10}
+          fixedItemHeight={itemHeight}
+        />
       ) : (
-        <div className="ff-variable-option">
-          <Typography as="span" fontSize={14}>
+        <div className="ff-variable-option ff-variable-option-no-data">
+          <Typography as="span" fontSize={12}>
             No Option
           </Typography>
         </div>

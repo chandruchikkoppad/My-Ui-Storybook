@@ -1,11 +1,4 @@
-import {
-  ChangeEvent,
-  useEffect,
-  useState,
-  type FC,
-  type JSX,
-  useMemo,
-} from 'react';
+import { ChangeEvent, useEffect, useState, type FC, type JSX } from 'react';
 import Drawer from '../Drawer';
 import { CreateVariableProps } from './types';
 import Input from '../Input';
@@ -37,20 +30,24 @@ const CreateVariableSlider: FC<CreateVariableProps> = ({
   mode = 'create',
   disabled,
   dataFiles = [],
+  truncateTextValue = 34,
 }): JSX.Element => {
   const [error, setError] = useState<boolean>(false);
   const [helperText, setHelperText] = useState<string>('');
   const [hashInputValue, setHashInputValue] = useState<any>();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [hasChanges, setHasChanges] = useState(false);
   const [initialValues, setInitialValues] = useState({
     name: '',
     value: '',
+    isChecked: false,
   });
   useEffect(() => {
     if (isOpen && mode === 'edit') {
       setInitialValues({
         name: variableName,
         value: variableValue,
+        isChecked: hideValue,
       });
     }
   }, []);
@@ -98,15 +95,17 @@ const CreateVariableSlider: FC<CreateVariableProps> = ({
     return isValid;
   }
 
-  const hasChanges = useMemo(() => {
-    if (mode !== 'edit') return true;
+  useEffect(() => {
+    if (mode !== 'edit') return;
 
-    return (
-      variableName !== initialValues.name ||
-      variableValue !== initialValues.value
+    const { name, value, isChecked } = initialValues;
+
+    setHasChanges(
+      variableName !== name ||
+        variableValue !== value ||
+        hideValue !== isChecked
     );
-  }, [mode, variableName, variableValue, initialValues]);
-
+  }, [mode, variableName, variableValue, hideValue, initialValues]);
   const FooterContent: FC = (): JSX.Element => {
     return (
       <div className="ff-create-slider-footer">
@@ -137,7 +136,7 @@ const CreateVariableSlider: FC<CreateVariableProps> = ({
       isOpen={isOpen}
       title={mode === 'create' ? 'Create Variable' : 'Edit Variable'}
       width="284px"
-      height="342px"
+      height="280px"
       top="30%"
       right={8}
       isFooterRequired={true}
@@ -180,7 +179,7 @@ const CreateVariableSlider: FC<CreateVariableProps> = ({
           isHash
           isOnlyHash
           zIndex={99999}
-          truncateTextValue={34}
+          truncateTextValue={truncateTextValue}
           dataFiles={dataFiles}
           dropdownWidth="100%"
           setHashInputValue={setHashInputValue}

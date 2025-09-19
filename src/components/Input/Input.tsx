@@ -45,6 +45,8 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       disableAfterMaxValueReached = false,
       pattern,
       background,
+      helperTextWidth,
+      fixedLabel = false,
       ...props
     },
     ref
@@ -186,7 +188,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       >
         <div
           className={classNames('ff-input-container', {
-            'ff-input-container--float': isValueFilled,
+            'ff-input-container--float': isValueFilled || fixedLabel,
             'ff-input-container--disabled': !!disabled,
           })}
         >
@@ -235,7 +237,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
                 'ff-input--danger':
                   (displayErrorImmediately || touched) && !!error,
                 'ff-input--no-border': !!noBorder,
-                'ff-input--placeholder': !isLabelRequired,
+                'ff-input--placeholder': !isLabelRequired || fixedLabel,
                 'ff-input--number': isTypeNumber,
                 'ff-input--focused': isFocused,
                 'ff-input--isSearchIcon': showSearchIcon,
@@ -341,10 +343,19 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             helperText &&
             (error || isHelperTextRequired) && (
               <span
-                className={classNames('ff-input-message', {
-                  'ff-input-message--showHelperText': !!isHelperTextRequired,
-                  'ff-input-message--danger': !!error,
-                })}
+                className={classNames(
+                  helperTextWidth ? 'ff-input-width' : 'ff-input-message',
+                  {
+                    'ff-input-message--showHelperText': !!isHelperTextRequired,
+                    'ff-input-message--danger': !!error,
+                  }
+                )}
+                style={{
+                  width:
+                    typeof helperTextWidth === 'number'
+                      ? `${helperTextWidth}px`
+                      : helperTextWidth || '',
+                }}
               >
                 {helperText}
               </span>

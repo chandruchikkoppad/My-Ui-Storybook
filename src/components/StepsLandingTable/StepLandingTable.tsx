@@ -9,7 +9,7 @@ import classNames from 'classnames';
 import './StepLandingTable.scss';
 import '../../../index.scss';
 import Typography from '../Typography';
-import { TableProps } from './types';
+import { TableProps, TitleAccordionAction } from './types';
 import StepInnerTable from './Components';
 import {
   gettingBlockMap,
@@ -59,14 +59,17 @@ const StepLandingTable = forwardRef<any, TableProps>(
     );
     const [isBulkEnable, setBulkEnable] = useState(false);
 
-    const onAccordionClick = (title: string) => {
+    const onAccordionClick = (
+      title: string,
+      action: TitleAccordionAction 
+    ) => {
       const row = tableData.find((row) => row.title === title);
       if (!row || !row.data || row.data.length === 0) {
         return;
       }
       setExpandedRows((prev) => ({
         ...prev,
-        [title]: !prev[title],
+        [title]: action === 'open' ? true : !prev[title],
       }));
     };
 
@@ -123,6 +126,8 @@ const StepLandingTable = forwardRef<any, TableProps>(
           partialSelected: stepPartialSelect,
         };
         onSelectClick?.(updatedSelection);
+      } else {
+        onSelectClick?.(selectedRows);
       }
     }, [selectedRows]);
 
@@ -301,6 +306,9 @@ const StepLandingTable = forwardRef<any, TableProps>(
       if (!checkEmpty(AddNlp)) {
         setViewComponent(() => null);
         setViewModeId(null);
+        if (AddNlp?.action === 'addLast') {
+          onAccordionClick('Steps', 'open');
+        }
       }
     }, [AddNlp]);
 

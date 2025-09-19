@@ -1,4 +1,4 @@
-import React, { useContext, useRef, forwardRef } from 'react';
+import React, { useContext, useRef, forwardRef, useMemo } from 'react';
 import { dropdownDefaultCSSData, DropdownProps } from './types';
 import './Dropdown.scss';
 import { checkEmpty } from '../../../utils/checkEmpty/checkEmpty';
@@ -14,6 +14,8 @@ import Icon from '../../Icon';
 import Button from '../../Button';
 import { useMergeRefs } from '../../../hooks/useMergeRefs';
 import TruncatedTooltip from '../../TruncatedTooltip';
+import { FixedSizeList } from 'react-window';
+
 const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
   (
     {
@@ -37,11 +39,15 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
       showArrowIcon = true,
       showClearIcon = false,
       noResultsMessage,
+      searchedIcon = '',
+      dropDownHeight = 160,
+      isCustomButtonDisabled = false,
     },
     ref
   ) => {
     const themeContext = useContext(ThemeContext);
     const currentTheme = themeContext?.currentTheme;
+    const { optionHeight, dropDownWrapperPadding } = dropdownDefaultCSSData;
 
     const customRecurrenceOnBlur = customReccurenece ? () => {} : onSelectBlur;
 
@@ -53,8 +59,7 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
     ]);
 
     const { positionX, positionY, fromBottom, width } = dropdownPosition;
-    const { margin, optionHeight, selectInputHeight, dropDownWrapperPadding } =
-      dropdownDefaultCSSData;
+    const { margin, selectInputHeight } = dropdownDefaultCSSData;
 
     const updateDropdownPosition = () => {
       let dropdownContainerHeight;
@@ -82,13 +87,14 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
         return {
           left: positionX,
           top: positionY + dynamicHeightFromTop - 10,
-          width: showIcon
-            ? width + 70
-            : showArrowIcon || showClearIcon
-            ? width + 32
-            : width + 10,
+          width:
+            showIcon && !checkEmpty(searchedIcon)
+              ? width + 70
+              : showArrowIcon || showClearIcon
+              ? width + 32
+              : width + 10,
           zIndex: optionZIndex,
-          marginLeft: showIcon ? '-31px' : '-2px',
+          marginLeft: showIcon && !checkEmpty(searchedIcon) ? '-31px' : '-2px',
         };
       }
       return {
@@ -101,24 +107,46 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
       };
     };
 
-    const dropdownWidth = updateDropdownPosition().width;
+    const positionStyle = updateDropdownPosition();
+    const dropdownWidth = positionStyle.width;
 
     const basePadding = 16;
     const iconPadding = showIcon ? 32 : 0;
-    // If custom recurrence modal is shown, the dropdown is likely split into two columns.
     const effectiveContentWidth = customReccurenece
       ? (typeof dropdownWidth === 'number' ? dropdownWidth / 2 : 0) -
         basePadding -
         iconPadding
       : dropdownWidth - basePadding - iconPadding;
-    const getOptionLabel = (label: any, icon: string, tooltipWidth: number) => {
+
+    const sortedOptions = useMemo(() => {
+      if (checkEmpty(options)) return [];
+      return [
+        ...options.filter(
+          (option) => getValue(option, valueAccessor) === selectedOption
+        ),
+        ...options.filter(
+          (option) => getValue(option, valueAccessor) !== selectedOption
+        ),
+      ];
+    }, [options, selectedOption, valueAccessor]);
+
+    const getOptionLabel = (
+      label: any,
+      icon: string | undefined,
+      tooltipWidth: number,
+      iconColor: string | undefined
+    ) => {
       if (React.isValidElement(label)) {
         return label;
       }
       return (
         <div className="ff-select-dropdown-option-wrapper">
-          {showIcon && (
-            <Icon name={icon} className="ff-select-dropdown__icon" />
+          {showIcon && icon && (
+            <Icon
+              name={icon}
+              className="ff-select-dropdown__icon"
+              {...(iconColor && { color: iconColor })}
+            />
           )}
           <Typography
             as="div"
@@ -143,6 +171,53 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
       onSaveModal();
     };
 
+    // Calculate height for virtualization
+    const listHeight = useMemo(() => {
+      if (checkEmpty(options)) return 32;
+      if (options.length > 5) return dropDownHeight;
+      return options.length * optionHeight;
+    }, [options]);
+
+    const renderOptionRow = ({ index, style }: any) => {
+      const option = sortedOptions[index];
+      if (!option) return null;
+
+      const optionValue = getValue(option, valueAccessor);
+      const optionLabel = getLabel(option, labelAccessor);
+      const iconName = 'iconName' in option ? option.iconName : undefined;
+      const iconColor = 'iconColor' in option ? option.iconColor : undefined;
+      const isDisabled = 'disable' in option && option.disable;
+
+      return (
+        <div
+          className={classNames(
+            'ff-select-dropdown-option',
+            {
+              'ff-select-dropdown-option__selected':
+                optionValue === selectedOption,
+            },
+            {
+              'ff-select-dropdown-option__disabled': isDisabled,
+            },
+            currentTheme
+          )}
+          key={index}
+          style={style}
+          onClick={() => {
+            if (isDisabled) return;
+            onSelectOptionSelector(option);
+          }}
+        >
+          {getOptionLabel(
+            optionLabel,
+            iconName,
+            effectiveContentWidth,
+            iconColor
+          )}
+        </div>
+      );
+    };
+
     return (
       <div
         className={classNames('ff-select-dropdown-wrapper', currentTheme, {
@@ -150,7 +225,7 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
           'ff-select-dropdown-mini-modal-wrapper': customReccurenece,
         })}
         ref={mergedRef}
-        style={updateDropdownPosition()}
+        style={positionStyle}
       >
         <div
           className={classNames({
@@ -158,40 +233,22 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
           })}
         >
           {!checkEmpty(options) ? (
-            [
-              ...options.filter(
-                (option) => getValue(option, valueAccessor) === selectedOption
-              ),
-              ...options.filter(
-                (option) => getValue(option, valueAccessor) !== selectedOption
-              ),
-            ].map((option, index) => (
-              <div
-                className={classNames(
-                  'ff-select-dropdown-option',
-                  {
-                    'ff-select-dropdown-option__selected':
-                      getValue(option, valueAccessor) === selectedOption,
-                  },
-                  {
-                    'ff-select-dropdown-option__disabled':
-                      'disable' in option && option['disable'],
-                  },
-                  currentTheme
-                )}
-                key={index}
-                onClick={() => {
-                  if ('disable' in option && option['disable']) return;
-                  onSelectOptionSelector(option);
-                }}
+            <div
+              style={{
+                padding: `${dropDownWrapperPadding}px 0`,
+                fontSize: '12px',
+              }}
+            >
+              {/* @ts-ignore: Type compatibility issue with react-window */}
+              <FixedSizeList
+                height={listHeight}
+                width="100%"
+                itemCount={sortedOptions.length}
+                itemSize={optionHeight}
               >
-                {getOptionLabel(
-                  getLabel(option, labelAccessor),
-                  'iconName' in option && option['iconName'],
-                  effectiveContentWidth
-                )}
-              </div>
-            ))
+                {renderOptionRow}
+              </FixedSizeList>
+            </div>
           ) : (
             <Typography
               textAlign="center"
@@ -217,8 +274,9 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
                 />
                 <Button
                   label="Save"
-                  variant="secondary"
+                  variant="primary"
                   onClick={onHandleSaveModal}
+                  disabled={isCustomButtonDisabled}
                 />
               </div>
             </div>

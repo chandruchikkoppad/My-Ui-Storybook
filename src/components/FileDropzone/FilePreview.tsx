@@ -12,7 +12,8 @@ const FilePreview: React.FC<FilePreviewProps> = ({
   onReplaceClick,
   onUploadFile,
   isUploadIcon,
-  isRemoveDisabled = false,
+  isRemoveDisabled,
+  isReplaceDisabled,
   isError = false,
   isIndependentPreview = false,
 }) => {
@@ -67,8 +68,9 @@ const FilePreview: React.FC<FilePreviewProps> = ({
       </div>
       <div className="ff-file-actions">
         <div className="ff-file-actions__icon-replace">
-          <Tooltip title="Replace">
+          <Tooltip disabled={isReplaceDisabled} title="Replace">
             <Icon
+              disabled={isReplaceDisabled}
               name="replace_file"
               color={'var(--icons-default-color)'}
               height={16}

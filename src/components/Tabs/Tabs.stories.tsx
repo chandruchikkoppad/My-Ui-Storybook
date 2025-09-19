@@ -51,42 +51,43 @@ export const DefaultTabs: Story = {
       useState<string>('tab-1');
 
     return (
-        <Tabs
-          tabsData={tabsData}
-          activeTabId={activeTabIdDefault}
-          onTabClick={setActiveTabIdDefault}
-        />
+      <Tabs
+        tabsData={tabsData}
+        activeTabId={activeTabIdDefault}
+        onTabClick={setActiveTabIdDefault}
+      />
     );
   },
 };
+
+const tabsDataForCapsule = [
+  {
+    id: 'tab-1',
+    label: 'Loremipsum_1',
+    component: <TabContentOne />,
+  },
+  {
+    id: 'tab-2',
+    label: 'Loremipsum_2',
+    component: <TabContentTwo />,
+  },
+  {
+    id: 'tab-3',
+    label: 'Loremipsum_3',
+    component: <TabContentThree />,
+  },
+  {
+    id: 'tab-4',
+    label: 'Loremipsum_4',
+    component: <TabContentFour />,
+  },
+  { id: 'tab-5', label: 'Loremipsum_5', component: <TabContentFour /> },
+];
+
 export const CapsuleTabs: Story = {
   render: () => {
     const [activeTabIdCapsule, setActiveTabIdCapsule] =
       useState<string>('tab-1');
-
-    const tabsDataForCapsule = [
-      {
-        id: 'tab-1',
-        label: 'Loremipsum_1',
-        component: <TabContentOne />,
-      },
-      {
-        id: 'tab-2',
-        label: 'Loremipsum_2',
-        component: <TabContentTwo />,
-      },
-      {
-        id: 'tab-3',
-        label: 'Loremipsum_3',
-        component: <TabContentThree />,
-      },
-      {
-        id: 'tab-4',
-        label: 'Loremipsum_4',
-        component: <TabContentFour />,
-      },
-      { id: 'tab-5', label: 'Loremipsum_5', component: <TabContentFour /> },
-    ];
 
     return (
       <Tabs
@@ -95,6 +96,53 @@ export const CapsuleTabs: Story = {
         activeTabId={activeTabIdCapsule}
         onTabClick={setActiveTabIdCapsule}
       />
+    );
+  },
+};
+
+export const tabsWithDifferentSpacings: Story = {
+  render: () => {
+    const [activeTabIdCapsule, setActiveTabIdCapsule] =
+      useState<string>('tab-1');
+
+    return (
+      <>
+        <Tabs
+          variant={'capsule'}
+          tabsData={tabsDataForCapsule}
+          activeTabId={activeTabIdCapsule}
+          onTabClick={setActiveTabIdCapsule}
+          tabFlexSpacing="center"
+        />
+        <Tabs
+          variant={'capsule'}
+          tabsData={tabsDataForCapsule}
+          activeTabId={activeTabIdCapsule}
+          onTabClick={setActiveTabIdCapsule}
+          tabFlexSpacing="flex-start"
+        />
+        <Tabs
+          variant={'capsule'}
+          tabsData={tabsDataForCapsule}
+          activeTabId={activeTabIdCapsule}
+          onTabClick={setActiveTabIdCapsule}
+          tabFlexSpacing="flex-end"
+        />
+        <Tabs
+          variant={'capsule'}
+          tabsData={tabsDataForCapsule}
+          activeTabId={activeTabIdCapsule}
+          onTabClick={setActiveTabIdCapsule}
+          tabFlexSpacing="space-between"
+        />
+        <Tabs
+          variant={'capsule'}
+          tabsData={tabsDataForCapsule}
+          activeTabId={activeTabIdCapsule}
+          onTabClick={setActiveTabIdCapsule}
+          tabFlexSpacing="space-around"
+        />
+      </>
     );
   },
 };
@@ -172,6 +220,23 @@ export const WithoutPadding: Story = {
           noPadding={true}
         />
       </div>
+    );
+  },
+};
+
+export const WithBorderBottom: Story = {
+  render: () => {
+    const [activeTabIdDefault, setActiveTabIdDefault] =
+      useState<string>('tab-1');
+
+    return (
+      <Tabs
+        isBorderBottomLine={true}
+        isBorderRadius={true}
+        tabsData={tabsData}
+        activeTabId={activeTabIdDefault}
+        onTabClick={setActiveTabIdDefault}
+      />
     );
   },
 };

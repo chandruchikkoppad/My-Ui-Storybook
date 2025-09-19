@@ -13,6 +13,7 @@ import { VariableSuggestionInputDropDownProps, dynamicObject } from './types';
 import './VariableSuggestionInputDropDown.scss';
 import OptionsDropdown from './OptionsDropdown';
 import Tooltip from '../Tooltip';
+import Typography from '../Typography';
 
 const VariableSuggestionInputDropDown = forwardRef<
   HTMLInputElement,
@@ -31,7 +32,7 @@ const VariableSuggestionInputDropDown = forwardRef<
       handleClearInput,
       value = '',
       dropdownWidth = '100%',
-      dropdownHeight = '150px',
+      dropdownHeight = '160px',
       isHash = false,
       isOnlyHash = false,
       dataFiles = [],
@@ -49,6 +50,7 @@ const VariableSuggestionInputDropDown = forwardRef<
       clearIcon = true,
       inputTitle = '',
       onBlur,
+      helperTextWidth,
       ...props
     },
     ref
@@ -115,6 +117,8 @@ const VariableSuggestionInputDropDown = forwardRef<
         selectedDollarValue !== null && value.startsWith('$');
       const additionalText =
         value.length > (selectedDollarValue?.name.length || 0);
+      const hasTextWithoutVariable =
+        (value.length > 0 && !isDollarSelected) || value.startsWith('#');
       if (isOnlyHash) {
         setShowCreateVariableIcon(false);
       } else {
@@ -125,6 +129,9 @@ const VariableSuggestionInputDropDown = forwardRef<
           value.includes('#')
         ) {
           setShowCreateVariableIcon(false);
+          if (hasTextWithoutVariable) {
+            setShowCreateVariableIcon(true);
+          }
         } else if (additionalText && !value.includes('$')) {
           setShowCreateVariableIcon(true);
         }
@@ -240,6 +247,12 @@ const VariableSuggestionInputDropDown = forwardRef<
         }
       }
     };
+    const variableOptionList = () => {
+      return variableList?.filter((file) =>
+        file?.name?.toLowerCase()?.includes(result?.searchString?.toLowerCase())
+      );
+    };
+
     return (
       <div className="ff-add-variable-container">
         <div className="ff-add-variable-input" ref={containerRef}>
@@ -249,6 +262,7 @@ const VariableSuggestionInputDropDown = forwardRef<
               name="add_variable"
               ref={inputRef}
               type={type}
+              className="ff-variable-input-container"
               value={value}
               onChange={onChange}
               onPaste={() => {
@@ -268,27 +282,33 @@ const VariableSuggestionInputDropDown = forwardRef<
               helperText={helperText}
               error={error}
               required={required}
+              helperTextWidth={helperTextWidth}
               {...formProps}
             />
+            {!checkEmpty(value) &&
+              showCreateVariableIcon &&
+              showAddVariableIcon && (
+                <div
+                  className="ff-create-variable-container"
+                  onClick={onCreateVariableClick}
+                >
+                  <Typography
+                    fontWeight="regular"
+                    fontSize="10px"
+                    color={'var(--brand-color)'}
+                  >
+                    Create Variable
+                  </Typography>
+                </div>
+              )}
           </Tooltip>
           {!checkEmpty(value) && !isOnlyHash && (
-            <div className="ff-variable-icon-container">
+            <div className="ff-cancel-icon-container">
               {clearIcon && (
                 <Tooltip title="Cancel" style={{ zIndex: 99999 }}>
                   <Icon
                     onClick={handleClearInput}
                     name="close"
-                    height={16}
-                    width={16}
-                    hoverEffect
-                  />
-                </Tooltip>
-              )}
-              {showCreateVariableIcon && showAddVariableIcon && (
-                <Tooltip title="Create as Variable" style={{ zIndex: 99999 }}>
-                  <Icon
-                    onClick={onCreateVariableClick}
-                    name="add_variable"
                     height={16}
                     width={16}
                     hoverEffect
@@ -304,12 +324,8 @@ const VariableSuggestionInputDropDown = forwardRef<
             zIndex={zIndex}
             truncateTextValue={truncateTextValue}
             width={dropdownWidthPx}
-            height={dropdownHeight}
-            optionsList={variableList.filter((file) =>
-              file.name
-                .toLowerCase()
-                .includes(result?.searchString?.toLowerCase())
-            )}
+            height={checkEmpty(variableOptionList()) ? 'auto' : dropdownHeight}
+            optionsList={variableOptionList()}
             onSelectVariable={handleDropdownClick}
           />
         )}

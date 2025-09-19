@@ -69,11 +69,11 @@ const Branches = ({
 
   const getGridTemplateColumnStyle = () => {
     if (machineColumnCount === 1) {
-      return `24px minmax(420px, auto) 24px`;
+      return `24px minmax(min-content, auto) 24px`;
     }
-    return `24px minmax(420px, auto) repeat(${
+    return `24px minmax(min-content, auto) repeat(${
       machineColumnCount - 1
-    }, 40px minmax(420px, auto)) 24px`;
+    }, 40px minmax(min-content, auto)) 24px`;
   };
 
   const getMachineLabelOptionList = (
@@ -88,6 +88,7 @@ const Branches = ({
       deviceInfo,
     } = machineInstance as ExecutionContext;
     const getEnvironment = (environment: string = '') => {
+      if (environment.toLowerCase() === 'local') return 'local';
       if (environment.toLowerCase().includes('browserstack'))
         return 'Browserstack';
       if (environment.toLowerCase().includes('lambdatest')) return 'LambdaTest';
@@ -105,7 +106,7 @@ const Branches = ({
     if (scriptType.toLowerCase() === 'manual') {
       baseOptions.push({
         label: hostName || '',
-        type: 'local',
+        type: executionEnv?.toLowerCase() === 'local' ? 'local' : '',
       });
     }
 
@@ -122,11 +123,14 @@ const Branches = ({
     ];
 
     // Mobile-specific options
-    const mobileOptions = deviceInfo?.reduce((acc, device, index) => {
-      if (device?.name) {
+    const mobileOptions = deviceInfo?.reduce((acc, device) => {
+      if (device) {
         acc.push({
           label: device?.name,
-          type: index === 0 ? 'android' : 'mac',
+          type:
+            scriptType.toLowerCase() === 'manual'
+              ? 'android'
+              : device?.platform,
           version:
             scriptType?.toLowerCase() === 'manual' ? device?.version : '',
         });
